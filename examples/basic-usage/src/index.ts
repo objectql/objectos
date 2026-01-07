@@ -1,23 +1,17 @@
 import { ObjectQL, ObjectConfig, UnifiedQuery } from '@objectql/core';
-import { MongoDriver } from '@objectql/driver-mongo';
 import { createObjectQLRouter } from '@objectql/express';
 import express from 'express';
 import cors from 'cors';
 import * as path from 'path';
+import config from './objectql.config';
 
 const app = new ObjectQL({
-  datasources: {
-    default: new MongoDriver({ 
-        url: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/objectql_example',
-        dbName: 'objectql_example'
-    })
-  }
+  datasources: config.datasources
 });
 
 // Load objects from directory (includes .object.yml and .hook.js)
-const objectsDir = path.join(__dirname, 'objects');
-console.log(`Loading objects from ${objectsDir}...`);
-app.loadFromDirectory(objectsDir);
+console.log(`Loading objects from ${config.objectsDir}...`);
+app.loadFromDirectory(config.objectsDir);
 
 const projectObj = app.getObject('projects');
 if (!projectObj) {
