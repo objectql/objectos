@@ -1,108 +1,198 @@
 # ObjectQL Lifecycle Hooks & Business Logic
 
 **Version:** 1.0.0
-**Context:** This document is part of the [ObjectQL Core Specification](./SPECIFICATION.md).
 
 ## 1. Overview
 
-The system provides a rich interception model to inject business logic into the CRUD lifecycle. Hooks are event-driven functions that execute within the transaction scope (if applicable), allowing developers to implement validation, side effects, and complex business rules.
+The system provides a rich interception model (AOP) to inject business logic into the CRUD lifecycle. Hooks are event-driven functions that execute within the same **Transaction Scope** as the primary operation.
 
 ## 2. Hook Signature
 
-Hooks are async functions that receive a strongly-typed `HookContext`.
+Hooks receive a structured object containing the **Session Context** and the **Operation Payload**.
 
 ```typescript
-import { UnifiedQuery } from './QUERY';
+import { UnifiedQuery, ObjectQLContext } from './CORE_TYPES';
 
-export type HookType = 
-  | 'beforeFind' | 'afterFind' 
-  | 'beforeCreate' | 'afterCreate' 
-  | 'beforeUpdate' | 'afterUpdate' 
-  | 'beforeDelete' | 'afterDelete'
-  | 'beforeAggregate' | 'afterAggregate';
+export interface HookContext<T = any> {
+  // === 1. The Session Context ===
+  // Automatically propagates userId, spaceId, and Transaction.
+  ctx: ObjectQLContext;
 
-export interface HookContext {
-  // Operational Context
+  // === 2. Operational Info ===
   entity: string;
-  op: 'find' | 'create' | 'update' | 'delete' | 'aggregate';
+  op: 'find' | 'create' | 'update' | 'delete' | 'count' | 'aggregate';
   
-  userId?: string;                        // Current User ID
-  spaceId?: string;                       // Multi-tenancy Isolation 
-  roles?: string[];                       // Authorization Roles
-  
-  // Security Context (Lightweight Session)
-  // Mirrors the 'context' object passed in the Client API
-  params: {
-    [key: string]: any;                     // Extensible metadata
-  };
-  
-  // Data Context (Varies by Op)
-  id?: any;               // ID for update/delete
-  query?: UnifiedQuery;   // For find/aggregate
-  
-  // Data Payload / Result
-  // - In before* hooks: Represents INPUT data. Modifications are persisted.
-  // - In after* hooks:  Represents OUTPUT result. Modifications affect the response.
-  doc?: any;              
+  // === 3. Data Payload (Mutable) ===
+  // - In beforeCreate/Update: The data to be written. 
+  // - In afterCreate/Update: The result record returned from DB.
+  doc?: T;              
 
-  // Infrastructure
-  transaction?: any;              // Transaction Handle (Forward to sub-queries)
+  // === 4. Query Context (Mutable, for 'find' only) ===
+  // Complies strictly with the UnifiedQuery JSON-DSL (AST).
+  // Developers can modify 'fields', 'sort', or wrap 'filters'.
+  query?: UnifiedQuery;
   
-  // Helpers
-  getPreviousDoc: () => Promise<any>; // Lazy load previous version (beforeUpdate/Delete only)
+  // === 5. Helpers ===
+  getPreviousDoc: () => Promise<T>;
+  
+  // AST Manipulation Utilities
+  utils: {
+    /**
+     * Safely injects a new filter criterion into the existing AST.
+     * It wraps existing filters in a new group to preserve operator precedence.
+     * * Logic: (Existing_Filters) AND (New_Filter)
+     */
+    restrict: (criterion: [string, string, any]) => void;
+  };
 }
 
-export type HookFunction = (ctx: HookContext) => Promise<void>;
+export type HookFunction = (context: HookContext) => Promise<void>;
+
 ```
 
 ## 3. Registering Hooks
 
-Hooks can be declared in `*.trigger.js` files adjacent to the object definition.
+Hooks are declared in `*.trigger.ts` files adjacent to the object definition.
 
-```javascript
-// objects/orders/orders.trigger.js
-module.exports = {
+### 3.1 Data Validation & Auto-fill (`beforeCreate`)
+
+Use `ctx.userId` and `ctx.spaceId` directly.
+
+```typescript
+// objects/orders/orders.trigger.ts
+import { defineTrigger } from '@objectql/core';
+
+export default defineTrigger({
   listenTo: 'orders',
 
-  async beforeCreate(ctx) {
-    // 1. Validation
-    if (ctx.doc.amount < 0) {
-      throw new Error("Amount must be positive");
+  async beforeCreate({ ctx, doc }) {
+    // 1. Context Validation
+    if (!ctx.userId) {
+      throw new Error("User must be logged in");
     }
-
-    // 2. Default Values/Calculation
-    ctx.doc.total = ctx.doc.amount + (ctx.doc.tax || 0);
-  },
-
-  async afterUpdate(ctx) {
-    // 3. Side Effects (Audit Log)
-    // IMPORTANT: specific logic for 'status' change
-    // Note: ctx.doc represents the Result in after* hooks
-    const previousDoc = await ctx.getPreviousDoc();
     
-    if (ctx.doc.status === 'shipped' && previousDoc.status !== 'shipped') {
-        // Use the same transaction for consistency
-        await objectql.create('audit_logs', {
-            order_id: ctx.id,
-            action: 'shipped',
-            operator: ctx.context.userId
-        }, { transaction: ctx.transaction });
+    // 2. Auto-fill (Mutation)
+    doc.created_by = ctx.userId;
+    doc.owner = ctx.userId;
+    
+    // 3. Tenant Isolation
+    if (ctx.spaceId) {
+      doc.space_id = ctx.spaceId;
     }
   }
-}
+});
+
+```
+
+### 3.2 Side Effects & Cascading (`afterUpdate`)
+
+Use `ctx.object(...)` to perform operations. This ensures execution within the **same transaction**.
+
+```typescript
+export default defineTrigger({
+  async afterUpdate({ ctx, doc, getPreviousDoc }) {
+    // 1. Fetch previous state
+    const prev = await getPreviousDoc();
+    
+    // 2. Detect Status Change
+    if (prev.status !== 'shipped' && doc.status === 'shipped') {
+        
+        // 3. Cascade Update (Atomic)
+        // Adjust inventory using atomic operators ($inc)
+        await ctx.object('inventory').update(doc.product_id, {
+            $inc: { stock: -doc.quantity }
+        });
+        
+        // 4. Audit Log
+        await ctx.object('audit_logs').create({
+            target_entity: 'orders',
+            target_id: doc._id,
+            action: 'shipped'
+        });
+    }
+  }
+});
+
+```
+
+### 3.3 Query Interception (`beforeFind`)
+
+This hook allows modifying the `UnifiedQuery` AST before it reaches the driver.
+
+**Important:** Do not manually `push` to `query.filters` array, as it may break the `['a', 'and', 'b']` structure. Use `utils.restrict`.
+
+```typescript
+export default defineTrigger({
+  async beforeFind({ ctx, query, utils }) {
+    // Bypass for system operations
+    if (ctx.isSystem) return;
+
+    // 1. Force Multi-tenancy (RLS)
+    // Injects: ... AND ['space_id', '=', ctx.spaceId]
+    if (ctx.spaceId) {
+      utils.restrict(['space_id', '=', ctx.spaceId]);
+    }
+
+    // 2. Soft Delete Logic (Default View)
+    // Check if 'is_deleted' is already present in the AST string
+    const filtersStr = JSON.stringify(query.filters || []);
+    if (!filtersStr.includes('is_deleted')) {
+      // Injects: ... AND ['is_deleted', '=', false]
+      utils.restrict(['is_deleted', '=', false]);
+    }
+    
+    // 3. Field Level Security (FLS)
+    // Remove sensitive fields from projection
+    if (query.fields && !ctx.roles.includes('admin')) {
+        query.fields = query.fields.filter(f => f !== 'cost_price');
+    }
+  }
+});
+
 ```
 
 ## 4. Execution Pipeline
 
-The execution flow ensures that hooks run within the transaction boundaries.
+The execution flow guarantees atomicity.
 
-1. **Transaction Start**
-2. **`before*` Hook** 
-   - Can validate inputs
-   - Can mutate `ctx.doc` or `ctx.query`
-   - Can throw Error to abort transaction
-3. **Driver Operation**
-4. **`after*` Hook** 
-   - Can mutate `ctx.result`
-   - Can perform side-effects using `ctx.transaction`
-5. **Transaction Commit**
+1. **Context Initialization:** `ctx` created (User/Space info).
+2. **Transaction Start:** (If supported).
+3. **`before*` Hook:**
+* Mutate `doc` -> Affects persistence.
+* Mutate `query` -> Affects AST passed to driver.
+* Throw Error -> **Rollback**.
+
+
+4. **Driver Operation:** * Driver compiles AST to SQL/Mongo Query.
+* Executes physical Read/Write.
+
+
+5. **`after*` Hook:**
+* Side-effects via `ctx.object()`.
+* Throw Error -> **Rollback**.
+
+
+6. **Transaction Commit.**
+
+## 5. Implementation Detail: `utils.restrict`
+
+The `utils.restrict` helper ensures the AST remains valid by wrapping the existing filters.
+
+```typescript
+// Conceptual logic of utils.restrict
+function restrict(newCriterion) {
+  if (!query.filters || query.filters.length === 0) {
+    // Case A: No existing filters
+    query.filters = [newCriterion];
+  } else {
+    // Case B: Wrap existing filters to preserve precedence
+    // Transform: [Old] -> [[Old], 'and', [New]]
+    query.filters = [
+      query.filters, // Previous AST
+      'and',
+      newCriterion   // New Condition
+    ];
+  }
+}
+
+```
