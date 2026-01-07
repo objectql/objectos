@@ -1,5 +1,8 @@
 import { ObjectQL, ObjectConfig, UnifiedQuery } from '@objectql/core';
 import { MongoDriver } from '@objectql/driver-mongo';
+import { createObjectQLRouter } from '@objectql/server';
+import express from 'express';
+import cors from 'cors';
 import * as path from 'path';
 
 const app = new ObjectQL({
@@ -58,45 +61,57 @@ const query: UnifiedQuery = {
 
 (async () => {
     try {
-        // 1. Create some dummy data (System context to bypass hooks/setup data)
+        console.log("Starting server...");
+        
+        // --- 1. Seed Data (Optional, reused from previous logic) ---
+        // Create some dummy data (System context to bypass hooks/setup data)
         const systemCtx = app.createContext({ isSystem: true });
         
-        console.log("Cleaning up old data...");
-        // Cleanup might be needed if running repeatedly, but MongoDriver currently doesn't expose deleteMany easily in this example?
-        // Let's just create new ones.
+        try {
+            await systemCtx.object('projects').create({
+                name: 'Website Redesign',
+                status: 'in_progress',
+                priority: 'high',
+                owner: 'u-123'
+            });
+             await systemCtx.object('projects').create({
+                name: 'Mobile App',
+                status: 'planned',
+                priority: 'high',
+                owner: 'u-999'
+            });
+        } catch (e) {
+            console.log("Error seeding data (might already exist):", e);
+        }
 
-        // User 123's project
-        await systemCtx.object('projects').create({
-            name: 'Website Redesign',
-            status: 'in_progress',
-            priority: 'high',
-            owner: 'u-123'
-        });
-        // Another user's project
-        await systemCtx.object('projects').create({
-            name: 'Mobile App',
-            status: 'planned',
-            priority: 'high',
-            owner: 'u-999'
+        // --- 2. Start Express Server ---
+        const server = express();
+        server.use(cors());
+        server.use(express.json());
+
+        // Mount ObjectQL API
+        // Example: /api/projects
+        server.use('/api', createObjectQLRouter({
+            objectql: app,
+            getContext: (req, res) => {
+                // Simulate Authentication: Read User ID from header
+                const userId = req.headers['x-user-id'] as string;
+                if (userId === 'admin') {
+                     return app.createContext({ isSystem: true });
+                }
+                return app.createContext({
+                    userId: userId || undefined
+                });
+            }
+        }));
+
+        const PORT = process.env.PORT || 3000;
+        server.listen(PORT, () => {
+            console.log(`Server running at http://localhost:${PORT}`);
+            console.log(`Try: curl -H "X-User-Id: u-123" http://localhost:${PORT}/api/projects`);
         });
 
-        // 2. Query as u-123
-        console.log('\n--- Querying as user u-123 ---');
-        const ctx = app.createContext({
-        userId: 'u-123'
-        });
-        // The query itself doesn't have an owner filter, but the Hook will inject it.
-        const resultsMongo = await ctx.object('projects').find(query);
-        console.log('Query Results (Should only see Website Redesign):', JSON.stringify(resultsMongo, null, 2));
-        
-        // 3. Query as System (Bypass RLS)
-        console.log('\n--- Querying as System (Admin) ---');
-        const allResults = await systemCtx.object('projects').find({ fields: ['name', 'owner'] });
-        console.log('System Results (Should see all):', JSON.stringify(allResults, null, 2));
-        
     } catch (e) {
-        console.error("Error running example:", e);
+        console.error("Error setting up server:", e);
     }
-    // keep alive if needed, or exit
-    process.exit(0);
 })();
