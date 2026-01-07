@@ -37,8 +37,10 @@ export class ObjectQL {
     }
 
     datasource(name: string) {
-        return {
-            find: async (query: any) => { return [] }
+        const driver = this.datasources[name];
+        if (!driver) {
+            throw new Error(`Datasource '${name}' not found`);
         }
+        return driver;
     }
 }

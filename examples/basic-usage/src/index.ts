@@ -39,10 +39,7 @@ const app = new ObjectQL({
   },
   datasources: {
     // Environment A: Cloud / Prototype (MongoDB)
-    design: new MongoDriver({ url: process.env.MONGO_URL }),
-    
-    // Environment B: On-Premise / Production (PostgreSQL)
-    runtime: new KnexDriver({ client: 'pg', connection: process.env.PG_URL })
+    default: new MongoDriver({ url: process.env.MONGO_URL }),
   }
 });
 
