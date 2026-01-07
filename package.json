@@ -3,9 +3,11 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/apps/*",
+    "examples/servers/*"
   ],
   "scripts": {
+    "start": "npm run build --workspaces && npm start --workspace=@example/express",
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "changeset": "changeset",

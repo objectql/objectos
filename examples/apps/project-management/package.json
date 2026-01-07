@@ -1,0 +1,18 @@
+{
+  "name": "@example/project-management",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && cp src/*.yml dist/"
+  },
+  "dependencies": {
+    "@objectql/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

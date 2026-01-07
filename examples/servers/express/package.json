@@ -1,9 +1,9 @@
 {
-  "name": "basic-usage",
+  "name": "@example/express",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "rm -rf dist && tsc -b && mkdir -p dist/objects && cp src/objects/*.yml dist/objects/",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc",
     "start": "node dist/index.js",
     "test": "echo \"No tests specified\" && exit 0"
   },
@@ -12,6 +12,7 @@
     "@objectql/driver-knex": "^0.1.0",
     "@objectql/driver-mongo": "^0.1.0",
     "@objectql/express": "^0.1.0",
+    "@example/project-management": "*",
     "cors": "^2.8.5",
     "express": "^4.18.2"
   },

@@ -1,4 +1,5 @@
 import { MongoDriver } from '@objectql/driver-mongo';
+import { packageDir as projectManagementParams } from '../../../apps/project-management/dist';
 import path from 'path';
 
 export default {
@@ -9,6 +10,6 @@ export default {
         })
     },
     packages: [
-        path.join(__dirname, 'packages/project-management')
+        projectManagementParams
     ]
 };
