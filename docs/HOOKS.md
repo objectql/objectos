@@ -227,13 +227,6 @@ Hooks are automatically loaded if they match the object name in the `/hooks` dir
 ├── /objects
 │   └── contracts.object.yml
 │
-# Method A: Dedicated Hooks Directory
 ├── /hooks
 │   └── contracts.hook.js
 │
-# Method B: Colocation (Preferred for modularity)
-├── /modules
-│   └── sales
-│       ├── contracts.object.yml
-│       └── contracts.hook.js
-```
