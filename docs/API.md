@@ -19,7 +19,22 @@ interface ObjectQLContext {
   userId?: string;                        // Current User ID
   spaceId?: string;                       // Multi-tenancy Isolation (Organization ID)
   roles: string[];                        // RBAC Roles
-  isSystem?: boolean;                     // Sudo mode flag
+
+  // === Execution Flags ===
+  /**
+   * Sudo Mode / System Bypass.
+   * - true: Bypasses all permission checks (CRUD, Field Level Security, Record Level Security).
+   * - false/undefined: Enforces all permission checks based on 'roles'.
+   */
+  isSystem?: boolean;
+
+  /**
+   * Trigger Control.
+   * - true: Skips all lifecycle hooks (beforeCreate, afterUpdate, etc.).
+   * - Useful for bulk data imports or raw data correction to prevent side effects.
+   * - Requires 'isSystem: true' (Security Safeguard).
+   */
+  ignoreTriggers?: boolean;
 
   // === Data Entry Point ===
   /**
@@ -33,6 +48,12 @@ interface ObjectQLContext {
    * The callback receives a new context 'trxCtx' which inherits userId and spaceId from this context.
    */
   transaction(callback: (trxCtx: ObjectQLContext) => Promise<any>): Promise<any>;
+
+  /**
+   * Returns a new context with system privileges (isSystem: true).
+   * It shares the same transaction scope as the current context.
+   */
+  sudo(): ObjectQLContext;
 }
 
 ```
@@ -188,16 +209,37 @@ const orders = await ctx.object('orders').find({
 
 ```
 
-### 5.2 Sudo / System Bypass
+### 5.2 System Privileges & Execution Control
 
-To perform administrative tasks (ignoring permission checks), create a system context.
+To perform administrative tasks, you can elevate the context privileges or control the execution pipeline.
+
+**Sudo Mode (`isSystem`)**
+
+Bypasses all permission checks (CRUD, FLS, RLS). Use this when the system needs to perform operations that the user is not allowed to do directly.
 
 ```typescript
-// 'isSystem: true' bypasses RBAC and some triggers
+// 'isSystem: true' grants full access
 const systemCtx = objectql.createContext({ isSystem: true });
-
 await systemCtx.object('audit_logs').delete('log-old-001');
+```
 
+**Bypassing Triggers (`ignoreTriggers`)**
+
+To insert raw data without executing business logic (hooks), set `ignoreTriggers: true`. This is often used during data migration or restoration.
+*Note: This flag usually requires `isSystem: true` to prevent security circumvention.*
+
+```typescript
+// Create a context for raw data import
+const importCtx = objectql.createContext({
+  isSystem: true,
+  ignoreTriggers: true
+});
+
+// Creates record WITHOUT executing 'beforeCreate'/'afterCreate' hooks
+await importCtx.object('orders').create({
+  _id: 'restored-o-001',
+  name: "Restored Order"
+});
 ```
 
 ## 6. Transaction Management

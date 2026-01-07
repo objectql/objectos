@@ -148,8 +148,31 @@ export default defineTrigger({
     }
   }
 });
-
 ```
+
+### 3.4 Elevating Privileges (Sudo Mode)
+
+If you need to perform actions that the current user does not have permission for (e.g., a user updating a system-only status), use `ctx.sudo()` .
+
+**Key Benefit:** The `sudo()` context shares the **same transaction** as the hook, ensuring that if the hook fails, the sudo operations are also rolled back.
+
+```typescript
+export default defineTrigger({
+  async afterCreate({ ctx, doc }) {
+    // Current user context (Restricted)
+    // await ctx.object('system_counters').update(...) // -> Would fail Permission Check
+
+    // Sudo context (Unrestricted, Shared Transaction)
+    const sudoCtx = ctx.sudo();
+    
+    // This updates 'system_counters' as System, but within the user's transaction.
+    await sudoCtx.object('system_counters').update('global_counter_id', {
+      $inc: { count: 1 }
+    });
+  }
+});
+```
+
 
 ## 4. Execution Pipeline
 
