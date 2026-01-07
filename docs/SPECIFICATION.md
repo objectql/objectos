@@ -99,87 +99,9 @@ fields:
 
 ## 4. The Unified Query Protocol (JSON-DSL)
 
-All internal communication uses this AST. It is designed to be a JSON-serializable representation of a SQL/NoSQL query.
+All internal communication uses the Unified Query Protocol (JSON-DSL).
 
-### 4.1 Interface (TypeScript)
-
-```typescript
-export type Operator = 
-  | '=' | '!=' | '>' | '>=' | '<' | '<=' 
-  | 'in' | 'not in' 
-  | 'like' | 'not like'         // SQL generic matching
-  | 'startswith' | 'endswith'   // String optimization
-  | 'contains'                  // Array or String containment
-  | 'between';                  // Range check
-
-export interface UnifiedQuery {
-  // Target
-  entity: string;
-  
-  // Projection
-  fields?: string[]; 
-  
-  // Selection
-  filters?: Array<
-    [string, Operator, any] | // Leaf Condition
-    'and' | 'or' |            // Logical Operator
-    UnifiedQuery['filters']   // Nested Group
-  >;
-  
-  // Global Text Search (optional implementation)
-  search?: string;
-
-  // Ordering
-  sort?: Array<[string, 'asc' | 'desc']>;
-  
-  // Pagination
-  top?: number;  // LIMIT
-  skip?: number; // OFFSET
-
-  // Graph Resolution (JOINs)
-  expand?: Record<string, {
-    fields?: string[];
-    filters?: UnifiedQuery['filters'];
-    sort?: UnifiedQuery['sort'];
-    top?: number;
-  }>;
-
-  // Analytics & Grouping
-  groupBy?: string[];
-  aggregate?: Record<string, 'sum' | 'avg' | 'min' | 'max' | 'count'>;
-}
-```
-
-### 4.2 Example
-
-```javascript
-{
-  "entity": "orders",
-  "fields": ["name", "amount", "created_at"],
-  
-  // (status = 'paid' OR status = 'pending') AND amount > 100
-  "filters": [
-    [["status", "=", "paid"], "or", ["status", "=", "pending"]],
-    "and",
-    ["amount", ">", 100]
-  ],
-  
-  "sort": [["created_at", "desc"]],
-  "top": 20,
-  "skip": 0,
-
-  "expand": {
-    "customer": { 
-      "fields": ["name", "email"],
-      "filters": [["is_active", "=", true]] 
-    },
-    "items": {
-      "fields": ["product_name", "qty", "price"],
-      "sort": [["price", "desc"]]
-    }
-  }
-}
-```
+> **Full Specification:** Please refer to [QUERY_PROTOCOL.md](./QUERY_PROTOCOL.md) for the complete TypeScript interface and examples.
 
 ## 5. Security Model (Modern RBAC)
 
@@ -199,8 +121,8 @@ policies:
     
     # Row Level Security (RLS)
     # Injected into the Query AST as an 'AND' condition
-    filter: 
-      - [owner, '=', '$user.id']
+    filters: 
+      - ['owner', '=', '$user.id']
 
     # Field Level Security (FLS)
     # Whitelist approach
@@ -214,59 +136,49 @@ Supported variables in filters:
 
 * `$user.id`: Current User ID.
 * `$user.roles`: Array of role names.
-* `$context.tenant_id`: For multi-tenancy isolation.
+* `$context.space`: For multi-tenancy isolation.
 
-## 6. Driver Specification
+## 6. Client API & Driver Specification
 
-Drivers must implement the `ObjectQLDriver` interface.
+### 6.1 Client API
 
-### 6.1 Required Methods
+Application developers use the standard ObjectQL API to interact with data.
 
-* `init(config: any): Promise<void>`
-* `find(query: UnifiedQuery): Promise<any[]>`
-* `count(query: UnifiedQuery): Promise<number>`
-* `aggregate?(query: UnifiedQuery): Promise<any[]>`
-* `create(entity: string, data: any): Promise<any>`
-* `update(entity: string, id: any, data: any): Promise<any>`
-* `delete(entity: string, id: any): Promise<any>`
-* `transaction?(work: (trx: any) => Promise<any>): Promise<any>`
+> **Full Specification:** Please refer to [CLIENT_API.md](./CLIENT_API.md) for method signatures and usage examples (CRUD, Transactions).
 
-### 6.2 The "Compiler" Responsibility
+### 6.2 Driver Interface
 
-* **Mongo Driver:** Compiles `UnifiedQuery` -> `Aggregation Pipeline`.
-* **Knex Driver:** Compiles `UnifiedQuery` -> `Knex QueryBuilder` (handling JSONB logic transparently).
-## 7. Lifecycle Hooks (Business Logic)
+Drivers must implement the `ObjectQLDriver` interface to be compatible with the core engine.
 
-To decouple business logic from the core CRUD, the system supports an event-driven hook system.
-
-### 7.1 Hook Definitions
-
-Hooks can be defined in a companion file (e.g., `orders.trigger.js`) or registered at runtime.
-
-```javascript
-module.exports = {
-  listenTo: 'orders',
+```typescript
+// Driver Interface Update
+interface ObjectQLDriver {
+  init(config: any): Promise<void>;
   
-  beforeCreate: async (ctx) => {
-    if (ctx.data.amount > 10000 && !ctx.user.is_manager) {
-      throw new Error("Needs manager approval");
-    }
-  },
-
-  afterUpdate: async (ctx) => {
-    if (ctx.changes.status === 'paid') {
-      await ctx.broker.emit('order.paid', ctx.doc);
-    }
-  }
+  // CRUD
+  find(query: UnifiedQuery, options?: { trx?: any }): Promise<any[]>;
+  count(query: UnifiedQuery, options?: { trx?: any }): Promise<number>;
+  aggregate?(query: UnifiedQuery, options?: { trx?: any }): Promise<any[]>;
+  create(entity: string, data: any, options?: { trx?: any }): Promise<any>;
+  update(entity: string, id: any, data: any, options?: { trx?: any }): Promise<any>;
+  delete(entity: string, id: any, options?: { trx?: any }): Promise<any>;
+  
+  // Transaction
+  transaction(work: (trx: any) => Promise<any>): Promise<any>;
 }
 ```
 
-### 7.2 Pipeline Execution
+### 6.3 The "Compiler" Responsibility
 
-1. **Request** -> **Authentication**
-2. **Access Control (RBAC/RLS)**
-3. `beforeCUD` Hooks
-4. **Validation** (Schema check)
-5. **Execution** (Driver)
-6. `afterCUD` Hooks
-7. **Response**
+* **Mongo Driver:** Compiles `UnifiedQuery` -> `Aggregation Pipeline`.
+* **Knex Driver:** Compiles `UnifiedQuery` -> `Knex QueryBuilder` (handling JSONB logic transparently).
+
+## 7. Transaction Management
+
+Transactions are critical for data integrity, especially in hybrid storage scenarios. Drivers must expose a `transaction` method that accepts a callback.
+
+## 8. Lifecycle Hooks & Business Logic
+
+The system provides a rich interception model to inject business logic. Hooks are executed within the transaction scope (if applicable).
+
+> **Full Specification:** Please refer to [LIFECYCLE_HOOKS.md](./LIFECYCLE_HOOKS.md) for the complete Hook Signature and Registering examples.
