@@ -1,6 +1,5 @@
 import { ObjectQL, ObjectConfig, UnifiedQuery } from '@objectql/core';
 import { createObjectQLRouter } from '@objectql/api';
-import { createObjectQLAdmin } from '@objectql/admin';
 import express from 'express';
 import cors from 'cors';
 import * as path from 'path';
@@ -26,8 +25,8 @@ console.log(`ObjectQL Server started with ${config.packages.length} packages.`);
         server.use(cors());
         server.use(express.json());
         
-        // Serve Admin UI
-        server.use(createObjectQLAdmin());
+        // Serve Admin UI (static files)
+        server.use(express.static(path.join(__dirname, '../public')));
 
         // Mount ObjectQL API
         // Example: /api/projects
