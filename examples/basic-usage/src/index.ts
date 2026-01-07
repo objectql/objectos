@@ -1,6 +1,6 @@
 import { ObjectQL, ObjectConfig, UnifiedQuery } from '@objectql/core';
 import { MongoDriver } from '@objectql/driver-mongo';
-import { createObjectQLRouter } from '@objectql/server';
+import { createObjectQLRouter } from '@objectql/express';
 import express from 'express';
 import cors from 'cors';
 import * as path from 'path';

@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@objectql/core": "^0.1.0",
-    "@objectql/server": "^0.1.0",
+    "@objectql/express": "^0.1.0",
     "@objectql/driver-mongo": "^0.1.0",
     "@objectql/driver-knex": "^0.1.0",
     "express": "^4.18.2",
