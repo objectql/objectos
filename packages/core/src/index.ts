@@ -24,23 +24,24 @@ export class ObjectQL implements IObjectQL {
             }
         }
         if (config.packages) {
-            for (const dir of config.packages) {
-                this.loadFromDirectory(dir);
+            for (const name of config.packages) {
+                try {
+                    this.loadFromPackage(name);
+                } catch (e) {
+                    this.loadFromDirectory(name);
+                }
             }
         }
     }
 
-    loadFromDirectory(dir: string) {
-        let packageDir = dir;
-        try {
-            // Try to resolve as a module
-            const entryPath = require.resolve(dir, { paths: [process.cwd()] });
-            packageDir = path.dirname(entryPath);
-        } catch (e) {
-            // Ignore error, assume it is a path
-        }
+    loadFromPackage(name: string) {
+        const entryPath = require.resolve(name, { paths: [process.cwd()] });
+        const packageDir = path.dirname(entryPath);
+        this.loadFromDirectory(packageDir);
+    }
 
-        const objects = loadObjectConfigs(packageDir);
+    loadFromDirectory(dir: string) {
+        const objects = loadObjectConfigs(dir);
         for (const obj of Object.values(objects)) {
             this.registerObject(obj);
         }

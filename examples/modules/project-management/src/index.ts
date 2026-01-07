@@ -1,4 +1,27 @@
-import * as path from 'path';
+// 从 package.json 导出当前软件包的基本定义
 
-// 导出包的根目录路径，供 ObjectQL 加载器使用
-export const packageDir = path.resolve(__dirname);
+import pkg from '../package.json';
+
+export default {
+    
+    name: pkg.name,
+    version: pkg.version,
+
+    /**
+     * Service created lifecycle event handler
+     */
+    created() {
+    },
+
+    /**
+     * Service started lifecycle event handler
+     */
+    async started() {
+    },
+
+    /**
+     * Service stopped lifecycle event handler
+     */
+    async stopped() {
+    }
+}
