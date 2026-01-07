@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc -b && mkdir -p dist/objects && cp src/objects/*.yml dist/objects/",
+    "build": "rm -rf dist && tsc -b && mkdir -p dist/objects && cp src/objects/*.yml dist/objects/",
     "start": "node dist/index.js"
   },
   "dependencies": {
