@@ -25,9 +25,8 @@ export class MongoDriver implements Driver {
     }
 
     private normalizeId(id: string | number | ObjectId): ObjectId | string | number {
-        if (typeof id === 'string' && ObjectId.isValid(id) && id.length === 24) {
-             return new ObjectId(id);
-        }
+        // User requested String IDs, so we do NOT convert 24-char strings to ObjectId.
+        // We only pass through what is given.
         return id;
     }
 
@@ -130,7 +129,12 @@ export class MongoDriver implements Driver {
 
     async create(objectName: string, data: any, options?: any) {
         const collection = await this.getCollection(objectName);
-        // MongoDB driver mutates data to add _id, but good to be explicit
+        
+        // If no ID is provided, generate a String ID instead of allowing Mongo to generate an ObjectId
+        if (!data._id) {
+            data._id = new ObjectId().toHexString();
+        }
+
         const result = await collection.insertOne(data);
         return { ...data, _id: result.insertedId };
     }
