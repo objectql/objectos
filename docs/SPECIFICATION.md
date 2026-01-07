@@ -24,13 +24,10 @@ The system uses a **"Directory-as-Datasource"** convention to map objects to dat
 ├── /objects
 │   ├── /_common/           # [Reserved] Mixins or abstract definitions
 │   │
-│   ├── /logs/              # [Datasource: logs] (e.g., MongoDB)
-│   │   └── access.yml      # -> Mapped to 'logs' connection
-│   │
-│   ├── /external/          # [Datasource: external] (e.g., Oracle)
+│   ├── /external/          # [Datasource: external] (e.g., pg)
 │   │   └── erp_orders.yml  # -> Mapped to 'external' connection
 │   │
-│   └── user.yml            # [Datasource: default] (Root level = default)
+│   └── users.yml            # [Datasource: default] (Root level = default)
 │
 ├── /roles                  # RBAC Definitions
 └── .objectqlrc.js          # Connection config (Environment specific)
@@ -59,19 +56,12 @@ module.exports = {
 
     // 'logs' connection
     // Used for files in /objects/logs/*.yml
-    logs: {
+    external: {
       driver: '@objectql/driver-knex', // NPM package or Driver Instance
       client: 'pg',                    // Knex specific config
       connection: process.env.POSTGRES_URL
     },
 
-    // 'external' connection
-    // Used for files in /objects/external/*.yml
-    external: {
-      driver: './drivers/oracle-driver', // Local path resolution
-      host: '192.168.1.50',
-      user: 'sysadmin'
-    }
   }
 }
 ```
@@ -83,7 +73,6 @@ Files must use **Snake Case** (e.g., `customer_orders.yml`).
 ```yaml
 name: contracts             # Unique Entity Name (Table/Collection Name)
 label: Sales Contracts
-datasource: default         # Optional: Overrides directory convention
 
 fields:
   # Primitive Types
@@ -110,41 +99,55 @@ fields:
 
 ## 4. The Unified Query Protocol (JSON-DSL)
 
-All internal communication uses this AST.
+All internal communication uses this AST. It is designed to be a JSON-serializable representation of a SQL/NoSQL query.
 
 ### 4.1 Interface (TypeScript)
 
 ```typescript
-type Operator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in' | 'not in' | 'like';
+export type Operator = 
+  | '=' | '!=' | '>' | '>=' | '<' | '<=' 
+  | 'in' | 'not in' 
+  | 'like' | 'not like'         // SQL generic matching
+  | 'startswith' | 'endswith'   // String optimization
+  | 'contains'                  // Array or String containment
+  | 'between';                  // Range check
 
-interface UnifiedQuery {
+export interface UnifiedQuery {
+  // Target
   entity: string;
-  fields?: string[];
   
-  // Recursive Filter AST
+  // Projection
+  fields?: string[]; 
+  
+  // Selection
   filters?: Array<
-    [string, Operator, any] | // Criterion
-    'and' | 'or' |            // Logic
+    [string, Operator, any] | // Leaf Condition
+    'and' | 'or' |            // Logical Operator
     UnifiedQuery['filters']   // Nested Group
   >;
+  
+  // Global Text Search (optional implementation)
+  search?: string;
 
+  // Ordering
   sort?: Array<[string, 'asc' | 'desc']>;
   
   // Pagination
   top?: number;  // LIMIT
   skip?: number; // OFFSET
 
-  // Graph Resolution
+  // Graph Resolution (JOINs)
   expand?: Record<string, {
     fields?: string[];
     filters?: UnifiedQuery['filters'];
+    sort?: UnifiedQuery['sort'];
+    top?: number;
   }>;
 
   // Analytics & Grouping
   groupBy?: string[];
   aggregate?: Record<string, 'sum' | 'avg' | 'min' | 'max' | 'count'>;
 }
-
 ```
 
 ### 4.2 Example
@@ -152,16 +155,30 @@ interface UnifiedQuery {
 ```javascript
 {
   "entity": "orders",
+  "fields": ["name", "amount", "created_at"],
+  
+  // (status = 'paid' OR status = 'pending') AND amount > 100
   "filters": [
-    ["status", "=", "paid"],
+    [["status", "=", "paid"], "or", ["status", "=", "pending"]],
     "and",
-    [["amount", ">", 100], "or", ["is_vip", "=", true]]
+    ["amount", ">", 100]
   ],
+  
+  "sort": [["created_at", "desc"]],
+  "top": 20,
+  "skip": 0,
+
   "expand": {
-    "customer": { "fields": ["name", "email"] }
+    "customer": { 
+      "fields": ["name", "email"],
+      "filters": [["is_active", "=", true]] 
+    },
+    "items": {
+      "fields": ["product_name", "qty", "price"],
+      "sort": [["price", "desc"]]
+    }
   }
 }
-
 ```
 
 ## 5. Security Model (Modern RBAC)
