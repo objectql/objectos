@@ -47,6 +47,17 @@ export class MetadataLoader {
     }
 
     private registerObject(obj: any, file: string, packageName?: string) {
+        // Normalize fields
+        if (obj.fields) {
+            for (const [key, field] of Object.entries(obj.fields)) {
+                if (typeof field === 'object' && field !== null) {
+                    if (!(field as any).name) {
+                        (field as any).name = key;
+                    }
+                }
+            }
+        }
+
         this.registry.register('object', {
             type: 'object',
             id: obj.name,
