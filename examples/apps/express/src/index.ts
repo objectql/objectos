@@ -1,5 +1,5 @@
 import { ObjectQL, ObjectConfig, UnifiedQuery } from '@objectql/core';
-import { createObjectQLRouter } from '@objectql/express';
+import { createObjectQLRouter } from '@objectql/api';
 import { createObjectQLAdmin } from '@objectql/admin';
 import express from 'express';
 import cors from 'cors';

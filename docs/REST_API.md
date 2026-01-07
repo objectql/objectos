@@ -1,11 +1,11 @@
 # REST API Reference
 
-The `@objectql/express` package provides a ready-to-use REST API middleware that exposes your ObjectQL resources over HTTP.
+The `@objectql/api` package provides a ready-to-use REST API middleware that exposes your ObjectQL resources over HTTP.
 
 ## Installation
 
 ```bash
-yarn add @objectql/express
+yarn add @objectql/api
 ```
 
 ## Setup
@@ -14,7 +14,7 @@ Integrate the API router into your Express application.
 
 ```typescript
 import express from 'express';
-import { createObjectQLRouter } from '@objectql/express';
+import { createObjectQLRouter } from '@objectql/api';
 import { objectql } from './my-objectql-instance';
 
 const app = express();

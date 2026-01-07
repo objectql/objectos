@@ -11,7 +11,7 @@
     "@objectql/core": "^0.1.0",
     "@objectql/driver-knex": "^0.1.0",
     "@objectql/driver-mongo": "^0.1.0",
-    "@objectql/express": "^0.1.0",
+    "@objectql/api": "^0.1.0",
     "@objectql/admin": "*",
     "@example/project-management": "*",
     "cors": "^2.8.5",

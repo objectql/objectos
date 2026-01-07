@@ -1,0 +1,22 @@
+{
+  "name": "@objectql/auth",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "better-auth": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@objectql/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@objectql/core": "^0.1.0",
+    "typescript": "^5.3.0"
+  }
+}
