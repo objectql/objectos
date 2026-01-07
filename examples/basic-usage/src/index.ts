@@ -77,6 +77,10 @@ const query: UnifiedQuery = {
         // Example: /api/projects
         server.use('/api', createObjectQLRouter({
             objectql: app,
+            swagger: {
+                enabled: true,
+                path: '/docs'
+            },
             getContext: (req, res) => {
                 // Simulate Authentication: Read User ID from header
                 const userId = req.headers['x-user-id'] as string;

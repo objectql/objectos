@@ -1,14 +1,28 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { IObjectQL, ObjectQLContext, UnifiedQuery } from '@objectql/core';
+import * as path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import { generateOpenApiSpec } from './swagger/generator';
 
 export interface ObjectQLServerOptions {
     objectql: IObjectQL;
     getContext?: (req: Request, res: Response) => Promise<ObjectQLContext> | ObjectQLContext;
+    swagger?: {
+        enabled: boolean;
+        path?: string; // default: /docs
+    }
 }
 
 export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
     const router = Router();
-    const { objectql, getContext } = options;
+    const { objectql, getContext, swagger } = options;
+
+    if (swagger && swagger.enabled) {
+        const docPath = swagger.path || '/docs';
+        const spec = generateOpenApiSpec(objectql);
+        router.use(docPath, swaggerUi.serve, swaggerUi.setup(spec));
+        console.log(`Swagger UI available at ${docPath}`);
+    }
 
     const getCtx = async (req: Request, res: Response): Promise<ObjectQLContext> => {
         if (getContext) {
