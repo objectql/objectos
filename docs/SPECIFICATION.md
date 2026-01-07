@@ -7,9 +7,10 @@
 
 ObjectQL is a **query transpiler** that converts a standardized JSON-DSL into native database queries.
 
-* **Pattern:** Repository Pattern with a Dual-Stack strategy.
-* **Design Time:** MongoDB (Schema-less, fast iteration).
-* **Run Time:** PostgreSQL/Knex (Schema-strict, JSONB hybrid storage).
+* **Pattern:** Repository Pattern with a Multi-Datasource strategy.
+* **Datasources:**
+  * **MongoDB:** Schema-less, fast iteration.
+  * **PostgreSQL/Knex:** Schema-strict, JSONB hybrid storage.
 * **Execution Flow:** `Client -> JSON DSL -> ObjectQL Core -> Driver -> Native Query -> DB`.
 
 ## 2. Directory & Datasource Resolution
@@ -105,6 +106,10 @@ interface UnifiedQuery {
     fields?: string[];
     filters?: UnifiedQuery['filters'];
   }>;
+
+  // Analytics & Grouping
+  groupBy?: string[];
+  aggregate?: Record<string, 'sum' | 'avg' | 'min' | 'max' | 'count'>;
 }
 
 ```
@@ -170,11 +175,48 @@ Drivers must implement the `ObjectQLDriver` interface.
 * `init(config: any): Promise<void>`
 * `find(query: UnifiedQuery): Promise<any[]>`
 * `count(query: UnifiedQuery): Promise<number>`
+* `aggregate?(query: UnifiedQuery): Promise<any[]>`
 * `create(entity: string, data: any): Promise<any>`
 * `update(entity: string, id: any, data: any): Promise<any>`
 * `delete(entity: string, id: any): Promise<any>`
+* `transaction?(work: (trx: any) => Promise<any>): Promise<any>`
 
 ### 6.2 The "Compiler" Responsibility
 
 * **Mongo Driver:** Compiles `UnifiedQuery` -> `Aggregation Pipeline`.
 * **Knex Driver:** Compiles `UnifiedQuery` -> `Knex QueryBuilder` (handling JSONB logic transparently).
+## 7. Lifecycle Hooks (Business Logic)
+
+To decouple business logic from the core CRUD, the system supports an event-driven hook system.
+
+### 7.1 Hook Definitions
+
+Hooks can be defined in a companion file (e.g., `orders.trigger.js`) or registered at runtime.
+
+```javascript
+module.exports = {
+  listenTo: 'orders',
+  
+  beforeCreate: async (ctx) => {
+    if (ctx.data.amount > 10000 && !ctx.user.is_manager) {
+      throw new Error("Needs manager approval");
+    }
+  },
+
+  afterUpdate: async (ctx) => {
+    if (ctx.changes.status === 'paid') {
+      await ctx.broker.emit('order.paid', ctx.doc);
+    }
+  }
+}
+```
+
+### 7.2 Pipeline Execution
+
+1. **Request** -> **Authentication**
+2. **Access Control (RBAC/RLS)**
+3. `beforeCUD` Hooks
+4. **Validation** (Schema check)
+5. **Execution** (Driver)
+6. `afterCUD` Hooks
+7. **Response**
