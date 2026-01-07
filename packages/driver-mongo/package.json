@@ -1,0 +1,13 @@
+{
+  "name": "@objectql/driver-mongo",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@objectql/core": "^0.1.0",
+    "mongodb": "^6.3.0"
+  }
+}

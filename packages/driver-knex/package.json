@@ -1,0 +1,13 @@
+{
+  "name": "@objectql/driver-knex",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@objectql/core": "^0.1.0",
+    "knex": "^3.1.0"
+  }
+}

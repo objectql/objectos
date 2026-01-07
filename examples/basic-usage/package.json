@@ -1,0 +1,14 @@
+{
+  "name": "basic-usage",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@objectql/core": "^0.1.0",
+    "@objectql/driver-mongo": "^0.1.0",
+    "@objectql/driver-knex": "^0.1.0"
+  }
+}
