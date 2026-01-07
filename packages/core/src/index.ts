@@ -1,15 +1,21 @@
 export * from './metadata';
+export * from './types';
+export * from './driver';
+export * from './repository';
 
 import { ObjectConfig } from './metadata';
+import { ObjectQLContext, ObjectQLContextOptions, IObjectQL } from './types';
+import { ObjectRepository } from './repository';
+import { Driver } from './driver';
 
 export interface ObjectQLConfig {
-    datasources: Record<string, any>;
+    datasources: Record<string, Driver>;
     objects?: Record<string, ObjectConfig>;
 }
 
-export class ObjectQL {
+export class ObjectQL implements IObjectQL {
     private objects: Record<string, ObjectConfig> = {};
-    private datasources: Record<string, any> = {};
+    private datasources: Record<string, Driver> = {};
 
     constructor(config: ObjectQLConfig) {
         this.datasources = config.datasources;
@@ -18,6 +24,27 @@ export class ObjectQL {
                 this.registerObject(obj);
             }
         }
+    }
+
+    createContext(options: ObjectQLContextOptions): ObjectQLContext {
+        const ctx: ObjectQLContext = {
+            userId: options.userId,
+            spaceId: options.spaceId,
+            roles: options.roles || [],
+            isSystem: options.isSystem,
+            ignoreTriggers: options.ignoreTriggers,
+            object: (name: string) => {
+                return new ObjectRepository(name, ctx, this);
+            },
+            transaction: async (callback) => {
+                 // TODO: Transaction support
+                 return callback(ctx);
+            },
+            sudo: () => {
+                 return this.createContext({ ...options, isSystem: true });
+            }
+        };
+        return ctx;
     }
 
     registerObject(object: ObjectConfig) {
@@ -36,7 +63,7 @@ export class ObjectQL {
         return this.objects[name];
     }
 
-    datasource(name: string) {
+    datasource(name: string): Driver {
         const driver = this.datasources[name];
         if (!driver) {
             throw new Error(`Datasource '${name}' not found`);

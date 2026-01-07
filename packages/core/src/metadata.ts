@@ -111,6 +111,7 @@ export interface ActionConfig {
  */
 export interface ObjectConfig {
     name: string;
+    datasource?: string; // The name of the datasource to use
     label?: string;
     icon?: string;
     description?: string;
