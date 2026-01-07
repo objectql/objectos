@@ -24,18 +24,17 @@ The system uses a **"Directory-as-Datasource"** convention to map objects to dat
 │   ├── /_common/           # [Reserved] Mixins or abstract definitions
 │   │
 │   ├── /external/          # [Datasource: external] (e.g., pg)
-│   │   └── erp_orders.yml  # -> Mapped to 'external' connection
+│   │   └── erp_orders.object.yml  # -> Mapped to 'external' connection
 │   │
-│   └── users.yml            # [Datasource: default] (Root level = default)
+│   └── users.object.yml           # [Datasource: default] (Root level = default)
 │
 ├── /roles                  # RBAC Definitions
 └── .objectqlrc.js          # Connection config (Environment specific)
-
 ```
 
 ### 2.2 Resolution Priority
 
-1. **Explicit:** `datasource` property in YAML.
+1. **Explicit:** `datasource` property in YAML (if supported).
 2. **Implicit:** Subdirectory name under `/objects/`.
 3. **Fallback:** `default` connection.
 
@@ -47,46 +46,184 @@ This file exports the configuration for all valid datasources. The `default` dat
 module.exports = {
   datasources: {
     // The 'default' connection (Required)
-    // Used for files in /objects/*.yml (root)
+    // Used for files in /objects/*.object.yml (root)
     default: {
       driver: '@objectql/driver-mongo',
       connection: process.env.MONGO_URL
     },
 
     // 'logs' connection
-    // Used for files in /objects/logs/*.yml
+    // Used for files in /objects/logs/*.object.yml
     external: {
       driver: '@objectql/driver-knex', // NPM package or Driver Instance
       client: 'pg',                    // Knex specific config
       connection: process.env.POSTGRES_URL
     },
-
   }
 }
 ```
 
-## 3. Schema Definition (`.object.yml`)
+## 3. Object Definition
 
-Files must use **Snake Case** (e.g., `customer_orders.yml`).
+Object files are typically defined in YAML (or JSON) and represent a business entity or database table.
+
+Files should use **Snake Case** filenames (e.g., `project_tasks.object.yml`).
+
+### 3.1 Root Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | **Required.** Unique API name of the object. Should match filename. |
+| `label` | `string` | Human-readable label (e.g., "Project Task"). |
+| `icon` | `string` | SLDS icon string (e.g., `standard:task`). |
+| `description` | `string` | Internal description of the object. |
+| `fields` | `Map` | Dictionary of field definitions. |
+| `actions` | `Map` | Dictionary of custom action definitions. |
+
+## 4. Field Definitions
+
+Fields are defined under the `fields` key. The key for each entry corresponds to the field's API name.
 
 ```yaml
-name: contracts             # Unique Entity Name (Table/Collection Name)
-label: Sales Contracts
+fields:
+  field_name:
+    type: text
+    label: Field Label
+```
+
+### 4.1 Common Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `type` | `string` | **Required.** Data type of the field. See Section 4.2. |
+| `label` | `string` | Display label for UI validation messages. |
+| `required` | `boolean` | If `true`, the field cannot be null/undefined. Default: `false`. |
+| `defaultValue` | `any` | Default value if not provided during creation. |
+| `index` | `boolean` | Hint to create a database index. |
+| `searchable` | `boolean` | Hint to include this field in global search. |
+| `sortable` | `boolean` | Hint that this field can be used for sorting in UI. |
+| `description` | `string` | Help text or documentation for the field. |
+
+### 4.2 Supported Field Types
+
+| Type | Description | Specific Properties |
+| :--- | :--- | :--- |
+| `text` | Single line text. | |
+| `textarea` | Multiline text. | |
+| `html` | Rich text content. | |
+| `number` | Numeric value (integer or float). | `precision` (total digits) |
+| `currency` | Monetary value. | `scale` (decimal places) |
+| `boolean` | `true` or `false`. | |
+| `date` | Date only (YYYY-MM-DD). | |
+| `datetime` | Date and time (ISO string). | |
+| `password` | Encrypted or masked string. | |
+| `select` | Single selection from a list. | `options` |
+| `multiselect` | Multiple selections from a list. | `options` |
+| `lookup` | Reference to another object. | `reference_to` (Required) |
+| `master_detail` | Strong ownership relationship. | `reference_to` (Required) |
+| `object` | JSON object structure. | |
+| `grid` | Array of objects/rows. | |
+
+### 4.3 Relationship Fields
+
+Key properties for `lookup` or `master_detail`:
+
+*   **reference_to**: The `name` of the target object.
+
+```yaml
+owner:
+  type: lookup
+  reference_to: users
+  label: Owner
+```
+
+### 4.4 Select Options
+
+Options for `select` or `multiselect` can be a simple list or label/value pairs.
+
+```yaml
+status:
+  type: select
+  options:
+    - label: Planned
+      value: planned
+    - label: In Progress
+      value: in_progress
+```
+
+## 5. Actions (RPC)
+
+Custom business logic can be defined in the `actions` section.
+
+```yaml
+actions:
+  approve:
+    label: Approve Request
+    description: Approves the current record.
+    params:
+      comment:
+        type: textarea
+        label: Approval Comments
+    result:
+      type: boolean
+```
+
+## 6. Complete Example
+
+```yaml
+name: project
+label: Project
+icon: standard:case
+description: Tracks internal projects and deliverables.
+enable_search: true
 
 fields:
-  # Primitive Types
-  name: { type: text, required: true, index: true }
-  amount: { type: currency, scale: 2 }
-  is_active: { type: boolean, default: true }
+  name:
+    label: Project Name
+    type: text
+    required: true
+    index: true
+    searchable: true
+  
+  status:
+    label: Status
+    type: select
+    defaultValue: planned
+    options:
+      - label: Planned
+        value: planned
+      - label: Active
+        value: active
+      - label: Archived
+        value: archived
 
-  # Relational Types
-  owner: 
+  priority:
+    label: Priority
+    type: select
+    options: [High, Medium, Low]
+
+  start_date:
+    label: Start Date
+    type: date
+
+  budget:
+    label: Total Budget
+    type: currency
+    scale: 2
+
+  manager:
+    label: Project Manager
     type: lookup
-    reference: users        # References 'users' entity
-    relationship: many-to-one
+    reference_to: users
+    index: true
 
-  # Dynamic Types (Stored as JSONB in SQL)
-  metadata:
-    type: object
+  notes:
+    label: Internal Notes
+    type: textarea
 
+actions:
+  calculate_roi:
+    label: Calculate ROI
+    result: 
+      type: currency
 ```
