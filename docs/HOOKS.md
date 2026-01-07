@@ -47,22 +47,21 @@ export interface HookContext<T = any> {
 }
 
 export type HookFunction = (context: HookContext) => Promise<void>;
-
 ```
 
 ## 3. Registering Hooks
 
-Hooks are declared in `*.trigger.ts` files adjacent to the object definition.
+Hooks are declared in `*.hook.ts` files adjacent to the object definition.
 
 ### 3.1 Data Validation & Auto-fill (`beforeCreate`)
 
 Use `ctx.userId` and `ctx.spaceId` directly.
 
 ```typescript
-// objects/orders/orders.trigger.ts
-import { defineTrigger } from '@objectql/core';
+// objects/orders/orders.hook.ts
+import { defineHook } from '@objectql/core';
 
-export default defineTrigger({
+export default defineHook({
   listenTo: 'orders',
 
   async beforeCreate({ ctx, doc }) {
@@ -89,7 +88,7 @@ export default defineTrigger({
 Use `ctx.object(...)` to perform operations. This ensures execution within the **same transaction**.
 
 ```typescript
-export default defineTrigger({
+export default defineHook({
   async afterUpdate({ ctx, doc, getPreviousDoc }) {
     // 1. Fetch previous state
     const prev = await getPreviousDoc();
@@ -122,7 +121,7 @@ This hook allows modifying the `UnifiedQuery` AST before it reaches the driver.
 **Important:** Do not manually `push` to `query.filters` array, as it may break the `['a', 'and', 'b']` structure. Use `utils.restrict`.
 
 ```typescript
-export default defineTrigger({
+export default defineHook({
   async beforeFind({ ctx, query, utils }) {
     // Bypass for system operations
     if (ctx.isSystem) return;
@@ -157,7 +156,7 @@ If you need to perform actions that the current user does not have permission fo
 **Key Benefit:** The `sudo()` context shares the **same transaction** as the hook, ensuring that if the hook fails, the sudo operations are also rolled back.
 
 ```typescript
-export default defineTrigger({
+export default defineHook({
   async afterCreate({ ctx, doc }) {
     // Current user context (Restricted)
     // await ctx.object('system_counters').update(...) // -> Would fail Permission Check
@@ -217,5 +216,24 @@ function restrict(newCriterion) {
     ];
   }
 }
+```
 
+## 6. Directory Convention
+
+Hooks are automatically loaded if they match the object name in the `/hooks` directory or alongside object definitions.
+
+```text
+/project-root
+├── /objects
+│   └── contracts.object.yml
+│
+# Method A: Dedicated Hooks Directory
+├── /hooks
+│   └── contracts.hook.js
+│
+# Method B: Colocation (Preferred for modularity)
+├── /modules
+│   └── sales
+│       ├── contracts.object.yml
+│       └── contracts.hook.js
 ```
