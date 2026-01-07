@@ -120,4 +120,29 @@ export class ObjectQL implements IObjectQL {
         }
         return driver;
     }
+
+    async init() {
+        const ctx = this.createContext({ isSystem: true });
+        for (const objectName in this.objects) {
+            const obj = this.objects[objectName];
+            if (obj.data && obj.data.length > 0) {
+                console.log(`Initializing data for object ${objectName}...`);
+                const repo = ctx.object(objectName);
+                for (const record of obj.data) {
+                    try {
+                        if (record._id) {
+                             const existing = await repo.findOne(record._id);
+                             if (existing) {
+                                 continue;
+                             }
+                        }
+                        await repo.create(record);
+                        console.log(`Inserted init data for ${objectName}: ${record._id || 'unknown id'}`);
+                    } catch (e) {
+                        console.error(`Failed to insert init data for ${objectName}:`, e);
+                    }
+                }
+            }
+        }
+    }
 }

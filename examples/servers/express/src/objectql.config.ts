@@ -1,5 +1,4 @@
 import { MongoDriver } from '@objectql/driver-mongo';
-import path from 'path';
 
 export default {
     datasources: {

@@ -115,7 +115,41 @@ export function loadObjectConfigs(dir: string): Record<string, ObjectConfig> {
         }
     }
 
-    // 3. Load Actions (.action.js, .action.ts)
+    // 3. Load Data (.data.yml, .data.yaml)
+    const dataFiles = glob.sync(['**/*.data.yml', '**/*.data.yaml'], {
+        cwd: dir,
+        absolute: true
+    });
+
+    for (const file of dataFiles) {
+        try {
+            const content = fs.readFileSync(file, 'utf8');
+            const data = yaml.load(content);
+
+            if (!Array.isArray(data)) {
+                console.warn(`Data file ${file} does not contain an array. Skipping.`);
+                continue;
+            }
+
+            // Guess object name from filename
+            // project.data.yml -> project
+            const basename = path.basename(file);
+            const objectName = basename.replace(/\.data\.ya?ml$/, '');
+
+            if (configs[objectName]) {
+                configs[objectName].data = data;
+            } else {
+                // Maybe the object config hasn't been found yet? 
+                // loadObjectConfigs runs glob for objects first, so configs should be populated.
+                console.warn(`Found data for unknown object '${objectName}' in ${file}`);
+            }
+
+        } catch (e) {
+            console.error(`Error loading data from ${file}:`, e);
+        }
+    }
+
+    // 4. Load Actions (.action.js, .action.ts)
     const actionFiles = glob.sync(['**/*.action.{js,ts}'], {
         cwd: dir,
         absolute: true

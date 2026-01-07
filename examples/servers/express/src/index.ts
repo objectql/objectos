@@ -5,58 +5,20 @@ import cors from 'cors';
 import * as path from 'path';
 import config from './objectql.config';
 
-const app = new ObjectQL({
+const objectql = new ObjectQL({
   datasources: config.datasources,
   packages: config.packages
 });
 
 console.log(`ObjectQL Server started with ${config.packages.length} packages.`);
 
-const projectObj = app.getObject('projects');
-if (!projectObj) {
-    console.error("Project object not found after loading!");
-}
-
-// Example: Find orders with amount > 1000 and expand customer details
-const query: UnifiedQuery = {
-  fields: ['name', 'status', 'priority'],
-  filters: [
-    ['status', '=', 'in_progress'],
-    'and',
-    ['priority', '=', 'high']
-  ],
-  sort: [['name', 'desc']],
-  // Note: Expansion requires relationship support. 
-  // If 'tasks' looks up 'project', we can query tasks and expand project.
-  // Querying project and expanding tasks usually requires a defined detail relationship.
-  // Keeping simplified for now.
-};
-
-
 (async () => {
     try {
         console.log("Starting server...");
         
-        // --- 1. Seed Data (Optional, reused from previous logic) ---
-        // Create some dummy data (System context to bypass hooks/setup data)
-        const systemCtx = app.createContext({ isSystem: true });
-        
-        try {
-            await systemCtx.object('projects').create({
-                name: 'Website Redesign',
-                status: 'in_progress',
-                priority: 'high',
-                owner: 'u-123'
-            });
-             await systemCtx.object('projects').create({
-                name: 'Mobile App',
-                status: 'planned',
-                priority: 'high',
-                owner: 'u-999'
-            });
-        } catch (e) {
-            console.log("Error seeding data (might already exist):", e);
-        }
+        // --- 1. Init Data (from .data.yml) ---
+        await objectql.init();
+
 
         // --- 2. Start Express Server ---
         const server = express();
@@ -69,7 +31,7 @@ const query: UnifiedQuery = {
         // Mount ObjectQL API
         // Example: /api/projects
         server.use('/api', createObjectQLRouter({
-            objectql: app,
+            objectql: objectql,
             swagger: {
                 enabled: true,
                 path: '/docs'
@@ -78,9 +40,9 @@ const query: UnifiedQuery = {
                 // Simulate Authentication: Read User ID from header
                 const userId = req.headers['x-user-id'] as string;
                 if (userId === 'admin') {
-                     return app.createContext({ isSystem: true });
+                     return objectql.createContext({ isSystem: true });
                 }
-                return app.createContext({
+                return objectql.createContext({
                     userId: userId || undefined
                 });
             }

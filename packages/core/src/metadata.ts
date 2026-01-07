@@ -1,4 +1,3 @@
-
 /**
  * Represents the supported field data types in the ObjectQL schema.
  * These types determine how data is stored, validated, and rendered.
@@ -138,4 +137,7 @@ export interface ObjectConfig {
 
     /** Lifecycle hooks. */
     listeners?: ObjectListeners;
+
+    /** Initial data to populate when system starts. */
+    data?: any[];
 }
