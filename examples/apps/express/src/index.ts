@@ -3,14 +3,20 @@ import { createObjectQLRouter } from '@objectql/api';
 import express from 'express';
 import cors from 'cors';
 import * as path from 'path';
-import config from './objectql.config';
+import { MongoDriver } from '@objectql/driver-mongo';
 
 const objectql = new ObjectQL({
-  datasources: config.datasources,
-  packages: config.packages
+    datasources: {
+        default: new MongoDriver({ 
+            url: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/objectql_example',
+            dbName: 'objectql_example'
+        })
+    },
+    packages: [
+        '@example/project-management'
+    ]
 });
 
-console.log(`ObjectQL Server started with ${config.packages.length} packages.`);
 
 (async () => {
     try {

@@ -1,30 +1,38 @@
 import { KnexDriver } from '../src';
-import knex from 'knex';
+import { UnifiedQuery } from '@objectql/core';
 
-const mockChain = (methods: string[]) => {
-    const mock: any = {};
-    methods.forEach(m => {
-        mock[m] = jest.fn().mockReturnThis();
-    });
-    mock.then = jest.fn((resolve) => resolve([]));
-    mock.catch = jest.fn();
-    return mock;
-};
-
-const mockBuilder = mockChain(['select', 'where', 'orWhere', 'orderBy', 'offset', 'limit', 'insert', 'update', 'delete', 'transacting', 'count']);
-const mockFirst = jest.fn();
-mockBuilder.first = mockFirst;
-
-jest.mock('knex', () => {
-    return jest.fn(() => (tableName: string) => mockBuilder);
-});
-
-describe('KnexDriver', () => {
+describe('KnexDriver (SQLite Integration)', () => {
     let driver: KnexDriver;
 
-    beforeEach(() => {
-        driver = new KnexDriver({ client: 'sqlite3' });
-        jest.clearAllMocks();
+    beforeEach(async () => {
+        // Init ephemeral in-memory database
+        driver = new KnexDriver({
+            client: 'sqlite3',
+            connection: {
+                filename: ':memory:'
+            },
+            useNullAsDefault: true
+        });
+        
+        const k = (driver as any).knex;
+        
+        await k.schema.createTable('users', (t: any) => {
+            t.increments('id');
+            t.string('name');
+            t.integer('age');
+        });
+
+        await k('users').insert([
+            { name: 'Alice', age: 25 },
+            { name: 'Bob', age: 17 },
+            { name: 'Charlie', age: 30 },
+            { name: 'Dave', age: 17 }
+        ]);
+    });
+
+    afterEach(async () => {
+        const k = (driver as any).knex;
+        await k.destroy();
     });
 
     it('should be instantiable', () => {
@@ -32,39 +40,70 @@ describe('KnexDriver', () => {
         expect(driver).toBeInstanceOf(KnexDriver);
     });
 
-    it('should find objects', async () => {
-        const query = {
+    it('should find objects with filters', async () => {
+        const query: UnifiedQuery = {
             fields: ['name', 'age'],
             filters: [['age', '>', 18]],
-            sort: [['name', 'asc']],
-            skip: 10,
-            limit: 5
+            sort: [['name', 'asc']]
         };
-        await driver.find('users', query);
+        const results = await driver.find('users', query);
         
-        expect(mockBuilder.select).toHaveBeenCalledWith(['name', 'age']);
-        expect(mockBuilder.where).toHaveBeenCalledWith('age', '>', 18);
-        expect(mockBuilder.orderBy).toHaveBeenCalledWith('name', 'asc');
-        expect(mockBuilder.offset).toHaveBeenCalledWith(10);
-        expect(mockBuilder.limit).toHaveBeenCalledWith(5);
+        expect(results.length).toBe(2);
+        expect(results.map((r: any) => r.name)).toEqual(['Alice', 'Charlie']);
     });
 
-    it('should apply OR filters correctly', async () => {
-        const query = {
-            filters: [['age', '>', 18], 'or', ['role', '=', 'admin']]
+    it('should apply simple AND/OR logic', async () => {
+        // age = 17 OR age > 29
+        const query: UnifiedQuery = {
+            filters: [
+                ['age', '=', 17],
+                'or',
+                ['age', '>', 29]
+            ]
         };
-        await driver.find('users', query);
-        expect(mockBuilder.where).toHaveBeenCalledWith('age', '>', 18);
-        expect(mockBuilder.orWhere).toHaveBeenCalledWith('role', 'admin');
+        const results = await driver.find('users', query);
+        const names = results.map((r: any) => r.name).sort();
+        expect(names).toEqual(['Bob', 'Charlie', 'Dave']);
     });
 
     it('should find one object by id', async () => {
-        mockFirst.mockResolvedValueOnce({ id: 1, name: 'Alice' });
-        const result = await driver.findOne('users', 1);
-        expect(mockBuilder.where).toHaveBeenCalledWith('id', 1);
-        expect(mockFirst).toHaveBeenCalled();
-        expect(result).toEqual({ id: 1, name: 'Alice' });
+        // First get an ID
+        const [alice] = await driver.find('users', { filters: [['name', '=', 'Alice']] });
+        expect(alice).toBeDefined();
+
+        const fetched = await driver.findOne('users', alice.id);
+        expect(fetched).toBeDefined();
+        expect(fetched.name).toBe('Alice');
     });
 
-    // Add more tests for insert, update, delete when implemented in src
+    it('should create an object', async () => {
+        const newItem = { name: 'Eve', age: 22 };
+        await driver.create('users', newItem);
+
+        const [eve] = await driver.find('users', { filters: [['name', '=', 'Eve']] });
+        expect(eve).toBeDefined();
+        expect(eve.age).toBe(22);
+    });
+
+    it('should update an object', async () => {
+        const [bob] = await driver.find('users', { filters: [['name', '=', 'Bob']] });
+        await driver.update('users', bob.id, { age: 18 });
+
+        const updated = await driver.findOne('users', bob.id);
+        expect(updated.age).toBe(18);
+    });
+
+    it('should delete an object', async () => {
+        const [charlie] = await driver.find('users', { filters: [['name', '=', 'Charlie']] });
+        await driver.delete('users', charlie.id);
+
+        const deleted = await driver.findOne('users', charlie.id);
+        expect(deleted).toBeUndefined();
+    });
+
+    it('should count objects', async () => {
+        const count = await driver.count('users', [['age', '=', 17]]);
+        expect(count).toBe(2);
+    });
 });
+
