@@ -26,12 +26,13 @@ export interface HookContext {
   entity: string;
   op: 'find' | 'create' | 'update' | 'delete' | 'aggregate';
   
+  userId?: string;                        // Current User ID
+  spaceId?: string;                       // Multi-tenancy Isolation 
+  roles?: string[];                       // Authorization Roles
+  
   // Security Context (Lightweight Session)
   // Mirrors the 'context' object passed in the Client API
-  context: {
-    userId?: string;                        // Current User ID
-    spaceId?: string;                       // Multi-tenancy Isolation 
-    roles?: string[];                       // Authorization Roles
+  params: {
     [key: string]: any;                     // Extensible metadata
   };
   
@@ -49,7 +50,6 @@ export interface HookContext {
   
   // Helpers
   getPreviousDoc: () => Promise<any>; // Lazy load previous version (beforeUpdate/Delete only)
-  getUser: () => Promise<any>;        // Lazy load full user details
 }
 
 export type HookFunction = (ctx: HookContext) => Promise<void>;
