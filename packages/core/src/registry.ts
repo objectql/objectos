@@ -1,4 +1,4 @@
-import { MetadataRegistry as BaseRegistry, Metadata } from '@objectql/loader';
+import { MetadataRegistry as BaseRegistry, Metadata } from '@objectql/metadata';
 
 export { Metadata };
 export class MetadataRegistry extends BaseRegistry {

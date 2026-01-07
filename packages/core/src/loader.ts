@@ -4,7 +4,7 @@ import * as yaml from 'js-yaml';
 import * as glob from 'fast-glob';
 import { MetadataRegistry } from './registry';
 import { ObjectConfig } from './types';
-import { MetadataLoader as BaseLoader } from '@objectql/loader';
+import { MetadataLoader as BaseLoader } from '@objectql/metadata';
 
 export class MetadataLoader extends BaseLoader {
     constructor(registry: MetadataRegistry) {
