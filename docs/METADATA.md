@@ -29,7 +29,7 @@ The system uses a **"Directory-as-Datasource"** convention to map objects to dat
 │   └── users.object.yml           # [Datasource: default] (Root level = default)
 │
 ├── /roles                  # RBAC Definitions
-└── .objectqlrc.js          # Connection config (Environment specific)
+└── objectql.config.js          # Connection config (Environment specific)
 ```
 
 ### 2.2 Resolution Priority
@@ -38,7 +38,7 @@ The system uses a **"Directory-as-Datasource"** convention to map objects to dat
 2. **Implicit:** Subdirectory name under `/objects/`.
 3. **Fallback:** `default` connection.
 
-### 2.3 Connection Configuration (`.objectqlrc.js`)
+### 2.3 Connection Configuration (`objectql.config.js`)
 
 This file exports the configuration for all valid datasources. The `default` datasource is required.
 
