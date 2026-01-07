@@ -37,8 +37,34 @@ export class ObjectQL implements IObjectQL {
                 return new ObjectRepository(name, ctx, this);
             },
             transaction: async (callback) => {
-                 // TODO: Transaction support
-                 return callback(ctx);
+                 const driver = this.datasources['default'];
+                 if (!driver || !driver.beginTransaction) {
+                      return callback(ctx);
+                 }
+
+                 let trx: any;
+                 try {
+                     trx = await driver.beginTransaction();
+                 } catch (e) {
+                     // If beginTransaction fails, fail.
+                     throw e;
+                 }
+
+                 const trxCtx: ObjectQLContext = {
+                     ...ctx,
+                     transactionHandle: trx,
+                     // Nested transaction simply reuses the current one (flat transaction)
+                     transaction: async (cb) => cb(trxCtx)
+                 };
+
+                 try {
+                     const result = await callback(trxCtx);
+                     if (driver.commitTransaction) await driver.commitTransaction(trx);
+                     return result;
+                 } catch (error) {
+                     if (driver.rollbackTransaction) await driver.rollbackTransaction(trx);
+                     throw error;
+                 }
             },
             sudo: () => {
                  return this.createContext({ ...options, isSystem: true });

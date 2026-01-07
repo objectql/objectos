@@ -47,6 +47,11 @@ export interface ObjectQLContext {
      * It shares the same transaction scope as the current context.
      */
     sudo(): ObjectQLContext;
+
+    /**
+     * Internal: Driver-specific transaction handle.
+     */
+    transactionHandle?: any;
 }
 
 export interface ObjectQLContextOptions {

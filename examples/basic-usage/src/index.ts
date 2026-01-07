@@ -63,11 +63,14 @@ const query = {
 (async () => {
     // Option A: Execute on MongoDB
     // ObjectQL compiles this to an Aggregation Pipeline
-    const resultsMongo = await app.datasource('design').find(query);
+    const ctx = app.createContext({
+      userId: 'u-123'
+    });
+    const resultsMongo = await ctx.object('projects').find(query);
     console.log('Mongo Results:', resultsMongo);
 
     // Option B: Execute on PostgreSQL
     // ObjectQL compiles this to a SQL query with JSONB operators and JOINs
-    const resultsSql = await app.datasource('runtime').find(query);
-    console.log('SQL Results:', resultsSql);
+    // const resultsSql = await app.datasource('runtime').find(query);
+    // console.log('SQL Results:', resultsSql);
 })();

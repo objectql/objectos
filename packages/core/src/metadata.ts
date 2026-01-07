@@ -103,6 +103,19 @@ export interface ActionConfig {
     };
     /** Input parameters schema. */
     params?: Record<string, FieldConfig>;
+    /** Implementation of the action. */
+    handler?: (ctx: any, params: any) => Promise<any>;
+}
+
+export type TriggerHook = (ctx: any, doc: any) => Promise<void | boolean>;
+
+export interface ObjectListeners {
+    beforeCreate?: TriggerHook;
+    afterCreate?: TriggerHook;
+    beforeUpdate?: TriggerHook;
+    afterUpdate?: TriggerHook;
+    beforeDelete?: TriggerHook;
+    afterDelete?: TriggerHook;
 }
 
 /**
@@ -120,4 +133,7 @@ export interface ObjectConfig {
     
     /** Custom Actions (RPC) defined on this object. */
     actions?: Record<string, ActionConfig>;
+
+    /** Lifecycle hooks. */
+    listeners?: ObjectListeners;
 }
