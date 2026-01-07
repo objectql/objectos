@@ -93,6 +93,10 @@ export class ObjectQL implements IObjectQL {
         return this.objects[name];
     }
 
+    getConfigs(): Record<string, ObjectConfig> {
+        return this.objects;
+    }
+
     datasource(name: string): Driver {
         const driver = this.datasources[name];
         if (!driver) {

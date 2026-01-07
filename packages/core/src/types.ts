@@ -12,6 +12,7 @@ export interface ObjectQLConfig {
 
 export interface IObjectQL {
     getObject(name: string): ObjectConfig | undefined;
+    getConfigs(): Record<string, ObjectConfig>;
     datasource(name: string): Driver;
 }
 

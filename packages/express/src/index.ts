@@ -101,6 +101,15 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
 
     // === Special Endpoints (Must come before /:objectName) ===
 
+    router.get('/_schema', async (req: Request, res: Response) => {
+        try {
+            const configs = objectql.getConfigs();
+            res.json(configs);
+        } catch (e: any) {
+             res.status(500).json({ error: e.message });
+        }
+    });
+
     // NONE for now, as :objectName is the root.
     // However, we might want /:objectName/count or /:objectName/aggregate.
 

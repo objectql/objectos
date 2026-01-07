@@ -69,6 +69,9 @@ const query: UnifiedQuery = {
         const server = express();
         server.use(cors());
         server.use(express.json());
+        
+        // Serve static files
+        server.use(express.static(path.join(__dirname, '../public')));
 
         // Mount ObjectQL API
         // Example: /api/projects
