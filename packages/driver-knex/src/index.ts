@@ -95,7 +95,7 @@ export class KnexDriver implements Driver {
 
     async findOne(objectName: string, id: string | number, query?: any, options?: any) {
         if (id) {
-            return await this.getBuilder(objectName, options).where('id', id).first();
+            return await this.getBuilder(objectName, options).where('_id', id).first();
         }
         if (query) {
              const results = await this.find(objectName, { ...query, limit: 1 }, options);
@@ -116,13 +116,13 @@ export class KnexDriver implements Driver {
 
     async update(objectName: string, id: string | number, data: any, options?: any) {
         const builder = this.getBuilder(objectName, options);
-        await builder.where('id', id).update(data);
-        return { id, ...data }; // Return patched data? Or fetch fresh?
+        await builder.where('_id', id).update(data);
+        return { _id: id, ...data }; // Return patched data? Or fetch fresh?
     }
 
     async delete(objectName: string, id: string | number, options?: any) {
         const builder = this.getBuilder(objectName, options);
-        return await builder.where('id', id).delete();
+        return await builder.where('_id', id).delete();
     }
 
     async count(objectName: string, filters: any, options?: any): Promise<number> {
@@ -179,7 +179,7 @@ export class KnexDriver implements Driver {
             
             if (!exists) {
                 await this.knex.schema.createTable(tableName, (table) => {
-                    table.string('id').primary(); 
+                    table.string('_id').primary(); 
                     table.timestamp('created_at').defaultTo(this.knex.fn.now());
                     table.timestamp('updated_at').defaultTo(this.knex.fn.now());
                     if (obj.fields) {
