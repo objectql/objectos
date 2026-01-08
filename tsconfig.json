@@ -7,6 +7,7 @@
     { "path": "./packages/driver-mongo" },
     { "path": "./packages/driver-knex" },
     { "path": "./packages/server" },
+    { "path": "./packages/ui" },
     { "path": "./examples/project-management" }
   ]
 }
