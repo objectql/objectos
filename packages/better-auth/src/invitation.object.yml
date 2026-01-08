@@ -1,0 +1,33 @@
+name: invitation
+description: Organization invitation
+fields:
+  organizationId:
+    type: string
+    description: ID of the organization
+    required: true
+  email:
+    type: string
+    description: Email of the invitee
+    required: true
+  role:
+    type: string
+    description: Role to be assigned
+    required: true
+  status:
+    type: string
+    description: Status of the invitation (pending, accepted, rejected)
+    default: pending
+  expiresAt:
+    type: datetime
+    description: Expiration time
+    required: true
+  inviterId:
+    type: string
+    description: User ID of the inviter
+    required: true
+  createdAt:
+    type: datetime
+    default: now()
+  updatedAt:
+    type: datetime
+    default: now()
