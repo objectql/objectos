@@ -8,6 +8,7 @@ export default defineConfig({
   srcDir: '.',
 
   themeConfig: {
+    logo: '/logo.svg',
     // Top Navigation
     nav: [
       { text: 'Guide', link: '/guide/' },
