@@ -4,6 +4,16 @@ import * as path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import { generateOpenApiSpec } from './swagger/generator';
 
+const handleError = (res: Response, e: any) => {
+    if (e.message && (e.message.includes('Permission denied') || e.message.includes('Access denied'))) {
+        res.status(403).json({ error: e.message });
+    } else if (e.message && e.message.includes('Not found')) {
+        res.status(404).json({ error: e.message });
+    } else {
+        res.status(500).json({ error: e.message });
+    }
+};
+
 export interface ObjectQLServerOptions {
     objectql: IObjectQL;
     getContext?: (req: Request, res: Response) => Promise<ObjectQLContext> | ObjectQLContext;
@@ -157,7 +167,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             }
             res.json(result);
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -172,7 +182,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             if ((copy as any).data) delete (copy as any).data;
             res.json(copy);
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -182,7 +192,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
              await objectql.init();
              res.json({ status: 'ok', message: 'Schema and data synced successfully' });
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+             handleError(res, e);
         }
     });
 
@@ -208,7 +218,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const count = await repo.count(filters);
             res.json({ count });
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+             handleError(res, e);
         }
     });
 
@@ -224,7 +234,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const result = await repo.aggregate(pipeline);
             res.json(result);
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+             handleError(res, e);
         }
     });
 
@@ -245,7 +255,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const result = await repo.deleteMany(filters);
             res.json(result);
         } catch (e: any) {
-             res.status(500).json({ error: e.message });
+             handleError(res, e);
         }
     });
 
@@ -258,7 +268,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const results = await repo.find(query);
             res.json(results);
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -275,7 +285,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
                 res.status(201).json(result);
             }
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -295,7 +305,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const result = await repo.call(actionName, params);
             res.json(result);
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -326,7 +336,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             }
             res.json(result);
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -337,7 +347,7 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             const result = await repo.update(id, req.body);
             res.json(result);
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
 
@@ -348,9 +358,10 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             await repo.delete(id);
             res.status(204).send();
         } catch (e: any) {
-            res.status(500).json({ error: e.message });
+            handleError(res, e);
         }
     });
+
 
     return router;
 }

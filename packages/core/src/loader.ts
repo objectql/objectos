@@ -1,6 +1,7 @@
 import { MetadataRegistry } from './registry';
 import { ObjectConfig } from './types';
 import { MetadataLoader as BaseLoader, registerObjectQLPlugins } from '@objectql/metadata';
+import * as yaml from 'js-yaml';
 
 export class MetadataLoader extends BaseLoader {
     constructor(registry: MetadataRegistry) {
@@ -8,16 +9,49 @@ export class MetadataLoader extends BaseLoader {
         registerObjectQLPlugins(this);
         
         // Register Security Plugins
-        this.registerPlugin('policy', {
-            extensions: ['.policy.yml', '.policy.yaml'],
-            loader: (content: any) => content // YAML parser is usually built-in or handled by BaseLoader if it returns object
+        this.use({
+            name: 'policy',
+            glob: ['**/*.policy.yml', '**/*.policy.yaml'],
+            handler: (ctx) => {
+                if (ctx.content) {
+                    try {
+                        const content = yaml.load(ctx.content) as any;
+                        if (content && content.name) {
+                            ctx.registry.register('policy', {
+                                type: 'policy',
+                                id: content.name,
+                                content: content
+                            });
+                        }
+                    } catch (e) {
+                            console.error(`Error loading policy ${ctx.file}`, e);
+                    }
+                }
+            }
         });
         
-        this.registerPlugin('role', {
-            extensions: ['.role.yml', '.role.yaml'],
-            loader: (content: any) => content
+        this.use({
+            name: 'role',
+            glob: ['**/*.role.yml', '**/*.role.yaml'],
+            handler: (ctx) => {
+                if (ctx.content) {
+                    try {
+                        const content = yaml.load(ctx.content) as any;
+                        if (content && content.name) {
+                            ctx.registry.register('role', {
+                                type: 'role',
+                                id: content.name,
+                                content: content
+                            });
+                        }
+                    } catch (e) {
+                            console.error(`Error loading role ${ctx.file}`, e);
+                    }
+                }
+            }
         });
     }
+
 }
 
 export function loadObjectConfigs(dir: string): Record<string, ObjectConfig> {

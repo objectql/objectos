@@ -145,6 +145,23 @@ export interface RoleConfig {
     inline_policies?: PolicyStatement[];
 }
 
+export interface ActionConfig {
+    handler?: (ctx: any, params: any) => Promise<any>;
+    [key: string]: any;
+}
+
+export interface ObjectListeners {
+    beforeFind?: (ctx: any) => Promise<void>;
+    afterFind?: (ctx: any) => Promise<void>;
+    beforeCreate?: (ctx: any) => Promise<void>;
+    afterCreate?: (ctx: any) => Promise<void>;
+    beforeUpdate?: (ctx: any) => Promise<void>;
+    afterUpdate?: (ctx: any) => Promise<void>;
+    beforeDelete?: (ctx: any) => Promise<void>;
+    afterDelete?: (ctx: any) => Promise<void>;
+    [key: string]: any;
+}
+
 export interface ObjectConfig {
     name: string;
     datasource?: string; // The name of the datasource to use

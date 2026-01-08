@@ -3,8 +3,5 @@ dist
 .DS_Store
 *.tsbuildinfo
 
-package-lock.json
-yarn.lock
-
 .env
 .env.local
