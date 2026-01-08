@@ -36,17 +36,27 @@ export class SecurityEngine {
             if (role.policies) {
                 for (const policyName of role.policies) {
                     const policy = this.policies.get(policyName);
-                    if (policy) {
-                        const statements = policy.statements.filter(s => s.object === objectName || s.object === '*');
-                        effectiveStatements.push(...statements);
+                    if (policy && policy.permissions) {
+                        // Check for specific object permission
+                        if (policy.permissions[objectName]) {
+                            effectiveStatements.push(policy.permissions[objectName]);
+                        }
+                        // Check for wildcard object permission
+                        if (policy.permissions['*']) {
+                            effectiveStatements.push(policy.permissions['*']);
+                        }
                     }
                 }
             }
 
             // Inline Policies
-            if (role.inline_policies) {
-                const statements = role.inline_policies.filter(s => s.object === objectName || s.object === '*');
-                effectiveStatements.push(...statements);
+            if (role.permissions) {
+                if (role.permissions[objectName]) {
+                    effectiveStatements.push(role.permissions[objectName]);
+                }
+                if (role.permissions['*']) {
+                    effectiveStatements.push(role.permissions['*']);
+                }
             }
         }
 

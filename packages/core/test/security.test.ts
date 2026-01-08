@@ -16,7 +16,7 @@ describe('SecurityEngine', () => {
     });
 
     it('should deny access if role has no permission', () => {
-        const role: RoleConfig = { name: 'guest', inline_policies: [] };
+        const role: RoleConfig = { name: 'guest', permissions: {} };
         security.registerRole(role);
 
         const ctx: any = { roles: ['guest'], object: {} as any, transaction: {} as any, sudo: () => ctx };
@@ -27,9 +27,9 @@ describe('SecurityEngine', () => {
     it('should allow access via inline policy', () => {
         const role: RoleConfig = {
             name: 'admin',
-            inline_policies: [
-                { object: 'project', actions: ['read'] }
-            ]
+            permissions: {
+                project: { actions: ['read'] }
+            }
         };
         security.registerRole(role);
 
@@ -41,9 +41,9 @@ describe('SecurityEngine', () => {
     it('should allow access via managed policy', () => {
         const policy: PolicyConfig = {
             name: 'read_access',
-            statements: [
-                { object: 'project', actions: ['read'] }
-            ]
+            permissions: {
+                project: { actions: ['read'] }
+            }
         };
         const role: RoleConfig = {
             name: 'viewer',
@@ -60,13 +60,12 @@ describe('SecurityEngine', () => {
     it('should return RLS filters', () => {
         const policy: PolicyConfig = {
             name: 'owner_only',
-            statements: [
-                {
-                    object: 'project',
+            permissions: {
+                project: {
                     actions: ['read'],
                     filters: [['owner', '=', '$user.id']]
                 }
-            ]
+            }
         };
         const role: RoleConfig = {
             name: 'user',
@@ -86,12 +85,16 @@ describe('SecurityEngine', () => {
         // Policy 1: Own projects
         const p1: PolicyConfig = {
             name: 'own_projects',
-            statements: [{ object: 'project', actions: ['read'], filters: [['owner', '=', 'me']] }]
+            permissions: {
+                project: { actions: ['read'], filters: [['owner', '=', 'me']] }
+            }
         };
         // Policy 2: Public projects
         const p2: PolicyConfig = {
             name: 'public_projects',
-            statements: [{ object: 'project', actions: ['read'], filters: [['public', '=', true]] }]
+            permissions: {
+                project: { actions: ['read'], filters: [['public', '=', true]] }
+            }
         };
         
         const role: RoleConfig = {

@@ -104,9 +104,6 @@ export interface FieldConfig {
  * Defines a permission rule for a specific object.
  */
 export interface PolicyStatement {
-    /** The object API name. Use '*' (wildcard) carefully. */
-    object: string;
-    
     /** Allowed actions. */
     actions: Array<'read' | 'create' | 'update' | 'delete' | '*'>;
     
@@ -129,7 +126,8 @@ export interface PolicyStatement {
 export interface PolicyConfig {
     name: string;
     description?: string;
-    statements: PolicyStatement[];
+    /** Map of Object Name to Permission Rules */
+    permissions: Record<string, PolicyStatement>;
 }
 
 /**
@@ -141,8 +139,8 @@ export interface RoleConfig {
     description?: string;
     /** List of policy names to include. */
     policies?: string[];
-    /** Specific rules defined directly in this role. */
-    inline_policies?: PolicyStatement[];
+    /** Map of inline permissions. */
+    permissions?: Record<string, PolicyStatement>;
 }
 
 export interface ActionConfig {

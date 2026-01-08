@@ -19,7 +19,9 @@ The security configuration supports both **Role-Based Access Control (RBAC)** an
 
 ## 2. Policy Definition (`.policy.yml`)
 
-A **Policy** is a reusable collection of permission statements without being tied to a specific user identity. It defines "what can be done".
+A **Policy** is a reusable collection of permission statements without being tied to a specific user identity. 
+
+To facilitate storage in database JSONB columns and efficient querying, the structure uses a **Map** keyed by object name.
 
 **File:** `/security/policies/contract_manage.policy.yml`
 
@@ -27,8 +29,9 @@ A **Policy** is a reusable collection of permission statements without being tie
 name: contract_manage
 description: Standard contract management rules
 
-statements:
-  - object: contracts
+# Map structure: Key is the Object Name
+permissions:
+  contracts:
     actions: [read, create, update] # No delete permission
     
     # Row Level Security (RLS)
@@ -43,7 +46,7 @@ statements:
 
 ## 3. Role Definition (`.role.yml`)
 
-A **Role** defines an identity and assigns permissions. It can compose permissions by referencing **Managed Policies** or defining **Inline Policies**.
+A **Role** defines an identity and assigns permissions. It can compose permissions by referencing **Managed Policies** or defining **Online Permissions**.
 
 **File:** `/security/roles/sales_rep.role.yml`
 
@@ -58,10 +61,10 @@ policies:
   - contract_manage      # References contract_manage.policy.yml
   - base_read_only       # References base_read_only.policy.yml
 
-# 2. Inline Policies (Specific)
+# 2. Inline Permissions (Specific)
 # Valid specifically for this role, not shared
-inline_policies:
-  - object: leads
+permissions:
+  leads:
     actions: [read, create]
     filters:
       - ['status', '=', 'new']
@@ -71,7 +74,7 @@ inline_policies:
 
 When a user with the role `sales_rep` executes a query:
 1.  The system loads all referenced **Managed Policies**.
-2.  The system loads all **Inline Policies**.
-3.  All policies are **merged (Union)**.
+2.  The system loads all **Inline Permissions**.
+3.  All permissions are **merged (Union)**.
     *   If *any* policy allows access to an object, access is granted.
     *   If multiple policies define RLS filters for the same object, they are typically combined with `OR`.
