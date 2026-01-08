@@ -1,5 +1,6 @@
 name: projects
 label: Project
+icon: building-line
 fields:
   name:
     type: text

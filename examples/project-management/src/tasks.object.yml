@@ -1,5 +1,6 @@
 name: tasks
 label: Task
+icon: checkbox-circle-line
 fields:
   name:
     type: text
