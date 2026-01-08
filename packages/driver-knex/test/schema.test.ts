@@ -183,4 +183,71 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         expect(columns).toHaveProperty('child_count');
         expect(columns).toHaveProperty('invoice_no');
     });
+
+    it('should create database constraints (unique, required)', async () => {
+        const objects = [{
+            name: 'constraint_test',
+            fields: {
+                unique_field: { type: 'string', unique: true } as any,
+                required_field: { type: 'string', required: true } as any
+            }
+        }];
+
+        await driver.init(objects);
+
+        // Verify Unique using negative test?
+        // SQLite enforces unique.
+        await driver.create('constraint_test', { unique_field: 'u1', required_field: 'r1' });
+        
+        try {
+            await driver.create('constraint_test', { unique_field: 'u1', required_field: 'r2' });
+            fail('Should throw error for unique violation');
+        } catch (e: any) {
+            expect(e.message).toMatch(/UNIQUE constraint failed|duplicate key value/);
+        }
+
+        try {
+            await driver.create('constraint_test', { unique_field: 'u2' });
+            fail('Should throw error for not null violation');
+        } catch (e: any) {
+             expect(e.message).toMatch(/NOT NULL constraint failed|null value in column/);
+        }
+    });
+
+    it('should handle new field types (email, file, location)', async () => {
+        const objects = [{
+            name: 'new_types_test',
+            fields: {
+                email: { type: 'email' } as any,
+                profile_pic: { type: 'image' } as any,
+                resume: { type: 'file' } as any,
+                office_loc: { type: 'location' } as any,
+                work_hours: { type: 'time' } as any
+            }
+        }];
+
+        await driver.init(objects);
+        const cols = await knexInstance('new_types_test').columnInfo();
+        
+        expect(cols).toHaveProperty('email');
+        // File/Image/Location/Avatar are stored as JSON in KnexDriver mapping
+        // But columnInfo might report 'text' for sqlite or 'json' for postgres.
+        // We just ensure they were created.
+        expect(cols).toHaveProperty('profile_pic');
+        expect(cols).toHaveProperty('resume');
+        
+        // Test Insert for complex types
+        await driver.create('new_types_test', {
+            email: 'test@example.com',
+            profile_pic: { url: 'http://img.com/1.png' },
+            office_loc: { lat: 10, lng: 20 },
+            work_hours: '09:00:00'
+        });
+        
+        const res = await driver.find('new_types_test', {});
+        const row = res[0];
+        
+        expect(row.email).toBe('test@example.com');
+        expect(row.office_loc).toEqual({ lat: 10, lng: 20 }); // Auto-parsed by driver logic
+    });
 });

@@ -10,16 +10,25 @@
 export type FieldType = 
     | 'text' 
     | 'textarea' 
+    | 'markdown'
     | 'html' 
     | 'select' 
     | 'date' 
     | 'datetime' 
+    | 'time'
     | 'number' 
     | 'currency' 
     | 'percent'
     | 'boolean' 
+    | 'email'
+    | 'phone'
+    | 'url'
+    | 'image'
+    | 'file'
+    | 'avatar'
+    | 'location'
     | 'lookup' 
-    | 'master_detail' 
+    | 'master_detail'  
     | 'password'
     | 'formula'
     | 'summary'
@@ -56,15 +65,39 @@ export interface FieldConfig {
     
     /** Whether the field is mandatory. Defaults to false. */
     required?: boolean;
+
+    /** Whether the field is unique in the table. */
+    unique?: boolean;
+
+    /** Whether the field is read-only in UI. */
+    readonly?: boolean;
+
+    /** Whether the field is hidden from default UI/API response. */
+    hidden?: boolean;
     
     /** The default value if not provided during creation. */
     defaultValue?: any;
+
+    /** Tooltip or help text for the user. */
+    help_text?: string;
     
     /** 
      * Whether the field allows multiple values. 
-     * Supported by 'select' and 'lookup'.
+     * Supported by 'select', 'lookup', 'file', 'image'.
      */
     multiple?: boolean;
+    
+    // Validation properties
+    /** Minimum for number/currency/percent. */
+    min?: number;
+    /** Maximum for number/currency/percent. */
+    max?: number;
+    /** Minimum length for text based fields. */
+    min_length?: number;
+    /** Maximum length for text based fields. */
+    max_length?: number;
+    /** Regular expression pattern for validation. */
+    regex?: string;
 
     // String options
     /** 
@@ -78,6 +111,10 @@ export interface FieldConfig {
     scale?: number;
     /** Total number of digits for `number` types. */
     precision?: number;
+
+    // UI properties
+    /** Number of rows for textarea fields. */
+    rows?: number;
     
     // Relationship properties
     /** 

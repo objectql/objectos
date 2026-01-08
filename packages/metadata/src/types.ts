@@ -1,16 +1,25 @@
 export type FieldType = 
     | 'text' 
     | 'textarea' 
+    | 'markdown'
     | 'html' 
     | 'select' 
     | 'date' 
     | 'datetime' 
+    | 'time'
     | 'number' 
     | 'currency' 
     | 'percent'
     | 'boolean' 
+    | 'email'
+    | 'phone'
+    | 'url'
+    | 'image'
+    | 'file'
+    | 'avatar'
+    | 'location'
     | 'lookup' 
-    | 'master_detail' 
+    | 'master_detail'  
     | 'password'
     | 'formula'
     | 'summary'
@@ -28,11 +37,25 @@ export interface FieldConfig {
     label?: string;
     type: FieldType;
     required?: boolean;
+    unique?: boolean;
+    readonly?: boolean;
+    hidden?: boolean;
     defaultValue?: any;
+    help_text?: string;
     multiple?: boolean;
+    
+    // Validation
+    min?: number;
+    max?: number;
+    min_length?: number;
+    max_length?: number;
+    regex?: string;
+
     options?: FieldOption[] | string[];
     scale?: number;
     precision?: number;
+    rows?: number;
+
     reference_to?: string;
     
     // Formula

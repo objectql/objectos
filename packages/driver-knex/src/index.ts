@@ -263,8 +263,17 @@ export class KnexDriver implements Driver {
         const type = field.type || 'string';
         let col;
         switch(type) {
-            case 'string': col = table.string(name); break;
-            case 'text': col = table.text(name); break;
+            case 'string': 
+            case 'email':
+            case 'url':
+            case 'phone':
+            case 'password':
+                col = table.string(name); break;
+            case 'text': 
+            case 'textarea': 
+            case 'html': 
+            case 'markdown':
+                col = table.text(name); break;
             case 'integer': 
             case 'int': col = table.integer(name); break;
             case 'float': 
@@ -274,13 +283,25 @@ export class KnexDriver implements Driver {
             case 'boolean': col = table.boolean(name); break;
             case 'date': col = table.date(name); break;
             case 'datetime': col = table.timestamp(name); break;
+            case 'time': col = table.time(name); break;
             case 'json': 
             case 'object':
-            case 'array': col = table.json(name); break;
+            case 'array': 
+            case 'image':
+            case 'file':
+            case 'avatar':
+            case 'location': col = table.json(name); break;
             case 'summary': col = table.float(name); break; // Stored calculation result
             case 'auto_number': col = table.string(name); break; // Generated string
             case 'formula': return; // Virtual field, do not create column
             default: col = table.string(name);
+        }
+
+        if (field.unique) {
+            col.unique();
+        }
+        if (field.required) {
+            col.notNullable();
         }
     }
 
@@ -333,7 +354,7 @@ export class KnexDriver implements Driver {
     }
 
     private isJsonField(type: string, field: any) {
-        return ['json', 'object', 'array'].includes(type) || field.multiple;
+        return ['json', 'object', 'array', 'image', 'file', 'avatar', 'location'].includes(type) || field.multiple;
     }
 
     private formatInput(objectName: string, data: any) {
