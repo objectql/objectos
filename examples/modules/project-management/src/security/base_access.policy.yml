@@ -1,0 +1,12 @@
+name: base_access
+description: Basic access for all employees
+
+permissions:
+  projects:
+    actions: [read]
+    # FLS: Exclude 'budget'
+    fields: [name, status, priority, description, owner, start_date, end_date]
+  
+  tasks:
+    actions: [read, create]
+

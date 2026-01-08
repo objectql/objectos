@@ -23,3 +23,13 @@ fields:
     type: textarea
   owner:
     type: text
+    label: Project Owner
+  budget:
+    type: currency
+    label: Total Budget
+  start_date:
+    type: date
+    label: Start Date
+  end_date:
+    type: date
+    label: End Date

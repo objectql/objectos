@@ -116,4 +116,80 @@ describe('SecurityEngine', () => {
         expect(result.filters).toHaveLength(3);
         expect(result.filters![0]).toBe('or');
     });
+
+    it('should support role inheritance', () => {
+        const mgrPolicy: PolicyConfig = {
+            name: 'mgr_policy',
+            permissions: {
+                project: { actions: ['delete'] }
+            }
+        };
+        const empRole: RoleConfig = {
+            name: 'employee',
+            permissions: {
+                project: { actions: ['read'] }
+            }
+        };
+        const mgrRole: RoleConfig = {
+            name: 'manager',
+            inherits: ['employee'],
+            policies: ['mgr_policy']
+        };
+        
+        security.registerPolicy(mgrPolicy);
+        security.registerRole(empRole);
+        security.registerRole(mgrRole);
+
+        const ctx: any = { roles: ['manager'], object: {} as any };
+        
+        // Should have employee permission
+        const readCheck = security.check(ctx, 'project', 'read');
+        expect(readCheck.allowed).toBe(true);
+
+        // Should have manager permission
+        const deleteCheck = security.check(ctx, 'project', 'delete');
+        expect(deleteCheck.allowed).toBe(true);
+    });
+
+    it('should support field level security whitelist', () => {
+        const role: RoleConfig = {
+            name: 'limited_user',
+            permissions: {
+                project: { 
+                    actions: ['read'],
+                    fields: ['name', 'status'] // strict whitelist
+                }
+            }
+        };
+        security.registerRole(role);
+        
+        const ctx: any = { roles: ['limited_user'], object: {} as any };
+        const result = security.check(ctx, 'project', 'read');
+        
+        expect(result.allowed).toBe(true);
+        expect(result.fields).toEqual(expect.arrayContaining(['name', 'status']));
+        expect(result.fields).not.toContain('budget');
+    });
+
+    it('should combine fields from multiple roles (union)', () => {
+        // Role A: sees Name
+        const roleA: RoleConfig = {
+            name: 'role_a',
+            permissions: { project: { actions: ['read'], fields: ['name'] } }
+        };
+        // Role B: sees Budget
+        const roleB: RoleConfig = {
+            name: 'role_b',
+            permissions: { project: { actions: ['read'], fields: ['budget'] } }
+        };
+        
+        security.registerRole(roleA);
+        security.registerRole(roleB);
+        
+        const ctx: any = { roles: ['role_a', 'role_b'], object: {} as any };
+        const result = security.check(ctx, 'project', 'read');
+        
+        expect(result.fields).toContain('name');
+        expect(result.fields).toContain('budget');
+    });
 });

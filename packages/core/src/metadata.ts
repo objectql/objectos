@@ -115,9 +115,15 @@ export interface PolicyStatement {
 
     /**
      * Field Level Security (FLS).
-     * List of allowed fields. If omitted, implies all fields.
+     * List of allowed fields (Visibility). If omitted, implies all fields.
      */
     fields?: string[];
+
+    /**
+     * FLS Write Protection.
+     * Specific fields that are visible but NOT editable.
+     */
+    readonly_fields?: string[];
 }
 
 /**
@@ -137,6 +143,8 @@ export interface RoleConfig {
     name: string;
     label?: string;
     description?: string;
+    /** Inherit permissions from these parent roles. */
+    inherits?: string[];
     /** List of policy names to include. */
     policies?: string[];
     /** Map of inline permissions. */

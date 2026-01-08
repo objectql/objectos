@@ -1,0 +1,7 @@
+name: project_manager
+label: Project Manager
+description: Department Manager
+inherits:
+  - employee
+policies:
+  - manager_access

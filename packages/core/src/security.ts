@@ -26,39 +26,50 @@ export class SecurityEngine {
         }
 
         const effectiveStatements: PolicyStatement[] = [];
+        const processedRoles = new Set<string>();
 
-        // 1. Gather all applicable statements
-        for (const roleName of userRoles) {
-            const role = this.roles.get(roleName);
-            if (!role) continue;
+        // Recursive function to gather statements from roles and their parents
+        const collectRolePermissions = (roleNames: string[]) => {
+            for (const roleName of roleNames) {
+                if (processedRoles.has(roleName)) continue;
+                processedRoles.add(roleName);
 
-            // Managed Policies
-            if (role.policies) {
-                for (const policyName of role.policies) {
-                    const policy = this.policies.get(policyName);
-                    if (policy && policy.permissions) {
-                        // Check for specific object permission
-                        if (policy.permissions[objectName]) {
-                            effectiveStatements.push(policy.permissions[objectName]);
-                        }
-                        // Check for wildcard object permission
-                        if (policy.permissions['*']) {
-                            effectiveStatements.push(policy.permissions['*']);
+                const role = this.roles.get(roleName);
+                if (!role) continue;
+
+                // 1. Inherited Roles
+                if (role.inherits) {
+                    collectRolePermissions(role.inherits);
+                }
+
+                // 2. Managed Policies
+                if (role.policies) {
+                    for (const policyName of role.policies) {
+                        const policy = this.policies.get(policyName);
+                        if (policy && policy.permissions) {
+                            if (policy.permissions[objectName]) {
+                                effectiveStatements.push(policy.permissions[objectName]);
+                            }
+                            if (policy.permissions['*']) {
+                                effectiveStatements.push(policy.permissions['*']);
+                            }
                         }
                     }
                 }
-            }
 
-            // Inline Policies
-            if (role.permissions) {
-                if (role.permissions[objectName]) {
-                    effectiveStatements.push(role.permissions[objectName]);
-                }
-                if (role.permissions['*']) {
-                    effectiveStatements.push(role.permissions['*']);
+                // 3. Inline Policies
+                if (role.permissions) {
+                    if (role.permissions[objectName]) {
+                        effectiveStatements.push(role.permissions[objectName]);
+                    }
+                    if (role.permissions['*']) {
+                        effectiveStatements.push(role.permissions['*']);
+                    }
                 }
             }
-        }
+        };
+
+        collectRolePermissions(userRoles);
 
         // 2. Resolve (Union)
         // If no statements found -> Deny
@@ -69,8 +80,12 @@ export class SecurityEngine {
         const resolved: ResolvedPermission = {
             allowed: false,
             actions: new Set(),
-            filters: []
+            filters: [],
+            fields: new Set(),
+            readonly_fields: new Set()
         };
+
+        let hasRestrictedFields = false;
 
         for (const stmt of effectiveStatements) {
             // Merge Actions
@@ -79,14 +94,33 @@ export class SecurityEngine {
             }
 
             // Merge Filters (OR logic)
-            // If multiple policies apply, the user has access if ANY of them grants access.
-            // But complex RLS merging (OR) is tricky.
-            // Simplified Logic: 
-            // If we have filters from multiple sources, we join them with OR.
-            // (FilterA) OR (FilterB)
             if (stmt.filters && stmt.filters.length > 0) {
                  resolved.filters!.push(stmt.filters);
             }
+            
+            // Merge FLS
+            if (stmt.fields) {
+                hasRestrictedFields = true;
+                for (const f of stmt.fields) resolved.fields!.add(f);
+            } else {
+                // If one policy allows ALL fields (undefined/empty), does it override others?
+                // Union strategy usually means: (Policy A restricts to [x]) OR (Policy B allows All) = Allows All.
+                // We'll mark a flag. If we encounter a statement with NO field restriction, user gets all fields.
+                // However, implementing "All" in a Set is tricky. 
+                // Let's assume if 'stmt.fields' is missing, it means FULL ACCESS to all fields for THAT action.
+            }
+            
+            if (stmt.readonly_fields) {
+                for (const f of stmt.readonly_fields) resolved.readonly_fields!.add(f);
+            }
+        }
+        
+        // If any statement granted permission but didn't list specific fields, it implies ALL fields are allowed.
+        // In that case, we should clear restrictions (or handle it in repository).
+        // For simplicity: If ANY statement has `fields` undefined, we consider all fields allowed.
+        const allowAllFields = effectiveStatements.some(s => !s.fields || s.fields.includes('*'));
+        if (allowAllFields) {
+            resolved.fields = undefined; // Undefined means ALL
         }
         
         if (resolved.actions!.size > 0) {
@@ -99,7 +133,7 @@ export class SecurityEngine {
     /**
      * Checks if the operation is allowed and returns the RLS filters to apply.
      */
-    check(ctx: ObjectQLContext, objectName: string, action: 'read' | 'create' | 'update' | 'delete'): { allowed: boolean, filters?: any[] } {
+    check(ctx: ObjectQLContext, objectName: string, action: 'read' | 'create' | 'update' | 'delete'): { allowed: boolean, filters?: any[], fields?: string[] } {
         // System bypass
         if (ctx.isSystem) return { allowed: true };
         
@@ -116,20 +150,20 @@ export class SecurityEngine {
         if (!hasWildcard && !hasAction) return { allowed: false };
 
         // Construct final RLS filter
-        // If we have multiple filter sets, it means (Set1) OR (Set2)
-        // because permissions are additive.
         let finalFilter = undefined;
-
         if (perm.filters && perm.filters.length > 0) {
             if (perm.filters.length === 1) {
                 finalFilter = perm.filters[0];
             } else {
-                // Combine with OR
                 finalFilter = ['or', ...perm.filters];
             }
         }
-
-        return { allowed: true, filters: finalFilter };
+        
+        // Calculate allowed fields
+        // If fields is undefined, it means ALL. 
+        let allowedFields: string[] | undefined = perm.fields ? Array.from(perm.fields) : undefined;
+        
+        return { allowed: true, filters: finalFilter, fields: allowedFields };
     }
 }
 
@@ -137,4 +171,6 @@ interface ResolvedPermission {
     allowed: boolean;
     actions?: Set<string>;
     filters?: any[][]; // Array of filter groups (which are arrays)
+    fields?: Set<string>;
+    readonly_fields?: Set<string>;
 }

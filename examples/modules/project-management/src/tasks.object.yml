@@ -12,3 +12,17 @@ fields:
   completed:
     type: boolean
     defaultValue: false
+  priority:
+    type: select
+    options:
+      - low
+      - medium
+      - high
+    defaultValue: medium
+  assigned_to:
+    type: text
+    label: Assignee
+  estimated_hours:
+    type: number
+    min: 0
+    label: Estimated Hours

@@ -5,17 +5,22 @@
 
 ## 1. Directory Structure
 
-The security configuration supports both **Role-Based Access Control (RBAC)** and **Managed Policies** for reusability.
+The security configuration files (`.role.yml` and `.policy.yml`) can be placed **anywhere** in your module's source path. The system scans for them recursively.
+
+**Recommended Structure (Simplified)**:
 
 ```text
 /project-root
-├── /security
-│   ├── /roles/             # Role Definitions
-│   │   └── sales_rep.role.yml
+├── /src
+│   ├── projects.object.yml
+│   ├── tasks.object.yml
 │   │
-│   └── /policies/          # Reusable Permisison Sets
+│   └── /security           # Optional grouping
+│       ├── sales_rep.role.yml
 │       └── contract_manage.policy.yml
 ```
+
+> **Note:** You can also place them alongside your objects if preferred, or completely flat.
 
 ## 2. Policy Definition (`.policy.yml`)
 
@@ -23,7 +28,7 @@ A **Policy** is a reusable collection of permission statements without being tie
 
 To facilitate storage in database JSONB columns and efficient querying, the structure uses a **Map** keyed by object name.
 
-**File:** `/security/policies/contract_manage.policy.yml`
+**File:** `/src/security/contract_manage.policy.yml`
 
 ```yaml
 name: contract_manage
@@ -48,7 +53,7 @@ permissions:
 
 A **Role** defines an identity and assigns permissions. It can compose permissions by referencing **Managed Policies** or defining **Online Permissions**.
 
-**File:** `/security/roles/sales_rep.role.yml`
+**File:** `/src/security/sales_rep.role.yml`
 
 ```yaml
 name: sales_rep
