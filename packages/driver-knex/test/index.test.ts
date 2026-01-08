@@ -17,16 +17,16 @@ describe('KnexDriver (SQLite Integration)', () => {
         const k = (driver as any).knex;
         
         await k.schema.createTable('users', (t: any) => {
-            t.increments('id');
+            t.string('_id').primary();
             t.string('name');
             t.integer('age');
         });
 
         await k('users').insert([
-            { name: 'Alice', age: 25 },
-            { name: 'Bob', age: 17 },
-            { name: 'Charlie', age: 30 },
-            { name: 'Dave', age: 17 }
+            { _id: '1', name: 'Alice', age: 25 },
+            { _id: '2', name: 'Bob', age: 17 },
+            { _id: '3', name: 'Charlie', age: 30 },
+            { _id: '4', name: 'Dave', age: 17 }
         ]);
     });
 
@@ -71,7 +71,7 @@ describe('KnexDriver (SQLite Integration)', () => {
         const [alice] = await driver.find('users', { filters: [['name', '=', 'Alice']] });
         expect(alice).toBeDefined();
 
-        const fetched = await driver.findOne('users', alice.id);
+        const fetched = await driver.findOne('users', alice._id);
         expect(fetched).toBeDefined();
         expect(fetched.name).toBe('Alice');
     });
@@ -87,17 +87,17 @@ describe('KnexDriver (SQLite Integration)', () => {
 
     it('should update an object', async () => {
         const [bob] = await driver.find('users', { filters: [['name', '=', 'Bob']] });
-        await driver.update('users', bob.id, { age: 18 });
+        await driver.update('users', bob._id, { age: 18 });
 
-        const updated = await driver.findOne('users', bob.id);
+        const updated = await driver.findOne('users', bob._id);
         expect(updated.age).toBe(18);
     });
 
     it('should delete an object', async () => {
         const [charlie] = await driver.find('users', { filters: [['name', '=', 'Charlie']] });
-        await driver.delete('users', charlie.id);
+        await driver.delete('users', charlie._id);
 
-        const deleted = await driver.findOne('users', charlie.id);
+        const deleted = await driver.findOne('users', charlie._id);
         expect(deleted).toBeUndefined();
     });
 
