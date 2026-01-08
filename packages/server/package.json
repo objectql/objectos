@@ -3,9 +3,11 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "build": "tsc -b",
+    "build": "nest build",
+    "dev": "nest start --watch",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {

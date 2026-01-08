@@ -7,7 +7,6 @@
     "assets": [
       {
         "include": "views/**/*",
-        "outDir": "dist/src/views",
         "watchAssets": true
       }
     ]
