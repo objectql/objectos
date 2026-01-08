@@ -6,6 +6,17 @@ export class MetadataLoader extends BaseLoader {
     constructor(registry: MetadataRegistry) {
         super(registry);
         registerObjectQLPlugins(this);
+        
+        // Register Security Plugins
+        this.registerPlugin('policy', {
+            extensions: ['.policy.yml', '.policy.yaml'],
+            loader: (content: any) => content // YAML parser is usually built-in or handled by BaseLoader if it returns object
+        });
+        
+        this.registerPlugin('role', {
+            extensions: ['.role.yml', '.role.yaml'],
+            loader: (content: any) => content
+        });
     }
 }
 

@@ -3,6 +3,7 @@ import { ObjectConfig } from "./metadata";
 import { Driver } from "./driver";
 import { UnifiedQuery, FilterCriterion } from "./query";
 import { MetadataRegistry } from "./registry";
+import { SecurityEngine } from "./security";
 
 export { ObjectConfig } from "./metadata";
 export { MetadataRegistry } from "./registry";
@@ -22,6 +23,7 @@ export interface IObjectQL {
     addPackage(name: string): void;
     removePackage(name: string): void;
     metadata: MetadataRegistry; 
+    security: SecurityEngine;
 }
 
 export interface HookContext<T = any> {

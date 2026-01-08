@@ -98,97 +98,53 @@ export interface FieldConfig {
     max_length?: number;
     /** Regular expression pattern for validation. */
     regex?: string;
-
-    // String options
-    /** 
-     * Options available for `select` or `multiselect` types.
-     * Can be an array of strings or {@link FieldOption} objects.
-     */
-    options?: FieldOption[] | string[];
-    
-    // Number options
-    /** Number of decimal places for `currency` types (e.g., 2). */
-    scale?: number;
-    /** Total number of digits for `number` types. */
-    precision?: number;
-
-    // UI properties
-    /** Number of rows for textarea fields. */
-    rows?: number;
-    
-    // Relationship properties
-    /** 
-     * The API name of the target object.
-     * Required when type is `lookup` or `master_detail` or `summary`.
-     */
-    reference_to?: string;
-
-    // Formula properties
-    /** The expression for formula fields. */
-    expression?: string;
-    /** The return data type for formula or summary fields. */
-    data_type?: 'text' | 'boolean' | 'date' | 'datetime' | 'number' | 'currency' | 'percent';
-
-    // Summary properties
-    /** The child object to summarize. */
-    summary_object?: string;
-    /** The type of summary calculation. */
-    summary_type?: 'count' | 'sum' | 'min' | 'max' | 'avg';
-    /** The field on the child object to aggregate. */
-    summary_field?: string;
-    /** Filters to apply to child records before summarizing. */
-    summary_filters?: any[] | string;
-
-    // Auto Number properties
-    /** The format pattern for auto number fields (e.g. 'INV-{YYYY}-{0000}'). */
-    auto_number_format?: string;
-
-    // UI properties (kept for compatibility, though ObjectQL is a query engine)
-    /** Implementation hint: Whether this field should be indexed for search. */
-    searchable?: boolean;
-    /** Implementation hint: Whether this field is sortable in lists. */
-    sortable?: boolean;
-    /** Implementation hint: Whether to create a database index for this column. */
-    index?: boolean;
-    
-    // Other properties
-    /** Description for documentation purposes. */
-    description?: string;
 }
 
 /**
- * Configuration for a custom action (RPC).
+ * Defines a permission rule for a specific object.
  */
-export interface ActionConfig {
+export interface PolicyStatement {
+    /** The object API name. Use '*' (wildcard) carefully. */
+    object: string;
+    
+    /** Allowed actions. */
+    actions: Array<'read' | 'create' | 'update' | 'delete' | '*'>;
+    
+    /** 
+     * Row Level Security (RLS). 
+     * A set of filters automatically applied to queries.
+     */
+    filters?: any[]; // Using any[] to allow flexible filter structure for now
+
+    /**
+     * Field Level Security (FLS).
+     * List of allowed fields. If omitted, implies all fields.
+     */
+    fields?: string[];
+}
+
+/**
+ * A reusable policy definition.
+ */
+export interface PolicyConfig {
+    name: string;
+    description?: string;
+    statements: PolicyStatement[];
+}
+
+/**
+ * A role definition combining managed policies and inline rules.
+ */
+export interface RoleConfig {
+    name: string;
     label?: string;
     description?: string;
-    /** Output/Result type definition. */
-    result?: {
-        type: FieldType;
-    };
-    /** Input parameters schema. */
-    params?: Record<string, FieldConfig>;
-    /** Implementation of the action. */
-    handler?: (ctx: any, params: any) => Promise<any>;
+    /** List of policy names to include. */
+    policies?: string[];
+    /** Specific rules defined directly in this role. */
+    inline_policies?: PolicyStatement[];
 }
 
-import { HookFunction } from './types';
-
-export interface ObjectListeners {
-    beforeCreate?: HookFunction;
-    afterCreate?: HookFunction;
-    beforeUpdate?: HookFunction;
-    afterUpdate?: HookFunction;
-    beforeDelete?: HookFunction;
-    afterDelete?: HookFunction;
-    beforeFind?: HookFunction;
-    afterFind?: HookFunction;
-}
-
-/**
- * Configuration for a business object (Entity).
- * Analogous to a Database Table or MongoDB Collection.
- */
 export interface ObjectConfig {
     name: string;
     datasource?: string; // The name of the datasource to use

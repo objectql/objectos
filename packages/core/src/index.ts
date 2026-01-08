@@ -14,14 +14,17 @@ import { ObjectRepository } from './repository';
 import { Driver } from './driver';
 import { MetadataLoader } from './loader';
 import { MetadataRegistry } from './registry';
+import { SecurityEngine } from './security';
 
 export class ObjectQL implements IObjectQL {
     public metadata: MetadataRegistry;
+    public security: SecurityEngine;
     private loader: MetadataLoader;
     private datasources: Record<string, Driver> = {};
 
     constructor(config: ObjectQLConfig) {
         this.metadata = config.registry || new MetadataRegistry();
+        this.security = new SecurityEngine();
         this.loader = new MetadataLoader(this.metadata);
         this.datasources = config.datasources;
 
@@ -39,15 +42,30 @@ export class ObjectQL implements IObjectQL {
 
     addPackage(name: string) {
         this.loader.loadPackage(name);
+        this.reloadSecurity();
     }
-
 
     removePackage(name: string) {
         this.metadata.unregisterPackage(name);
+        this.reloadSecurity();
     }
 
     loadFromDirectory(dir: string, packageName?: string) {
         this.loader.load(dir, packageName);
+        this.reloadSecurity();
+    }
+    
+    private reloadSecurity() {
+        // Sync policies and roles from registry to security engine
+        // Assuming loader puts them in registry with type 'policy' and 'role'
+        const policies = this.metadata.list<any>('policy');
+        for (const p of policies) {
+            this.security.registerPolicy(p);
+        }
+        const roles = this.metadata.list<any>('role');
+        for (const r of roles) {
+            this.security.registerRole(r);
+        }
     }
 
     createContext(options: ObjectQLContextOptions): ObjectQLContext {
@@ -133,6 +151,8 @@ export class ObjectQL implements IObjectQL {
     }
 
     async init() {
+        this.reloadSecurity(); // Initial sync
+
         const objects = this.metadata.list<ObjectConfig>('object');
         
         // 1. Init Drivers (e.g. Sync Schema)
