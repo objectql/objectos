@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -21,10 +21,10 @@
   },
   "include": ["src/**/*"],
   "references": [
-    { "path": "../../../packages/core" },
-    { "path": "../../../packages/api" },
-    { "path": "../../../packages/driver-mongo" },
-    { "path": "../../../packages/driver-knex" },
-    { "path": "../../modules/project-management" }
+    { "path": "../core" },
+    { "path": "../api" },
+    { "path": "../driver-mongo" },
+    { "path": "../driver-knex" },
+    { "path": "../../examples/project-management" }
   ]
 }
