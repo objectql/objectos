@@ -156,8 +156,13 @@ export class ObjectQL implements IObjectQL {
                 const repo = ctx.object(obj.name);
                 for (const record of obj.data) {
                     try {
-                        if (record._id) {
-                             const existing = await repo.findOne(record._id);
+                        // Handle compatibility for ID vs _id
+                        // If driver is Knex/SQL, it likely uses 'id'.
+                        // If Object definition uses '_id', we check that.
+                        const recordId = record.id || record._id;
+
+                        if (recordId) {
+                             const existing = await repo.findOne(recordId);
                              if (existing) {
                                  continue;
                              }

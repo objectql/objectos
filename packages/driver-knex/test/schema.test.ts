@@ -35,7 +35,7 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         expect(exists).toBe(true);
 
         const columns = await knexInstance('test_obj').columnInfo();
-        expect(columns).toHaveProperty('_id');
+        expect(columns).toHaveProperty('id');
         expect(columns).toHaveProperty('created_at');
         expect(columns).toHaveProperty('updated_at');
         expect(columns).toHaveProperty('name');
@@ -45,12 +45,12 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
     it('should add new columns if table exists', async () => {
         // 1. Setup existing table with subset of columns
         await knexInstance.schema.createTable('test_obj', (t: any) => {
-            t.string('_id').primary();
+            t.string('id').primary();
             t.string('name');
         });
 
         // 2. Insert some data
-        await knexInstance('test_obj').insert({ _id: '1', name: 'Old Data' });
+        await knexInstance('test_obj').insert({ id: '1', name: 'Old Data' });
 
         // 3. Init with new fields
         const objects = [{
@@ -70,14 +70,14 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         expect(columns).toHaveProperty('active');
 
         // 5. Verify data is intact
-        const row = await knexInstance('test_obj').where('_id', '1').first();
+        const row = await knexInstance('test_obj').where('id', '1').first();
         expect(row.name).toBe('Old Data');
     });
 
     it('should not delete existing columns', async () => {
          // 1. Setup table with extra column
          await knexInstance.schema.createTable('test_obj', (t: any) => {
-            t.string('_id').primary();
+            t.string('id').primary();
             t.string('name');
             t.string('extra_column'); // Should stay
         });

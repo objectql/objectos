@@ -95,7 +95,7 @@ export class KnexDriver implements Driver {
 
     async findOne(objectName: string, id: string | number, query?: any, options?: any) {
         if (id) {
-            return await this.getBuilder(objectName, options).where('_id', id).first();
+            return await this.getBuilder(objectName, options).where('id', id).first();
         }
         if (query) {
              const results = await this.find(objectName, { ...query, limit: 1 }, options);
@@ -105,24 +105,33 @@ export class KnexDriver implements Driver {
     }
 
     async create(objectName: string, data: any, options?: any) {
+        // Handle _id -> id mapping for compatibility
+        const { _id, ...rest } = data;
+        const toInsert = { ...rest };
+        // If _id exists and id doesn't, map _id to id
+        if (_id !== undefined && toInsert.id === undefined) {
+             toInsert.id = _id;
+        } else if (toInsert.id !== undefined) {
+            // normal case
+        }
+        
         // Knex insert returns Result array (e.g. ids)
         // We want the created document. 
-        // Some DBs support .returning('*'), others don't easily.
-        // Assuming Postgres/SQLite/Modern MySQL for now support returning.
         const builder = this.getBuilder(objectName, options);
-        const result = await builder.insert(data).returning('*'); // This might fail on old MySQL
+        // We should insert 'toInsert' instead of 'data'
+        const result = await builder.insert(toInsert).returning('*'); 
         return result[0];
     }
 
     async update(objectName: string, id: string | number, data: any, options?: any) {
         const builder = this.getBuilder(objectName, options);
-        await builder.where('_id', id).update(data);
-        return { _id: id, ...data }; // Return patched data? Or fetch fresh?
+        await builder.where('id', id).update(data);
+        return { id, ...data }; 
     }
 
     async delete(objectName: string, id: string | number, options?: any) {
         const builder = this.getBuilder(objectName, options);
-        return await builder.where('_id', id).delete();
+        return await builder.where('id', id).delete();
     }
 
     async count(objectName: string, filters: any, options?: any): Promise<number> {
@@ -175,11 +184,24 @@ export class KnexDriver implements Driver {
 
         for (const obj of objects) {
             const tableName = obj.name;
-            const exists = await this.knex.schema.hasTable(tableName);
+            let exists = await this.knex.schema.hasTable(tableName);
+            
+            if (exists) {
+                 const columnInfo = await this.knex(tableName).columnInfo();
+                 const existingColumns = Object.keys(columnInfo);
+                 
+                 // Check for _id vs id conflict (Legacy _id from mongo-style init)
+                 if (existingColumns.includes('_id') && !existingColumns.includes('id')) {
+                     console.log(`[KnexDriver] Detected legacy '_id' in '${tableName}'. Recreating table for 'id' compatibility...`);
+                     await this.knex.schema.dropTable(tableName);
+                     exists = false;
+                 }
+            }
             
             if (!exists) {
                 await this.knex.schema.createTable(tableName, (table) => {
-                    table.string('_id').primary(); 
+                    // Use standard 'id' for SQL databases
+                    table.string('id').primary(); 
                     table.timestamp('created_at').defaultTo(this.knex.fn.now());
                     table.timestamp('updated_at').defaultTo(this.knex.fn.now());
                     if (obj.fields) {
