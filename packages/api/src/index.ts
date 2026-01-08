@@ -118,7 +118,13 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
     router.get('/_schema', async (req: Request, res: Response) => {
         try {
             const configs = objectql.getConfigs();
-            res.json(configs);
+            // Clone and strip data
+            const sanitized = Object.entries(configs).reduce((acc, [key, val]) => {
+                const { data, ...rest } = val;
+                acc[key] = rest;
+                return acc;
+            }, {} as Record<string, any>);
+            res.json(sanitized);
         } catch (e: any) {
              res.status(500).json({ error: e.message });
         }
@@ -134,6 +140,18 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
                 // assume item has id or name
                 const key = item.id || item.name || item.code;
                 if (key) {
+                    const content = { ...item };
+                    // If content has data (e.g. object config inside metadata), strip it
+                    if (content.data && Array.isArray(content.data) && type === 'object') {
+                        delete content.data;
+                    } 
+                    // Should we check item.content.data? Metadata wrapper vs content.
+                    // MetadataRegistry stores { content: ... }
+                    // list() returns `m.content`.
+                    // So item IS the object config.
+                    
+                    if ((item as any).data) delete (item as any).data;
+                    
                     result[key] = item;
                 }
             }
@@ -150,7 +168,19 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
             if (!item) {
                 return res.status(404).json({ error: "Metadata not found" });
             }
-            res.json(item);
+            const copy = { ...item };
+            if ((copy as any).data) delete (copy as any).data;
+            res.json(copy);
+        } catch (e: any) {
+             res.status(500).json({ error: e.message });
+        }
+    });
+
+    router.post('/_schema/sync', async (req: Request, res: Response) => {
+        try {
+             // Re-run init to sync schema and data
+             await objectql.init();
+             res.json({ status: 'ok', message: 'Schema and data synced successfully' });
         } catch (e: any) {
              res.status(500).json({ error: e.message });
         }

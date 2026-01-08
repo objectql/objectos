@@ -265,6 +265,10 @@ export class KnexDriver implements Driver {
             console.log(`[KnexDriver] Database '${dbName}' created successfully.`);
         } catch (e: any) {
              console.error(`[KnexDriver] Failed to create database '${dbName}':`, e.message);
+             if (e.code === '42501') {
+                 console.error(`[KnexDriver] Hint: The user '${adminConfig.connection.user || 'current user'}' does not have CREATEDB privileges.`);
+                 console.error(`[KnexDriver] Please run: createdb ${dbName}`);
+             }
              throw e;
         } finally {
             await adminKnex.destroy();

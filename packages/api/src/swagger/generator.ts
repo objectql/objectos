@@ -99,6 +99,29 @@ export function generateOpenApiSpec(objectql: IObjectQL) {
       }
   };
 
+  paths['/api/_schema/sync'] = {
+      post: {
+          summary: "Sync Schema & Data",
+          tags: ["System"],
+          responses: {
+              200: {
+                  description: "Sync result",
+                  content: {
+                      'application/json': {
+                          schema: {
+                              type: 'object',
+                              properties: {
+                                  status: { type: 'string' },
+                                  message: { type: 'string' }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  };
+
   Object.values(configs).forEach((config) => {
     const objectName = config.name;
     const schemaName = objectName;

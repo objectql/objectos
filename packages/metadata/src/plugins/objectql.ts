@@ -142,31 +142,30 @@ export function registerObjectQLPlugins(loader: MetadataLoader) {
     });
 
     // Data
-    // loader.use({
-    //     name: 'data',
-    //     glob: ['**/*.data.yml', '**/*.data.yaml'],
-    //     handler: (ctx) => {
-    //         try {
-    //             const content = ctx.content;
-    //             const data = yaml.load(content);
-    //             if (!Array.isArray(data)) return;
+    loader.use({
+        name: 'data',
+        glob: ['**/*.data.yml', '**/*.data.yaml'],
+        handler: (ctx) => {
+            try {
+                const content = ctx.content;
+                const data = yaml.load(content);
+                if (!Array.isArray(data)) return;
 
-    //             const basename = path.basename(ctx.file);
-    //             const objectName = basename.replace(/\.data\.ya?ml$/, '');
+                const basename = path.basename(ctx.file);
+                const objectName = basename.replace(/\.data\.ya?ml$/, '');
                 
-    //             const entry = ctx.registry.getEntry('object', objectName);
-    //             if (entry) {
-    //                 const config = entry.content as ObjectConfig;
-    //                 // We don't want to load data into metadata
-    //                 // config.data = data; 
-    //             } else {
-    //                 // console.warn(`Found data for unknown object '${objectName}' in ${ctx.file}`);
-    //             }
-    //         } catch (e) {
-    //             console.error(`Error loading data from ${ctx.file}:`, e);
-    //         }
-    //     }
-    // });
+                const entry = ctx.registry.getEntry('object', objectName);
+                if (entry) {
+                    const config = entry.content as ObjectConfig;
+                    config.data = data; 
+                } else {
+                    console.warn(`Found data for unknown object '${objectName}' in ${ctx.file}`);
+                }
+            } catch (e) {
+                console.error(`Error loading data from ${ctx.file}:`, e);
+            }
+        }
+    });
 }
 
 function registerObject(registry: any, obj: any, file: string, packageName?: string) {
