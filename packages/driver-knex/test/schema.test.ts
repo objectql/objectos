@@ -114,4 +114,32 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         const exists = await knexInstance.schema.hasTable('test_obj');
         expect(exists).toBe(true);
     });
+
+    it('should create json column for multiple=true fields', async () => {
+        const objects = [{
+            name: 'multi_test',
+            fields: {
+                tags: { type: 'select', multiple: true } as any,
+                users: { type: 'lookup', reference_to: 'user', multiple: true } as any
+            }
+        }];
+
+        await driver.init(objects);
+
+        const columns = await knexInstance('multi_test').columnInfo();
+        // Types in SQLite might be generic, but verifying we can insert/read array is best.
+        
+        // Try inserting array data
+        await driver.create('multi_test', {
+            tags: ['a', 'b'],
+            users: ['u1', 'u2']
+        });
+
+        const results = await driver.find('multi_test', {});
+        const row = results[0];
+
+        // Driver should automatically parse JSON columns for SQLite
+        expect(row.tags).toEqual(['a', 'b']);
+        expect(row.users).toEqual(['u1', 'u2']);
+    });
 });

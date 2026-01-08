@@ -4,6 +4,7 @@ import knex, { Knex } from 'knex';
 export class KnexDriver implements Driver {
     private knex: Knex;
     private config: any;
+    private jsonFields: Record<string, string[]> = {};
 
     constructor(config: any) {
         this.config = config;
@@ -90,12 +91,19 @@ export class KnexDriver implements Driver {
         if (query.skip) builder.offset(query.skip);
         if (query.limit) builder.limit(query.limit);
 
-        return await builder;
+        const results = await builder;
+        if (this.config.client === 'sqlite3') {
+             for (const row of results) {
+                 this.formatOutput(objectName, row);
+             }
+        }
+        return results;
     }
 
     async findOne(objectName: string, id: string | number, query?: any, options?: any) {
         if (id) {
-            return await this.getBuilder(objectName, options).where('id', id).first();
+            const res = await this.getBuilder(objectName, options).where('id', id).first();
+            return this.formatOutput(objectName, res);
         }
         if (query) {
              const results = await this.find(objectName, { ...query, limit: 1 }, options);
@@ -118,14 +126,18 @@ export class KnexDriver implements Driver {
         // Knex insert returns Result array (e.g. ids)
         // We want the created document. 
         const builder = this.getBuilder(objectName, options);
+
+        const formatted = this.formatInput(objectName, toInsert);
+
         // We should insert 'toInsert' instead of 'data'
-        const result = await builder.insert(toInsert).returning('*'); 
-        return result[0];
+        const result = await builder.insert(formatted).returning('*'); 
+        return this.formatOutput(objectName, result[0]);
     }
 
     async update(objectName: string, id: string | number, data: any, options?: any) {
         const builder = this.getBuilder(objectName, options);
-        await builder.where('id', id).update(data);
+        const formatted = this.formatInput(objectName, data);
+        await builder.where('id', id).update(formatted);
         return { id, ...data }; 
     }
 
@@ -184,6 +196,19 @@ export class KnexDriver implements Driver {
 
         for (const obj of objects) {
             const tableName = obj.name;
+            
+            // Cache JSON fields
+            const jsonCols: string[] = [];
+            if (obj.fields) {
+                for (const [name, field] of Object.entries<any>(obj.fields)) {
+                     const type = field.type || 'string';
+                     if (this.isJsonField(type, field)) {
+                         jsonCols.push(name);
+                     }
+                }
+            }
+            this.jsonFields[tableName] = jsonCols;
+
             let exists = await this.knex.schema.hasTable(tableName);
             
             if (exists) {
@@ -230,6 +255,11 @@ export class KnexDriver implements Driver {
     }
 
     private createColumn(table: Knex.CreateTableBuilder, name: string, field: any) {
+        if (field.multiple) {
+            table.json(name);
+            return;
+        }
+
         const type = field.type || 'string';
         let col;
         switch(type) {
@@ -295,6 +325,47 @@ export class KnexDriver implements Driver {
         } finally {
             await adminKnex.destroy();
         }
+    }
+
+    private isJsonField(type: string, field: any) {
+        return ['json', 'object', 'array'].includes(type) || field.multiple;
+    }
+
+    private formatInput(objectName: string, data: any) {
+        // Only needed for SQLite usually, PG handles JSON
+        const isSqlite = this.config.client === 'sqlite3';
+        if (!isSqlite) return data;
+        
+        const fields = this.jsonFields[objectName];
+        if (!fields || fields.length === 0) return data;
+
+        const copy = { ...data };
+        for (const field of fields) {
+            if (copy[field] !== undefined && typeof copy[field] === 'object' && copy[field] !== null) {
+                copy[field] = JSON.stringify(copy[field]);
+            }
+        }
+        return copy;
+    }
+
+    private formatOutput(objectName: string, data: any) {
+        const isSqlite = this.config.client === 'sqlite3';
+        if (!isSqlite) return data;
+
+        const fields = this.jsonFields[objectName];
+        if (!fields || fields.length === 0) return data;
+
+        // data is a single row object
+        for (const field of fields) {
+            if (data[field] !== undefined && typeof data[field] === 'string') {
+                try {
+                    data[field] = JSON.parse(data[field]);
+                } catch (e) {
+                    // ignore parse error, keep as string
+                }
+            }
+        }
+        return data;
     }
 }
 

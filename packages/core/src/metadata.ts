@@ -12,7 +12,6 @@ export type FieldType =
     | 'textarea' 
     | 'html' 
     | 'select' 
-    | 'multiselect' 
     | 'date' 
     | 'datetime' 
     | 'number' 
@@ -57,6 +56,12 @@ export interface FieldConfig {
     /** The default value if not provided during creation. */
     defaultValue?: any;
     
+    /** 
+     * Whether the field allows multiple values. 
+     * Supported by 'select' and 'lookup'.
+     */
+    multiple?: boolean;
+
     // String options
     /** 
      * Options available for `select` or `multiselect` types.

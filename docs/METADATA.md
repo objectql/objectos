@@ -117,9 +117,8 @@ fields:
 | `date` | Date only (YYYY-MM-DD). | |
 | `datetime` | Date and time (ISO string). | |
 | `password` | Encrypted or masked string. | |
-| `select` | Single selection from a list. | `options` |
-| `multiselect` | Multiple selections from a list. | `options` |
-| `lookup` | Reference to another object. | `reference_to` (Required) |
+| `select` | Selection from a list. | `options`, `multiple` |
+| `lookup` | Reference to another object. | `reference_to`, `multiple` |
 | `master_detail` | Strong ownership relationship. | `reference_to` (Required) |
 | `object` | JSON object structure. | |
 | `grid` | Array of objects/rows. | |
@@ -139,7 +138,7 @@ owner:
 
 ### 4.4 Select Options
 
-Options for `select` or `multiselect` can be a simple list or label/value pairs.
+Options for `select` can be a simple list or label/value pairs.
 
 ```yaml
 status:

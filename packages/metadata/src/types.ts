@@ -3,7 +3,6 @@ export type FieldType =
     | 'textarea' 
     | 'html' 
     | 'select' 
-    | 'multiselect' 
     | 'date' 
     | 'datetime' 
     | 'number' 
@@ -26,6 +25,7 @@ export interface FieldConfig {
     type: FieldType;
     required?: boolean;
     defaultValue?: any;
+    multiple?: boolean;
     options?: FieldOption[] | string[];
     scale?: number;
     precision?: number;
