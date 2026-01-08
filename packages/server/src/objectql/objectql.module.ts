@@ -32,11 +32,12 @@ export class ObjectQLModule implements OnModuleInit {
 
         consumer
             .apply((req: any, res: any, next: any) => {
-                if (req.url.startsWith('/api')) {
-                    req.url = req.url.replace(/^\/api/, '') || '/';
+                // Rewrite URL for objectql router
+                if (req.url.startsWith('/api/object')) {
+                    req.url = req.url.replace(/^\/api\/object/, '') || '/';
                 }
                 router(req, res, next);
             })
-            .forRoutes('api');
+            .forRoutes('api/object');
     }
 }

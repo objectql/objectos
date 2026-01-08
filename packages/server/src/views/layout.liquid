@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title | default: "ObjectQL Server" }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React Dependencies (Development) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for in-browser JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- ObjectQL UI Library -->
+    <script src="/assets/ui/index.global.js"></script>
+    <link rel="stylesheet" href="/assets/ui/index.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="root" class="p-8">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script type="text/babel">
+        // Common React Exports
+        const { useState, useEffect } = React;
+
+        // --- Common Components ---
+        function Button({ children, onClick, className, type = "button", disabled }) {
+            return (
+                <button 
+                    type={type}
+                    onClick={onClick}
+                    disabled={disabled}
+                    className={`px-4 py-2 bg-stone-900 text-white rounded hover:bg-stone-800 transition disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+                >
+                    {children}
+                </button>
+            );
+        }
+
+        // --- Auth Client ---
+        const authClient = {
+            baseUrl: '/api/auth',
+            async signIn(email, password) {
+                const res = await fetch(`${this.baseUrl}/sign-in/email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (!res.ok) throw await res.json();
+                return res.json();
+            },
+            async signUp(email, password, name) {
+                const res = await fetch(`${this.baseUrl}/sign-up/email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, name })
+                });
+                if (!res.ok) throw await res.json();
+                return res.json();
+            },
+            async signOut() {
+                await fetch(`${this.baseUrl}/sign-out`, { method: 'POST' });
+                window.location.href = '/login';
+            },
+            async getSession() {
+                const res = await fetch(`${this.baseUrl}/get-session`);
+                if (!res.ok) return null;
+                return res.json();
+            }
+        };
+
+        {% block scripts %}{% endblock %}
+    </script>
+</body>
+</html>

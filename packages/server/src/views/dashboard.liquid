@@ -1,0 +1,90 @@
+{% layout "layout.liquid" %}
+
+{% block content %}
+<!-- Dashboard Content -->
+{% endblock %}
+
+{% block scripts %}
+    // --- Dashboard Components ---
+    function FieldWrapper({ label, description, children, error }) {
+            return (
+            <div className="mb-4 space-y-1.5">
+                <label className="block text-sm font-medium leading-none">{label}</label>
+                {children}
+                {description && <p className="text-[0.8rem] text-stone-500">{description}</p>}
+                {error && <p className="text-[0.8rem] text-red-500">{error}</p>}
+            </div>
+        );
+    }
+
+    function StringField({ label, description, value, onChange, type = "text" }) {
+        return (
+            <FieldWrapper label={label} description={description}>
+                <input 
+                    type={type} 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-stone-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-stone-950"
+                />
+            </FieldWrapper>
+        );
+    }
+
+    function DashboardApp() {
+        const [user, setUser] = useState(null);
+        const [loading, setLoading] = useState(true);
+        const [projectName, setProjectName] = useState('My Project');
+
+        useEffect(() => {
+            authClient.getSession().then(session => {
+                if (!session || !session.user) {
+                    window.location.href = '/login';
+                } else {
+                    setUser(session.user);
+                    setLoading(false);
+                }
+            }).catch(() => {
+                window.location.href = '/login';
+            });
+        }, []);
+
+        if (loading) return <div>Loading dashboard...</div>;
+
+        return (
+            <div className="max-w-4xl mx-auto space-y-8">
+                {/* Header */}
+                <div className="bg-white p-4 rounded-lg shadow-sm border flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                        <div className="h-10 w-10 bg-stone-900 rounded-full flex items-center justify-center text-white font-bold">
+                            {user.name?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">{user.name}</h2>
+                            <p className="text-xs text-stone-500">{user.email}</p>
+                        </div>
+                    </div>
+                    <Button onClick={() => authClient.signOut()} className="bg-white text-stone-900 border border-stone-200 hover:bg-stone-50">
+                        Sign Out
+                    </Button>
+                </div>
+
+                {/* Content */}
+                <div className="bg-white p-6 rounded-lg shadow-lg border">
+                    <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+                    <p className="mb-6 text-stone-500">Welcome to your project management console.</p>
+                    
+                    <StringField 
+                        label="Project Name" 
+                        value={projectName} 
+                        onChange={setProjectName} 
+                    />
+                    
+                    <Button onClick={() => alert(`Saved: ${projectName}`)}>Save Changes</Button>
+                </div>
+            </div>
+        );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DashboardApp />);
+{% endblock %}
