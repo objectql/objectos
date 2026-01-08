@@ -14,6 +14,7 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../../ui/dist'),
       serveRoot: '/assets/ui',
+      renderPath: '/assets/ui/*' // Prevent fallback to index.html for api or other routes
     }),
   ],
   controllers: [AppController, ViewsController],
