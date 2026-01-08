@@ -113,6 +113,7 @@ fields:
 | `html` | Rich text content. | |
 | `number` | Numeric value (integer or float). | `precision` (total digits) |
 | `currency` | Monetary value. | `scale` (decimal places) |
+| `percent` | Percentage value (0-100 or 0-1). | `scale` (decimal places) |
 | `boolean` | `true` or `false`. | |
 | `date` | Date only (YYYY-MM-DD). | |
 | `datetime` | Date and time (ISO string). | |

@@ -268,7 +268,9 @@ export class KnexDriver implements Driver {
             case 'integer': 
             case 'int': col = table.integer(name); break;
             case 'float': 
-            case 'number': col = table.float(name); break;
+            case 'number': 
+            case 'currency':
+            case 'percent': col = table.float(name); break;
             case 'boolean': col = table.boolean(name); break;
             case 'date': col = table.date(name); break;
             case 'datetime': col = table.timestamp(name); break;

@@ -142,4 +142,23 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         expect(row.tags).toEqual(['a', 'b']);
         expect(row.users).toEqual(['u1', 'u2']);
     });
+
+    it('should create percent column', async () => {
+        const objects = [{
+            name: 'percent_test',
+            fields: {
+                completion: { type: 'percent' } as any
+            }
+        }];
+
+        await driver.init(objects);
+
+        const columns = await knexInstance('percent_test').columnInfo();
+        expect(columns).toHaveProperty('completion');
+        
+        // Insert a percentage
+        await driver.create('percent_test', { completion: 0.85 });
+        const res = await driver.find('percent_test', {});
+        expect(res[0].completion).toBe(0.85);
+    });
 });
