@@ -124,6 +124,25 @@ export function createObjectQLRouter(options: ObjectQLServerOptions): Router {
         }
     });
 
+    router.get('/_schema/:type', async (req: Request, res: Response) => {
+        try {
+            const { type } = req.params;
+            const list = objectql.metadata.list(type);
+            // Convert list to map for consistency
+            const result: Record<string, any> = {};
+            for (const item of list) {
+                // assume item has id or name
+                const key = item.id || item.name || item.code;
+                if (key) {
+                    result[key] = item;
+                }
+            }
+            res.json(result);
+        } catch (e: any) {
+             res.status(500).json({ error: e.message });
+        }
+    });
+
     // NONE for now, as :objectName is the root.
     // However, we might want /:objectName/count or /:objectName/aggregate.
 
