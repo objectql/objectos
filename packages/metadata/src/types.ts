@@ -9,9 +9,12 @@ export type FieldType =
     | 'currency' 
     | 'percent'
     | 'boolean' 
-    | 'lookup'  
+    | 'lookup' 
     | 'master_detail' 
     | 'password'
+    | 'formula'
+    | 'summary'
+    | 'auto_number'
     | 'object'
     | 'grid';
 
@@ -31,6 +34,20 @@ export interface FieldConfig {
     scale?: number;
     precision?: number;
     reference_to?: string;
+    
+    // Formula
+    expression?: string;
+    data_type?: 'text' | 'boolean' | 'date' | 'datetime' | 'number' | 'currency' | 'percent';
+
+    // Summary
+    summary_object?: string;
+    summary_type?: 'count' | 'sum' | 'min' | 'max' | 'avg';
+    summary_field?: string;
+    summary_filters?: any[] | string;
+
+    // Auto Number
+    auto_number_format?: string;
+
     searchable?: boolean;
     sortable?: boolean;
     index?: boolean;

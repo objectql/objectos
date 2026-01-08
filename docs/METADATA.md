@@ -121,6 +121,9 @@ fields:
 | `select` | Selection from a list. | `options`, `multiple` |
 | `lookup` | Reference to another object. | `reference_to`, `multiple` |
 | `master_detail` | Strong ownership relationship. | `reference_to` (Required) |
+| `formula` | Read-only calculated field. | `expression`, `data_type` |
+| `summary` | Roll-up summary of child records. | `summary_object`, `summary_type`, `summary_field`, `summary_filters` |
+| `auto_number` | Auto-incrementing unique identifier. | `auto_number_format` |
 | `object` | JSON object structure. | |
 | `grid` | Array of objects/rows. | |
 

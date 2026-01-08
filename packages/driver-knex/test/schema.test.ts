@@ -161,4 +161,26 @@ describe('KnexDriver Schema Sync (SQLite)', () => {
         const res = await driver.find('percent_test', {});
         expect(res[0].completion).toBe(0.85);
     });
+
+    it('should handle special fields (formula, summary, auto_number)', async () => {
+        const objects = [{
+            name: 'special_fields_test',
+            fields: {
+                // Formula should NOT create a column
+                total: { type: 'formula', expression: 'price * qty', data_type: 'number' } as any,
+                // Summary should create a numeric column
+                child_count: { type: 'summary', summary_object: 'child_obj', summary_type: 'count' } as any,
+                // Auto Number should create a string column
+                invoice_no: { type: 'auto_number', auto_number_format: 'INV-{0000}' } as any
+            }
+        }];
+
+        await driver.init(objects);
+
+        const columns = await knexInstance('special_fields_test').columnInfo();
+        
+        expect(columns).not.toHaveProperty('total');
+        expect(columns).toHaveProperty('child_count');
+        expect(columns).toHaveProperty('invoice_no');
+    });
 });

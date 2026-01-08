@@ -277,6 +277,9 @@ export class KnexDriver implements Driver {
             case 'json': 
             case 'object':
             case 'array': col = table.json(name); break;
+            case 'summary': col = table.float(name); break; // Stored calculation result
+            case 'auto_number': col = table.string(name); break; // Generated string
+            case 'formula': return; // Virtual field, do not create column
             default: col = table.string(name);
         }
     }

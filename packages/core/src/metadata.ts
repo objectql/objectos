@@ -18,9 +18,12 @@ export type FieldType =
     | 'currency' 
     | 'percent'
     | 'boolean' 
-    | 'lookup'  
+    | 'lookup' 
     | 'master_detail' 
     | 'password'
+    | 'formula'
+    | 'summary'
+    | 'auto_number'
     | 'object'
     | 'grid';
 
@@ -79,9 +82,29 @@ export interface FieldConfig {
     // Relationship properties
     /** 
      * The API name of the target object.
-     * Required when type is `lookup` or `master_detail`.
+     * Required when type is `lookup` or `master_detail` or `summary`.
      */
     reference_to?: string;
+
+    // Formula properties
+    /** The expression for formula fields. */
+    expression?: string;
+    /** The return data type for formula or summary fields. */
+    data_type?: 'text' | 'boolean' | 'date' | 'datetime' | 'number' | 'currency' | 'percent';
+
+    // Summary properties
+    /** The child object to summarize. */
+    summary_object?: string;
+    /** The type of summary calculation. */
+    summary_type?: 'count' | 'sum' | 'min' | 'max' | 'avg';
+    /** The field on the child object to aggregate. */
+    summary_field?: string;
+    /** Filters to apply to child records before summarizing. */
+    summary_filters?: any[] | string;
+
+    // Auto Number properties
+    /** The format pattern for auto number fields (e.g. 'INV-{YYYY}-{0000}'). */
+    auto_number_format?: string;
 
     // UI properties (kept for compatibility, though ObjectQL is a query engine)
     /** Implementation hint: Whether this field should be indexed for search. */
