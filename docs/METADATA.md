@@ -108,24 +108,55 @@ fields:
 
 | Type | Description | Specific Properties |
 | :--- | :--- | :--- |
-| `text` | Single line text. | |
-| `textarea` | Multiline text. | |
-| `html` | Rich text content. | |
-| `number` | Numeric value (integer or float). | `precision` (total digits) |
-| `currency` | Monetary value. | `scale` (decimal places) |
-| `percent` | Percentage value (0-100 or 0-1). | `scale` (decimal places) |
+| **Basic Types** | | |
+| `text` | Single line text. | `min_length`, `max_length`, `regex` |
+| `textarea` | Multiline text. | `rows`, `min_length`, `max_length` |
+| `markdown` | Markdown formatted text. | |
+| `html` | Rich text content (HTML). | |
+| `number` | Numeric value (integer or float). | `precision`, `min`, `max` |
+| `currency` | Monetary value. | `scale`, `min`, `max` |
+| `percent` | Percentage value (0-1). | `scale`, `min`, `max` |
 | `boolean` | `true` or `false`. | |
+| **System/Format Types** | | |
+| `email` | Email address with validation. | |
+| `phone` | Phone number formatting. | |
+| `url` | Web URL validation. | |
+| `password` | Encrypted or masked string. | |
+| **Date & Time** | | |
 | `date` | Date only (YYYY-MM-DD). | |
 | `datetime` | Date and time (ISO string). | |
-| `password` | Encrypted or masked string. | |
+| `time` | Time only (HH:mm:ss). | |
+| **Complex/Media** | | |
+| `file` | File attachment (stored as JSON). | `multiple` |
+| `image` | Image attachment (stored as JSON). | `multiple` |
+| `avatar` | User avatar image. | |
+| `location` | Geolocation (lat/lng JSON). | |
+| **Relationships** | | |
 | `select` | Selection from a list. | `options`, `multiple` |
 | `lookup` | Reference to another object. | `reference_to`, `multiple` |
 | `master_detail` | Strong ownership relationship. | `reference_to` (Required) |
+| **Advanced** | | |
 | `formula` | Read-only calculated field. | `expression`, `data_type` |
 | `summary` | Roll-up summary of child records. | `summary_object`, `summary_type`, `summary_field`, `summary_filters` |
 | `auto_number` | Auto-incrementing unique identifier. | `auto_number_format` |
 | `object` | JSON object structure. | |
 | `grid` | Array of objects/rows. | |
+
+### 4.6 Field Attributes
+
+| Attribute | Type | Description |
+| :--- | :--- | :--- |
+| `required` | `boolean` | If true, database enforces NOT NULL. |
+| `unique` | `boolean` | If true, database enforces UNIQUE constraint. |
+| `readonly` | `boolean` | UI hint: Field should not be editable by users. |
+| `hidden` | `boolean` | UI/API hint: Field should be hidden by default. |
+| `defaultValue` | `any` | Default value on creation. |
+| `help_text` | `string` | Tooltip for end-users. |
+| `multiple` | `boolean` | Allows multiple values (stored as JSON array). |
+| `min`, `max` | `number` | Range validation for numeric types. |
+| `min_length`, `max_length` | `number` | Length validation for text types. |
+| `regex` | `string` | Custom regular expression validation. |
+
 
 ### 4.3 Relationship Fields
 
