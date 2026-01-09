@@ -3,7 +3,7 @@ description: Manage and track your projects efficiently.
 code: projects
 dark: true
 color: gray
-icon: settings
+icon: ri-settings-line
 
 # Left-side menu configuration (similar to Airtable interfaces)
 menu:
