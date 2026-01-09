@@ -87,6 +87,18 @@ export interface FieldConfig {
      */
     multiple?: boolean;
     
+    /** 
+     * Options for select fields.
+     * List of available choices for select/multiselect fields.
+     */
+    options?: FieldOption[];
+    
+    /**
+     * Reference to another object for lookup/master_detail fields.
+     * Specifies the target object name for relationship fields.
+     */
+    reference_to?: string;
+    
     // Validation properties
     /** Minimum for number/currency/percent. */
     min?: number;

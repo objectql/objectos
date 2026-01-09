@@ -26,7 +26,7 @@ describe('createObjectQLRouter', () => {
 
         mockObjectQL = {
             init: jest.fn(),
-            getConfigs: jest.fn().mockReturnValue([{ name: 'user', fields: {} }])
+            getConfigs: jest.fn().mockReturnValue({ user: { name: 'user', fields: {} } })
         };
 
         // Mock getContext to return a context that returns our mockRepo
@@ -69,7 +69,7 @@ describe('createObjectQLRouter', () => {
         it('GET /_schema should return configs', async () => {
             const res = await request(app).get('/api/_schema');
             expect(res.status).toBe(200);
-            expect(res.body).toEqual([{ name: 'user', fields: {} }]);
+            expect(res.body).toEqual({ user: { name: 'user', fields: {} } });
             expect(mockObjectQL.getConfigs).toHaveBeenCalled();
         });
 
