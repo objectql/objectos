@@ -3,7 +3,7 @@ import { cn } from "../../lib/utils"
 import { Button } from "../Button"
 import { Badge } from "../Badge"
 import { Checkbox } from "../Checkbox"
-import { Copy, Trash2, GripVertical } from "lucide-react"
+import { Copy, Trash2, GripVertical, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
 
 interface Column {
   id: string
@@ -11,7 +11,13 @@ interface Column {
   type?: 'text' | 'number' | 'date' | 'select' | 'badge' | 'boolean'
   width?: number | string
   editable?: boolean
+  sortable?: boolean
   options?: Array<{ value: string; label: string; variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' }>
+}
+
+interface SortConfig {
+  columnId: string
+  direction: 'asc' | 'desc'
 }
 
 interface GridViewProps {
@@ -33,6 +39,9 @@ interface GridViewProps {
   // Drag & Drop for column reordering
   enableColumnDragDrop?: boolean
   onColumnReorder?: (columns: Column[]) => void
+  // Sorting
+  enableSorting?: boolean
+  onSortChange?: (sorts: SortConfig[]) => void
 }
 
 export function GridView({
@@ -50,6 +59,8 @@ export function GridView({
   enableCopyPaste = false,
   enableColumnDragDrop = false,
   onColumnReorder,
+  enableSorting = true,
+  onSortChange,
 }: GridViewProps) {
   const [editingCell, setEditingCell] = React.useState<{ row: number; col: string } | null>(null)
   const [editValue, setEditValue] = React.useState<any>('')
@@ -57,14 +68,118 @@ export function GridView({
   const [columns, setColumns] = React.useState(initialColumns)
   const [draggedColumn, setDraggedColumn] = React.useState<number | null>(null)
   const [dragOverColumn, setDragOverColumn] = React.useState<number | null>(null)
+  const [sorts, setSorts] = React.useState<SortConfig[]>([])
 
   // Update columns when initialColumns change
   React.useEffect(() => {
     setColumns(initialColumns)
   }, [initialColumns])
 
+  // Notify parent of sort changes
+  React.useEffect(() => {
+    if (onSortChange) {
+      onSortChange(sorts)
+    }
+  }, [sorts, onSortChange])
+
+  // Handle column header click for sorting
+  const handleSort = (columnId: string, shiftKey: boolean) => {
+    if (!enableSorting) return
+
+    const column = columns.find(c => c.id === columnId)
+    if (column && column.sortable === false) return
+
+    setSorts(prevSorts => {
+      const existingIndex = prevSorts.findIndex(s => s.columnId === columnId)
+      
+      if (shiftKey) {
+        // Multi-column sorting with Shift+Click
+        if (existingIndex >= 0) {
+          // Toggle direction or remove
+          const existing = prevSorts[existingIndex]
+          if (existing.direction === 'asc') {
+            return prevSorts.map((s, i) => 
+              i === existingIndex ? { ...s, direction: 'desc' as const } : s
+            )
+          } else {
+            return prevSorts.filter((_, i) => i !== existingIndex)
+          }
+        } else {
+          // Add new sort
+          return [...prevSorts, { columnId, direction: 'asc' }]
+        }
+      } else {
+        // Single column sorting
+        if (existingIndex === 0 && prevSorts.length === 1) {
+          // Toggle direction or clear
+          const existing = prevSorts[0]
+          if (existing.direction === 'asc') {
+            return [{ columnId, direction: 'desc' }]
+          } else {
+            return []
+          }
+        } else {
+          // Replace all sorts with this one
+          return [{ columnId, direction: 'asc' }]
+        }
+      }
+    })
+  }
+
+  // Get sort info for a column
+  const getSortInfo = (columnId: string): { index: number; direction: 'asc' | 'desc' } | null => {
+    const index = sorts.findIndex(s => s.columnId === columnId)
+    if (index >= 0) {
+      return { index, direction: sorts[index].direction }
+    }
+    return null
+  }
+
+  // Sort data based on current sorts
+  const sortData = (dataToSort: any[]) => {
+    if (!enableSorting || sorts.length === 0) {
+      return dataToSort
+    }
+
+    return [...dataToSort].sort((a, b) => {
+      for (const sort of sorts) {
+        const column = columns.find(c => c.id === sort.columnId)
+        if (!column) continue
+
+        let aVal = a[sort.columnId]
+        let bVal = b[sort.columnId]
+
+        // Handle null/undefined
+        if (aVal == null && bVal == null) continue
+        if (aVal == null) return 1
+        if (bVal == null) return -1
+
+        // Type-specific comparison
+        let comparison = 0
+        if (column.type === 'number') {
+          comparison = Number(aVal) - Number(bVal)
+        } else if (column.type === 'date') {
+          comparison = new Date(aVal).getTime() - new Date(bVal).getTime()
+        } else if (column.type === 'boolean') {
+          comparison = (aVal ? 1 : 0) - (bVal ? 1 : 0)
+        } else {
+          // Text comparison
+          comparison = String(aVal).localeCompare(String(bVal))
+        }
+
+        if (comparison !== 0) {
+          return sort.direction === 'asc' ? comparison : -comparison
+        }
+      }
+      return 0
+    })
+  }
+
   // Group data if grouping is enabled and create index map for performance
   const { groupedData, rowIndexMap } = React.useMemo(() => {
+    // Sort data first
+    const sortedData = sortData(data)
+
     // Create a map for O(1) index lookups
     const indexMap = new Map<any, number>()
     data.forEach((row, index) => {
@@ -72,11 +187,11 @@ export function GridView({
     })
 
     if (!enableGrouping || !groupByColumn) {
-      return { groupedData: { ungrouped: data }, rowIndexMap: indexMap }
+      return { groupedData: { ungrouped: sortedData }, rowIndexMap: indexMap }
     }
     
     const groups: Record<string, any[]> = {}
-    data.forEach(row => {
+    sortedData.forEach(row => {
       const groupValue = row[groupByColumn] || 'Ungrouped'
       if (!groups[groupValue]) {
         groups[groupValue] = []
@@ -84,7 +199,7 @@ export function GridView({
       groups[groupValue].push(row)
     })
     return { groupedData: groups, rowIndexMap: indexMap }
-  }, [data, enableGrouping, groupByColumn])
+  }, [data, enableGrouping, groupByColumn, sorts, columns, enableSorting])
 
   const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
     new Set(Object.keys(groupedData))
@@ -360,7 +475,7 @@ export function GridView({
       <div className="overflow-auto border border-stone-200 rounded-lg">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-stone-50 border-b border-stone-200">
+            <tr className="bg-stone-50 border-b border-stone-200 group">
               {enableRowSelection && (
                 <th className="px-4 py-3 w-12 border-r border-stone-200">
                   <Checkbox
@@ -369,29 +484,60 @@ export function GridView({
                   />
                 </th>
               )}
-              {columns.map((column, index) => (
-                <th
-                  key={column.id}
-                  style={{ width: column.width }}
-                  className={cn(
-                    "px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider border-r border-stone-200 last:border-r-0",
-                    enableColumnDragDrop && "cursor-move select-none",
-                    dragOverColumn === index && "bg-blue-100"
-                  )}
-                  draggable={enableColumnDragDrop}
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDrop={(e) => handleDrop(e, index)}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="flex items-center gap-1">
-                    {enableColumnDragDrop && (
-                      <GripVertical className="w-3 h-3 text-stone-400" />
+              {columns.map((column, index) => {
+                const sortInfo = getSortInfo(column.id)
+                const isSortable = enableSorting && column.sortable !== false
+                
+                return (
+                  <th
+                    key={column.id}
+                    style={{ width: column.width }}
+                    className={cn(
+                      "px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider border-r border-stone-200 last:border-r-0",
+                      enableColumnDragDrop && "cursor-move select-none",
+                      isSortable && !enableColumnDragDrop && "cursor-pointer hover:bg-stone-100",
+                      dragOverColumn === index && "bg-blue-100"
                     )}
-                    {column.label}
-                  </div>
-                </th>
-              ))}
+                    draggable={enableColumnDragDrop}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={(e) => {
+                      if (isSortable && !enableColumnDragDrop) {
+                        handleSort(column.id, e.shiftKey)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      {enableColumnDragDrop && (
+                        <GripVertical className="w-3 h-3 text-stone-400" />
+                      )}
+                      <span className="flex-1">{column.label}</span>
+                      {isSortable && (
+                        <div className="flex items-center">
+                          {sortInfo ? (
+                            <div className="flex items-center gap-0.5">
+                              {sortInfo.direction === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-blue-600" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                              )}
+                              {sorts.length > 1 && (
+                                <span className="text-[10px] font-bold text-blue-600 ml-0.5">
+                                  {sortInfo.index + 1}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <ArrowUpDown className="w-3.5 h-3.5 text-stone-400 opacity-0 group-hover:opacity-100" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                )
+              })}
               {onDelete && (
                 <th className="px-4 py-3 text-right text-xs font-semibold text-stone-600 uppercase tracking-wider w-20">
                   Actions
@@ -552,3 +698,6 @@ export function GridView({
     </div>
   )
 }
+
+// Export types for external use
+export type { SortConfig, Column }
