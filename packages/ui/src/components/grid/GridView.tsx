@@ -35,7 +35,15 @@ export function GridView({
   const [editValue, setEditValue] = React.useState<any>('')
 
   const startEdit = (rowIndex: number, columnId: string, currentValue: any) => {
-    if (!columns.find(c => c.id === columnId)?.editable) return
+    const column = columns.find(c => c.id === columnId)
+    if (!column?.editable) return
+    
+    // Don't allow inline editing for badge, select, and boolean types
+    // These should use the row click to edit in a form
+    if (column.type === 'badge' || column.type === 'select' || column.type === 'boolean') {
+      return
+    }
+    
     setEditingCell({ row: rowIndex, col: columnId })
     setEditValue(currentValue || '')
   }
@@ -96,7 +104,7 @@ export function GridView({
             type="checkbox"
             checked={!!value}
             readOnly
-            className="w-4 h-4 rounded border-stone-300 text-blue-600 cursor-pointer"
+            className="w-4 h-4 rounded border-stone-300 text-blue-600"
           />
         </div>
       )
