@@ -14,7 +14,7 @@ export const getAuth = async () => {
         });
         authInstance = betterAuth({
             database: pool,
-            trustedOrigins: ["http://localhost:5173"],
+            trustedOrigins: ["http://localhost:5173", "http://localhost:3000"],
             emailAndPassword: {
                 enabled: true
             },
