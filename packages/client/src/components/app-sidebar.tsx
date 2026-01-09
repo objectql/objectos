@@ -42,7 +42,8 @@ export function AppSidebar({ objects, appMetadata, ...props }: React.ComponentPr
 
   const isGrouped = Array.isArray(rawMenu) && rawMenu.length > 0 && isSection(rawMenu[0]);
   
-  const menuSections = rawMenu ? (isGrouped ? rawMenu : [{ label: 'Menu', items: rawMenu }]) : [];
+  // Use a special key/flag for the default wrapper to hide the label later
+  const menuSections = rawMenu ? (isGrouped ? rawMenu : [{ label: 'Menu', items: rawMenu, _isDefaultWrapper: true }]) : [];
 
   const renderMenuItem = (item: any, idx: number) => {
     if (item.visible === false) return null;
@@ -183,7 +184,7 @@ export function AppSidebar({ objects, appMetadata, ...props }: React.ComponentPr
 
                 return (
                     <SidebarGroup key={idx}>
-                        <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+                        {!section._isDefaultWrapper && <SidebarGroupLabel>{section.label}</SidebarGroupLabel>}
                         <SidebarGroupContent>
                             {renderGroupContent()}
                         </SidebarGroupContent>

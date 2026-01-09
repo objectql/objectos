@@ -6,45 +6,52 @@ import Settings from './pages/Settings';
 import Organization from './pages/Organization';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppSidebar } from './components/app-sidebar';
-import { SidebarProvider, SidebarInset, SidebarTrigger, Separator, Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from '@objectql/ui';
+import { SidebarProvider, SidebarInset, SidebarTrigger, Separator, Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, Avatar, AvatarFallback, AvatarImage, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuItem } from '@objectql/ui';
+import { LogOut, Settings as SettingsIcon, Building, Bell } from 'lucide-react';
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
-  // This would ideally come from a context or prop passed from Dashboard, 
-  // but for now we'll fetch objects to pass to Sidebar in AppContent as well if needed, 
-  // or refactor layout. 
-  // ACTUALLY: Dashboard handles the Sidebar usually. 
-  // Let's modify AppContent to render the Main Layout if logged in.
   
-  const [objects, setObjects] = useState<Record<string, any>>({});
   const [currentAppMetadata, setCurrentAppMetadata] = useState<any>(null);
+  const lastFetchedApp = useRef<string | null>(null);
 
   // Fetch App Metadata when entering an app
   useEffect(() => {
-      const parts = currentPath.split('/');
-      if (parts[1] === 'app' && parts[2]) {
-          const appName = parts[2];
-          // Simple cache check/avoid refetch if same app
-          if (currentAppMetadata && (currentAppMetadata.name === appName || currentAppMetadata.id === appName)) {
-              return;
-          }
-          
-          fetch(`/api/v6/metadata/app/${appName}`)
-              .then(res => {
-                  if (!res.ok) throw new Error('App not found');
-                  return res.json();
-              })
-              .then(data => setCurrentAppMetadata(data))
-              .catch(err => {
-                  console.error(err);
-                  setCurrentAppMetadata(null);
-              });
-      } else if (currentAppMetadata) {
-          setCurrentAppMetadata(null);
-      }
-  }, [currentPath, currentAppMetadata]);
-  
+    const parts = currentPath.split('/');
+    if (parts[1] === 'app' && parts[2]) {
+        const appName = parts[2];
+        
+        // Avoid re-fetching if we already have this app loaded
+        if (lastFetchedApp.current === appName) {
+            return;
+        }
+        
+        lastFetchedApp.current = appName;
+        
+        fetch(`/api/v6/metadata/app/${appName}`)
+            .then(res => {
+                if (!res.ok) throw new Error('App not found');
+                return res.json();
+            })
+            .then(data => {
+                setCurrentAppMetadata(data);
+                // Ensure ref matches confirmed loaded data ID/Name if needed, but keeping it simple
+            })
+            .catch(err => {
+                console.error(err);
+                setCurrentAppMetadata(null);
+                // Reset ref on error so we can try again if user refreshes or navs away and back
+                lastFetchedApp.current = null;
+            });
+    } else {
+        if (lastFetchedApp.current) {
+            setCurrentAppMetadata(null);
+            lastFetchedApp.current = null;
+        }
+    }
+  }, [currentPath]); // Remove currentAppMetadata from dependency
+
   // We need to fetch objects for the sidebar if we are not in dashboard
   useEffect(() => {
     if (user && Object.keys(objects).length === 0) {
