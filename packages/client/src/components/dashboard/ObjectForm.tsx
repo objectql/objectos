@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button, Input, Label, Spinner } from '@objectql/ui';
+import { useForm, Controller } from 'react-hook-form';
+import { Button, Spinner, Field } from '@objectql/ui';
 
 interface ObjectFormProps {
     objectName: string;
@@ -12,7 +12,7 @@ interface ObjectFormProps {
 
 export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, headers }: ObjectFormProps) {
     const [schema, setSchema] = useState<any>(null);
-    const { register, handleSubmit, reset } = useForm({
+    const { control, handleSubmit, reset } = useForm({
         defaultValues: initialValues || {}
     });
 
@@ -38,14 +38,25 @@ export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, head
                 if (['id', '_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'].includes(key)) return null;
                 
                 return (
-                    <div key={key} className="space-y-2">
-                        <Label htmlFor={key}>{field.label || field.title || key}</Label>
-                        <Input 
-                            id={key}
-                            {...register(key, { required: !field.optional })} 
-                            type={field.type === 'number' || field.type === 'integer' || field.type === 'float' ? 'number' : field.type === 'password' ? 'password' : 'text'}
-                        />
-                    </div>
+                    <Controller
+                        key={key}
+                        name={key}
+                        control={control}
+                        rules={{ required: field.required }}
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                            <Field
+                                name={key}
+                                label={field.label || field.title || key}
+                                type={field.type}
+                                value={value}
+                                onChange={onChange}
+                                error={error?.message}
+                                required={field.required}
+                                description={field.description}
+                                options={field.options}
+                            />
+                        )}
+                    />
                 );
             })}
             <div className="flex justify-end gap-2 pt-4">

@@ -16,6 +16,7 @@ export * from './components/ui/context-menu';
 export * from './components/ui/tabs';
 export * from './components/ui/avatar';
 export * from './components/ui/tooltip';
+export * from './components/fields';
 export * from './components/ui/switch';
 export * from './components/ui/badge';
 export * from './components/ui/scroll-area';
