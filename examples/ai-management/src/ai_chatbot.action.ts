@@ -210,6 +210,11 @@ export const test_conversation = async (ctx: ObjectQLContext, params: { test_mes
         throw new Error('Chatbot not found');
     }
     
+    // Validate test_messages is an array
+    if (!Array.isArray(test_messages)) {
+        throw new Error('test_messages must be an array');
+    }
+    
     console.log(`[Chatbot] Testing ${chatbot.name} with ${test_messages.length} messages`);
     
     const results = [];

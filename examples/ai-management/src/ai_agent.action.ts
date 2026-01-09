@@ -79,8 +79,10 @@ export const execute_task = async (ctx: ObjectQLContext, params: { task_descript
     const newFailedTasks = success ? (agent.failed_tasks || 0) : (agent.failed_tasks || 0) + 1;
     const successRate = (newSuccessfulTasks / newTotalTasks) * 100;
     
-    const avgExecTime = agent.average_execution_time || 0;
-    const newAvgExecTime = (avgExecTime * agent.total_tasks_executed + executionTime) / newTotalTasks;
+    // Calculate new average execution time (safe division)
+    const currentAvgExecTime = agent.average_execution_time || 0;
+    const currentTotalTasks = agent.total_tasks_executed || 0;
+    const newAvgExecTime = (currentAvgExecTime * currentTotalTasks + executionTime) / newTotalTasks;
     
     await repo.update(agentId, {
         total_tasks_executed: newTotalTasks,

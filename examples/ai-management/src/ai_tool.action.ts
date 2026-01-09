@@ -63,11 +63,13 @@ export const execute = async (ctx: ObjectQLContext, params: { input_data: any })
         }
     };
     
-    // Update usage statistics
-    await repo.update(toolId, {
-        usage_count: (tool.usage_count || 0) + 1,
-        last_used_at: new Date()
-    });
+    // Only update usage statistics if execution was successful
+    if (result.status === 'success') {
+        await repo.update(toolId, {
+            usage_count: (tool.usage_count || 0) + 1,
+            last_used_at: new Date()
+        });
+    }
     
     console.log(`[AI Tool] Execution complete:`, result);
     
