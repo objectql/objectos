@@ -235,7 +235,7 @@ The `menu` property defines the left-side navigation structure. It can be either
 | `type` | `string` | Type: `object`, `page`, `url`, or `divider`. Default: `page`. |
 | `object` | `string` | Object name to link to (when `type: object`). |
 | `url` | `string` | URL path (when `type: page` or `type: url`). |
-| `badge` | `string\|number` | Badge text or count to display next to the item. |
+| `badge` | `string|number` | Badge text or count to display next to the item. |
 | `visible` | `boolean` | Whether the item is visible. Default: `true`. |
 | `items` | `array` | Nested sub-menu items (for hierarchical menus). |
 

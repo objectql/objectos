@@ -127,12 +127,20 @@ export interface AppMenuItem {
 export interface AppMenuSection {
     /** Section title/label */
     label?: string;
-    /** Menu items in this section */
+    /** Menu items in this section (required for sections) */
     items: AppMenuItem[];
     /** Whether this section is collapsible */
     collapsible?: boolean;
     /** Whether this section is collapsed by default */
     collapsed?: boolean;
+}
+
+/**
+ * Type guard to check if a menu entry is a section (has items array as required property)
+ * vs a direct menu item.
+ */
+export function isAppMenuSection(entry: AppMenuSection | AppMenuItem): entry is AppMenuSection {
+    return 'items' in entry && Array.isArray(entry.items) && !('type' in entry);
 }
 
 /**
@@ -154,6 +162,13 @@ export interface AppConfig {
     color?: string;
     /** Dark mode preference */
     dark?: boolean;
-    /** Left-side menu configuration */
+    /** 
+     * Left-side menu configuration.
+     * Can be either:
+     * - An array of menu sections (recommended for organized menus with groups)
+     * - An array of menu items (for simple flat menus)
+     * 
+     * Use the `isAppMenuSection()` type guard to distinguish between them at runtime.
+     */
     menu?: AppMenuSection[] | AppMenuItem[];
 }

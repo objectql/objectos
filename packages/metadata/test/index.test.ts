@@ -1,6 +1,7 @@
 import { MetadataRegistry } from '../src/registry';
 import { MetadataLoader } from '../src/loader';
 import { registerObjectQLPlugins } from '../src/plugins/objectql';
+import { isAppMenuSection } from '../src/types';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
@@ -126,5 +127,41 @@ describe('ObjectQL Plugins - App with Menu', () => {
         expect(settingsSection.label).toBe('Settings');
         expect(settingsSection.collapsible).toBe(true);
         expect(settingsSection.items.length).toBe(1);
+    });
+});
+
+describe('Type Guards', () => {
+    it('should correctly identify menu sections', () => {
+        const section = {
+            label: 'Main',
+            items: [
+                { label: 'Dashboard', type: 'page' as const, url: '/dashboard' }
+            ]
+        };
+        
+        expect(isAppMenuSection(section)).toBe(true);
+    });
+    
+    it('should correctly identify menu items', () => {
+        const item = {
+            label: 'Dashboard',
+            type: 'page' as const,
+            url: '/dashboard'
+        };
+        
+        expect(isAppMenuSection(item)).toBe(false);
+    });
+    
+    it('should handle nested menu items', () => {
+        const itemWithSubItems = {
+            label: 'Projects',
+            type: 'page' as const,
+            items: [
+                { label: 'Active', type: 'page' as const, url: '/active' }
+            ]
+        };
+        
+        // This should be identified as a menu item (has type property)
+        expect(isAppMenuSection(itemWithSubItems)).toBe(false);
     });
 });
