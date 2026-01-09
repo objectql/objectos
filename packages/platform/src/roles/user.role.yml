@@ -5,9 +5,15 @@ policies: []
 permissions:
   organization: 
     actions: [read]
+  user:
+    actions: [read]
   member:
     actions: [read]
   team:
+    actions: [read]
+  base:
+    actions: [read]
+  base_member:
     actions: [read]
   # Does not include 'projects' or 'tasks' as those are app-specific.
   # This base role provides enough execution context to exist in the org.

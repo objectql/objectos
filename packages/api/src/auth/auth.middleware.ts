@@ -33,8 +33,8 @@ export class AuthMiddleware implements NestMiddleware {
               roles: roles,
               spaceId: session.session.activeOrganizationId,
               sessionId: session.session.id,
-              // If user is super_admin or admin, they are system admin (bypass ACL)
-              isSystem: ['super_admin', 'admin'].includes(role)
+              // If user is super_admin, they are system admin (bypass ACL)
+              isSystem: ['super_admin'].includes(role)
           };
       } else if (req.headers['x-user-id']) {
           // Fallback for dev/test: trust x-user-id header

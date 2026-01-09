@@ -1,0 +1,19 @@
+name: owner
+label: Organization Owner
+description: Full ownership of the organization
+policies: []
+permissions:
+  organization: 
+    actions: [read, update, delete]
+  user:
+    actions: [read]
+  member:
+    actions: [create, read, update, delete]
+  invitation:
+    actions: [create, read, delete]
+  base:
+    actions: [create, read, update, delete]
+  base_member:
+    actions: [create, read, update, delete]
+  team:
+    actions: [create, read, update, delete]

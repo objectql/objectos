@@ -8,9 +8,15 @@ permissions:
   # If we want to define global permissions here:
   organization: 
     actions: [read, update]
+  user:
+    actions: [read]
   member:
-    actions: [create, read, update, delete]
+    actions: [read, update, delete]
   invitation:
-    actions: [create, read, delete]
+    actions: [read, create, delete]
+  base:
+    actions: [create, read, update, delete]
+  base_member:
+    actions: [create, read, update, delete]
   team:
     actions: [create, read, update, delete]
