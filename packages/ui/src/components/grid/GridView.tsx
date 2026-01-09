@@ -163,8 +163,8 @@ export function GridView({
         } else if (column.type === 'boolean') {
           comparison = (aVal ? 1 : 0) - (bVal ? 1 : 0)
         } else {
-          // Text comparison
-          comparison = String(aVal).localeCompare(String(bVal))
+          // Text comparison (case-insensitive)
+          comparison = String(aVal).localeCompare(String(bVal), undefined, { sensitivity: 'base' })
         }
 
         if (comparison !== 0) {
@@ -199,7 +199,8 @@ export function GridView({
       groups[groupValue].push(row)
     })
     return { groupedData: groups, rowIndexMap: indexMap }
-  }, [data, enableGrouping, groupByColumn, sorts, columns, enableSorting])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, enableGrouping, groupByColumn, sorts, enableSorting])
 
   const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
     new Set(Object.keys(groupedData))
