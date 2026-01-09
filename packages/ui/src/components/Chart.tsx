@@ -30,10 +30,13 @@ const COLORS = [
   '#8B46FF',
 ];
 
+// Pie chart radius divisor for calculating outer radius
+const PIE_RADIUS_DIVISOR = 3;
+
 export type ChartType = 'bar' | 'line' | 'pie' | 'area';
 
 export interface ChartDataPoint {
-  [key: string]: any;
+  [key: string]: string | number | null | undefined;
 }
 
 export interface ChartProps {
@@ -205,7 +208,7 @@ export function Chart({
               nameKey={xAxisKey}
               cx="50%"
               cy="50%"
-              outerRadius={height / 3}
+              outerRadius={height / PIE_RADIUS_DIVISOR}
               label
             >
               {data.map((entry, index) => (
