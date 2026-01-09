@@ -1,0 +1,131 @@
+name: base
+label: Base
+description: A data workspace container, similar to Airtable Base
+icon: ri-database-2-line
+
+fields:
+  name:
+    type: text
+    label: Base Name
+    required: true
+    searchable: true
+    help_text: Display name for this base
+  
+  slug:
+    type: text
+    label: URL Slug
+    unique: true
+    required: true
+    regex: ^[a-z0-9-]+$
+    help_text: URL-friendly identifier (e.g., 'product-roadmap')
+  
+  description:
+    type: textarea
+    label: Description
+    searchable: true
+    help_text: Brief description of what this base contains
+  
+  icon:
+    type: text
+    label: Icon
+    default: ri-database-2-line
+    help_text: Icon identifier (e.g., 'ri-database-2-line', 'ri-roadmap-line')
+  
+  color:
+    type: select
+    label: Color Theme
+    default: blue
+    options:
+      - value: blue
+        label: Blue
+      - value: green
+        label: Green
+      - value: purple
+        label: Purple
+      - value: red
+        label: Red
+      - value: orange
+        label: Orange
+      - value: gray
+        label: Gray
+      - value: pink
+        label: Pink
+      - value: teal
+        label: Teal
+  
+  cover:
+    type: image
+    label: Cover Image
+    help_text: Cover image for the base
+  
+  organizationId:
+    type: text
+    label: Organization
+    required: true
+    index: true
+    help_text: ID of the organization this base belongs to
+  
+  isTemplate:
+    type: boolean
+    label: Is Template
+    default: false
+    help_text: Whether this base is a template that can be copied
+  
+  isArchived:
+    type: boolean
+    label: Is Archived
+    default: false
+    index: true
+    help_text: Whether this base is archived
+  
+  isPublic:
+    type: boolean
+    label: Is Public
+    default: false
+    help_text: Whether this base can be viewed by anyone with the link
+  
+  settings:
+    type: object
+    label: Settings
+    help_text: JSON settings (timezone, locale, defaultView, etc.)
+  
+  # Template-related fields
+  templateCategory:
+    type: select
+    label: Template Category
+    options:
+      - value: project-management
+        label: Project Management
+      - value: crm
+        label: CRM
+      - value: product-roadmap
+        label: Product Roadmap
+      - value: content-calendar
+        label: Content Calendar
+      - value: inventory
+        label: Inventory Management
+      - value: hr
+        label: Human Resources
+      - value: marketing
+        label: Marketing
+      - value: custom
+        label: Custom
+    help_text: Category for template bases
+  
+  # Metadata
+  createdBy:
+    type: text
+    label: Created By
+    readonly: true
+    help_text: User ID who created this base
+  
+  createdAt:
+    type: datetime
+    label: Created At
+    default: now()
+    readonly: true
+  
+  updatedAt:
+    type: datetime
+    label: Updated At
+    default: now()

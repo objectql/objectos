@@ -13,6 +13,8 @@ import * as path from 'path';
  * - organization: Organizations for multi-tenant apps
  * - member: Organization membership
  * - invitation: Organization invitations
+ * - base: Airtable-like Base (data workspace container)
+ * - base_member: Base-level membership and permissions
  * 
  * These object definitions follow Better-Auth's schema specifications
  * and can be loaded into ObjectQL's metadata registry.
@@ -33,7 +35,9 @@ export const objectDefinitions = [
     'verification.object.yml',
     'organization.object.yml',
     'member.object.yml',
-    'invitation.object.yml'
+    'invitation.object.yml',
+    'base.object.yml',
+    'base_member.object.yml'
 ];
 
 /**
