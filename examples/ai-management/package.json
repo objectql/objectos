@@ -1,0 +1,28 @@
+{
+  "name": "@objectql/example-ai-management",
+  "version": "0.1.0",
+  "description": "AI Management example for ObjectQL - Tools, Chatbots, and Agents inspired by Zapier",
+  "private": true,
+  "keywords": [
+    "objectql",
+    "ai",
+    "chatbot",
+    "agent",
+    "automation",
+    "zapier",
+    "example"
+  ],
+  "author": "ObjectQL Team",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "dev": "echo 'AI Management example - see README.md for usage'"
+  },
+  "dependencies": {
+    "@objectql/core": "*",
+    "@objectql/metadata": "*"
+  }
+}

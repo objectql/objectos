@@ -1,0 +1,17 @@
+name: agent_success_rate
+label: Agent Success Rate
+description: Success rate comparison across AI agents
+type: bar
+object: ai_agent
+xAxisKey: name
+yAxisKeys:
+  - success_rate
+height: 350
+showGrid: true
+showLegend: true
+showTooltip: true
+colors:
+  - '#10B981'  # Green
+sort:
+  - - success_rate
+    - desc

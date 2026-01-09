@@ -1,0 +1,188 @@
+- name: data_analyst_agent
+  display_name: Data Analysis Agent
+  description: Autonomous agent that analyzes data and generates insights
+  agent_type: analysis_reporting
+  status: active
+  provider: openai
+  model: gpt-4-turbo
+  system_prompt: |
+    You are a data analysis expert agent. Your mission is to:
+    - Analyze datasets and identify patterns
+    - Generate actionable insights
+    - Create visualizations and reports
+    - Answer data-related questions
+    
+    Use available tools to access data, perform calculations, and create visualizations.
+  objective: "Analyze business data to uncover trends, patterns, and actionable insights that drive decision-making"
+  memory_enabled: true
+  memory_type: hybrid
+  memory_size: 50
+  reasoning_strategy: react
+  max_iterations: 15
+  temperature: 0.3
+  max_tokens: 4000
+  timeout: 300
+  auto_approve: false
+  approval_required_for:
+    - data_modifications
+    - external_api_calls
+  trigger_type: manual
+  max_concurrent_tasks: 3
+  cost_limit_per_task: 1.00
+  daily_cost_limit: 20.00
+  error_handling: retry
+  max_retries: 3
+  logging_level: detailed
+  notifications_enabled: true
+  notification_channels:
+    - email
+    - slack
+  is_public: false
+  tags:
+    - data-analysis
+    - business-intelligence
+    - reporting
+
+- name: content_creator_agent
+  display_name: Content Creation Agent
+  description: Creates blog posts, social media content, and marketing materials
+  agent_type: content_creation
+  status: active
+  provider: anthropic
+  model: claude-3-opus
+  system_prompt: |
+    You are a creative content specialist agent. Your mission is to:
+    - Generate high-quality written content
+    - Adapt tone and style to different platforms
+    - Research topics and incorporate relevant information
+    - Optimize content for SEO and engagement
+    
+    Create content that is informative, engaging, and aligned with brand voice.
+  objective: "Create compelling content that engages audiences and drives business objectives"
+  memory_enabled: true
+  memory_type: long_term
+  memory_size: 100
+  reasoning_strategy: chain_of_thought
+  max_iterations: 10
+  temperature: 0.8
+  max_tokens: 3000
+  timeout: 180
+  auto_approve: true
+  trigger_type: scheduled
+  schedule:
+    frequency: daily
+    time: "09:00"
+    timezone: "UTC"
+  max_concurrent_tasks: 5
+  cost_limit_per_task: 0.50
+  daily_cost_limit: 10.00
+  error_handling: retry
+  max_retries: 2
+  logging_level: normal
+  notifications_enabled: true
+  notification_channels:
+    - email
+  is_public: false
+  tags:
+    - content-creation
+    - marketing
+    - social-media
+
+- name: workflow_automation_agent
+  display_name: Workflow Automation Agent
+  description: Automates repetitive business workflows and tasks
+  agent_type: workflow_orchestration
+  status: active
+  provider: openai
+  model: gpt-4
+  system_prompt: |
+    You are a workflow automation specialist agent. Your mission is to:
+    - Execute multi-step business processes
+    - Coordinate between different systems and tools
+    - Handle exceptions and errors gracefully
+    - Optimize workflow efficiency
+    
+    Follow defined workflows while adapting to edge cases intelligently.
+  objective: "Automate routine business processes to increase efficiency and reduce manual work"
+  memory_enabled: true
+  memory_type: short_term
+  memory_size: 20
+  reasoning_strategy: react
+  max_iterations: 20
+  temperature: 0.2
+  max_tokens: 2000
+  timeout: 600
+  auto_approve: false
+  approval_required_for:
+    - data_modifications
+    - external_api_calls
+    - payment_processing
+  trigger_type: event_based
+  event_triggers:
+    - event_type: new_order
+      source: orders
+    - event_type: customer_signup
+      source: users
+  max_concurrent_tasks: 10
+  cost_limit_per_task: 0.30
+  daily_cost_limit: 30.00
+  error_handling: escalate
+  max_retries: 5
+  logging_level: detailed
+  notifications_enabled: true
+  notification_channels:
+    - email
+    - slack
+    - webhook
+  is_public: false
+  tags:
+    - automation
+    - workflow
+    - integration
+
+- name: code_review_agent
+  display_name: Code Review Agent
+  description: Reviews code changes and provides feedback
+  agent_type: code_assistant
+  status: testing
+  provider: anthropic
+  model: claude-3-opus
+  system_prompt: |
+    You are an expert code reviewer agent. Your mission is to:
+    - Review code for bugs, security issues, and best practices
+    - Suggest improvements and optimizations
+    - Ensure code quality and maintainability
+    - Check for test coverage
+    
+    Provide constructive, actionable feedback that helps developers improve.
+  objective: "Maintain high code quality through automated reviews and helpful feedback"
+  memory_enabled: true
+  memory_type: hybrid
+  memory_size: 30
+  reasoning_strategy: tree_of_thought
+  max_iterations: 8
+  temperature: 0.2
+  max_tokens: 4000
+  timeout: 240
+  auto_approve: true
+  trigger_type: event_based
+  event_triggers:
+    - event_type: pull_request_opened
+      source: github
+    - event_type: code_pushed
+      source: git
+  max_concurrent_tasks: 5
+  cost_limit_per_task: 0.40
+  daily_cost_limit: 15.00
+  error_handling: retry
+  max_retries: 2
+  logging_level: debug
+  notifications_enabled: true
+  notification_channels:
+    - slack
+    - in_app
+  is_public: false
+  tags:
+    - code-review
+    - quality-assurance
+    - development

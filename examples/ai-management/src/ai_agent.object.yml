@@ -1,0 +1,498 @@
+name: ai_agent
+label: AI Agent
+icon: ri-robot-2-line
+description: Autonomous AI agent that can execute complex tasks and workflows, similar to Zapier AI Agents
+enable_search: true
+
+fields:
+  name:
+    type: text
+    label: Agent Name
+    required: true
+    index: true
+    searchable: true
+    description: Unique identifier for the agent
+    max_length: 100
+  
+  display_name:
+    type: text
+    label: Display Name
+    required: true
+    searchable: true
+    description: Human-readable name for the agent
+    max_length: 200
+  
+  description:
+    type: textarea
+    label: Description
+    searchable: true
+    description: Detailed description of the agent's purpose and capabilities
+    max_length: 1000
+  
+  avatar:
+    type: image
+    label: Avatar
+    description: Agent avatar or icon
+  
+  agent_type:
+    type: select
+    label: Agent Type
+    required: true
+    options:
+      - label: Task Automation
+        value: task_automation
+      - label: Data Processing
+        value: data_processing
+      - label: Workflow Orchestration
+        value: workflow_orchestration
+      - label: Research Assistant
+        value: research_assistant
+      - label: Code Assistant
+        value: code_assistant
+      - label: Customer Service
+        value: customer_service
+      - label: Content Creation
+        value: content_creation
+      - label: Analysis & Reporting
+        value: analysis_reporting
+      - label: Custom
+        value: custom
+    defaultValue: custom
+    description: The primary function of this agent
+  
+  status:
+    type: select
+    label: Status
+    required: true
+    options:
+      - label: Draft
+        value: draft
+      - label: Training
+        value: training
+      - label: Testing
+        value: testing
+      - label: Active
+        value: active
+      - label: Paused
+        value: paused
+      - label: Failed
+        value: failed
+      - label: Archived
+        value: archived
+    defaultValue: draft
+    index: true
+  
+  provider:
+    type: select
+    label: AI Provider
+    required: true
+    options:
+      - label: OpenAI
+        value: openai
+      - label: Anthropic
+        value: anthropic
+      - label: Google AI
+        value: google_ai
+      - label: AWS Bedrock
+        value: aws_bedrock
+      - label: Azure OpenAI
+        value: azure_openai
+      - label: Custom
+        value: custom
+    description: Primary AI service provider for the agent
+  
+  model:
+    type: text
+    label: Model
+    required: true
+    description: AI model identifier (e.g., gpt-4, claude-3-opus)
+    max_length: 100
+  
+  system_prompt:
+    type: textarea
+    label: System Prompt
+    required: true
+    description: Core instructions that define the agent's behavior and capabilities
+    help_text: Provide comprehensive context about the agent's role, goals, and constraints
+  
+  objective:
+    type: textarea
+    label: Objective
+    required: true
+    description: The main goal or mission of this agent
+    max_length: 500
+  
+  capabilities:
+    type: grid
+    label: Capabilities
+    description: List of specific capabilities and permissions
+    help_text: Define what actions the agent can perform
+  
+  tools:
+    type: lookup
+    reference_to: ai_tool
+    label: Available Tools
+    multiple: true
+    description: AI tools this agent can use to accomplish tasks
+  
+  chatbot:
+    type: lookup
+    reference_to: ai_chatbot
+    label: Associated Chatbot
+    description: Chatbot interface for this agent (optional)
+  
+  memory_enabled:
+    type: boolean
+    label: Memory Enabled
+    description: Whether the agent maintains memory across sessions
+    defaultValue: true
+  
+  memory_type:
+    type: select
+    label: Memory Type
+    options:
+      - label: Short-term (Session)
+        value: short_term
+      - label: Long-term (Persistent)
+        value: long_term
+      - label: Hybrid
+        value: hybrid
+    defaultValue: hybrid
+    description: Type of memory the agent uses
+  
+  memory_size:
+    type: number
+    label: Memory Size (MB)
+    description: Maximum memory storage in megabytes
+    min: 1
+    max: 1000
+    defaultValue: 10
+  
+  reasoning_strategy:
+    type: select
+    label: Reasoning Strategy
+    required: true
+    options:
+      - label: Chain of Thought
+        value: chain_of_thought
+      - label: Tree of Thought
+        value: tree_of_thought
+      - label: ReAct (Reasoning + Acting)
+        value: react
+      - label: Reflexion
+        value: reflexion
+      - label: Custom
+        value: custom
+    defaultValue: react
+    description: The reasoning approach the agent uses
+  
+  max_iterations:
+    type: number
+    label: Max Iterations
+    description: Maximum number of reasoning steps per task
+    min: 1
+    max: 100
+    defaultValue: 10
+  
+  temperature:
+    type: number
+    label: Temperature
+    description: Controls response creativity (0.0 - 2.0)
+    min: 0
+    max: 2
+    defaultValue: 0.7
+    precision: 2
+  
+  max_tokens:
+    type: number
+    label: Max Tokens
+    description: Maximum tokens per agent response
+    min: 100
+    max: 100000
+    defaultValue: 4000
+  
+  timeout:
+    type: number
+    label: Timeout (seconds)
+    description: Maximum execution time for a single task
+    min: 10
+    max: 3600
+    defaultValue: 300
+  
+  auto_approve:
+    type: boolean
+    label: Auto Approve Actions
+    description: Whether the agent can execute actions without approval
+    defaultValue: false
+  
+  approval_required_for:
+    type: select
+    label: Approval Required For
+    multiple: true
+    options:
+      - label: Data Modifications
+        value: data_modifications
+      - label: External API Calls
+        value: external_api_calls
+      - label: File Operations
+        value: file_operations
+      - label: Email Sending
+        value: email_sending
+      - label: Payment Processing
+        value: payment_processing
+      - label: High-Cost Operations
+        value: high_cost_operations
+    description: Actions that require human approval
+  
+  trigger_type:
+    type: select
+    label: Trigger Type
+    required: true
+    options:
+      - label: Manual
+        value: manual
+      - label: Scheduled
+        value: scheduled
+      - label: Event-based
+        value: event_based
+      - label: API Call
+        value: api_call
+      - label: Continuous
+        value: continuous
+    defaultValue: manual
+    description: How the agent is activated
+  
+  schedule:
+    type: object
+    label: Schedule Configuration
+    description: Cron-like schedule for scheduled agents
+    help_text: Define when the agent should run automatically
+  
+  event_triggers:
+    type: grid
+    label: Event Triggers
+    description: Events that trigger this agent
+    help_text: Configure event-based activation rules
+  
+  max_concurrent_tasks:
+    type: number
+    label: Max Concurrent Tasks
+    description: Maximum number of tasks the agent can handle simultaneously
+    min: 1
+    max: 100
+    defaultValue: 5
+  
+  cost_limit_per_task:
+    type: currency
+    label: Cost Limit Per Task
+    description: Maximum cost allowed for a single task execution
+    scale: 4
+  
+  daily_cost_limit:
+    type: currency
+    label: Daily Cost Limit
+    description: Maximum total cost per day
+    scale: 2
+  
+  error_handling:
+    type: select
+    label: Error Handling
+    required: true
+    options:
+      - label: Retry
+        value: retry
+      - label: Skip
+        value: skip
+      - label: Escalate
+        value: escalate
+      - label: Abort
+        value: abort
+    defaultValue: retry
+    description: How the agent handles errors
+  
+  max_retries:
+    type: number
+    label: Max Retries
+    description: Maximum number of retry attempts on failure
+    min: 0
+    max: 10
+    defaultValue: 3
+  
+  logging_level:
+    type: select
+    label: Logging Level
+    required: true
+    options:
+      - label: Minimal
+        value: minimal
+      - label: Normal
+        value: normal
+      - label: Detailed
+        value: detailed
+      - label: Debug
+        value: debug
+    defaultValue: normal
+    description: Level of detail in agent logs
+  
+  notifications_enabled:
+    type: boolean
+    label: Notifications Enabled
+    description: Send notifications on agent events
+    defaultValue: true
+  
+  notification_channels:
+    type: select
+    label: Notification Channels
+    multiple: true
+    options:
+      - label: Email
+        value: email
+      - label: Slack
+        value: slack
+      - label: SMS
+        value: sms
+      - label: Webhook
+        value: webhook
+      - label: In-app
+        value: in_app
+    description: Where to send notifications
+  
+  is_public:
+    type: boolean
+    label: Public
+    description: Whether this agent is publicly accessible
+    defaultValue: false
+  
+  allowed_users:
+    type: lookup
+    reference_to: user
+    label: Allowed Users
+    multiple: true
+    description: Users who can interact with this agent
+  
+  tags:
+    type: text
+    label: Tags
+    multiple: true
+    description: Tags for organization and filtering
+  
+  owner:
+    type: lookup
+    reference_to: user
+    label: Owner
+    index: true
+  
+  organization:
+    type: lookup
+    reference_to: organization
+    label: Organization
+    index: true
+  
+  total_tasks_executed:
+    type: number
+    label: Total Tasks Executed
+    description: Total number of tasks completed
+    readonly: true
+    defaultValue: 0
+  
+  successful_tasks:
+    type: number
+    label: Successful Tasks
+    description: Number of successfully completed tasks
+    readonly: true
+    defaultValue: 0
+  
+  failed_tasks:
+    type: number
+    label: Failed Tasks
+    description: Number of failed tasks
+    readonly: true
+    defaultValue: 0
+  
+  success_rate:
+    type: percent
+    label: Success Rate
+    description: Percentage of successful task executions
+    readonly: true
+    scale: 2
+  
+  average_execution_time:
+    type: number
+    label: Avg Execution Time (seconds)
+    description: Average time to complete a task
+    readonly: true
+    precision: 2
+  
+  total_cost:
+    type: currency
+    label: Total Cost
+    description: Total cost of all executions
+    readonly: true
+    scale: 2
+  
+  last_executed_at:
+    type: datetime
+    label: Last Executed At
+    description: Last time the agent executed a task
+    readonly: true
+  
+  created_at:
+    type: datetime
+    label: Created At
+    defaultValue: now()
+    readonly: true
+  
+  updated_at:
+    type: datetime
+    label: Updated At
+    defaultValue: now()
+    readonly: true
+
+actions:
+  execute_task:
+    label: Execute Task
+    description: Run the agent with a specific task
+    params:
+      task_description:
+        type: textarea
+        label: Task Description
+        required: true
+      context:
+        type: object
+        label: Context Data
+    result:
+      type: object
+  
+  pause:
+    label: Pause Agent
+    description: Temporarily pause the agent's execution
+    result:
+      type: boolean
+  
+  resume:
+    label: Resume Agent
+    description: Resume a paused agent
+    result:
+      type: boolean
+  
+  reset_memory:
+    label: Reset Memory
+    description: Clear the agent's memory
+    result:
+      type: boolean
+  
+  validate_config:
+    label: Validate Configuration
+    description: Validate the agent's configuration and dependencies
+    result:
+      type: object
+  
+  simulate:
+    label: Simulate Execution
+    description: Dry-run the agent without actually executing actions
+    params:
+      task_description:
+        type: textarea
+        label: Task Description
+    result:
+      type: object

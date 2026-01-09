@@ -1,0 +1,119 @@
+- name: customer_support_bot
+  display_name: Customer Support Assistant
+  description: 24/7 customer support chatbot for handling common inquiries
+  welcome_message: "Hello! I'm your customer support assistant. How can I help you today?"
+  personality: professional
+  language: en
+  supported_languages:
+    - en
+    - zh-CN
+    - es
+  provider: openai
+  model: gpt-4-turbo
+  status: active
+  system_prompt: |
+    You are a helpful and professional customer support assistant for our company.
+    Your role is to:
+    - Answer common questions about products and services
+    - Help users troubleshoot issues
+    - Provide information about orders and shipping
+    - Escalate complex issues to human agents when needed
+    
+    Always be polite, empathetic, and solution-focused.
+  temperature: 0.7
+  max_tokens: 500
+  context_window: 10
+  handoff_enabled: true
+  handoff_conditions: |
+    Transfer to human agent when:
+    - User explicitly requests human assistance
+    - Issue involves payment disputes or refunds
+    - User expresses strong dissatisfaction (sentiment < -0.7)
+    - Unable to resolve issue after 3 attempts
+  fallback_message: "I'm not sure I understand. Could you please rephrase that, or would you like me to connect you with a human agent?"
+  max_conversation_length: 50
+  channels:
+    - web
+    - mobile
+    - slack
+  is_public: true
+  require_authentication: false
+  rate_limit: 20
+  analytics_enabled: true
+  tags:
+    - customer-support
+    - general-inquiries
+
+- name: sales_assistant
+  display_name: Sales Assistant Bot
+  description: Helps potential customers learn about products and make purchasing decisions
+  welcome_message: "Welcome! I'm here to help you find the perfect solution for your needs. What are you looking for?"
+  personality: friendly
+  language: en
+  provider: anthropic
+  model: claude-3-sonnet
+  status: active
+  system_prompt: |
+    You are a knowledgeable and friendly sales assistant.
+    Your goals are to:
+    - Understand customer needs
+    - Recommend appropriate products or services
+    - Explain features and benefits clearly
+    - Guide customers through the purchasing process
+    - Build trust and rapport
+    
+    Be consultative, not pushy. Focus on solving customer problems.
+  temperature: 0.8
+  max_tokens: 600
+  context_window: 15
+  handoff_enabled: true
+  handoff_conditions: "Transfer for: pricing negotiations, enterprise deals, custom solutions"
+  channels:
+    - web
+    - whatsapp
+  is_public: true
+  require_authentication: false
+  rate_limit: 15
+  analytics_enabled: true
+  tags:
+    - sales
+    - lead-qualification
+    - product-recommendations
+
+- name: hr_onboarding_bot
+  display_name: HR Onboarding Assistant
+  description: Guides new employees through the onboarding process
+  welcome_message: "Welcome to the team! I'm your onboarding assistant. I'll help you get started. What would you like to know?"
+  personality: empathetic
+  language: en
+  provider: openai
+  model: gpt-4
+  status: active
+  system_prompt: |
+    You are a warm and helpful HR onboarding assistant.
+    Help new employees with:
+    - Company policies and procedures
+    - Benefits enrollment
+    - IT setup and access
+    - Team introductions
+    - First week schedule
+    - Common questions about workplace culture
+    
+    Make new hires feel welcome and supported.
+  temperature: 0.6
+  max_tokens: 500
+  context_window: 12
+  handoff_enabled: true
+  handoff_conditions: "Escalate for: benefits changes, IT issues, manager conflicts"
+  channels:
+    - web
+    - slack
+    - teams
+  is_public: false
+  require_authentication: true
+  rate_limit: 30
+  analytics_enabled: true
+  tags:
+    - hr
+    - onboarding
+    - internal

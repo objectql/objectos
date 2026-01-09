@@ -1,0 +1,19 @@
+name: agent_tasks_by_status
+label: Agent Tasks by Status
+description: Distribution of agent tasks by current status
+type: pie
+object: ai_agent
+xAxisKey: status
+yAxisKeys:
+  - total_tasks_executed
+height: 350
+showLegend: true
+showTooltip: true
+colors:
+  - '#9CA3AF'  # Draft
+  - '#F59E0B'  # Training
+  - '#3B82F6'  # Testing
+  - '#10B981'  # Active
+  - '#6B7280'  # Paused
+  - '#EF4444'  # Failed
+  - '#6B7280'  # Archived

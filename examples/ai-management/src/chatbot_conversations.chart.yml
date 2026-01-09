@@ -1,0 +1,16 @@
+name: chatbot_conversations
+label: Chatbot Conversations Over Time
+description: Track the volume of chatbot conversations
+type: area
+object: ai_chatbot
+xAxisKey: created_at
+yAxisKeys:
+  - total_conversations
+  - total_messages
+height: 350
+showGrid: true
+showLegend: true
+showTooltip: true
+colors:
+  - '#8B5CF6'  # Purple
+  - '#EC4899'  # Pink

@@ -1,0 +1,105 @@
+name: AI Management
+description: Manage AI tools, chatbots, and agents for your organization
+code: ai-management
+icon: ri-brain-line
+color: purple
+dark: false
+
+menu:
+  # Overview Section
+  - label: Overview
+    items:
+      - label: Dashboard
+        icon: ri-dashboard-3-line
+        type: page
+        url: /ai/dashboard
+      
+      - label: Quick Start
+        icon: ri-rocket-line
+        type: page
+        url: /ai/quick-start
+
+  # AI Entities Section
+  - label: AI Entities
+    collapsible: true
+    items:
+      - label: AI Tools
+        icon: ri-tools-line
+        type: object
+        object: ai_tool
+      
+      - label: Chatbots
+        icon: ri-message-3-line
+        type: object
+        object: ai_chatbot
+      
+      - label: AI Agents
+        icon: ri-robot-2-line
+        type: object
+        object: ai_agent
+
+  # Analytics Section
+  - label: Analytics
+    collapsible: true
+    items:
+      - label: Usage Analytics
+        icon: ri-line-chart-line
+        type: page
+        url: /ai/analytics/usage
+      
+      - label: Cost Analysis
+        icon: ri-money-dollar-circle-line
+        type: page
+        url: /ai/analytics/cost
+      
+      - label: Performance Metrics
+        icon: ri-speed-line
+        type: page
+        url: /ai/analytics/performance
+
+  # Monitoring Section
+  - label: Monitoring
+    collapsible: true
+    items:
+      - label: Active Tasks
+        icon: ri-timer-line
+        type: page
+        url: /ai/monitoring/tasks
+        badge: Live
+      
+      - label: Execution Logs
+        icon: ri-file-list-3-line
+        type: page
+        url: /ai/monitoring/logs
+      
+      - label: Error Reports
+        icon: ri-error-warning-line
+        type: page
+        url: /ai/monitoring/errors
+
+  # Configuration Section
+  - label: Configuration
+    collapsible: true
+    collapsed: true
+    items:
+      - label: API Keys
+        icon: ri-key-2-line
+        type: page
+        url: /ai/config/api-keys
+      
+      - label: Provider Settings
+        icon: ri-settings-3-line
+        type: page
+        url: /ai/config/providers
+      
+      - label: Rate Limits
+        icon: ri-speed-line
+        type: page
+        url: /ai/config/rate-limits
+      
+      - type: divider
+      
+      - label: Documentation
+        icon: ri-book-line
+        type: url
+        url: https://docs.objectql.com/ai

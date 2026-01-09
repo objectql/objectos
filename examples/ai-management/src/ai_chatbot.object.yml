@@ -1,0 +1,374 @@
+name: ai_chatbot
+label: AI Chatbot
+icon: ri-message-3-line
+description: Conversational AI chatbot configuration for customer service, support, and engagement
+enable_search: true
+
+fields:
+  name:
+    type: text
+    label: Chatbot Name
+    required: true
+    index: true
+    searchable: true
+    description: Unique identifier for the chatbot
+    max_length: 100
+  
+  display_name:
+    type: text
+    label: Display Name
+    required: true
+    searchable: true
+    description: Name shown to users in the chat interface
+    max_length: 200
+  
+  description:
+    type: textarea
+    label: Description
+    searchable: true
+    description: Internal description of the chatbot's purpose
+    max_length: 1000
+  
+  avatar:
+    type: image
+    label: Avatar
+    description: Chatbot avatar image for the chat interface
+  
+  welcome_message:
+    type: textarea
+    label: Welcome Message
+    required: true
+    description: Initial greeting message when users start a conversation
+    max_length: 500
+    defaultValue: "Hello! I'm here to help. How can I assist you today?"
+  
+  personality:
+    type: select
+    label: Personality
+    required: true
+    options:
+      - label: Professional
+        value: professional
+      - label: Friendly
+        value: friendly
+      - label: Casual
+        value: casual
+      - label: Formal
+        value: formal
+      - label: Humorous
+        value: humorous
+      - label: Empathetic
+        value: empathetic
+      - label: Custom
+        value: custom
+    defaultValue: friendly
+    description: The chatbot's conversational style
+  
+  language:
+    type: select
+    label: Primary Language
+    required: true
+    options:
+      - label: English
+        value: en
+      - label: Chinese (Simplified)
+        value: zh-CN
+      - label: Chinese (Traditional)
+        value: zh-TW
+      - label: Spanish
+        value: es
+      - label: French
+        value: fr
+      - label: German
+        value: de
+      - label: Japanese
+        value: ja
+      - label: Korean
+        value: ko
+      - label: Multi-language
+        value: multi
+    defaultValue: en
+  
+  supported_languages:
+    type: select
+    label: Supported Languages
+    multiple: true
+    options:
+      - en
+      - zh-CN
+      - zh-TW
+      - es
+      - fr
+      - de
+      - ja
+      - ko
+    description: Additional languages the chatbot can understand
+  
+  provider:
+    type: select
+    label: AI Provider
+    required: true
+    options:
+      - label: OpenAI
+        value: openai
+      - label: Anthropic
+        value: anthropic
+      - label: Google AI
+        value: google_ai
+      - label: AWS Bedrock
+        value: aws_bedrock
+      - label: Azure OpenAI
+        value: azure_openai
+      - label: Custom
+        value: custom
+    description: The underlying AI service provider
+  
+  model:
+    type: text
+    label: Model
+    required: true
+    description: AI model identifier (e.g., gpt-4, claude-3-sonnet)
+    max_length: 100
+  
+  status:
+    type: select
+    label: Status
+    required: true
+    options:
+      - label: Draft
+        value: draft
+      - label: Training
+        value: training
+      - label: Active
+        value: active
+      - label: Paused
+        value: paused
+      - label: Archived
+        value: archived
+    defaultValue: draft
+    index: true
+  
+  system_prompt:
+    type: textarea
+    label: System Prompt
+    required: true
+    description: Instructions that define the chatbot's behavior and knowledge
+    help_text: Provide detailed context about the chatbot's role, capabilities, and constraints
+  
+  knowledge_base:
+    type: object
+    label: Knowledge Base
+    description: Structured knowledge data for the chatbot to reference
+    help_text: Upload documents, FAQs, or structured data the bot can use
+  
+  tools:
+    type: lookup
+    reference_to: ai_tool
+    label: Available Tools
+    multiple: true
+    description: AI tools this chatbot can use during conversations
+  
+  temperature:
+    type: number
+    label: Temperature
+    description: Controls response creativity (0.0 - 2.0)
+    min: 0
+    max: 2
+    defaultValue: 0.8
+    precision: 2
+  
+  max_tokens:
+    type: number
+    label: Max Tokens
+    description: Maximum response length in tokens
+    min: 50
+    max: 4000
+    defaultValue: 500
+  
+  context_window:
+    type: number
+    label: Context Window
+    description: Number of previous messages to consider
+    min: 1
+    max: 50
+    defaultValue: 10
+  
+  handoff_enabled:
+    type: boolean
+    label: Human Handoff Enabled
+    description: Allow transferring conversations to human agents
+    defaultValue: true
+  
+  handoff_conditions:
+    type: textarea
+    label: Handoff Conditions
+    description: Rules for when to transfer to a human agent
+    help_text: Define scenarios when the bot should escalate to a human
+  
+  fallback_message:
+    type: textarea
+    label: Fallback Message
+    description: Message shown when the bot cannot understand or respond
+    defaultValue: "I'm not sure I understand. Could you please rephrase that?"
+    max_length: 500
+  
+  max_conversation_length:
+    type: number
+    label: Max Conversation Length
+    description: Maximum number of turns before conversation reset
+    min: 10
+    max: 1000
+    defaultValue: 100
+  
+  channels:
+    type: select
+    label: Deployment Channels
+    multiple: true
+    options:
+      - label: Web Chat
+        value: web
+      - label: Mobile App
+        value: mobile
+      - label: Slack
+        value: slack
+      - label: Microsoft Teams
+        value: teams
+      - label: WhatsApp
+        value: whatsapp
+      - label: Telegram
+        value: telegram
+      - label: WeChat
+        value: wechat
+      - label: Discord
+        value: discord
+    description: Platforms where this chatbot is deployed
+  
+  is_public:
+    type: boolean
+    label: Public
+    description: Whether this chatbot is publicly accessible
+    defaultValue: false
+  
+  require_authentication:
+    type: boolean
+    label: Require Authentication
+    description: Whether users must log in to use the chatbot
+    defaultValue: false
+  
+  allowed_domains:
+    type: text
+    label: Allowed Domains
+    multiple: true
+    description: Domains where the chatbot can be embedded
+  
+  rate_limit:
+    type: number
+    label: Rate Limit (messages/min)
+    description: Maximum messages per user per minute
+    min: 1
+    defaultValue: 20
+  
+  analytics_enabled:
+    type: boolean
+    label: Analytics Enabled
+    description: Enable conversation analytics and tracking
+    defaultValue: true
+  
+  tags:
+    type: text
+    label: Tags
+    multiple: true
+    description: Tags for organization and filtering
+  
+  owner:
+    type: lookup
+    reference_to: user
+    label: Owner
+    index: true
+  
+  organization:
+    type: lookup
+    reference_to: organization
+    label: Organization
+    index: true
+  
+  total_conversations:
+    type: number
+    label: Total Conversations
+    description: Total number of conversations handled
+    readonly: true
+    defaultValue: 0
+  
+  total_messages:
+    type: number
+    label: Total Messages
+    description: Total number of messages processed
+    readonly: true
+    defaultValue: 0
+  
+  average_satisfaction:
+    type: percent
+    label: Average Satisfaction
+    description: Average user satisfaction score
+    readonly: true
+    scale: 2
+  
+  last_active_at:
+    type: datetime
+    label: Last Active At
+    description: Last time the chatbot handled a conversation
+    readonly: true
+  
+  created_at:
+    type: datetime
+    label: Created At
+    defaultValue: now()
+    readonly: true
+  
+  updated_at:
+    type: datetime
+    label: Updated At
+    defaultValue: now()
+    readonly: true
+
+actions:
+  start_conversation:
+    label: Start Conversation
+    description: Initialize a new conversation session
+    params:
+      user_message:
+        type: text
+        label: Initial Message
+    result:
+      type: object
+  
+  deploy:
+    label: Deploy Chatbot
+    description: Deploy the chatbot to selected channels
+    params:
+      channels:
+        type: select
+        label: Target Channels
+        multiple: true
+    result:
+      type: boolean
+  
+  train:
+    label: Train Chatbot
+    description: Train the chatbot with new knowledge
+    params:
+      training_data:
+        type: object
+        label: Training Data
+    result:
+      type: boolean
+  
+  test_conversation:
+    label: Test Conversation
+    description: Test the chatbot with sample conversations
+    params:
+      test_messages:
+        type: object
+        label: Test Messages
+    result:
+      type: object

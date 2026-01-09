@@ -1,0 +1,239 @@
+name: ai_tool
+label: AI Tool
+icon: ri-tools-line
+description: Defines reusable AI functions and capabilities, similar to Zapier AI Actions
+enable_search: true
+
+fields:
+  name:
+    type: text
+    label: Tool Name
+    required: true
+    index: true
+    searchable: true
+    description: Unique name for the AI tool
+    max_length: 100
+  
+  display_name:
+    type: text
+    label: Display Name
+    required: true
+    searchable: true
+    description: Human-readable name for the tool
+    max_length: 200
+  
+  description:
+    type: textarea
+    label: Description
+    required: true
+    searchable: true
+    description: Detailed description of what the tool does
+    max_length: 1000
+  
+  category:
+    type: select
+    label: Category
+    required: true
+    options:
+      - label: Text Processing
+        value: text_processing
+      - label: Data Analysis
+        value: data_analysis
+      - label: Image Generation
+        value: image_generation
+      - label: Code Generation
+        value: code_generation
+      - label: Translation
+        value: translation
+      - label: Sentiment Analysis
+        value: sentiment_analysis
+      - label: Summarization
+        value: summarization
+      - label: Question Answering
+        value: question_answering
+      - label: Custom
+        value: custom
+    defaultValue: custom
+  
+  provider:
+    type: select
+    label: AI Provider
+    required: true
+    options:
+      - label: OpenAI
+        value: openai
+      - label: Anthropic
+        value: anthropic
+      - label: Google AI
+        value: google_ai
+      - label: AWS Bedrock
+        value: aws_bedrock
+      - label: Azure OpenAI
+        value: azure_openai
+      - label: Custom
+        value: custom
+    description: The AI service provider for this tool
+  
+  model:
+    type: text
+    label: Model Name
+    description: Specific AI model to use (e.g., gpt-4, claude-3-opus)
+    max_length: 100
+  
+  version:
+    type: text
+    label: Version
+    description: Tool version identifier
+    defaultValue: "1.0.0"
+    max_length: 20
+  
+  status:
+    type: select
+    label: Status
+    required: true
+    options:
+      - label: Draft
+        value: draft
+      - label: Active
+        value: active
+      - label: Deprecated
+        value: deprecated
+      - label: Archived
+        value: archived
+    defaultValue: draft
+    index: true
+  
+  input_schema:
+    type: object
+    label: Input Schema
+    description: JSON schema defining the expected input parameters
+    help_text: Define the structure and validation rules for tool inputs
+  
+  output_schema:
+    type: object
+    label: Output Schema
+    description: JSON schema defining the expected output format
+    help_text: Define the structure of the tool's response
+  
+  system_prompt:
+    type: textarea
+    label: System Prompt
+    description: System instructions for the AI model
+    help_text: Provide context and instructions to guide the AI's behavior
+  
+  temperature:
+    type: number
+    label: Temperature
+    description: Controls randomness in AI responses (0.0 - 2.0)
+    min: 0
+    max: 2
+    defaultValue: 0.7
+    precision: 2
+  
+  max_tokens:
+    type: number
+    label: Max Tokens
+    description: Maximum number of tokens in the response
+    min: 1
+    max: 100000
+    defaultValue: 2048
+  
+  timeout:
+    type: number
+    label: Timeout (seconds)
+    description: Maximum execution time in seconds
+    min: 1
+    max: 300
+    defaultValue: 30
+  
+  rate_limit:
+    type: number
+    label: Rate Limit
+    description: Maximum number of calls per minute
+    min: 1
+    defaultValue: 60
+  
+  cost_per_call:
+    type: currency
+    label: Estimated Cost Per Call
+    description: Estimated cost in USD for each tool execution
+    scale: 6
+  
+  is_public:
+    type: boolean
+    label: Public
+    description: Whether this tool is publicly accessible
+    defaultValue: false
+  
+  tags:
+    type: text
+    label: Tags
+    description: Comma-separated tags for categorization
+    multiple: true
+  
+  owner:
+    type: lookup
+    reference_to: user
+    label: Owner
+    description: User who created or owns this tool
+    index: true
+  
+  organization:
+    type: lookup
+    reference_to: organization
+    label: Organization
+    description: Organization this tool belongs to
+    index: true
+  
+  usage_count:
+    type: number
+    label: Usage Count
+    description: Number of times this tool has been executed
+    readonly: true
+    defaultValue: 0
+  
+  last_used_at:
+    type: datetime
+    label: Last Used At
+    description: Timestamp of the last execution
+    readonly: true
+  
+  created_at:
+    type: datetime
+    label: Created At
+    defaultValue: now()
+    readonly: true
+  
+  updated_at:
+    type: datetime
+    label: Updated At
+    defaultValue: now()
+    readonly: true
+
+actions:
+  execute:
+    label: Execute Tool
+    description: Run the AI tool with provided inputs
+    params:
+      input_data:
+        type: object
+        label: Input Data
+        required: true
+    result:
+      type: object
+  
+  validate:
+    label: Validate Configuration
+    description: Validate the tool's configuration and schemas
+    result:
+      type: boolean
+  
+  test:
+    label: Test Tool
+    description: Test the tool with sample data
+    params:
+      sample_input:
+        type: object
+        label: Sample Input
+    result:
+      type: object

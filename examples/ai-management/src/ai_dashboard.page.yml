@@ -1,0 +1,107 @@
+name: ai_dashboard
+label: AI Management Dashboard
+description: Comprehensive overview of AI tools, chatbots, and agents
+icon: ri-dashboard-3-line
+layout: grid
+components:
+  # Summary Cards Section
+  - type: text
+    props:
+      content: "## AI Platform Overview"
+      style: heading
+  
+  # Charts for AI Tools
+  - type: chart
+    props:
+      chartName: ai_tools_by_category
+  
+  - type: chart
+    props:
+      chartName: ai_tools_by_status
+  
+  # Charts for Chatbots
+  - type: chart
+    props:
+      chartName: chatbot_conversations
+  
+  # Charts for Agents
+  - type: chart
+    props:
+      chartName: agent_success_rate
+  
+  - type: chart
+    props:
+      chartName: agent_tasks_by_status
+  
+  # AI Tools Table
+  - type: text
+    props:
+      content: "## Recent AI Tools"
+      style: heading
+  
+  - type: table
+    props:
+      object: ai_tool
+      fields:
+        - name
+        - display_name
+        - category
+        - provider
+        - status
+        - usage_count
+        - created_at
+      sort:
+        - - created_at
+          - desc
+      limit: 10
+  
+  # Active Chatbots
+  - type: text
+    props:
+      content: "## Active Chatbots"
+      style: heading
+  
+  - type: table
+    props:
+      object: ai_chatbot
+      fields:
+        - name
+        - display_name
+        - status
+        - total_conversations
+        - total_messages
+        - average_satisfaction
+        - last_active_at
+      filters:
+        - - status
+          - =
+          - active
+      limit: 10
+  
+  # Active Agents
+  - type: text
+    props:
+      content: "## AI Agents Status"
+      style: heading
+  
+  - type: table
+    props:
+      object: ai_agent
+      fields:
+        - name
+        - display_name
+        - agent_type
+        - status
+        - total_tasks_executed
+        - success_rate
+        - total_cost
+        - last_executed_at
+      sort:
+        - - last_executed_at
+          - desc
+      limit: 10
+
+settings:
+  gridColumns: 2
+  gap: 24
+  responsive: true

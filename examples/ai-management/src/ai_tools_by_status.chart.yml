@@ -1,0 +1,17 @@
+name: ai_tools_by_status
+label: AI Tools by Status
+description: Current status distribution of AI tools
+type: bar
+object: ai_tool
+xAxisKey: status
+yAxisKeys:
+  - count
+height: 300
+showGrid: true
+showLegend: true
+showTooltip: true
+colors:
+  - '#9CA3AF'  # Draft (Gray)
+  - '#10B981'  # Active (Green)
+  - '#F59E0B'  # Deprecated (Amber)
+  - '#6B7280'  # Archived (Dark Gray)

@@ -1,0 +1,20 @@
+name: ai_tools_by_category
+label: AI Tools by Category
+description: Distribution of AI tools across different categories
+type: pie
+object: ai_tool
+xAxisKey: category
+yAxisKeys:
+  - count
+height: 350
+showLegend: true
+showTooltip: true
+colors:
+  - '#8B5CF6'  # Purple
+  - '#EC4899'  # Pink
+  - '#F59E0B'  # Amber
+  - '#10B981'  # Green
+  - '#3B82F6'  # Blue
+  - '#6366F1'  # Indigo
+  - '#EF4444'  # Red
+  - '#14B8A6'  # Teal
