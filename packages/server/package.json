@@ -19,7 +19,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
     "@objectql/api": "*",
-    "@objectql/better-auth": "*",
+    "@objectql/platform": "*",
     "@objectql/core": "*",
     "@objectql/driver-knex": "*",
     "@objectql/driver-mongo": "*",

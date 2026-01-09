@@ -16,12 +16,17 @@ import * as path from 'path';
  * - base: Airtable-like Base (data workspace container)
  * - base_member: Base-level membership and permissions
  * 
- * These object definitions follow Better-Auth's schema specifications
+ * Also includes standard Platform Roles:
+ * - super_admin: System Administrator
+ * - admin: Organization Administrator
+ * - user: Standard Member
+ * 
+ * These definitions follow Better-Auth's schema specifications
  * and can be loaded into ObjectQL's metadata registry.
  */
 
-export const BetterAuthPackage = {
-    name: '@objectql/better-auth',
+export const PlatformPackage = {
+    name: '@objectql/platform',
     path: __dirname
 };
 

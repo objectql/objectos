@@ -18,6 +18,26 @@ export const getAuth = async () => {
             emailAndPassword: {
                 enabled: true
             },
+            databaseHooks: {
+                user: {
+                    create: {
+                        before: async (user) => {
+                            try {
+                                const result = await pool.query('SELECT count(*) FROM "user"');
+                                const count = parseInt(result.rows[0].count);
+                                return {
+                                    data: {
+                                        ...user,
+                                        role: count === 0 ? 'super_admin' : 'user'
+                                    }
+                                };
+                            } catch (e) {
+                                return { data: user };
+                            }
+                        }
+                    }
+                }
+            },
             plugins: [
                 organization({
                     // Enable role-based access control
@@ -29,20 +49,15 @@ export const getAuth = async () => {
                         enabled: true
                     },
                     // Define default organization roles with permissions
+                    creatorRole: 'admin',
                     roles: {
-                        owner: role({
-                            organization: ['create', 'read', 'update', 'delete'],
-                            member: ['create', 'read', 'update', 'delete'],
-                            invitation: ['create', 'read', 'delete'],
-                            team: ['create', 'read', 'update', 'delete']
-                        }),
                         admin: role({
-                            organization: ['read', 'update'],
-                            member: ['create', 'read', 'update', 'delete'],
-                            invitation: ['create', 'read', 'delete'],
-                            team: ['create', 'read', 'update']
+                            organization: ['update', 'delete', 'read'],
+                            member: ['create', 'update', 'delete', 'read'],
+                            invitation: ['create', 'cancel', 'read'],
+                            team: ['create', 'update', 'delete', 'read']
                         }),
-                        member: role({
+                        user: role({
                             organization: ['read'],
                             member: ['read'],
                             team: ['read']

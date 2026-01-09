@@ -1,5 +1,5 @@
 {
-  "name": "@objectql/better-auth",
+  "name": "@objectql/platform",
   "version": "0.1.0",
   "description": "Better-Auth integration for ObjectQL",
   "main": "dist/index.js",

@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { 
-    SidebarProvider, 
-    SidebarInset, 
-    SidebarTrigger, 
-    Separator,
     Spinner,
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
 } from '@objectql/ui';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from '../hooks/useRouter';
-import { AppSidebar } from '../components/app-sidebar';
 import { ObjectListView } from '../components/dashboard/ObjectListView';
 import { ObjectDetailView } from '../components/dashboard/ObjectDetailView';
 import { SettingsView } from '../components/dashboard/SettingsView';
@@ -28,11 +17,10 @@ export default function Dashboard() {
     
     // Parse path
     // /object/project/123 -> parts ['', 'object', 'project', '123']
-    const parts = path.split('/').filter(Boolean);
-    const isSettings = path === '/settings';
-    const isObjectView = parts[0] === 'object';
-    const selectedObject = isObjectView ? parts[1] : null;
-    const recordId = isObjectView ? parts[2] : null;
+    const parts = path.split('/');
+    const objectName = parts[1] === 'object' ? parts[2] : null;
+    const isObjectView = parts[1] === 'object';
+    const recordId = isObjectView ? parts[3] : null; // Index 3 is ID because parts[2] is name
 
     useEffect(() => {
         if (user) {
@@ -63,97 +51,55 @@ export default function Dashboard() {
                     setLoading(false);
                 });
         }
-    }, [user]); // Run when user is available
+    }, [user]);
 
     if (loading) {
         return (
-            <div className="flex h-screen w-full items-center justify-center bg-[#F5F5F7]">
-                <Spinner className="w-6 h-6 text-gray-400" />
+            <div className="flex h-full w-full items-center justify-center">
+                <Spinner size="lg" />
             </div>
         );
     }
 
-    if (!user) return null;
+    // Since Dashboard is now rendered INSIDE App.tsx's Layout, 
+    // we only need to render the content specific to the route
+    
+    if (path === '/settings') {
+        return <SettingsView />;
+    }
 
-    const currentSchema = selectedObject ? objects[selectedObject] : null;
+    if (objectName && objects[objectName]) {
+        if (recordId) {
+            return (
+                <ObjectDetailView 
+                    objectName={objectName} 
+                    recordId={recordId}
+                    navigate={navigate}
+                    objectSchema={objects[objectName]}
+                />
+            );
+        }
+        return (
+            <ObjectListView 
+                objectName={objectName} 
+                user={user}
+                isCreating={false}
+                navigate={navigate}
+                objectSchema={objects[objectName]}
+            />
+        );
+    }
 
     return (
-        <SidebarProvider>
-            <AppSidebar objects={objects} />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
-                                    Dashboard
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            
-                            {isSettings && (
-                                <>
-                                    <BreadcrumbSeparator />
-                                    <BreadcrumbItem>
-                                        <BreadcrumbPage>Settings</BreadcrumbPage>
-                                    </BreadcrumbItem>
-                                </>
-                            )}
-
-                            {selectedObject && (
-                                <>
-                                    <BreadcrumbSeparator />
-                                    <BreadcrumbItem>
-                                        <BreadcrumbLink href="#" onClick={(e) => { e.preventDefault(); navigate(`/object/${selectedObject}`); }}>
-                                            {currentSchema?.label || selectedObject}
-                                        </BreadcrumbLink>
-                                    </BreadcrumbItem>
-                                </>
-                            )}
-                            
-                            {recordId && (
-                                <>
-                                    <BreadcrumbSeparator />
-                                    <BreadcrumbItem>
-                                        <BreadcrumbPage>
-                                            {recordId === 'new' ? 'New Record' : 'Edit Record'}
-                                        </BreadcrumbPage>
-                                    </BreadcrumbItem>
-                                </>
-                            )}
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                    <div className="py-6">
-                        {isSettings ? (
-                            <SettingsView />
-                        ) : isObjectView && selectedObject ? (
-                            recordId && recordId !== 'new' ? (
-                                <ObjectDetailView 
-                                    objectName={selectedObject} 
-                                    recordId={recordId} 
-                                    navigate={navigate}
-                                    objectSchema={objects[selectedObject]}
-                                />
-                            ) : (
-                                <ObjectListView 
-                                    objectName={selectedObject} 
-                                    user={user}
-                                    isCreating={recordId === 'new'}
-                                    navigate={navigate}
-                                    objectSchema={objects[selectedObject]}
-                                />
-                            )
-                        ) : (
-                            <div className="flex items-center justify-center h-[50vh] text-muted-foreground">
-                                Select a collection to view
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
+        <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+            <div className="flex flex-col items-center gap-1 text-center">
+                <h3 className="text-2xl font-bold tracking-tight">
+                    Welcome to ObjectQL
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                    Select an object from the sidebar to get started.
+                </p>
+            </div>
+        </div>
     );
 }

@@ -10,6 +10,6 @@ export const objectql = new ObjectQL({
   },
   packages: [
       '@example/project-management',
-      '@objectql/better-auth'
+      '@objectql/platform'
   ]
 });

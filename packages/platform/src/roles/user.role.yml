@@ -1,0 +1,13 @@
+name: user
+label: Standard User
+description: Regular organization member
+policies: []
+permissions:
+  organization: 
+    actions: [read]
+  member:
+    actions: [read]
+  team:
+    actions: [read]
+  # Does not include 'projects' or 'tasks' as those are app-specific.
+  # This base role provides enough execution context to exist in the org.

@@ -1,0 +1,9 @@
+name: super_admin
+label: System Administrator
+description: Full access to the entire system
+# isSystem is not a role property, but implicitly handled by checks.
+# But we can define a policy that gives * permissions or handled via isSystem flag.
+# For ObjectQL metadata, we'll just define it as a marker for now, 
+# though usually Super Admin bypasses checks in code.
+policies: [] 
+permissions: {}

@@ -22,15 +22,19 @@ export class AuthMiddleware implements NestMiddleware {
       });
       
       if (session) {
+          const role = session.user.role || 'user';
+          // Ensure we have an array of roles. better-auth usually provides a single role string on user object.
+          const roles = [role];
+
           req['user'] = {
               userId: session.user.id,
               id: session.user.id,
               ...session.user,
-              roles: session.user.role ? [session.user.role] : [],
+              roles: roles,
               spaceId: session.session.activeOrganizationId,
               sessionId: session.session.id,
-              // If user is admin, they are system admin (bypass ACL)
-              isSystem: session.user.role === 'admin'
+              // If user is super_admin or admin, they are system admin (bypass ACL)
+              isSystem: ['super_admin', 'admin'].includes(role)
           };
       } else if (req.headers['x-user-id']) {
           // Fallback for dev/test: trust x-user-id header

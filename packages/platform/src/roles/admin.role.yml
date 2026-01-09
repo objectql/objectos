@@ -1,0 +1,16 @@
+name: admin
+label: Organization Administrator
+description: Full access within the organization
+policies: []
+permissions:
+  # Organization Administrators should have wide access, 
+  # but maybe scoped (enforced by RLS typically).
+  # If we want to define global permissions here:
+  organization: 
+    actions: [read, update]
+  member:
+    actions: [create, read, update, delete]
+  invitation:
+    actions: [create, read, delete]
+  team:
+    actions: [create, read, update, delete]
