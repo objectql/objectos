@@ -21,4 +21,5 @@ export * from './components/AutoForm';
 export * from './components/Modal';
 export * from './components/Card';
 export * from './components/Spinner';
+export * from './components/Chart';
 
