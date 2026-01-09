@@ -136,6 +136,18 @@ graph TD
 * [ ] **Phase 2: Mongo Driver:** Implement full CRUD and Aggregation support.
 * [ ] **Phase 3: SQL Driver:** Implement the "Hybrid Storage" strategy (Relational Columns + JSONB).
 * [ ] **Phase 4: CLI Tools:** Schema synchronization and TypeScript type generation (`objectql generate`).
+* [ ] **Phase 5: AI Integration:** Natural language queries, schema generation, and AI-powered analytics.
+
+## 🤖 AI Capabilities
+
+ObjectQL is designed to be **AI-native** from the ground up:
+
+* **Natural Language to Queries**: Convert plain English to database queries
+* **Schema Generation**: Generate object definitions from business requirements
+* **AI-Powered Analytics**: Automated insights and trend detection
+* **Safe AI Operations**: Built-in validation, sandboxing, and rate limiting
+
+See our [AI Integration Guide](./docs/guide/ai-integration.md) and [AI Capabilities Roadmap](./docs/AI_CAPABILITIES_ROADMAP.md) for details.
 
 ## 🤝 Contributing
 
