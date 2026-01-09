@@ -95,3 +95,65 @@ export interface ObjectConfig {
     actions?: Record<string, ActionConfig>;
     data?: any[];
 }
+
+/**
+ * Menu item configuration for app interfaces.
+ * Similar to Airtable's interface menu structure.
+ */
+export interface AppMenuItem {
+    /** Unique identifier for the menu item */
+    id?: string;
+    /** Display label for the menu item */
+    label: string;
+    /** Icon identifier (e.g., remixicon class name like 'ri-home-line') */
+    icon?: string;
+    /** Type of menu item */
+    type?: 'object' | 'page' | 'url' | 'divider';
+    /** Reference to an object name (for type: 'object') */
+    object?: string;
+    /** URL path (for type: 'url' or 'page') */
+    url?: string;
+    /** Badge text or count to display */
+    badge?: string | number;
+    /** Whether this item is visible */
+    visible?: boolean;
+    /** Nested sub-menu items */
+    items?: AppMenuItem[];
+}
+
+/**
+ * Menu section/group configuration for organizing menu items.
+ */
+export interface AppMenuSection {
+    /** Section title/label */
+    label?: string;
+    /** Menu items in this section */
+    items: AppMenuItem[];
+    /** Whether this section is collapsible */
+    collapsible?: boolean;
+    /** Whether this section is collapsed by default */
+    collapsed?: boolean;
+}
+
+/**
+ * App configuration metadata.
+ * Represents an application or interface with its own menu structure.
+ */
+export interface AppConfig {
+    /** Unique identifier or code for the app */
+    id?: string;
+    /** App name */
+    name: string;
+    /** App code/slug */
+    code?: string;
+    /** Description of the app */
+    description?: string;
+    /** App icon identifier */
+    icon?: string;
+    /** Color theme for the app */
+    color?: string;
+    /** Dark mode preference */
+    dark?: boolean;
+    /** Left-side menu configuration */
+    menu?: AppMenuSection[] | AppMenuItem[];
+}

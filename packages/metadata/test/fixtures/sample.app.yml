@@ -1,0 +1,25 @@
+name: Sample App
+code: sample
+description: A sample app with menu configuration
+icon: ri-apps-line
+color: blue
+dark: false
+
+menu:
+  - label: Main
+    items:
+      - label: Dashboard
+        icon: ri-dashboard-line
+        type: page
+        url: /dashboard
+      - label: Projects
+        icon: ri-building-line
+        type: object
+        object: projects
+  - label: Settings
+    collapsible: true
+    items:
+      - label: Preferences
+        icon: ri-settings-3-line
+        type: page
+        url: /settings
