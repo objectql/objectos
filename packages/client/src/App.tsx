@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AppList from './pages/AppList';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
@@ -17,6 +18,32 @@ function AppContent() {
   // Let's modify AppContent to render the Main Layout if logged in.
   
   const [objects, setObjects] = useState<Record<string, any>>({});
+  const [currentAppMetadata, setCurrentAppMetadata] = useState<any>(null);
+
+  // Fetch App Metadata when entering an app
+  useEffect(() => {
+      const parts = currentPath.split('/');
+      if (parts[1] === 'app' && parts[2]) {
+          const appName = parts[2];
+          // Simple cache check/avoid refetch if same app
+          if (currentAppMetadata && (currentAppMetadata.id === appName || currentAppMetadata.content?.code === appName)) {
+              return;
+          }
+          
+          fetch(`/api/v6/metadata/app/${appName}`)
+              .then(res => {
+                  if (!res.ok) throw new Error('App not found');
+                  return res.json();
+              })
+              .then(data => setCurrentAppMetadata(data))
+              .catch(err => {
+                  console.error(err);
+                  setCurrentAppMetadata(null);
+              });
+      } else if (currentAppMetadata) {
+          setCurrentAppMetadata(null);
+      }
+  }, [currentPath, currentAppMetadata]);
   
   // We need to fetch objects for the sidebar if we are not in dashboard
   useEffect(() => {
@@ -73,9 +100,33 @@ function AppContent() {
   }
 
   // Main Layout
+  if (currentPath === '/' || currentPath === '/apps') {
+      return (
+        <SidebarProvider>
+            <AppSidebar objects={objects} />
+            <SidebarInset>
+                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Apps</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </header>
+                <div className="flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
+                    <AppList />
+                </div>
+            </SidebarInset>
+        </SidebarProvider>
+      );
+  }
+
   return (
       <SidebarProvider>
-          <AppSidebar objects={objects} />
+          <AppSidebar objects={objects} appMetadata={currentAppMetadata} />
           <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                 <SidebarTrigger className="-ml-1" />

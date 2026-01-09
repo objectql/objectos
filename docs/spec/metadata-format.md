@@ -212,9 +212,8 @@ App files define application interfaces with custom navigation menus, similar to
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
+| `code` | `string` | Unique identifier for the app, default to id if not specified. |
 | `name` | `string` | **Required.** Display name of the app. |
-| `id` | `string` | Unique identifier for the app. Defaults to `name` if not provided. |
-| `code` | `string` | URL-friendly code/slug for the app. |
 | `description` | `string` | Description of the app's purpose. |
 | `icon` | `string` | Icon identifier (e.g., `ri-dashboard-line`). |
 | `color` | `string` | Color theme for the app (e.g., `blue`, `gray`). |
@@ -231,8 +230,8 @@ The `menu` property defines the left-side navigation structure. It can be either
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `label` | `string` | **Required.** Display label for the menu item. |
 | `id` | `string` | Unique identifier for the menu item. |
+| `label` | `string` | **Required.** Display label for the menu item. |
 | `icon` | `string` | Icon identifier (e.g., `ri-home-line`, `ri-dashboard-line`). |
 | `type` | `string` | Type: `object`, `page`, `url`, or `divider`. Default: `page`. |
 | `object` | `string` | Object name to link to (when `type: object`). |
@@ -284,9 +283,9 @@ The `menu` property defines the left-side navigation structure. It can be either
 ### 6.4 Complete App Example
 
 ```yaml
+code: projects
 name: Project Management
 description: Manage and track your projects efficiently.
-code: projects
 icon: ri-dashboard-line
 color: blue
 dark: false
