@@ -1,7 +1,32 @@
 name: ai_agent
 label: AI Agent
 icon: ri-robot-2-line
-description: Autonomous AI agent that can execute complex tasks and workflows, similar to Zapier AI Agents
+description: |
+  AI Agents are autonomous entities that can execute complex, multi-step tasks and workflows.
+  Unlike simple chatbots or tools, agents can reason about problems, plan solutions, use multiple
+  tools, maintain memory across interactions, and adapt their approach based on results.
+  
+  Core Characteristics:
+  - Autonomy: Can work independently with minimal supervision
+  - Reasoning: Uses strategies like Chain of Thought or ReAct to solve problems
+  - Tool Use: Can select and execute appropriate tools from a toolkit
+  - Memory: Maintains context and learns from past interactions
+  - Goal-Oriented: Works toward defined objectives with measurable outcomes
+  
+  Agent Lifecycle:
+  1. Task Assignment: Receive a task description and context
+  2. Planning: Analyze the task and create an execution plan
+  3. Execution: Perform actions using available tools and APIs
+  4. Monitoring: Track progress and adjust strategy as needed
+  5. Completion: Return results and update performance metrics
+  
+  Common Use Cases:
+  - Automated data analysis and reporting
+  - Content creation and curation workflows
+  - Business process automation (approval workflows, data entry)
+  - Code review and quality assurance
+  - Research and information synthesis
+  - Customer success automation
 enable_search: true
 
 fields:
@@ -112,8 +137,32 @@ fields:
     type: textarea
     label: System Prompt
     required: true
-    description: Core instructions that define the agent's behavior and capabilities
-    help_text: Provide comprehensive context about the agent's role, goals, and constraints
+    description: Foundational instructions that define the agent's role, capabilities, decision-making process, and constraints
+    help_text: |
+      The system prompt is the agent's core programming. It should include:
+      
+      1. Identity & Role:
+         "You are a data analysis expert agent responsible for..."
+      
+      2. Objectives & Goals:
+         "Your mission is to analyze business data and generate actionable insights that..."
+      
+      3. Available Tools & When to Use Them:
+         "You have access to the following tools:
+          - data_query: Use to fetch data from databases
+          - visualize: Use to create charts and graphs
+          - calculate: Use for statistical analysis"
+      
+      4. Decision-Making Process:
+         "When given a task, first analyze requirements, then plan your approach,
+          execute step by step, and validate results before presenting findings."
+      
+      5. Constraints & Limitations:
+         "Do not modify data without explicit approval. Always explain your reasoning.
+          If uncertain, ask for clarification rather than making assumptions."
+      
+      6. Output Format:
+         "Present findings in a structured format with summary, details, and recommendations."
   
   objective:
     type: textarea
@@ -125,8 +174,31 @@ fields:
   capabilities:
     type: grid
     label: Capabilities
-    description: List of specific capabilities and permissions
-    help_text: Define what actions the agent can perform
+    description: Detailed list of specific actions and permissions the agent is authorized to perform
+    help_text: |
+      Define what the agent can do. Each capability should specify:
+      - Action name (e.g., "query_database", "send_email", "create_report")
+      - Description of what it does
+      - Required parameters
+      - Any constraints or limits
+      
+      Example grid entries:
+      [
+        {
+          "action": "query_database",
+          "description": "Execute SQL queries on analytics database",
+          "parameters": ["query_string", "database_name"],
+          "constraints": "Read-only access, max 10000 rows"
+        },
+        {
+          "action": "send_email",
+          "description": "Send notification emails to stakeholders",
+          "parameters": ["recipients", "subject", "body"],
+          "constraints": "Max 10 emails per day, internal recipients only"
+        }
+      ]
+      
+      This explicit definition helps ensure agents only perform authorized actions.
   
   tools:
     type: lookup
@@ -184,7 +256,31 @@ fields:
       - label: Custom
         value: custom
     defaultValue: react
-    description: The reasoning approach the agent uses
+    description: The cognitive approach the agent uses to break down and solve problems
+    help_text: |
+      Different reasoning strategies for different types of tasks:
+      
+      Chain of Thought (CoT):
+      - Best for: Step-by-step logical problems, math, analysis
+      - How it works: Breaks problem into sequential steps
+      - Example: "First I'll A, then B, finally C"
+      
+      Tree of Thought (ToT):
+      - Best for: Problems with multiple solution paths, complex planning
+      - How it works: Explores multiple approaches in parallel, backtracks if needed
+      - Example: "Let me try approach A... that didn't work. Let me try B..."
+      
+      ReAct (Reasoning + Acting):
+      - Best for: Tasks requiring tool use and interaction with external systems
+      - How it works: Alternates between thinking and acting
+      - Example: "Thought: I need data. Action: Query database. Observation: Got 100 records..."
+      
+      Reflexion:
+      - Best for: Tasks requiring self-correction and learning
+      - How it works: Reflects on failures and adjusts approach
+      - Example: "Previous attempt failed because... I'll adjust by..."
+      
+      Recommendation: Use ReAct for most general-purpose agents.
   
   max_iterations:
     type: number

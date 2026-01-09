@@ -1,7 +1,19 @@
 name: ai_tool
 label: AI Tool
 icon: ri-tools-line
-description: Defines reusable AI functions and capabilities, similar to Zapier AI Actions
+description: |
+  AI Tools are reusable AI-powered functions that can be configured and executed programmatically.
+  Similar to Zapier AI Actions, they provide a standardized way to integrate AI capabilities
+  into workflows and applications. Each tool encapsulates an AI model with specific configuration,
+  input/output schemas, and execution parameters. Tools can perform tasks like text processing,
+  code generation, translation, sentiment analysis, and more.
+  
+  Key Concepts:
+  - Tools are stateless and can be called multiple times
+  - Input and output are validated against JSON schemas
+  - Execution is tracked for usage analytics and cost monitoring
+  - Tools support multiple AI providers (OpenAI, Anthropic, Google AI, etc.)
+  - Rate limiting and cost controls prevent overruns
 enable_search: true
 
 fields:
@@ -106,25 +118,44 @@ fields:
   input_schema:
     type: object
     label: Input Schema
-    description: JSON schema defining the expected input parameters
-    help_text: Define the structure and validation rules for tool inputs
+    description: JSON schema defining the expected input parameters for this AI tool
+    help_text: |
+      Define the structure and validation rules for tool inputs using JSON Schema format.
+      Example: { "type": "object", "properties": { "text": { "type": "string" } }, "required": ["text"] }
+      This ensures inputs are validated before execution and provides documentation for API consumers.
   
   output_schema:
     type: object
     label: Output Schema
-    description: JSON schema defining the expected output format
-    help_text: Define the structure of the tool's response
+    description: JSON schema defining the expected output format from this AI tool
+    help_text: |
+      Define the structure of the tool's response using JSON Schema format.
+      Example: { "type": "object", "properties": { "result": { "type": "string" } } }
+      This provides type safety and documentation for consumers of the tool's output.
   
   system_prompt:
     type: textarea
     label: System Prompt
-    description: System instructions for the AI model
-    help_text: Provide context and instructions to guide the AI's behavior
+    description: System-level instructions that define the AI model's behavior and role
+    help_text: |
+      The system prompt sets the context and personality for the AI model.
+      Best practices:
+      - Be clear and specific about the task
+      - Define the expected output format
+      - Include any constraints or guidelines
+      - Provide examples if helpful
+      Example: "You are a professional text summarizer. Create concise summaries that capture key points while maintaining accuracy."
   
   temperature:
     type: number
     label: Temperature
-    description: Controls randomness in AI responses (0.0 - 2.0)
+    description: Controls randomness/creativity in AI responses (0.0 - 2.0)
+    help_text: |
+      Temperature affects the randomness of the model's output:
+      - 0.0-0.3: Very deterministic, consistent responses (good for factual tasks)
+      - 0.4-0.7: Balanced creativity and consistency (general purpose)
+      - 0.8-1.2: More creative and varied responses (good for content generation)
+      - 1.3-2.0: Highly creative but may be less coherent (experimental use)
     min: 0
     max: 2
     defaultValue: 0.7

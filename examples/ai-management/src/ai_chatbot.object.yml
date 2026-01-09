@@ -1,7 +1,25 @@
 name: ai_chatbot
 label: AI Chatbot
 icon: ri-message-3-line
-description: Conversational AI chatbot configuration for customer service, support, and engagement
+description: |
+  AI Chatbots are conversational AI interfaces designed for customer service, support, and user engagement.
+  They provide natural language interaction through text or voice, can be deployed across multiple channels,
+  and integrate with business systems to provide personalized assistance.
+  
+  Key Capabilities:
+  - Multi-turn conversations with context retention
+  - Personality customization for brand alignment
+  - Multi-language support for global audiences
+  - Human handoff when issues require human intervention
+  - Integration with AI Tools for extended functionality
+  - Analytics tracking for performance optimization
+  
+  Common Use Cases:
+  - 24/7 customer support and FAQ answering
+  - Sales assistance and lead qualification
+  - Employee onboarding and HR support
+  - Technical troubleshooting guides
+  - Product recommendations and discovery
 enable_search: true
 
 fields:
@@ -152,14 +170,40 @@ fields:
     type: textarea
     label: System Prompt
     required: true
-    description: Instructions that define the chatbot's behavior and knowledge
-    help_text: Provide detailed context about the chatbot's role, capabilities, and constraints
+    description: Core instructions defining the chatbot's behavior, knowledge boundaries, and interaction style
+    help_text: |
+      The system prompt is critical for chatbot behavior. Include:
+      1. Role definition: "You are a helpful customer support assistant for [Company]"
+      2. Capabilities: What the bot can and cannot do
+      3. Tone and style: Professional, friendly, empathetic, etc.
+      4. Response guidelines: Format, length, when to escalate
+      5. Knowledge boundaries: What topics are in/out of scope
+      
+      Example:
+      "You are a professional customer support assistant for TechCorp.
+       Your role is to help customers with product questions, basic troubleshooting,
+       and order inquiries. Always be polite and empathetic. If you cannot resolve
+       an issue, offer to connect the customer with a human agent."
   
   knowledge_base:
     type: object
     label: Knowledge Base
-    description: Structured knowledge data for the chatbot to reference
-    help_text: Upload documents, FAQs, or structured data the bot can use
+    description: Structured knowledge data that the chatbot can reference during conversations
+    help_text: |
+      Upload or define structured knowledge that the chatbot should know:
+      - FAQs and their answers
+      - Product documentation excerpts
+      - Company policies and procedures
+      - Common troubleshooting steps
+      
+      Format as JSON with categories:
+      {
+        "products": { "product_name": "description and features" },
+        "policies": { "return_policy": "30-day returns allowed..." },
+        "faqs": [ { "q": "How to reset password?", "a": "Click forgot password..." } ]
+      }
+      
+      The chatbot will use this to provide accurate, consistent information.
   
   tools:
     type: lookup
@@ -202,8 +246,25 @@ fields:
   handoff_conditions:
     type: textarea
     label: Handoff Conditions
-    description: Rules for when to transfer to a human agent
-    help_text: Define scenarios when the bot should escalate to a human
+    description: Rules and criteria for when the chatbot should transfer conversations to human agents
+    help_text: |
+      Define specific scenarios when the bot should escalate to a human:
+      
+      Recommended handoff triggers:
+      - User explicitly requests human assistance ("I want to speak to a person")
+      - Sentiment becomes very negative (user is frustrated or angry)
+      - Issue involves sensitive topics (payments, refunds, complaints)
+      - Bot cannot provide a satisfactory answer after 3 attempts
+      - Complex technical issues beyond bot's knowledge
+      - VIP or enterprise customers (based on customer tier)
+      
+      Example:
+      "Transfer to human agent when:
+       1. User explicitly requests it
+       2. Issue involves payment disputes or refunds over $100
+       3. User sentiment score is below -0.7
+       4. Unable to resolve after 3 conversation turns
+       5. Customer is marked as VIP tier"
   
   fallback_message:
     type: textarea
