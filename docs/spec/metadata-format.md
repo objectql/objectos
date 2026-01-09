@@ -79,6 +79,7 @@ Files should use **Snake Case** filenames (e.g., `project_tasks.object.yml`).
 | `description` | `string` | Internal description of the object. |
 | `fields` | `Map` | Dictionary of field definitions. |
 | `actions` | `Map` | Dictionary of custom action definitions. |
+| `customizable` | `boolean` | Whether this object can be modified or deleted. System objects (e.g., `user`, `session`) should be marked as `false`. Defaults to `true`. |
 
 ## 4. Field Definitions
 
@@ -103,6 +104,7 @@ fields:
 | `searchable` | `boolean` | Hint to include this field in global search. |
 | `sortable` | `boolean` | Hint that this field can be used for sorting in UI. |
 | `description` | `string` | Help text or documentation for the field. |
+| `customizable` | `boolean` | Whether this field can be modified or deleted. System fields (e.g., `_id`, `createdAt`, `updatedAt`) should be marked as `false`. Defaults to `true`. |
 
 ### 4.2 Supported Field Types
 
@@ -663,4 +665,143 @@ settings:
   defaultTab: 0
   tabPosition: top
 ```
+
+## 9. Metadata Protection
+
+Similar to Salesforce and other low-code platforms, ObjectQL supports protecting system metadata from modification or deletion. This is crucial for maintaining system integrity when integrating with authentication systems like better-auth.
+
+### 9.1 Object-Level Protection
+
+Objects can be marked as non-customizable using the `customizable` property:
+
+```yaml
+name: user
+description: System user for authentication
+customizable: false  # Prevents modification or deletion of this object
+fields:
+  email:
+    type: email
+    required: true
+```
+
+When an object is marked as `customizable: false`:
+- The object cannot be deleted using `unregister()`
+- Attempts to modify the object will throw a validation error
+- The object cannot be removed as part of package unregistration
+
+**Use Cases:**
+- Authentication objects (user, session, account)
+- Core system objects (organization, member)
+- Third-party integration objects that must maintain a specific schema
+
+### 9.2 Field-Level Protection
+
+Individual fields can be marked as non-customizable, even within customizable objects:
+
+```yaml
+name: user
+customizable: true  # Allow adding custom fields
+fields:
+  email:
+    type: email
+    customizable: false  # But protect core system field
+  createdAt:
+    type: datetime
+    customizable: false  # Protect audit fields
+  updatedAt:
+    type: datetime
+    customizable: false  # Protect audit fields
+  customField:
+    type: text
+    customizable: true  # Allow modification of custom fields
+```
+
+When a field is marked as `customizable: false`:
+- The field cannot be modified or deleted
+- Field properties (type, validation rules, etc.) cannot be changed
+- The field will always appear in the object schema
+
+**Common Protected Fields:**
+- `_id` or `id`: Primary key
+- `createdAt`: Record creation timestamp
+- `updatedAt`: Record update timestamp
+- `createdBy`: User who created the record
+- `updatedBy`: User who last updated the record
+
+### 9.3 Better-Auth Integration
+
+All better-auth objects are marked as non-customizable to ensure authentication system integrity:
+
+**Protected Objects:**
+- `user`: User accounts and authentication
+- `account`: OAuth provider accounts
+- `session`: Active user sessions
+- `verification`: Email/phone verification tokens
+- `invitation`: Organization invitations
+- `organization`: Multi-tenant organizations
+- `member`: Organization memberships
+
+**Example:**
+```yaml
+# packages/better-auth/src/user.object.yml
+name: user
+description: System user for authentication
+customizable: false
+fields:
+  email:
+    type: string
+    unique: true
+  password:
+    type: string
+    hidden: true
+  createdAt:
+    type: datetime
+    customizable: false
+  updatedAt:
+    type: datetime
+    customizable: false
+```
+
+### 9.4 Validation API
+
+The MetadataRegistry provides validation methods to check if metadata can be modified:
+
+```typescript
+import { MetadataRegistry } from '@objectql/metadata';
+
+const registry = new MetadataRegistry();
+
+// Check if an object can be modified
+try {
+  registry.validateObjectCustomizable('user');
+  // Proceed with modification
+} catch (error) {
+  // Error: Cannot modify system object 'user'
+}
+
+// Check if a field can be modified
+try {
+  registry.validateFieldCustomizable('user', 'createdAt');
+  // Proceed with field modification
+} catch (error) {
+  // Error: Cannot modify system field 'createdAt' on object 'user'
+}
+```
+
+### 9.5 Best Practices
+
+1. **System Objects**: Always mark authentication and core system objects as non-customizable
+2. **Audit Fields**: Mark timestamp and user tracking fields as non-customizable
+3. **Custom Extensions**: Allow users to add custom fields to system objects by keeping the object customizable but protecting core fields
+4. **Documentation**: Clearly document which objects and fields are protected and why
+5. **Error Messages**: Provide clear error messages when modification attempts are blocked
+
+### 9.6 Default Behavior
+
+If the `customizable` property is not specified:
+- **Objects**: Default to `true` (customizable)
+- **Fields**: Default to `true` (customizable)
+
+This ensures backward compatibility while allowing explicit protection of system metadata.
+
 
