@@ -6,14 +6,17 @@ import { BooleanField } from './BooleanField'
 import { SelectField } from './SelectField'
 import { DateField } from './DateField'
 import { TextAreaField } from './TextAreaField'
+import { LookupField } from './LookupField'
 
 export interface GenericFieldProps extends FieldProps {
     type: string
+    referenceTo?: string
 }
 
-export function Field({ type, ...props }: GenericFieldProps) {
+export function Field({ type, referenceTo, ...props }: GenericFieldProps) {
     switch (type) {
         case 'text':
+
         case 'string':
         case 'email':
         case 'url':
@@ -36,6 +39,12 @@ export function Field({ type, ...props }: GenericFieldProps) {
         case 'textarea':
         case 'longtext':
             return <TextAreaField {...props} />
+        case 'lookup':
+        case 'master_detail':
+            if (referenceTo) {
+                return <LookupField referenceTo={referenceTo} {...props} />
+            }
+            return <TextField {...props} />
         default:
             return <TextField {...props} />
     }

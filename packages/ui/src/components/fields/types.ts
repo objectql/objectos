@@ -1,4 +1,3 @@
-
 export interface FieldProps<T = any> {
   value?: T
   onChange?: (value: T | undefined) => void
@@ -16,4 +15,8 @@ export interface FieldProps<T = any> {
   
   // Specific options
   options?: ({ label: string; value: any } | string)[]
+}
+
+export interface LookupFieldProps extends FieldProps<string> {
+  referenceTo: string
 }

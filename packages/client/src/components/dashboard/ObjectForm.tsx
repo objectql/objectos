@@ -33,10 +33,12 @@ export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, head
     const fields = Object.entries(schema.fields || {});
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {fields.map(([key, field]: [string, any]) => {
                 if (['id', '_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'].includes(key)) return null;
                 
+                const isWide = field.is_wide || ['textarea', 'json', 'markdown', 'code'].includes(field.type);
+
                 return (
                     <Controller
                         key={key}
@@ -45,9 +47,11 @@ export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, head
                         rules={{ required: field.required }}
                         render={({ field: { value, onChange }, fieldState: { error } }) => (
                             <Field
+                                className={isWide ? "col-span-1 md:col-span-2" : ""}
                                 name={key}
                                 label={field.label || field.title || key}
                                 type={field.type}
+                                referenceTo={field.reference_to}
                                 value={value}
                                 onChange={onChange}
                                 error={error?.message}
@@ -59,7 +63,7 @@ export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, head
                     />
                 );
             })}
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex justify-end gap-2 pt-4 col-span-1 md:col-span-2">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
                 <Button type="submit">Save</Button>
             </div>
