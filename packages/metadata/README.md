@@ -64,6 +64,50 @@ const objects = registry.list('object');
 console.log(objects.map(o => o.name));
 ```
 
+### Working with App Metadata and Menus
+
+Apps can define custom navigation menus, similar to Airtable interfaces:
+
+```typescript
+import { MetadataRegistry, MetadataLoader, registerObjectQLPlugins, AppConfig } from '@objectql/metadata';
+
+const registry = new MetadataRegistry();
+const loader = new MetadataLoader(registry);
+
+registerObjectQLPlugins(loader);
+loader.load('./src');
+
+// Get app configuration
+const app = registry.get('app', 'MyApp') as AppConfig;
+
+if (app && app.menu) {
+    // Render menu sections
+    app.menu.forEach((section) => {
+        console.log(`Section: ${section.label || 'Unnamed'}`);
+        
+        section.items?.forEach((item) => {
+            console.log(`  - ${item.label} (${item.type})`);
+            
+            // Handle different menu item types
+            switch (item.type) {
+                case 'object':
+                    // Link to object list view
+                    console.log(`    Object: ${item.object}`);
+                    break;
+                case 'page':
+                    // Link to internal page
+                    console.log(`    Page: ${item.url}`);
+                    break;
+                case 'url':
+                    // External link
+                    console.log(`    URL: ${item.url}`);
+                    break;
+            }
+        });
+    });
+}
+```
+
 ## API
 
 ### `MetadataRegistry`
