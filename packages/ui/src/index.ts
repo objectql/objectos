@@ -15,6 +15,7 @@ export * from './components/fields/BooleanField';
 export * from './components/Form';
 export * from './components/Table';
 export * from './components/grid/DataTable';
+export * from './components/grid/DataTableFilter';
 export * from './components/AutoForm';
 
 export * from './components/Modal';
