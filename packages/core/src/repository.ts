@@ -73,12 +73,11 @@ export class ObjectRepository {
         }
 
         // Wrap existing filters with AND baseId
+        // Using nested array to group existing filters with baseId
         return {
             ...query,
             filters: [
-                '(',
-                ...query.filters,
-                ')',
+                query.filters,
                 'and',
                 baseFilter
             ]
