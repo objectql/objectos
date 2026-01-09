@@ -104,7 +104,7 @@ export interface AppMenuItem {
     /** Unique identifier for the menu item */
     id?: string;
     /** Display label for the menu item */
-    label: string;
+    label?: string;
     /** Icon identifier (e.g., remixicon class name like 'ri-home-line') */
     icon?: string;
     /** Type of menu item */
