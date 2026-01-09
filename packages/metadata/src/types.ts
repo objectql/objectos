@@ -136,11 +136,16 @@ export interface AppMenuSection {
 }
 
 /**
- * Type guard to check if a menu entry is a section (has items array as required property)
- * vs a direct menu item.
+ * Type guard to check if a menu entry is a section vs a direct menu item.
+ * A section has an 'items' array and lacks menu item-specific properties like 'type', 'object', or 'url'.
+ * It may also have section-specific properties like 'collapsible' or 'collapsed'.
  */
 export function isAppMenuSection(entry: AppMenuSection | AppMenuItem): entry is AppMenuSection {
-    return 'items' in entry && Array.isArray(entry.items) && !('type' in entry);
+    return 'items' in entry && 
+           Array.isArray(entry.items) && 
+           !('type' in entry) && 
+           !('object' in entry) && 
+           !('url' in entry);
 }
 
 /**
