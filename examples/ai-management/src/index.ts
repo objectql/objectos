@@ -1,35 +1,15 @@
 /**
  * AI Management Example
  * 
- * This module exports AI-related metadata definitions for tools, chatbots, and agents.
+ * This module provides type definitions and enums for AI-related metadata.
  * Inspired by Zapier's AI capabilities, these definitions provide a foundation for
  * building AI-powered applications with ObjectQL.
  * 
+ * Note: YAML metadata files should be loaded using ObjectQL's metadata loader,
+ * not directly imported in TypeScript.
+ * 
  * @module ai-management
  */
-
-// Object Definitions
-export { default as aiToolObject } from './ai_tool.object.yml';
-export { default as aiChatbotObject } from './ai_chatbot.object.yml';
-export { default as aiAgentObject } from './ai_agent.object.yml';
-
-// App Definition
-export { default as aiApp } from './ai.app.yml';
-
-// Page Definitions
-export { default as aiDashboardPage } from './ai_dashboard.page.yml';
-
-// Chart Definitions
-export { default as aiToolsByCategoryChart } from './ai_tools_by_category.chart.yml';
-export { default as aiToolsByStatusChart } from './ai_tools_by_status.chart.yml';
-export { default as chatbotConversationsChart } from './chatbot_conversations.chart.yml';
-export { default as agentSuccessRateChart } from './agent_success_rate.chart.yml';
-export { default as agentTasksByStatusChart } from './agent_tasks_by_status.chart.yml';
-
-// Sample Data
-export { default as aiToolData } from './ai_tool.data.yml';
-export { default as aiChatbotData } from './ai_chatbot.data.yml';
-export { default as aiAgentData } from './ai_agent.data.yml';
 
 /**
  * AI Tool Categories
