@@ -157,7 +157,7 @@ describe('Metadata Customizable Protection', () => {
                         customizable: true
                     },
                     description: {
-                        type: 'textarea'
+                        type: 'textarea',
                         // customizable defaults to true
                     }
                 }

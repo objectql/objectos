@@ -30,14 +30,21 @@ export class MetadataRegistry {
     
     unregisterPackage(packageName: string) {
         for (const [type, map] of this.store.entries()) {
+            const entriesToDelete: string[] = [];
+            
             for (const [id, meta] of map.entries()) {
                 if (meta.package === packageName) {
                     // Check if the metadata is customizable before allowing unregister
                     if (type === 'object' && meta.content.customizable === false) {
                         throw new Error(`Cannot unregister package '${packageName}'. It contains non-customizable object '${id}'.`);
                     }
-                    map.delete(id);
+                    entriesToDelete.push(id);
                 }
+            }
+            
+            // Delete all collected entries
+            for (const id of entriesToDelete) {
+                map.delete(id);
             }
         }
     }
