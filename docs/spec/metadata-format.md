@@ -261,3 +261,117 @@ actions:
     result: 
       type: currency
 ```
+
+## 7. Chart Definition
+
+Chart files define data visualizations based on object data. They use the naming convention `*.chart.yml` or `*.chart.yaml`.
+
+### 7.1 Root Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | **Required.** Unique API name of the chart. |
+| `label` | `string` | Human-readable label for the chart. |
+| `description` | `string` | Description of what the chart visualizes. |
+| `type` | `string` | **Required.** Chart type: `bar`, `line`, `pie`, or `area`. |
+| `object` | `string` | **Required.** The object/entity to visualize data from. |
+| `xAxisKey` | `string` | **Required.** Field name for X-axis data. |
+| `yAxisKeys` | `string[]` | **Required.** Array of field names for Y-axis data series. |
+| `height` | `number` | Chart height in pixels. Default: `300`. |
+| `colors` | `string[]` | Custom color palette for chart series. |
+| `showGrid` | `boolean` | Whether to display grid lines. Default: `true`. |
+| `showLegend` | `boolean` | Whether to display the legend. Default: `true`. |
+| `showTooltip` | `boolean` | Whether to show tooltips on hover. Default: `true`. |
+| `filters` | `array` | Optional filters to apply to the data query. |
+| `sort` | `array` | Sort criteria as `[field, direction]` pairs. |
+
+### 7.2 Chart Types
+
+**Bar Chart**: Best for comparing values across categories.
+
+**Line Chart**: Ideal for showing trends over time.
+
+**Area Chart**: Similar to line charts but with filled areas, great for cumulative data.
+
+**Pie Chart**: Best for showing proportions and distributions (limit to 5-7 categories).
+
+### 7.3 Example Chart Definitions
+
+#### Pie Chart Example
+
+```yaml
+name: projects_by_status
+label: Projects by Status
+description: Distribution of projects across different statuses
+type: pie
+object: projects
+xAxisKey: status
+yAxisKeys:
+  - count
+height: 350
+showLegend: true
+showTooltip: true
+```
+
+#### Bar Chart with Custom Colors
+
+```yaml
+name: projects_by_priority
+label: Projects by Priority
+description: Bar chart showing project distribution by priority level
+type: bar
+object: projects
+xAxisKey: priority
+yAxisKeys:
+  - count
+height: 300
+showGrid: true
+showLegend: true
+showTooltip: true
+colors:
+  - '#FF6F2C'  # High priority (Orange)
+  - '#FFC940'  # Normal priority (Yellow)
+  - '#20C933'  # Low priority (Green)
+```
+
+#### Multi-Series Area Chart
+
+```yaml
+name: tasks_completion
+label: Task Completion Trend
+description: Track task completion progress over time
+type: area
+object: tasks
+xAxisKey: due_date
+yAxisKeys:
+  - completed_count
+  - total_count
+height: 350
+showGrid: true
+showLegend: true
+showTooltip: true
+colors:
+  - '#20C933'
+  - '#2D7FF9'
+```
+
+#### Bar Chart with Sorting
+
+```yaml
+name: project_timeline
+label: Project Timeline
+description: Visualize project start and end dates
+type: bar
+object: projects
+xAxisKey: name
+yAxisKeys:
+  - start_date
+  - end_date
+height: 400
+showGrid: true
+showLegend: true
+showTooltip: true
+sort:
+  - - start_date
+    - asc
+```

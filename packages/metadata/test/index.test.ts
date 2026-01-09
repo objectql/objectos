@@ -1,5 +1,6 @@
 import { MetadataRegistry } from '../src/registry';
 import { MetadataLoader } from '../src/loader';
+import { registerObjectQLPlugins } from '../src/plugins/objectql';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
@@ -80,5 +81,24 @@ describe('MetadataLoader', () => {
         const item = registry.get('test', 'test-item');
         expect(item).toBeDefined();
         expect(item.value).toBe(123);
+    });
+});
+
+describe('Chart Metadata Loader', () => {
+    it('should load chart metadata from .chart.yml files', () => {
+        const registry = new MetadataRegistry();
+        const loader = new MetadataLoader(registry);
+        
+        registerObjectQLPlugins(loader);
+
+        const fixturesDir = path.join(__dirname, 'fixtures');
+        loader.load(fixturesDir);
+
+        const chart = registry.get('chart', 'test_chart');
+        expect(chart).toBeDefined();
+        expect(chart.type).toBe('bar');
+        expect(chart.object).toBe('test_object');
+        expect(chart.xAxisKey).toBe('category');
+        expect(chart.yAxisKeys).toEqual(['value']);
     });
 });
