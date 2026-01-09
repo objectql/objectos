@@ -9,8 +9,9 @@ async function bootstrap() {
       credentials: true
   });
   
-  // NestJS by default listens on 3000
-  await app.listen(3000);
+  // Listen on PORT or default to 3000 to match client proxy
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

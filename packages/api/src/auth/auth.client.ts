@@ -14,8 +14,8 @@ export const getAuth = async () => {
         });
         authInstance = betterAuth({
             database: pool,
-            baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3100/api/v6/auth",
-            trustedOrigins: ["http://localhost:5173", "http://localhost:3000", "http://localhost:3100"],
+            baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000/api/v6/auth",
+            trustedOrigins: ["http://localhost:5173", "http://localhost:3000", "http://localhost:3000"],
             emailAndPassword: {
                 enabled: true
             },
