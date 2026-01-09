@@ -102,3 +102,27 @@ describe('Chart Metadata Loader', () => {
         expect(chart.yAxisKeys).toEqual(['value']);
     });
 });
+
+describe('Page Metadata Loader', () => {
+    it('should load page metadata from .page.yml files', () => {
+        const registry = new MetadataRegistry();
+        const loader = new MetadataLoader(registry);
+        
+        registerObjectQLPlugins(loader);
+
+        const fixturesDir = path.join(__dirname, 'fixtures');
+        loader.load(fixturesDir);
+
+        const page = registry.get('page', 'dashboard');
+        expect(page).toBeDefined();
+        expect(page.name).toBe('dashboard');
+        expect(page.label).toBe('Dashboard');
+        expect(page.description).toBe('Main dashboard page with charts and metrics');
+        expect(page.icon).toBe('dashboard');
+        expect(page.layout).toBe('grid');
+        expect(page.components).toBeDefined();
+        expect(page.components).toHaveLength(3);
+        expect(page.settings).toBeDefined();
+        expect(page.settings.gridColumns).toBe(2);
+    });
+});

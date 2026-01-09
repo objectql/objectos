@@ -114,3 +114,21 @@ export interface ChartConfig {
     filters?: any[];
     sort?: [string, 'asc' | 'desc'][];
 }
+
+export type PageLayoutType = 'grid' | 'flex' | 'stack' | 'tabs';
+
+export interface PageComponent {
+    type: string;
+    props?: Record<string, any>;
+    children?: PageComponent[];
+}
+
+export interface PageConfig {
+    name: string;
+    label?: string;
+    description?: string;
+    icon?: string;
+    layout?: PageLayoutType;
+    components?: PageComponent[];
+    settings?: Record<string, any>;
+}

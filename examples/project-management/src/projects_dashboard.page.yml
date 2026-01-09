@@ -1,0 +1,31 @@
+name: projects_dashboard
+label: Projects Dashboard
+description: Overview of all projects with charts and task tracking
+icon: dashboard
+layout: grid
+components:
+  - type: chart
+    props:
+      chartName: projects_by_status
+  - type: chart
+    props:
+      chartName: projects_by_priority
+  - type: chart
+    props:
+      chartName: project_budget
+  - type: chart
+    props:
+      chartName: tasks_completion
+  - type: table
+    props:
+      object: projects
+      fields:
+        - name
+        - status
+        - priority
+        - start_date
+        - budget
+settings:
+  gridColumns: 2
+  gap: 20
+  responsive: true

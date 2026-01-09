@@ -1,0 +1,18 @@
+name: dashboard
+label: Dashboard
+description: Main dashboard page with charts and metrics
+icon: dashboard
+layout: grid
+components:
+  - type: chart
+    props:
+      chartName: projects_by_status
+  - type: chart
+    props:
+      chartName: projects_by_priority
+  - type: table
+    props:
+      object: projects
+settings:
+  gridColumns: 2
+  gap: 16

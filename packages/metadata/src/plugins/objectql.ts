@@ -1,7 +1,7 @@
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import { MetadataLoader } from '../loader';
-import { ObjectConfig, ChartConfig } from '../types';
+import { ObjectConfig, ChartConfig, PageConfig } from '../types';
 
 export function registerObjectQLPlugins(loader: MetadataLoader) {
     // Objects
@@ -192,6 +192,32 @@ export function registerObjectQLPlugins(loader: MetadataLoader) {
             }
         }
     });
+
+    // Pages
+    loader.use({
+        name: 'page',
+        glob: ['**/*.page.yml', '**/*.page.yaml'],
+        handler: (ctx) => {
+            try {
+                const doc = yaml.load(ctx.content) as any;
+                if (!doc) return;
+
+                if (doc.name) {
+                    registerPage(ctx.registry, doc, ctx.file, ctx.packageName);
+                } else {
+                    for (const [key, value] of Object.entries(doc)) {
+                        if (value && !Array.isArray(value) && typeof value === 'object') {
+                            const page = value as any;
+                            if (!page.name) page.name = key;
+                            registerPage(ctx.registry, page, ctx.file, ctx.packageName);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(`Error loading page from ${ctx.file}:`, e);
+            }
+        }
+    });
 }
 
 function registerObject(registry: any, obj: any, file: string, packageName?: string) {
@@ -221,6 +247,16 @@ function registerChart(registry: any, chart: any, file: string, packageName?: st
         path: file,
         package: packageName,
         content: chart
+    });
+}
+
+function registerPage(registry: any, page: any, file: string, packageName?: string) {
+    registry.register('page', {
+        type: 'page',
+        id: page.name,
+        path: file,
+        package: packageName,
+        content: page
     });
 }
 
