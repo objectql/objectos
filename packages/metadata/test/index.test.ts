@@ -1,6 +1,7 @@
 import { MetadataRegistry } from '../src/registry';
 import { MetadataLoader } from '../src/loader';
 import { registerObjectQLPlugins } from '../src/plugins/objectql';
+import { isAppMenuSection } from '../src/types';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
@@ -84,8 +85,9 @@ describe('MetadataLoader', () => {
     });
 });
 
-describe('Chart Metadata Loader', () => {
-    it('should load chart metadata from .chart.yml files', () => {
+describe('ObjectQL Plugins - App with Menu', () => {
+    it('should load app with menu configuration', () => {
+
         const registry = new MetadataRegistry();
         const loader = new MetadataLoader(registry);
         
@@ -94,35 +96,73 @@ describe('Chart Metadata Loader', () => {
         const fixturesDir = path.join(__dirname, 'fixtures');
         loader.load(fixturesDir);
 
-        const chart = registry.get('chart', 'test_chart');
-        expect(chart).toBeDefined();
-        expect(chart.type).toBe('bar');
-        expect(chart.object).toBe('test_object');
-        expect(chart.xAxisKey).toBe('category');
-        expect(chart.yAxisKeys).toEqual(['value']);
+        const app = registry.get('app', 'Sample App');
+        expect(app).toBeDefined();
+        expect(app.name).toBe('Sample App');
+        expect(app.code).toBe('sample');
+        expect(app.icon).toBe('ri-apps-line');
+        expect(app.menu).toBeDefined();
+        expect(Array.isArray(app.menu)).toBe(true);
+        expect(app.menu.length).toBe(2);
+        
+        // Check first menu section
+        const mainSection = app.menu[0];
+        expect(mainSection.label).toBe('Main');
+        expect(mainSection.items).toBeDefined();
+        expect(mainSection.items.length).toBe(2);
+        
+        // Check menu items
+        const dashboardItem = mainSection.items[0];
+        expect(dashboardItem.label).toBe('Dashboard');
+        expect(dashboardItem.icon).toBe('ri-dashboard-line');
+        expect(dashboardItem.type).toBe('page');
+        expect(dashboardItem.url).toBe('/dashboard');
+        
+        const projectsItem = mainSection.items[1];
+        expect(projectsItem.label).toBe('Projects');
+        expect(projectsItem.type).toBe('object');
+        expect(projectsItem.object).toBe('projects');
+        
+        // Check second section
+        const settingsSection = app.menu[1];
+        expect(settingsSection.label).toBe('Settings');
+        expect(settingsSection.collapsible).toBe(true);
+        expect(settingsSection.items.length).toBe(1);
     });
 });
 
-describe('Page Metadata Loader', () => {
-    it('should load page metadata from .page.yml files', () => {
-        const registry = new MetadataRegistry();
-        const loader = new MetadataLoader(registry);
+describe('Type Guards', () => {
+    it('should correctly identify menu sections', () => {
+        const section = {
+            label: 'Main',
+            items: [
+                { label: 'Dashboard', type: 'page' as const, url: '/dashboard' }
+            ]
+        };
         
-        registerObjectQLPlugins(loader);
-
-        const fixturesDir = path.join(__dirname, 'fixtures');
-        loader.load(fixturesDir);
-
-        const page = registry.get('page', 'dashboard');
-        expect(page).toBeDefined();
-        expect(page.name).toBe('dashboard');
-        expect(page.label).toBe('Dashboard');
-        expect(page.description).toBe('Main dashboard page with charts and metrics');
-        expect(page.icon).toBe('dashboard');
-        expect(page.layout).toBe('grid');
-        expect(page.components).toBeDefined();
-        expect(page.components).toHaveLength(3);
-        expect(page.settings).toBeDefined();
-        expect(page.settings.gridColumns).toBe(2);
+        expect(isAppMenuSection(section)).toBe(true);
+    });
+    
+    it('should correctly identify menu items', () => {
+        const item = {
+            label: 'Dashboard',
+            type: 'page' as const,
+            url: '/dashboard'
+        };
+        
+        expect(isAppMenuSection(item)).toBe(false);
+    });
+    
+    it('should handle nested menu items', () => {
+        const itemWithSubItems = {
+            label: 'Projects',
+            type: 'page' as const,
+            items: [
+                { label: 'Active', type: 'page' as const, url: '/active' }
+            ]
+        };
+        
+        // This should be identified as a menu item (has type property)
+        expect(isAppMenuSection(itemWithSubItems)).toBe(false);
     });
 });

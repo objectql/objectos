@@ -3,4 +3,54 @@ description: Manage and track your projects efficiently.
 code: projects
 dark: true
 color: gray
-icon: settings
+icon: ri-settings-line
+
+# Left-side menu configuration (similar to Airtable interfaces)
+menu:
+  # Main section
+  - label: Main
+    items:
+      - label: Dashboard
+        icon: ri-dashboard-line
+        type: page
+        url: /dashboard
+      - label: All Projects
+        icon: ri-building-line
+        type: object
+        object: projects
+      - label: Active Tasks
+        icon: ri-checkbox-circle-line
+        type: object
+        object: tasks
+        badge: 12
+  
+  # Views section
+  - label: Views
+    collapsible: true
+    items:
+      - label: My Projects
+        icon: ri-user-line
+        type: page
+        url: /my-projects
+      - label: Team Calendar
+        icon: ri-calendar-line
+        type: page
+        url: /calendar
+      - label: Reports
+        icon: ri-bar-chart-line
+        type: page
+        url: /reports
+  
+  # Settings section
+  - label: Settings
+    collapsible: true
+    collapsed: true
+    items:
+      - label: App Settings
+        icon: ri-settings-3-line
+        type: page
+        url: /settings
+      - label: Help & Support
+        icon: ri-question-line
+        type: url
+        url: https://docs.objectql.org

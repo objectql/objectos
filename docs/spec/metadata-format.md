@@ -202,7 +202,145 @@ actions:
       type: boolean
 ```
 
-## 6. Complete Example
+## 6. App Definition
+
+App files define application interfaces with custom navigation menus, similar to Airtable interfaces. Apps are defined in `*.app.yml` or `*.app.yaml` files.
+
+### 6.1 Root Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | **Required.** Display name of the app. |
+| `id` | `string` | Unique identifier for the app. Defaults to `name` if not provided. |
+| `code` | `string` | URL-friendly code/slug for the app. |
+| `description` | `string` | Description of the app's purpose. |
+| `icon` | `string` | Icon identifier (e.g., `ri-dashboard-line`). |
+| `color` | `string` | Color theme for the app (e.g., `blue`, `gray`). |
+| `dark` | `boolean` | Whether to use dark mode by default. |
+| `menu` | `array` | Left-side navigation menu configuration. See Section 6.2. |
+
+### 6.2 Menu Configuration
+
+The `menu` property defines the left-side navigation structure. It can be either:
+- An array of menu items (flat structure)
+- An array of menu sections (grouped structure)
+
+#### Menu Item Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `label` | `string` | **Required.** Display label for the menu item. |
+| `id` | `string` | Unique identifier for the menu item. |
+| `icon` | `string` | Icon identifier (e.g., `ri-home-line`, `ri-dashboard-line`). |
+| `type` | `string` | Type: `object`, `page`, `url`, or `divider`. Default: `page`. |
+| `object` | `string` | Object name to link to (when `type: object`). |
+| `url` | `string` | URL path (when `type: page` or `type: url`). |
+| `badge` | `string|number` | Badge text or count to display next to the item. |
+| `visible` | `boolean` | Whether the item is visible. Default: `true`. |
+| `items` | `array` | Nested sub-menu items (for hierarchical menus). |
+
+#### Menu Section Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `label` | `string` | Section title/header. |
+| `items` | `array` | **Required.** Menu items in this section. |
+| `collapsible` | `boolean` | Whether the section can be collapsed. Default: `false`. |
+| `collapsed` | `boolean` | Whether the section is collapsed by default. Default: `false`. |
+
+### 6.3 Menu Types
+
+**`object`**: Links to an object's list view
+```yaml
+- label: Projects
+  icon: ri-building-line
+  type: object
+  object: projects
+```
+
+**`page`**: Links to an internal page/route
+```yaml
+- label: Dashboard
+  icon: ri-dashboard-line
+  type: page
+  url: /dashboard
+```
+
+**`url`**: External or absolute URL link
+```yaml
+- label: Documentation
+  icon: ri-book-line
+  type: url
+  url: https://docs.example.com
+```
+
+**`divider`**: Visual separator (no label or action)
+```yaml
+- type: divider
+```
+
+### 6.4 Complete App Example
+
+```yaml
+name: Project Management
+description: Manage and track your projects efficiently.
+code: projects
+icon: ri-dashboard-line
+color: blue
+dark: false
+
+menu:
+  # Main section
+  - label: Main
+    items:
+      - label: Dashboard
+        icon: ri-dashboard-line
+        type: page
+        url: /dashboard
+      - label: All Projects
+        icon: ri-building-line
+        type: object
+        object: projects
+      - label: Active Tasks
+        icon: ri-checkbox-circle-line
+        type: object
+        object: tasks
+        badge: 12
+  
+  # Views section
+  - label: Views
+    collapsible: true
+    items:
+      - label: My Projects
+        icon: ri-user-line
+        type: page
+        url: /my-projects
+      - label: Team Calendar
+        icon: ri-calendar-line
+        type: page
+        url: /calendar
+      - label: Reports
+        icon: ri-bar-chart-line
+        type: page
+        url: /reports
+  
+  # Settings
+  - label: Settings
+    collapsible: true
+    collapsed: true
+    items:
+      - label: App Settings
+        icon: ri-settings-3-line
+        type: page
+        url: /settings
+      - type: divider
+      - label: Help & Support
+        icon: ri-question-line
+        type: url
+        url: https://docs.example.com
+```
+
+## 7. Complete Example
 
 ```yaml
 name: project
