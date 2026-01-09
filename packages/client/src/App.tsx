@@ -84,7 +84,16 @@ function AppContent() {
                     <BreadcrumbList>
                         <BreadcrumbItem>
                             <BreadcrumbPage>
-                                {currentPath === '/settings' ? 'Settings' : 'Dashboard'}
+                                {(() => {
+                                    if (currentPath === '/settings') return 'Settings';
+                                    if (currentPath === '/organization') return 'Organization';
+                                    
+                                    const parts = currentPath.split('/');
+                                    if (parts[1] === 'app') {
+                                        return `App: ${parts[2]}`;
+                                    }
+                                    return 'Dashboard';
+                                })()}
                             </BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>

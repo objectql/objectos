@@ -20,6 +20,11 @@ import { useAuth } from "../context/AuthContext"
 export function AppSidebar({ objects, ...props }: React.ComponentProps<typeof Sidebar> & { objects: Record<string, any> }) {
   const { path, navigate } = useRouter()
   const { user } = useAuth()
+
+  // Parse current app context
+  const parts = path.split('/');
+  const currentApp = parts[1] === 'app' ? parts[2] : null;
+  const getObjectPath = (name: string) => currentApp ? `/app/${currentApp}/object/${name}` : `/object/${name}`;
   
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -46,8 +51,8 @@ export function AppSidebar({ objects, ...props }: React.ComponentProps<typeof Si
                {Object.entries(objects).map(([name, schema]) => (
                  <SidebarMenuItem key={name}>
                    <SidebarMenuButton 
-                     isActive={path.startsWith(`/object/${name}`)}
-                     onClick={() => navigate(`/object/${name}`)}
+                     isActive={path.includes(`/object/${name}`)}
+                     onClick={() => navigate(getObjectPath(name))}
                     >
                      <FileText />
                      <span>{schema.label || schema.title || name}</span>
