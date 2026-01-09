@@ -24,6 +24,10 @@ function AppContent() {
   // Simple routing
   if (!user && currentPath !== '/login') {
       window.history.pushState({}, '', '/login');
+      // Update state to match new URL to prevent inconsistent state
+      if (currentPath !== '/login') {
+        setCurrentPath('/login');
+      }
       return <Login />;
   }
 

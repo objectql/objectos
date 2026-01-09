@@ -4,7 +4,8 @@ export const authClient = {
         const res = await fetch(`${this.baseUrl}/sign-in/email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password }),
+            credentials: 'include'
         });
         if (!res.ok) throw await res.json();
         return res.json();
@@ -13,7 +14,8 @@ export const authClient = {
         const res = await fetch(`${this.baseUrl}/sign-up/email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, name })
+            body: JSON.stringify({ email, password, name }),
+            credentials: 'include'
         });
         if (!res.ok) throw await res.json();
         return res.json();
@@ -24,19 +26,20 @@ export const authClient = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
         } catch (e) {
             console.error("Sign out error:", e);
         }
-        window.location.href = '/login';
     },
     async getSession() {
         const res = await fetch(`${this.baseUrl}/get-session?_t=${Date.now()}`, {
             headers: {
                 'Cache-Control': 'no-store, no-cache, must-revalidate',
                 'Pragma': 'no-cache'
-            }
+            },
+            credentials: 'include'
         });
         if (!res.ok) return null;
         return res.json();
