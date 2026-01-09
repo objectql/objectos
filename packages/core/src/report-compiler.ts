@@ -108,7 +108,7 @@ export class ReportCompiler {
     const expansions: Record<string, ExpansionTree> = {};
 
     for (const column of columns) {
-      if (!column.visible && column.visible !== undefined) {
+      if (column.visible === false) {
         continue; // Skip hidden columns
       }
 
