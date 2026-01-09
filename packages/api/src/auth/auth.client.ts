@@ -18,6 +18,15 @@ export const getAuth = async () => {
             emailAndPassword: {
                 enabled: true
             },
+            user: {
+                additionalFields: {
+                    role: {
+                        type: "string",
+                        required: false,
+                        defaultValue: 'user'
+                    }
+                }
+            },
             databaseHooks: {
                 user: {
                     create: {
@@ -25,13 +34,16 @@ export const getAuth = async () => {
                             try {
                                 const result = await pool.query('SELECT count(*) FROM "user"');
                                 const count = parseInt(result.rows[0].count);
+                                const role = count === 0 ? 'super_admin' : 'user';
+                                console.log(`Creating user with role: ${role} (current count: ${count})`);
                                 return {
                                     data: {
                                         ...user,
-                                        role: count === 0 ? 'super_admin' : 'user'
+                                        role
                                     }
                                 };
                             } catch (e) {
+                                console.error("Error in user create hook:", e);
                                 return { data: user };
                             }
                         }
