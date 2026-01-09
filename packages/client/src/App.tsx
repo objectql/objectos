@@ -52,24 +52,6 @@ function AppContent() {
     }
   }, [currentPath]); // Remove currentAppMetadata from dependency
 
-  // We need to fetch objects for the sidebar if we are not in dashboard
-  useEffect(() => {
-    if (user && Object.keys(objects).length === 0) {
-        fetch('/api/v6/metadata/object')
-            .then(res => res.json())
-            .then(result => {
-                const objectsMap: Record<string, any> = {};
-                if (Array.isArray(result)) {
-                    result.forEach((obj: any) => {
-                        objectsMap[obj.name] = obj;
-                    });
-                }
-                setObjects(objectsMap);
-            })
-            .catch(console.error);
-    }
-  }, [user]);
-
   useEffect(() => {
     const handlePopState = () => setCurrentPath(window.location.pathname);
     window.addEventListener('popstate', handlePopState);
@@ -109,31 +91,72 @@ function AppContent() {
   // Main Layout
   if (currentPath === '/' || currentPath === '/apps') {
       return (
-        <SidebarProvider>
-            <AppSidebar objects={objects} />
-            <SidebarInset>
-                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>Apps</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
-                    <AppList />
+        <div className="flex flex-col min-h-screen w-full bg-background">
+            <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6 bg-card sticky top-0 z-50">
+                <div className="flex items-center gap-2 font-bold text-lg">
+                    <span>ObjectQL</span>
                 </div>
-            </SidebarInset>
-        </SidebarProvider>
+                <div className="ml-auto flex items-center gap-2">
+                    {/* User Menu */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 outline-none">
+                                <Avatar className="h-8 w-8 rounded-lg cursor-pointer hover:opacity-80 transition-opacity">
+                                    <AvatarImage src={user?.image} alt={user?.name} />
+                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                </Avatar>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" sideOffset={4}>
+                            <DropdownMenuLabel className="p-0 font-normal">
+                            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                <Avatar className="h-8 w-8 rounded-lg">
+                                <AvatarImage src={user?.image} alt={user?.name} />
+                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                </Avatar>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-semibold">{user?.name}</span>
+                                <span className="truncate text-xs">{user?.email}</span>
+                                </div>
+                            </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem>
+                                    <Building className="mr-2 h-4 w-4" />
+                                    Organization
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <SettingsIcon className="mr-2 h-4 w-4" />
+                                    Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Bell className="mr-2 h-4 w-4" />
+                                    Notifications
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={signOut}>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Log out
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </header>
+            <div className="flex flex-1 flex-col gap-4 p-8 overflow-y-auto">
+                <div className="max-w-7xl mx-auto w-full">
+                     <h1 className="text-2xl font-bold mb-6">Apps</h1>
+                     <AppList />
+                </div>
+            </div>
+        </div>
       );
   }
 
   return (
       <SidebarProvider>
-          <AppSidebar objects={objects} appMetadata={currentAppMetadata} />
+          <AppSidebar objects={{}} appMetadata={currentAppMetadata} />
           <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                 <SidebarTrigger className="-ml-1" />
