@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
+import Organization from './pages/Organization';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppSidebar } from './components/app-sidebar';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Separator, Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from '@objectql/ui';
@@ -90,7 +91,8 @@ function AppContent() {
                 </Breadcrumb>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4">
-                {currentPath === '/settings' ? <Settings /> : <Dashboard />}
+                {currentPath === '/settings' ? <Settings /> : 
+                 currentPath === '/organization' ? <Organization /> : <Dashboard />}
             </div>
           </SidebarInset>
       </SidebarProvider>

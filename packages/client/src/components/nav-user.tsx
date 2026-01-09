@@ -78,13 +78,19 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                window.history.pushState({}, '', '/settings');
+                window.dispatchEvent(new Event('pushstate'));
+              }}>
                 <BadgeCheck className="mr-2 h-4 w-4" />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                window.history.pushState({}, '', '/organization');
+                window.dispatchEvent(new Event('pushstate'));
+              }}>
                 <CreditCard className="mr-2 h-4 w-4" />
-                Billing
+                Organization
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell className="mr-2 h-4 w-4" />

@@ -1,0 +1,20 @@
+name: team_member
+description: Members of a team
+fields:
+  teamId:
+    type: string
+    description: Link to team
+    required: true
+  userId:
+    type: string
+    description: Link to user
+    required: true
+  role:
+    type: string
+    description: Role in the team
+  createdAt:
+    type: datetime
+    default: now()
+  updatedAt:
+    type: datetime
+    default: now()

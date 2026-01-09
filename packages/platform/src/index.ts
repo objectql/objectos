@@ -42,6 +42,8 @@ export const objectDefinitions = [
     'organization.object.yml',
     'member.object.yml',
     'invitation.object.yml',
+    'team.object.yml',
+    'team_member.object.yml',
     'base.object.yml',
     'base_member.object.yml'
 ];

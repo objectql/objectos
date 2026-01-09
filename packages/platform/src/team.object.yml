@@ -1,0 +1,23 @@
+name: team
+description: Organization Teams
+fields:
+  name:
+    type: string
+    description: Team Name
+  slug:
+    type: string
+    description: Team Slug
+    unique: true
+  organizationId:
+    type: string
+    description: Link to organization
+    required: true
+  metadata:
+    type: json
+    description: Additional metadata
+  createdAt:
+    type: datetime
+    default: now()
+  updatedAt:
+    type: datetime
+    default: now()
