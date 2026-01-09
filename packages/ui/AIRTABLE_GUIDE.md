@@ -65,6 +65,12 @@ const columns = [
 - `onRowClick`: Callback when row is clicked (optional)
 - `onDelete`: Callback for delete action (optional)
 - `emptyMessage`: Message shown when no data (optional)
+- `enableSorting`: Enable sorting on column headers (default: true)
+- `onSortChange`: Callback when sort configuration changes (optional)
+- `enableRowSelection`: Enable row selection checkboxes (optional)
+- `enableGrouping`: Enable grouping by column (optional)
+- `enableCopyPaste`: Enable copy/paste functionality (optional)
+- `enableColumnDragDrop`: Enable column reordering via drag & drop (optional)
 
 **Column Types:**
 - `text`: Plain text (editable)
@@ -73,6 +79,73 @@ const columns = [
 - `select`: Dropdown selection
 - `badge`: Status badges with colors
 - `boolean`: Checkbox
+
+**Column Properties:**
+- `id`: Unique column identifier (required)
+- `label`: Column header label (required)
+- `type`: Column data type (optional)
+- `width`: Column width in pixels or string (optional)
+- `editable`: Enable inline editing for this column (optional)
+- `sortable`: Enable/disable sorting for this column (default: true when enableSorting is true)
+- `options`: Options for badge/select types (optional)
+
+### Sorting
+
+GridView supports single and multi-column sorting similar to Airtable:
+
+**Single Column Sorting:**
+- Click on a column header to sort ascending
+- Click again to sort descending
+- Click a third time to remove sorting
+
+**Multi-Column Sorting:**
+- Hold Shift and click column headers to add additional sort levels
+- Each sorted column shows its sort direction (↑ for ascending, ↓ for descending)
+- Multi-column sorts show sort priority numbers (1, 2, 3, etc.)
+
+**Example:**
+
+```tsx
+import { GridView, SortConfig } from '@objectql/ui'
+
+function MyComponent() {
+  const [sorts, setSorts] = useState<SortConfig[]>([])
+
+  const handleSortChange = (newSorts: SortConfig[]) => {
+    setSorts(newSorts)
+    console.log('Active sorts:', newSorts)
+    // Example output: [
+    //   { columnId: 'priority', direction: 'desc' },
+    //   { columnId: 'name', direction: 'asc' }
+    // ]
+  }
+
+  return (
+    <GridView
+      columns={columns}
+      data={data}
+      enableSorting={true}
+      onSortChange={handleSortChange}
+    />
+  )
+}
+```
+
+**Disabling Sorting for Specific Columns:**
+
+```tsx
+const columns = [
+  { id: 'name', label: 'Name', sortable: true },
+  { id: 'actions', label: 'Actions', sortable: false }, // No sorting for this column
+]
+```
+
+**Sorting Behavior:**
+- Text fields: Case-insensitive alphabetical sorting
+- Number fields: Numeric comparison
+- Date fields: Chronological sorting
+- Boolean fields: false before true
+- Null/undefined values: Always sorted to the end
 
 ### Toolbar & ViewSwitcher
 
