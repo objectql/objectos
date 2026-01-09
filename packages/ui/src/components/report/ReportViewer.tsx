@@ -152,28 +152,46 @@ function TabularReportView({
       <table className="min-w-full bg-white border">
         <thead className="bg-gray-50 border-b">
           <tr>
-            {visibleColumns.map((column, index) => (
-              <th
-                key={index}
-                className={`px-4 py-3 text-${column.align || 'left'} text-xs font-medium text-gray-700 uppercase tracking-wider`}
-                style={{ width: column.width }}
-              >
-                {column.label}
-              </th>
-            ))}
+            {visibleColumns.map((column, index) => {
+              const alignmentClass =
+                column.align === 'center'
+                  ? 'text-center'
+                  : column.align === 'right'
+                  ? 'text-right'
+                  : 'text-left';
+
+              return (
+                <th
+                  key={index}
+                  className={`px-4 py-3 text-xs font-medium text-gray-700 uppercase tracking-wider ${alignmentClass}`}
+                  style={{ width: column.width }}
+                >
+                  {column.label}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {data.map((row, rowIndex) => (
             <tr key={rowIndex} className="hover:bg-gray-50">
-              {visibleColumns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  className={`px-4 py-3 text-sm text-${column.align || 'left'}`}
-                >
-                  {getNestedValue(row, column.field)}
-                </td>
-              ))}
+              {visibleColumns.map((column, colIndex) => {
+                const alignmentClass =
+                  column.align === 'center'
+                    ? 'text-center'
+                    : column.align === 'right'
+                    ? 'text-right'
+                    : 'text-left';
+
+                return (
+                  <td
+                    key={colIndex}
+                    className={`px-4 py-3 text-sm ${alignmentClass}`}
+                  >
+                    {getNestedValue(row, column.field)}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
@@ -215,34 +233,52 @@ function SummaryReportView({
             <table className="min-w-full bg-white">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  {report.columns.map((column, index) => (
-                    <th
-                      key={index}
-                      className={`px-4 py-2 text-${column.align || 'left'} text-xs font-medium text-gray-700`}
-                    >
-                      {column.label}
-                    </th>
-                  ))}
+                  {report.columns.map((column, index) => {
+                    const alignmentClass =
+                      column.align === 'right'
+                        ? 'text-right'
+                        : column.align === 'center'
+                        ? 'text-center'
+                        : 'text-left';
+
+                    return (
+                      <th
+                        key={index}
+                        className={`px-4 py-2 text-xs font-medium text-gray-700 ${alignmentClass}`}
+                      >
+                        {column.label}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {(groupRows as any[]).map((row, rowIndex) => (
                   <tr key={rowIndex} className="hover:bg-gray-50">
-                    {report.columns.map((column, colIndex) => (
-                      <td
-                        key={colIndex}
-                        className={`px-4 py-2 text-sm text-${column.align || 'left'}`}
-                      >
-                        {getNestedValue(row, column.field)}
-                      </td>
-                    ))}
+                    {report.columns.map((column, colIndex) => {
+                      const alignmentClass =
+                        column.align === 'right'
+                          ? 'text-right'
+                          : column.align === 'center'
+                          ? 'text-center'
+                          : 'text-left';
+
+                      return (
+                        <td
+                          key={colIndex}
+                          className={`px-4 py-2 text-sm ${alignmentClass}`}
+                        >
+                          {getNestedValue(row, column.field)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
               {report.aggregations && (
                 <tfoot className="bg-gray-50 border-t font-semibold">
                   <tr>
-                    <td className="px-4 py-2 text-sm" colSpan={report.columns.length - report.aggregations.length}>
+                    <td className="px-4 py-2 text-sm" colSpan={Math.max(1, report.columns.length - report.aggregations.length)}>
                       Subtotal
                     </td>
                     {report.aggregations.map((agg, index) => (
