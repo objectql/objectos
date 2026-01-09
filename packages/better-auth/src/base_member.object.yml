@@ -1,0 +1,72 @@
+name: base_member
+label: Base Member
+description: Base-level membership and permissions
+icon: ri-user-settings-line
+
+fields:
+  baseId:
+    type: text
+    label: Base
+    required: true
+    index: true
+    help_text: ID of the base
+  
+  userId:
+    type: text
+    label: User
+    required: true
+    index: true
+    help_text: ID of the user
+  
+  role:
+    type: select
+    label: Role
+    required: true
+    default: viewer
+    options:
+      - value: owner
+        label: Owner
+      - value: editor
+        label: Editor
+      - value: commenter
+        label: Commenter
+      - value: viewer
+        label: Viewer
+    help_text: Access level for this base
+  
+  # Permissions can be expanded in the future
+  permissions:
+    type: object
+    label: Custom Permissions
+    help_text: Override permissions for specific actions
+  
+  invitedBy:
+    type: text
+    label: Invited By
+    help_text: User ID who sent the invitation
+  
+  invitedAt:
+    type: datetime
+    label: Invited At
+    help_text: When the invitation was sent
+  
+  joinedAt:
+    type: datetime
+    label: Joined At
+    help_text: When the user joined this base (set programmatically)
+  
+  lastAccessedAt:
+    type: datetime
+    label: Last Accessed
+    help_text: Last time user accessed this base
+  
+  createdAt:
+    type: datetime
+    label: Created At
+    default: now()
+    readonly: true
+  
+  updatedAt:
+    type: datetime
+    label: Updated At
+    default: now()

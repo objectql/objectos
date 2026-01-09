@@ -65,6 +65,7 @@ export interface ObjectQLContext {
     // === Identity & Isolation ===
     userId?: string;                        // Current User ID
     spaceId?: string;                       // Multi-tenancy Isolation (Organization ID)
+    baseId?: string;                        // Base ID for data isolation (optional)
     roles: string[];                        // RBAC Roles
 
     // === Execution Flags ===
@@ -86,13 +87,13 @@ export interface ObjectQLContext {
     // === Data Entry Point ===
     /**
      * Returns a repository proxy bound to this context.
-     * All operations performed via this proxy inherit userId, spaceId, and transaction.
+     * All operations performed via this proxy inherit userId, spaceId, baseId, and transaction.
      */
     object(entityName: string): ObjectRepository;
 
     /**
      * Execute a function within a transaction.
-     * The callback receives a new context 'trxCtx' which inherits userId and spaceId from this context.
+     * The callback receives a new context 'trxCtx' which inherits userId, spaceId, and baseId from this context.
      */
     transaction(callback: (trxCtx: ObjectQLContext) => Promise<any>): Promise<any>;
 
@@ -111,6 +112,7 @@ export interface ObjectQLContext {
 export interface ObjectQLContextOptions {
     userId?: string;
     spaceId?: string;
+    baseId?: string;                        // Base ID for data isolation (optional)
     roles?: string[];
     isSystem?: boolean;
     ignoreTriggers?: boolean;

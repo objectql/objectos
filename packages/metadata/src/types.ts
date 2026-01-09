@@ -96,6 +96,8 @@ export interface ObjectConfig {
     label?: string;
     description?: string;
     icon?: string;
+    /** Base ID this object belongs to (optional, for Base layer support) */
+    baseId?: string;
     fields?: Record<string, FieldConfig>;
     methods?: Record<string, Function>;
     listeners?: Record<string, Function>;
@@ -181,6 +183,8 @@ export interface AppConfig {
     color?: string;
     /** Dark mode preference */
     dark?: boolean;
+    /** Base ID this app belongs to (optional, for Base layer support) */
+    baseId?: string;
     /** 
      * Left-side menu configuration.
      * Can be either:
@@ -227,4 +231,86 @@ export interface PageConfig {
     layout?: PageLayoutType;
     components?: PageComponent[];
     settings?: Record<string, any>;
+}
+
+/**
+ * Base role types for access control
+ */
+export type BaseRole = 'owner' | 'editor' | 'commenter' | 'viewer';
+
+/**
+ * Base settings configuration
+ */
+export interface BaseSettings {
+    /** Default timezone for the base */
+    timezone?: string;
+    /** Locale for date/number formatting */
+    locale?: string;
+    /** Default view when opening the base */
+    defaultView?: string;
+    /** Whether to show archived records by default */
+    showArchived?: boolean;
+    /** Custom field for additional settings */
+    [key: string]: any;
+}
+
+/**
+ * Base configuration metadata.
+ * Represents a logical data workspace container (similar to Airtable Base).
+ */
+export interface BaseConfig {
+    /** Unique identifier */
+    id?: string;
+    /** Base name */
+    name: string;
+    /** URL-friendly slug */
+    slug: string;
+    /** Description */
+    description?: string;
+    /** Icon identifier */
+    icon?: string;
+    /** Color theme */
+    color?: 'blue' | 'green' | 'purple' | 'red' | 'orange' | 'gray' | 'pink' | 'teal';
+    /** Cover image URL */
+    cover?: string;
+    /** Organization ID this base belongs to */
+    organizationId: string;
+    /** Whether this is a template */
+    isTemplate?: boolean;
+    /** Whether this is archived */
+    isArchived?: boolean;
+    /** Whether this is publicly accessible */
+    isPublic?: boolean;
+    /** Base settings */
+    settings?: BaseSettings;
+    /** Template category */
+    templateCategory?: string;
+    /** Created by user ID */
+    createdBy?: string;
+    /** Created timestamp */
+    createdAt?: Date;
+    /** Updated timestamp */
+    updatedAt?: Date;
+}
+
+/**
+ * Base member configuration for access control
+ */
+export interface BaseMember {
+    /** Base ID */
+    baseId: string;
+    /** User ID */
+    userId: string;
+    /** Role in the base */
+    role: BaseRole;
+    /** Custom permissions override */
+    permissions?: Record<string, boolean>;
+    /** User who sent the invitation */
+    invitedBy?: string;
+    /** When the invitation was sent */
+    invitedAt?: Date;
+    /** When the user joined this base */
+    joinedAt?: Date;
+    /** Last time user accessed this base */
+    lastAccessedAt?: Date;
 }
