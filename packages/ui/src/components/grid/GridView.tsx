@@ -2,6 +2,8 @@ import * as React from "react"
 import { cn } from "../../lib/utils"
 import { Button } from "../Button"
 import { Badge } from "../Badge"
+import { Checkbox } from "../Checkbox"
+import { Copy, Trash2, GripVertical } from "lucide-react"
 
 interface Column {
   id: string
@@ -20,19 +22,191 @@ interface GridViewProps {
   onDelete?: (row: any, index: number) => void
   className?: string
   emptyMessage?: string
+  // Row selection and bulk operations
+  enableRowSelection?: boolean
+  onBulkDelete?: (rows: any[]) => void
+  // Grouping
+  enableGrouping?: boolean
+  groupByColumn?: string
+  // Copy/Paste
+  enableCopyPaste?: boolean
+  // Drag & Drop for column reordering
+  enableColumnDragDrop?: boolean
+  onColumnReorder?: (columns: Column[]) => void
 }
 
 export function GridView({
-  columns,
+  columns: initialColumns,
   data,
   onRowClick,
   onCellEdit,
   onDelete,
   className,
-  emptyMessage = "No records found"
+  emptyMessage = "No records found",
+  enableRowSelection = false,
+  onBulkDelete,
+  enableGrouping = false,
+  groupByColumn,
+  enableCopyPaste = false,
+  enableColumnDragDrop = false,
+  onColumnReorder,
 }: GridViewProps) {
   const [editingCell, setEditingCell] = React.useState<{ row: number; col: string } | null>(null)
   const [editValue, setEditValue] = React.useState<any>('')
+  const [selectedRows, setSelectedRows] = React.useState<Set<number>>(new Set())
+  const [columns, setColumns] = React.useState(initialColumns)
+  const [draggedColumn, setDraggedColumn] = React.useState<number | null>(null)
+  const [dragOverColumn, setDragOverColumn] = React.useState<number | null>(null)
+
+  // Update columns when initialColumns change
+  React.useEffect(() => {
+    setColumns(initialColumns)
+  }, [initialColumns])
+
+  // Group data if grouping is enabled and create index map for performance
+  const { groupedData, rowIndexMap } = React.useMemo(() => {
+    // Create a map for O(1) index lookups
+    const indexMap = new Map<any, number>()
+    data.forEach((row, index) => {
+      indexMap.set(row, index)
+    })
+
+    if (!enableGrouping || !groupByColumn) {
+      return { groupedData: { ungrouped: data }, rowIndexMap: indexMap }
+    }
+    
+    const groups: Record<string, any[]> = {}
+    data.forEach(row => {
+      const groupValue = row[groupByColumn] || 'Ungrouped'
+      if (!groups[groupValue]) {
+        groups[groupValue] = []
+      }
+      groups[groupValue].push(row)
+    })
+    return { groupedData: groups, rowIndexMap: indexMap }
+  }, [data, enableGrouping, groupByColumn])
+
+  const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
+    new Set(Object.keys(groupedData))
+  )
+
+  // Update expanded groups when groupedData changes
+  React.useEffect(() => {
+    setExpandedGroups(new Set(Object.keys(groupedData)))
+  }, [groupedData])
+
+  const toggleGroup = (groupKey: string) => {
+    setExpandedGroups(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(groupKey)) {
+        newSet.delete(groupKey)
+      } else {
+        newSet.add(groupKey)
+      }
+      return newSet
+    })
+  }
+
+  // Row selection handlers
+  const toggleRowSelection = (index: number) => {
+    setSelectedRows(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+  }
+
+  const toggleAllRows = () => {
+    if (selectedRows.size === data.length) {
+      setSelectedRows(new Set())
+    } else {
+      setSelectedRows(new Set(data.map((_, i) => i)))
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (onBulkDelete) {
+      const rowsToDelete = Array.from(selectedRows).map(i => data[i])
+      onBulkDelete(rowsToDelete)
+      setSelectedRows(new Set())
+    }
+  }
+
+  // Copy functionality
+  const handleCopy = () => {
+    if (!enableCopyPaste || selectedRows.size === 0) return
+
+    const headers = columns.map(col => col.label).join('\t')
+    const rows = Array.from(selectedRows)
+      .map(i => data[i])
+      .map(row => 
+        columns.map(col => {
+          const value = row[col.id]
+          return value !== null && value !== undefined ? String(value) : ''
+        }).join('\t')
+      )
+      .join('\n')
+
+    const tsv = headers + '\n' + rows
+    
+    // Use modern clipboard API with error handling
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(tsv).catch(err => {
+        console.error('Failed to copy to clipboard:', err)
+        // Fallback: show user a message or use document.execCommand as last resort
+      })
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = tsv
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err)
+      }
+      document.body.removeChild(textArea)
+    }
+  }
+
+  // Column drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (!enableColumnDragDrop) return
+    setDraggedColumn(index)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (!enableColumnDragDrop) return
+    e.preventDefault()
+    setDragOverColumn(index)
+  }
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    if (!enableColumnDragDrop || draggedColumn === null) return
+    e.preventDefault()
+
+    const newColumns = [...columns]
+    const [removed] = newColumns.splice(draggedColumn, 1)
+    newColumns.splice(dropIndex, 0, removed)
+    
+    setColumns(newColumns)
+    onColumnReorder?.(newColumns)
+    setDraggedColumn(null)
+    setDragOverColumn(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedColumn(null)
+    setDragOverColumn(null)
+  }
 
   const startEdit = (rowIndex: number, columnId: string, currentValue: any) => {
     const column = columns.find(c => c.id === columnId)
@@ -138,81 +312,243 @@ export function GridView({
     )
   }
 
+  const hasSelection = selectedRows.size > 0
+
   return (
-    <div className={cn("w-full overflow-auto border border-stone-200 rounded-lg", className)}>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-stone-50 border-b border-stone-200">
-            {columns.map((column) => (
-              <th
-                key={column.id}
-                style={{ width: column.width }}
-                className="px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider border-r border-stone-200 last:border-r-0"
+    <div className={cn("w-full", className)}>
+      {/* Bulk actions toolbar */}
+      {enableRowSelection && hasSelection && (
+        <div className="flex items-center gap-2 p-2 mb-2 bg-blue-50 border border-blue-200 rounded-md">
+          <span className="text-sm text-blue-900">
+            {selectedRows.size} row(s) selected
+          </span>
+          <div className="flex gap-2 ml-auto">
+            {enableCopyPaste && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                className="h-8"
               >
-                {column.label}
-              </th>
-            ))}
-            {onDelete && (
-              <th className="px-4 py-3 text-right text-xs font-semibold text-stone-600 uppercase tracking-wider w-20">
-                Actions
-              </th>
+                <Copy className="w-4 h-4 mr-1" />
+                Copy
+              </Button>
             )}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className={cn(
-                "border-b border-stone-100 hover:bg-stone-50 transition-colors group",
-                onRowClick && "cursor-pointer"
-              )}
-              onClick={() => onRowClick?.(row)}
+            {onBulkDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBulkDelete}
+                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedRows(new Set())}
+              className="h-8"
             >
-              {columns.map((column) => (
-                <td
+              Clear
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-auto border border-stone-200 rounded-lg">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-stone-50 border-b border-stone-200">
+              {enableRowSelection && (
+                <th className="px-4 py-3 w-12 border-r border-stone-200">
+                  <Checkbox
+                    checked={selectedRows.size === data.length}
+                    onCheckedChange={toggleAllRows}
+                  />
+                </th>
+              )}
+              {columns.map((column, index) => (
+                <th
                   key={column.id}
-                  className="px-4 py-2.5 text-sm text-stone-900 border-r border-stone-100 last:border-r-0"
-                  onClick={(e) => {
-                    if (column.editable) {
-                      e.stopPropagation()
-                      startEdit(rowIndex, column.id, row[column.id])
-                    }
-                  }}
+                  style={{ width: column.width }}
+                  className={cn(
+                    "px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider border-r border-stone-200 last:border-r-0",
+                    enableColumnDragDrop && "cursor-move select-none",
+                    dragOverColumn === index && "bg-blue-100"
+                  )}
+                  draggable={enableColumnDragDrop}
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
                 >
-                  {renderCell(row, column, rowIndex)}
-                </td>
+                  <div className="flex items-center gap-1">
+                    {enableColumnDragDrop && (
+                      <GripVertical className="w-3 h-3 text-stone-400" />
+                    )}
+                    {column.label}
+                  </div>
+                </th>
               ))}
               {onDelete && (
-                <td className="px-4 py-2.5 text-right">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete(row, rowIndex)
-                    }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-red-600"
-                    title="Delete"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                  </button>
-                </td>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-stone-600 uppercase tracking-wider w-20">
+                  Actions
+                </th>
               )}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {enableGrouping && groupByColumn ? (
+              // Render grouped data
+              Object.entries(groupedData).map(([groupKey, groupRows]) => (
+                <React.Fragment key={groupKey}>
+                  <tr className="bg-stone-100 border-b border-stone-200">
+                    <td
+                      colSpan={
+                        columns.length +
+                        (enableRowSelection ? 1 : 0) +
+                        (onDelete ? 1 : 0)
+                      }
+                      className="px-4 py-2"
+                    >
+                      <button
+                        onClick={() => toggleGroup(groupKey)}
+                        className="flex items-center gap-2 font-medium text-stone-900 hover:text-stone-700"
+                      >
+                        <svg
+                          className={cn(
+                            "w-4 h-4 transition-transform",
+                            expandedGroups.has(groupKey) && "rotate-90"
+                          )}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                        {groupKey} ({groupRows.length})
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedGroups.has(groupKey) &&
+                    groupRows.map((row) => {
+                      const actualIndex = rowIndexMap.get(row) ?? -1
+                      return (
+                        <tr
+                          key={actualIndex}
+                          className={cn(
+                            "border-b border-stone-100 hover:bg-stone-50 transition-colors group",
+                            onRowClick && "cursor-pointer"
+                          )}
+                          onClick={() => onRowClick?.(row)}
+                        >
+                          {enableRowSelection && (
+                            <td 
+                              className="px-4 py-2.5 border-r border-stone-100"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Checkbox
+                                checked={selectedRows.has(actualIndex)}
+                                onCheckedChange={() => toggleRowSelection(actualIndex)}
+                              />
+                            </td>
+                          )}
+                          {columns.map((column) => (
+                            <td
+                              key={column.id}
+                              className="px-4 py-2.5 text-sm text-stone-900 border-r border-stone-100 last:border-r-0"
+                              onClick={(e) => {
+                                if (column.editable) {
+                                  e.stopPropagation()
+                                  startEdit(actualIndex, column.id, row[column.id])
+                                }
+                              }}
+                            >
+                              {renderCell(row, column, actualIndex)}
+                            </td>
+                          ))}
+                          {onDelete && (
+                            <td className="px-4 py-2.5 text-right">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onDelete(row, actualIndex)
+                                }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-red-600"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      )
+                    })}
+                </React.Fragment>
+              ))
+            ) : (
+              // Render ungrouped data
+              data.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
+                  className={cn(
+                    "border-b border-stone-100 hover:bg-stone-50 transition-colors group",
+                    onRowClick && "cursor-pointer"
+                  )}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  {enableRowSelection && (
+                    <td 
+                      className="px-4 py-2.5 border-r border-stone-100"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        checked={selectedRows.has(rowIndex)}
+                        onCheckedChange={() => toggleRowSelection(rowIndex)}
+                      />
+                    </td>
+                  )}
+                  {columns.map((column) => (
+                    <td
+                      key={column.id}
+                      className="px-4 py-2.5 text-sm text-stone-900 border-r border-stone-100 last:border-r-0"
+                      onClick={(e) => {
+                        if (column.editable) {
+                          e.stopPropagation()
+                          startEdit(rowIndex, column.id, row[column.id])
+                        }
+                      }}
+                    >
+                      {renderCell(row, column, rowIndex)}
+                    </td>
+                  ))}
+                  {onDelete && (
+                    <td className="px-4 py-2.5 text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onDelete(row, rowIndex)
+                        }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-red-600"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
