@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Badge, Modal, Spinner, GridView, Input } from '@objectql/ui';
+import { Button, Badge, Modal, Spinner, AgGridView, Input } from '@objectql/ui';
 import { ObjectForm } from './ObjectForm';
 import { cn } from '../../lib/utils';
 // import { useRouter } from ... passed as prop
@@ -22,7 +22,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
-    const [sortConfig, setSortConfig] = useState<SortConfig[]>([]);
+    const [sortConfig] = useState<SortConfig[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showFilter, setShowFilter] = useState(false); // New state for filter visibility
     
@@ -173,41 +173,35 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
         .catch(err => alert(err.message));
     }
 
-    const generateColumns = () => {
-        // Prefer schema for columns, fallback to data inspection
-        let fields: string[] = [];
-        
-        if (objectSchema && objectSchema.fields) {
-            fields = Object.keys(objectSchema.fields);
-            if (!fields.includes('createdAt')) fields.push('createdAt');
-            if (!fields.includes('updatedAt')) fields.push('updatedAt');
-        } else if (data && data.length > 0) {
-            fields = Object.keys(data[0]).filter(key => !['_id', '__v'].includes(key));
-        }
+    const getAgGridColumns = () => {
+         // AgGrid Column Definitions
+         // Prefer schema for columns, fallback to data inspection
+         let fields: string[] = [];
+         if (objectSchema && objectSchema.fields) {
+             fields = Object.keys(objectSchema.fields);
+             if (!fields.includes('createdAt')) fields.push('createdAt');
+             if (!fields.includes('updatedAt')) fields.push('updatedAt');
+         } else if (data && data.length > 0) {
+             fields = Object.keys(data[0]).filter(key => !['_id', '__v'].includes(key));
+         }
 
-        return fields.map(key => {
-            const field = objectSchema?.fields?.[key];
-            const type = getFieldType(key) as 'text' | 'number' | 'boolean' | 'date' | 'select' | 'badge';
-            
-            return {
-                id: key,
-                label: getFieldLabel(key),
-                type: type,
-                width: type === 'boolean' ? 80 : type === 'date' ? 150 : type === 'number' ? 120 : 200,
-                editable: !['id', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt'].includes(key),
-                sortable: true,
-                ...(type === 'badge' && field?.options ? {
-                    options: field.options.map((opt: string) => ({
-                        value: opt,
-                        label: opt,
-                        variant: 'default'
-                    }))
-                } : {})
-            };
-        });
+         return fields.map(key => {
+             const type = getFieldType(key);
+             
+             return {
+                 field: key, // AgGrid uses 'field' instead of 'id'
+                 headerName: getFieldLabel(key),
+                 editable: !['id', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt'].includes(key),
+                 sortable: true,
+                 filter: true,
+                 resizable: true,
+                 width: type === 'boolean' ? 100 : type === 'date' ? 180 : type === 'number' ? 120 : 200,
+                 // Optional: Custom cell renderers can be added here if needed
+             };
+         });
     };
 
-    const columns = generateColumns();
+    const columns = getAgGridColumns();
 
     return (
         <div className="flex flex-col h-full bg-stone-50">
@@ -303,16 +297,17 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
                         </Button>
                     </div>
                 ) : (
-                    <GridView
-                        columns={columns}
-                        data={data}
-                        onRowClick={(row: any) => navigate(`/object/${objectName}/${row.id || row._id}`)}
-                        onCellEdit={handleCellEdit}
-                        onDelete={handleDelete}
-                        emptyMessage={`No ${label.toLowerCase()} found`}
-                        enableSorting={true}
-                        onSortChange={setSortConfig}
-                    />
+                    <div className="h-full w-full">
+                        <AgGridView
+                            columns={columns}
+                            data={data}
+                            onRowClick={(row: any) => navigate(`/object/${objectName}/${row.id || row._id}`)}
+                            onCellEdit={handleCellEdit}
+                            onDelete={handleDelete}
+                            enableSorting={true}
+                            className="h-full w-full"
+                        />
+                    </div>
                 )}
             </div>
 

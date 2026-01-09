@@ -6,11 +6,11 @@
     "examples/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" --kill-others --names \"SERVER,CLIENT\" -c \"magenta,blue\"",
-    "start": "npm run start --workspace=@objectql/server",
-    "dev:server": "npm run dev --workspace=@objectql/server",
-    "dev:client": "npm run dev --workspace=@objectql/client",
+    "dev": "concurrently \"npm run server\" \"npm run client\" --kill-others --names \"SERVER,CLIENT\" -c \"magenta,blue\"",
+    "server": "npm run dev --workspace=@objectql/server",
+    "client": "npm run dev --workspace=@objectql/client",
     "build": "tsc -b && npm run build --workspaces",
+    "start": "npm run start --workspace=@objectql/server",
     "test": "npm run test --workspaces",
     "changeset": "changeset",
     "version": "changeset version",

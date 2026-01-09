@@ -23,6 +23,7 @@ export * from './components/Table';
 export * from './components/grid/DataTable';
 export * from './components/grid/DataTableFilter';
 export * from './components/grid/GridView';
+export * from './components/grid/AgGridView'; // Export updated wrapper
 export * from './components/AutoForm';
 
 export * from './components/Modal';
