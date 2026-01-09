@@ -1,0 +1,70 @@
+# Active Tasks Report
+# Simple tabular report showing all active tasks with related project information
+
+name: active_tasks
+label: Active Tasks
+description: List of all incomplete tasks with project and assignee details
+type: tabular
+object: tasks
+
+# Columns to display
+# Can reference fields from related objects using dot notation
+columns:
+  - field: name
+    label: Task Name
+    width: 300
+    align: left
+  
+  - field: project.name
+    label: Project
+    width: 200
+    align: left
+  
+  - field: project.owner
+    label: Project Owner
+    width: 150
+    align: left
+  
+  - field: assigned_to
+    label: Assignee
+    width: 150
+    align: left
+  
+  - field: priority
+    label: Priority
+    width: 100
+    align: center
+  
+  - field: due_date
+    label: Due Date
+    width: 120
+    align: center
+    format: "YYYY-MM-DD"
+  
+  - field: estimated_hours
+    label: Est. Hours
+    width: 100
+    align: right
+
+# Filter to show only incomplete tasks
+filters:
+  - - completed
+    - "="
+    - false
+
+# Sort by due date (earliest first), then priority (high to low)
+sort:
+  - - due_date
+    - asc
+  - - priority
+    - desc
+
+# Limit results to prevent overwhelming the UI
+limit: 500
+
+# Tags for organization
+category: Tasks
+tags:
+  - tasks
+  - active
+  - workload

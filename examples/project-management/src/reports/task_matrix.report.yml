@@ -1,0 +1,41 @@
+# Project Status Matrix
+# Matrix report showing task counts by project and priority
+
+name: task_matrix
+label: Task Distribution Matrix
+description: Cross-tabulation of tasks by project and priority
+type: matrix
+object: tasks
+
+# Matrix configuration
+matrix:
+  # Rows: Projects
+  rowGrouping:
+    field: project.name
+    label: Project
+    sort: asc
+  
+  # Columns: Priority levels
+  columnGrouping:
+    field: priority
+    label: Priority
+    sort: desc
+  
+  # Measure: Count of tasks
+  measure:
+    field: id
+    function: count
+    label: Task Count
+    format: "0"
+
+# Filter to show only incomplete tasks
+filters:
+  - - completed
+    - "="
+    - false
+
+category: Tasks
+tags:
+  - tasks
+  - matrix
+  - overview

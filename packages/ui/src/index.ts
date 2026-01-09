@@ -31,3 +31,6 @@ export * from './components/Spinner';
 export * from './components/Chart';
 export * from './components/Toolbar';
 
+export * from './components/report/ReportBuilder';
+export * from './components/report/ReportViewer';
+

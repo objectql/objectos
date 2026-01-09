@@ -1,0 +1,80 @@
+# Tasks by Project and Priority
+# Summary report with grouping and aggregations
+
+name: tasks_by_project_priority
+label: Tasks by Project and Priority
+description: Summary of tasks grouped by project and priority with counts and effort estimates
+type: summary
+object: tasks
+
+# Columns to display
+columns:
+  - field: project.name
+    label: Project
+    width: 250
+  
+  - field: priority
+    label: Priority
+    width: 100
+  
+  - field: id
+    label: Task Count
+    width: 120
+    align: right
+  
+  - field: estimated_hours
+    label: Total Hours
+    width: 120
+    align: right
+
+# Filter to show only active tasks
+filters:
+  - - completed
+    - "="
+    - false
+
+# Group by project first, then by priority
+groupings:
+  - field: project.name
+    label: Project
+    sort: asc
+    showSubtotals: true
+  
+  - field: priority
+    label: Priority
+    sort: desc
+    showSubtotals: false
+
+# Aggregations to calculate
+aggregations:
+  - field: id
+    function: count
+    label: Task Count
+  
+  - field: estimated_hours
+    function: sum
+    label: Total Estimated Hours
+    format: "0.0"
+
+# Sort by project name, then priority
+sort:
+  - - project.name
+    - asc
+  - - priority
+    - desc
+
+# Chart visualization
+chart:
+  type: bar
+  groupBy: priority
+  measure: id
+  aggregation: count
+  title: Tasks by Priority
+  showLegend: true
+  height: 300
+
+category: Tasks
+tags:
+  - tasks
+  - summary
+  - project-tracking

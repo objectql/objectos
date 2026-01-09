@@ -19,3 +19,9 @@ Welcome to the ObjectQL User Guide. This documentation is designed to help you b
 *   [**Custom Actions**](./logic-actions.md)
     *   Defining custom RPC endpoints.
 
+## 3. Reporting & Analytics
+*   [**Visual Reporting Guide**](./visual-reporting.md)
+    *   Creating multi-table reports with visual builder
+    *   Report types: Tabular, Summary, and Matrix
+    *   Advanced features: Grouping, aggregations, and charts
+

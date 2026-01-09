@@ -7,6 +7,7 @@ export * from './repository';
 export * from './query';
 export * from './registry';
 export * from './loader';
+export * from './report-compiler';
 
 import { ObjectConfig } from './metadata';
 import { ObjectQLContext, ObjectQLContextOptions, IObjectQL, ObjectQLConfig } from './types';
