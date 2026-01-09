@@ -8,15 +8,97 @@ This document describes the advanced features implementation in ObjectQL UI tabl
 
 ### ✅ 已实现的功能 (Implemented Features)
 
-1. **Grouping (分组)** - 按列分组数据显示
-2. **Inline Editing (内联编辑)** - Grid 中直接编辑单元格
-3. **Bulk Operations (批量操作)** - 批量删除、批量更新
-4. **Copy/Paste (复制粘贴)** - 复制选中行到剪贴板
-5. **Drag & Drop (拖拽排序)** - 字段拖拽排序
+1. **Sorting (排序)** - 单列和多列排序
+2. **Grouping (分组)** - 按列分组数据显示
+3. **Inline Editing (内联编辑)** - Grid 中直接编辑单元格
+4. **Bulk Operations (批量操作)** - 批量删除、批量更新
+5. **Copy/Paste (复制粘贴)** - 复制选中行到剪贴板
+6. **Drag & Drop (拖拽排序)** - 字段拖拽排序
 
 ---
 
-## 1. Grouping (分组)
+## 1. Sorting (排序)
+
+### 功能描述 (Feature Description)
+
+行排序功能允许用户对表格数据按一个或多个列进行排序，类似 Airtable 的排序体验。
+
+The row sorting feature allows users to sort table data by one or multiple columns, similar to Airtable's sorting experience.
+
+### 使用方法 (Usage)
+
+#### GridView 组件
+
+```tsx
+import { GridView, SortConfig } from '@objectql/ui'
+
+function MyComponent() {
+  const [sorts, setSorts] = useState<SortConfig[]>([])
+
+  return (
+    <GridView
+      columns={columns}
+      data={data}
+      enableSorting={true}
+      onSortChange={(newSorts) => setSorts(newSorts)}
+    />
+  )
+}
+```
+
+### 特性 (Features)
+
+- ✅ 单列排序：点击列标题排序
+- ✅ 多列排序：Shift + 点击添加多个排序级别
+- ✅ 排序指示器：显示排序方向 (↑ 升序 / ↓ 降序)
+- ✅ 排序优先级：多列排序时显示优先级数字 (1, 2, 3...)
+- ✅ 智能排序：根据数据类型自动选择排序算法
+- ✅ 可配置：可以禁用特定列的排序
+
+### 排序行为 (Sorting Behavior)
+
+**单列排序 (Single Column Sort):**
+1. 第一次点击：升序 (A→Z, 0→9, 旧→新)
+2. 第二次点击：降序 (Z→A, 9→0, 新→旧)
+3. 第三次点击：清除排序
+
+**多列排序 (Multi-Column Sort):**
+1. 按住 Shift 键点击列标题
+2. 可添加多个排序级别
+3. 先按第一个排序字段，再按第二个，以此类推
+
+**数据类型排序 (Data Type Sorting):**
+- `text`: 不区分大小写的字母排序
+- `number`: 数值比较
+- `date`: 按时间顺序
+- `boolean`: false 在前，true 在后
+- `null/undefined`: 始终排在最后
+
+### API
+
+**SortConfig 类型:**
+
+```typescript
+interface SortConfig {
+  columnId: string
+  direction: 'asc' | 'desc'
+}
+```
+
+**Column 属性:**
+
+```typescript
+interface Column {
+  id: string
+  label: string
+  sortable?: boolean  // 默认 true，设为 false 可禁用该列排序
+  // ... 其他属性
+}
+```
+
+---
+
+## 2. Grouping (分组)
 
 ### 功能描述 (Feature Description)
 
@@ -62,7 +144,7 @@ import { DataTable } from '@objectql/ui'
 
 ---
 
-## 2. Inline Editing (内联编辑)
+## 3. Inline Editing (内联编辑)
 
 ### 功能描述 (Feature Description)
 
@@ -122,7 +204,7 @@ const columns = [
 
 ---
 
-## 3. Bulk Operations (批量操作)
+## 4. Bulk Operations (批量操作)
 
 ### 功能描述 (Feature Description)
 
@@ -189,7 +271,7 @@ When rows are selected, a bulk actions toolbar appears with:
 
 ---
 
-## 4. Copy/Paste (复制粘贴)
+## 5. Copy/Paste (复制粘贴)
 
 ### 功能描述 (Feature Description)
 
@@ -233,7 +315,7 @@ Mobile App Development	Engineering	active	high
 
 ---
 
-## 5. Drag & Drop (拖拽排序)
+## 6. Drag & Drop (拖拽排序)
 
 ### 功能描述 (Feature Description)
 

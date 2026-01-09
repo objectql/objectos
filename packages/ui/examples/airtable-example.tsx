@@ -1,5 +1,5 @@
 import * as React from "react"
-import { GridView } from "../components/grid/GridView"
+import { GridView, SortConfig } from "../components/grid/GridView"
 import { Toolbar, ViewSwitcher, ToolbarIcons } from "../components/Toolbar"
 import { Button } from "../components/Button"
 import { Badge } from "../components/Badge"
@@ -119,6 +119,7 @@ export function AirtableExample() {
   const [data, setData] = React.useState(sampleData)
   const [activeView, setActiveView] = React.useState('grid')
   const [showCreateModal, setShowCreateModal] = React.useState(false)
+  const [sorts, setSorts] = React.useState<SortConfig[]>([])
 
   const handleCellEdit = (rowIndex: number, columnId: string, value: any) => {
     const newData = [...data]
@@ -139,6 +140,19 @@ export function AirtableExample() {
     }
     setData([...data, newRecord])
     setShowCreateModal(false)
+  }
+
+  const handleSortChange = (newSorts: SortConfig[]) => {
+    setSorts(newSorts)
+    console.log('Sorts changed:', newSorts)
+  }
+
+  const getSortDescription = () => {
+    if (sorts.length === 0) return 'No sorting applied'
+    return sorts.map((s, i) => {
+      const column = sampleColumns.find(c => c.id === s.columnId)
+      return `${i + 1}. ${column?.label} (${s.direction === 'asc' ? '↑' : '↓'})`
+    }).join(', ')
   }
 
   const views = [
@@ -166,10 +180,11 @@ export function AirtableExample() {
         </Button>
         <Button
           variant="secondary"
-          onClick={() => alert('Sort functionality')}
+          onClick={() => alert(getSortDescription())}
+          title={getSortDescription()}
         >
           <ToolbarIcons.Sort />
-          <span className="ml-2">Sort</span>
+          <span className="ml-2">Sort {sorts.length > 0 && `(${sorts.length})`}</span>
         </Button>
         <Button onClick={() => setShowCreateModal(true)}>
           <ToolbarIcons.Plus />
@@ -179,13 +194,23 @@ export function AirtableExample() {
 
       <div className="flex-1 overflow-auto p-6">
         {activeView === 'grid' ? (
-          <GridView
-            columns={sampleColumns}
-            data={data}
-            onCellEdit={handleCellEdit}
-            onDelete={handleDelete}
-            emptyMessage="No projects found. Create one to get started!"
-          />
+          <div className="space-y-3">
+            {sorts.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm text-blue-900">
+                <strong>Active sorts:</strong> {getSortDescription()}
+                <span className="ml-2 text-xs text-blue-700">(Click column headers to sort, Shift+Click for multi-column)</span>
+              </div>
+            )}
+            <GridView
+              columns={sampleColumns}
+              data={data}
+              onCellEdit={handleCellEdit}
+              onDelete={handleDelete}
+              onSortChange={handleSortChange}
+              enableSorting={true}
+              emptyMessage="No projects found. Create one to get started!"
+            />
+          </div>
         ) : (
           <div className="bg-white rounded-lg border border-stone-200 p-8 text-center text-stone-500">
             <p>List view coming soon...</p>
