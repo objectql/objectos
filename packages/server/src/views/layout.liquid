@@ -7,19 +7,25 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Apple-system font stack and specific overrides */
+        /* Apple-system font stack and design language */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fafaf9; /* stone-50 */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+            background-color: #fafafa; /* gray-50 */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Smooth transitions */
-        .transition-all-custom {
+        /* Apple-style transitions */
+        .transition-apple {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 250ms;
+            transition-duration: 200ms;
+        }
+        
+        /* Backdrop blur like macOS */
+        .backdrop-blur-apple {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
         }
         
         /* Hide scrollbar for clean look in sidebars */
@@ -29,6 +35,53 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+        
+        /* Apple-style focus rings */
+        *:focus-visible {
+            outline: none;
+            ring: 2px solid rgb(59 130 246 / 0.5);
+            ring-offset: 2px;
+        }
+        
+        /* Smooth animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateY(8px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes scaleIn {
+            from { 
+                transform: scale(0.96);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        .animate-slideIn {
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .animate-scaleIn {
+            animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
     </style>
     
@@ -43,7 +96,7 @@
     <script src="/assets/ui/index.global.js"></script>
     <link rel="stylesheet" href="/assets/ui/index.css">
 </head>
-<body class="bg-stone-50 text-stone-900 min-h-screen selection:bg-blue-100 selection:text-blue-600">
+<body class="bg-gray-50 text-gray-900 min-h-screen selection:bg-blue-100 selection:text-blue-600">
     <div id="root" class="h-screen w-full flex flex-col">
         {% block content %}{% endblock %}
     </div>

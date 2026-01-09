@@ -409,9 +409,9 @@ export function GridView({
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-stone-400">
+      <div className="flex flex-col items-center justify-center py-16 text-gray-400 bg-white rounded-xl border border-gray-200">
         <svg
-          className="w-12 h-12 mb-3"
+          className="w-14 h-14 mb-4 text-gray-300"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -423,7 +423,7 @@ export function GridView({
             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
           />
         </svg>
-        <p className="text-sm font-medium">{emptyMessage}</p>
+        <p className="text-sm font-medium text-gray-600">{emptyMessage}</p>
       </div>
     )
   }
@@ -432,21 +432,21 @@ export function GridView({
 
   return (
     <div className={cn("w-full", className)}>
-      {/* Bulk actions toolbar */}
+      {/* Apple-style bulk actions toolbar */}
       {enableRowSelection && hasSelection && (
-        <div className="flex items-center gap-2 p-2 mb-2 bg-blue-50 border border-blue-200 rounded-md">
-          <span className="text-sm text-blue-900">
-            {selectedRows.size} row(s) selected
+        <div className="flex items-center gap-2 p-3 mb-3 bg-blue-50 border border-blue-200/60 rounded-lg shadow-sm animate-slideIn">
+          <span className="text-sm font-medium text-blue-900">
+            {selectedRows.size} {selectedRows.size === 1 ? 'item' : 'items'} selected
           </span>
           <div className="flex gap-2 ml-auto">
             {enableCopyPaste && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleCopy}
                 className="h-8"
               >
-                <Copy className="w-4 h-4 mr-1" />
+                <Copy className="w-3.5 h-3.5 mr-1.5" />
                 Copy
               </Button>
             )}
@@ -455,9 +455,9 @@ export function GridView({
                 variant="outline"
                 size="sm"
                 onClick={handleBulkDelete}
-                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
               >
-                <Trash2 className="w-4 h-4 mr-1" />
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
                 Delete
               </Button>
             )}
@@ -473,12 +473,12 @@ export function GridView({
         </div>
       )}
 
-      <div className="overflow-auto border border-stone-200 rounded-lg">
+      <div className="overflow-auto border border-gray-200/60 rounded-xl shadow-sm bg-white">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-stone-50 border-b border-stone-200 group">
+            <tr className="bg-gray-50/80 border-b border-gray-200 group">
               {enableRowSelection && (
-                <th className="px-4 py-3 w-12 border-r border-stone-200">
+                <th className="px-4 py-3 w-12 border-r border-gray-200/60">
                   <Checkbox
                     checked={selectedRows.size === data.length}
                     onCheckedChange={toggleAllRows}
@@ -494,9 +494,9 @@ export function GridView({
                     key={column.id}
                     style={{ width: column.width }}
                     className={cn(
-                      "px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider border-r border-stone-200 last:border-r-0",
+                      "px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-gray-200/60 last:border-r-0",
                       enableColumnDragDrop && "cursor-move select-none",
-                      isSortable && !enableColumnDragDrop && "cursor-pointer hover:bg-stone-100",
+                      isSortable && !enableColumnDragDrop && "cursor-pointer hover:bg-gray-100 transition-apple",
                       dragOverColumn === index && "bg-blue-100"
                     )}
                     draggable={enableColumnDragDrop}
@@ -512,7 +512,7 @@ export function GridView({
                   >
                     <div className="flex items-center gap-1.5">
                       {enableColumnDragDrop && (
-                        <GripVertical className="w-3 h-3 text-stone-400" />
+                        <GripVertical className="w-3 h-3 text-gray-400" />
                       )}
                       <span className="flex-1">{column.label}</span>
                       {isSortable && (
@@ -531,7 +531,7 @@ export function GridView({
                               )}
                             </div>
                           ) : (
-                            <ArrowUpDown className="w-3.5 h-3.5 text-stone-400 opacity-0 group-hover:opacity-100" />
+                            <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                           )}
                         </div>
                       )}
@@ -540,7 +540,7 @@ export function GridView({
                 )
               })}
               {onDelete && (
-                <th className="px-4 py-3 text-right text-xs font-semibold text-stone-600 uppercase tracking-wider w-20">
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-20">
                   Actions
                 </th>
               )}
@@ -591,14 +591,14 @@ export function GridView({
                         <tr
                           key={actualIndex}
                           className={cn(
-                            "border-b border-stone-100 hover:bg-stone-50 transition-colors group",
+                            "border-b border-gray-100 hover:bg-gray-50 transition-apple group",
                             onRowClick && "cursor-pointer"
                           )}
                           onClick={() => onRowClick?.(row)}
                         >
                           {enableRowSelection && (
                             <td 
-                              className="px-4 py-2.5 border-r border-stone-100"
+                              className="px-4 py-2.5 border-r border-gray-100"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Checkbox
@@ -610,7 +610,7 @@ export function GridView({
                           {columns.map((column) => (
                             <td
                               key={column.id}
-                              className="px-4 py-2.5 text-sm text-stone-900 border-r border-stone-100 last:border-r-0"
+                              className="px-4 py-2.5 text-sm text-gray-900 border-r border-gray-100 last:border-r-0"
                               onClick={(e) => {
                                 if (column.editable) {
                                   e.stopPropagation()
@@ -628,7 +628,7 @@ export function GridView({
                                   e.stopPropagation()
                                   onDelete(row, actualIndex)
                                 }}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-red-600"
+                                className="opacity-0 group-hover:opacity-100 transition-apple text-gray-400 hover:text-red-600"
                                 title="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -646,14 +646,14 @@ export function GridView({
                 <tr
                   key={rowIndex}
                   className={cn(
-                    "border-b border-stone-100 hover:bg-stone-50 transition-colors group",
+                    "border-b border-gray-100 hover:bg-gray-50 transition-apple group",
                     onRowClick && "cursor-pointer"
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
                   {enableRowSelection && (
                     <td 
-                      className="px-4 py-2.5 border-r border-stone-100"
+                      className="px-4 py-2.5 border-r border-gray-100"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Checkbox
@@ -665,7 +665,7 @@ export function GridView({
                   {columns.map((column) => (
                     <td
                       key={column.id}
-                      className="px-4 py-2.5 text-sm text-stone-900 border-r border-stone-100 last:border-r-0"
+                      className="px-4 py-2.5 text-sm text-gray-900 border-r border-gray-100 last:border-r-0"
                       onClick={(e) => {
                         if (column.editable) {
                           e.stopPropagation()
@@ -683,7 +683,7 @@ export function GridView({
                           e.stopPropagation()
                           onDelete(row, rowIndex)
                         }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-red-600"
+                        className="opacity-0 group-hover:opacity-100 transition-apple text-gray-400 hover:text-red-600"
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
