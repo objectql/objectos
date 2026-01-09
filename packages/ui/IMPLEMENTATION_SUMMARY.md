@@ -1,7 +1,7 @@
 # DataTable Filter Functionality - Implementation Summary
 
 ## Overview
-Successfully implemented comprehensive filter functionality for the ObjectQL DataTable component (objecttable), addressing the requirement: "给前端的objecttable增加过滤器功能" (Add filter functionality to the front-end objecttable).
+Successfully implemented comprehensive filter functionality for the ObjectQL DataTable component (objecttable), addressing the requirement to add filter functionality to the front-end objecttable.
 
 ## Changes Summary
 

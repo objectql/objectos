@@ -28,10 +28,10 @@ Welcome to ObjectQL's AI capabilities documentation. This index provides an over
   - Risk mitigation strategies
   - Technology stack
 
-- **[AI Planning Summary (中文)](./AI_PLANNING_SUMMARY_CN.md)** - Chinese summary of AI planning
-  - 计划概述
-  - 主要功能
-  - 实施时间表
+- **[AI Planning Summary](./AI_PLANNING_SUMMARY_CN.md)** - Summary of AI planning
+  - Plan overview
+  - Main features
+  - Implementation timeline
 
 ### Task Management
 - **[GitHub Issue Templates](./AI_GITHUB_ISSUES.md)** - Ready-to-use issue templates for AI implementation

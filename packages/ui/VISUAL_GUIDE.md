@@ -282,7 +282,7 @@ const columns = [
 
 - **AIRTABLE_GUIDE.md** - Complete usage guide
 - **AIRTABLE_IMPLEMENTATION.md** - Technical details
-- **AIRTABLE_UI_SUMMARY_CN.md** - 中英文总结
+- **AIRTABLE_UI_SUMMARY_CN.md** - Summary of Airtable UI implementation
 - **examples/airtable-example.tsx** - Working example
 
 ## ✨ Live Example

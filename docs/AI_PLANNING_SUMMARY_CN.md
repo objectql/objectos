@@ -1,82 +1,82 @@
-# ObjectQL AI 能力规划
+# ObjectQL AI Capabilities Planning
 
-## 概述
+## Overview
 
-本文档是 ObjectQL AI 能力增强计划的中文总结。我们已经完成了详细的规划和文档编写，为 ObjectQL 添加全面的 AI 集成能力。
+This document is a summary of the ObjectQL AI capabilities enhancement plan. We have completed detailed planning and documentation to add comprehensive AI integration capabilities to ObjectQL.
 
-## 已完成的工作
+## Completed Work
 
-### 1. 核心文档 ✅
+### 1. Core Documentation ✅
 
-#### AI 集成指南 (`docs/guide/ai-integration.md`)
-- **内容**: 全面的 AI 集成指南，包括：
-  - ObjectQL 为何天然适合 AI
-  - 主要使用场景（自然语言查询、数据分析、表单生成、智能自动化）
-  - 集成模式（架构感知 AI、查询验证、迭代优化）
-  - LLM 提示模板
-  - 最佳实践和安全考虑
-  - 性能优化
-  - 完整示例代码
+#### AI Integration Guide (`docs/guide/ai-integration.md`)
+- **Contents**: Comprehensive AI integration guide, including:
+  - Why ObjectQL is naturally suited for AI
+  - Main use cases (natural language queries, data analysis, form generation, intelligent automation)
+  - Integration patterns (schema-aware AI, query validation, iterative optimization)
+  - LLM prompt templates
+  - Best practices and security considerations
+  - Performance optimization
+  - Complete example code
 
-#### AI 安全指南 (`docs/guide/ai-safety.md`)
-- **内容**: AI 操作的安全最佳实践：
-  - 核心安全原则（永不信任 AI 输出、深度防御、最小权限）
-  - 查询验证（结构、语义、复杂度）
-  - 权限检查（对象级、字段级、过滤器）
-  - 速率限制
-  - AI 生成代码沙箱
-  - 数据清理和防泄漏
-  - 审计日志
-  - 错误处理
-  - 安全检查清单
+#### AI Safety Guide (`docs/guide/ai-safety.md`)
+- **Contents**: Security best practices for AI operations:
+  - Core security principles (never trust AI output, defense in depth, least privilege)
+  - Query validation (structure, semantics, complexity)
+  - Permission checks (object-level, field-level, filters)
+  - Rate limiting
+  - AI-generated code sandboxing
+  - Data sanitization and leakage prevention
+  - Audit logging
+  - Error handling
+  - Security checklist
 
-#### AI 能力路线图 (`docs/AI_CAPABILITIES_ROADMAP.md`)
-- **内容**: 6 个阶段的详细实施计划：
-  - **第 1 阶段**: 基础和文档（2-3 周）
-  - **第 2 阶段**: AI SDK 开发（3-4 周）
-  - **第 3 阶段**: 高级 AI 功能（4-5 周）
-  - **第 4 阶段**: AI 监控和治理（2-3 周）
-  - **第 5 阶段**: AI 开发工具（3-4 周）
-  - **第 6 阶段**: AI 模板和市场（2-3 周）
-- 包含成功指标、资源需求、风险缓解策略
+#### AI Capabilities Roadmap (`docs/AI_CAPABILITIES_ROADMAP.md`)
+- **Contents**: Detailed implementation plan in 6 phases:
+  - **Phase 1**: Foundation and Documentation (2-3 weeks)
+  - **Phase 2**: AI SDK Development (3-4 weeks)
+  - **Phase 3**: Advanced AI Features (4-5 weeks)
+  - **Phase 4**: AI Monitoring and Governance (2-3 weeks)
+  - **Phase 5**: AI Development Tools (3-4 weeks)
+  - **Phase 6**: AI Templates and Marketplace (2-3 weeks)
+- Includes success metrics, resource requirements, risk mitigation strategies
 
-#### GitHub 任务模板 (`docs/AI_GITHUB_ISSUES.md`)
-- **内容**: 每个阶段的详细 GitHub Issue 模板：
-  - 20+ 个详细的任务模板
-  - 每个模板包含完整的任务清单
-  - 验收标准
-  - 工作量估算
-  - 相关标签建议
+#### GitHub Task Templates (`docs/AI_GITHUB_ISSUES.md`)
+- **Contents**: Detailed GitHub Issue templates for each phase:
+  - 20+ detailed task templates
+  - Each template includes complete task checklist
+  - Acceptance criteria
+  - Effort estimates
+  - Relevant label suggestions
 
-### 2. 更新的主文档 ✅
+### 2. Updated Main Documentation ✅
 
 #### README.md
-- 添加 AI 能力部分
-- 更新路线图包含 AI 集成阶段
-- 链接到详细的 AI 文档
+- Added AI capabilities section
+- Updated roadmap to include AI integration phases
+- Links to detailed AI documentation
 
-## 文档结构
+## Documentation Structure
 
 ```
 docs/
 ├── guide/
-│   ├── ai-integration.md      ✅ 已完成 - AI 集成完整指南
-│   └── ai-safety.md            ✅ 已完成 - AI 安全最佳实践
-├── AI_CAPABILITIES_ROADMAP.md  ✅ 已完成 - AI 能力实施路线图
-└── AI_GITHUB_ISSUES.md         ✅ 已完成 - GitHub 任务模板
+│   ├── ai-integration.md      ✅ Complete - Comprehensive AI integration guide
+│   └── ai-safety.md            ✅ Complete - AI security best practices
+├── AI_CAPABILITIES_ROADMAP.md  ✅ Complete - AI capabilities implementation roadmap
+└── AI_GITHUB_ISSUES.md         ✅ Complete - GitHub task templates
 ```
 
-## 主要 AI 能力规划
+## Main AI Capabilities Planning
 
-### 1. 自然语言查询 (Natural Language to Query)
+### 1. Natural Language to Query
 
-**功能**: 将自然语言转换为 ObjectQL 查询
+**Feature**: Convert natural language to ObjectQL queries
 
-**示例**:
+**Example**:
 ```
-用户: "查找所有分配给 John 的高优先级任务"
+User: "Find all high priority tasks assigned to John"
 
-AI 生成:
+AI generates:
 {
   entity: 'tasks',
   fields: ['id', 'name', 'priority', 'assignee.name'],
@@ -89,17 +89,17 @@ AI 生成:
 }
 ```
 
-### 2. AI 驱动的架构生成
+### 2. AI-Driven Schema Generation
 
-**功能**: 从业务需求自动生成数据库架构
+**Feature**: Automatically generate database schema from business requirements
 
-**示例**:
+**Example**:
 ```
-用户描述: "我需要跟踪员工，包括姓名、邮箱、部门和薪资"
+User description: "I need to track employees, including name, email, department and salary"
 
-AI 生成:
+AI generates:
 name: employee
-label: 员工
+label: Employee
 fields:
   name:
     type: text
@@ -110,155 +110,155 @@ fields:
     required: true
   department:
     type: select
-    options: ["工程", "销售", "市场", "人力"]
+    options: ["Engineering", "Sales", "Marketing", "HR"]
   salary:
     type: currency
     min: 0
 ```
 
-### 3. AI 分析引擎
+### 3. AI Analytics Engine
 
-**功能**:
-- 自动趋势检测
-- 异常识别
-- 智能报表生成
-- 可视化建议
+**Features**:
+- Automatic trend detection
+- Anomaly identification
+- Intelligent report generation
+- Visualization recommendations
 
-### 4. AI 自动化构建器
+### 4. AI Automation Builder
 
-**功能**: 从自然语言创建工作流自动化
+**Feature**: Create workflow automation from natural language
 
-**示例**:
+**Example**:
 ```
-用户: "当创建高优先级任务时发送邮件"
+User: "Send email when a high priority task is created"
 
-AI 生成自动化配置
+AI generates automation configuration
 ```
 
-## 实施时间表
+## Implementation Timeline
 
-### 快速胜利（第 1 周）
-- ✅ AI 集成指南
-- 📝 AI 安全指南
-- 📝 基础示例项目
+### Quick Wins (Week 1)
+- ✅ AI integration guide
+- 📝 AI security guide
+- 📝 Basic example project
 
-### 第 1 个月
-- 完成第 1 阶段（基础和文档）
-- 开始第 2 阶段（AI SDK 开发）
-- 启动 AI 游乐场原型
+### Month 1
+- Complete Phase 1 (Foundation and Documentation)
+- Start Phase 2 (AI SDK Development)
+- Launch AI playground prototype
 
-### 第 2-3 个月
-- 完成第 2 和第 3 阶段
-- AI 功能 Beta 发布
-- 收集社区反馈
+### Months 2-3
+- Complete Phases 2 and 3
+- AI features Beta release
+- Gather community feedback
 
-### 第 4-6 个月
-- 完成剩余阶段
-- 生产环境发布
-- 启动 AI 模板市场
+### Months 4-6
+- Complete remaining phases
+- Production release
+- Launch AI template marketplace
 
-## 技术栈
+## Technology Stack
 
-### 新依赖
+### New Dependencies
 ```json
 {
   "dependencies": {
-    "openai": "^4.20.0",              // OpenAI 集成
-    "@anthropic-ai/sdk": "^0.9.0",    // Claude 集成
-    "ollama": "^0.5.0",               // 本地 LLM
-    "langchain": "^0.1.0",            // LLM 编排
-    "zod": "^3.22.0",                 // 验证
-    "node-cache": "^5.1.2"            // 缓存
+    "openai": "^4.20.0",              // OpenAI integration
+    "@anthropic-ai/sdk": "^0.9.0",    // Claude integration
+    "ollama": "^0.5.0",               // Local LLM
+    "langchain": "^0.1.0",            // LLM orchestration
+    "zod": "^3.22.0",                 // Validation
+    "node-cache": "^5.1.2"            // Caching
   }
 }
 ```
 
-## 安全重点
+## Security Focus
 
-1. **查询验证**: 所有 AI 生成的查询都经过多层验证
-2. **权限检查**: 强制执行对象和字段级权限
-3. **速率限制**: 防止滥用和过度使用
-4. **沙箱**: AI 生成的代码在隔离环境中运行
-5. **审计日志**: 记录所有 AI 操作以供审计
+1. **Query Validation**: All AI-generated queries go through multi-layer validation
+2. **Permission Checks**: Enforce object and field-level permissions
+3. **Rate Limiting**: Prevent abuse and excessive usage
+4. **Sandboxing**: AI-generated code runs in isolated environments
+5. **Audit Logging**: Record all AI operations for auditing
 
-## 成功指标
+## Success Metrics
 
-### 功能
-- ✅ 自然语言到查询转换，准确率 > 90%
-- ✅ 从描述生成架构
-- ✅ AI 驱动的分析和洞察
-- ✅ 具有全面验证的安全 AI 操作
+### Functionality
+- ✅ Natural language to query conversion with >90% accuracy
+- ✅ Schema generation from descriptions
+- ✅ AI-driven analysis and insights
+- ✅ Secure AI operations with comprehensive validation
 
-### 性能
-- ✅ 查询生成 < 2 秒
-- ✅ 架构分析 < 5 秒
-- ✅ 验证 < 100 毫秒
+### Performance
+- ✅ Query generation < 2 seconds
+- ✅ Schema analysis < 5 seconds
+- ✅ Validation < 100 milliseconds
 
-### 质量
-- ✅ AI 模块测试覆盖率 > 80%
-- ✅ 全面的文档
-- ✅ 安全审计通过
+### Quality
+- ✅ AI module test coverage > 80%
+- ✅ Comprehensive documentation
+- ✅ Security audit passed
 
-## 下一步行动
+## Next Steps
 
-### 立即行动
-1. ✅ 完成 AI 集成指南
-2. ✅ 完成 AI 安全指南
-3. ✅ 完成 AI 能力路线图
-4. ✅ 完成 GitHub 任务模板
-5. 📝 创建第一个自然语言查询示例
-6. 📝 设置 `packages/ai/` 包结构
+### Immediate Actions
+1. ✅ Complete AI integration guide
+2. ✅ Complete AI security guide
+3. ✅ Complete AI capabilities roadmap
+4. ✅ Complete GitHub task templates
+5. 📝 Create first natural language query example
+6. 📝 Set up `packages/ai/` package structure
 
-### 本周
-1. 审查和完善文档
-2. 创建 GitHub Issues
-3. 开始基础示例项目
-4. 设置 AI SDK 包结构
+### This Week
+1. Review and refine documentation
+2. Create GitHub Issues
+3. Start basic example project
+4. Set up AI SDK package structure
 
-### 下个月
-1. 完成第 1 阶段
-2. 开始 AI SDK 开发
-3. 发布第一篇关于 AI 能力的博客文章
+### Next Month
+1. Complete Phase 1
+2. Start AI SDK development
+3. Publish first blog post about AI capabilities
 
-## 社区参与
+## Community Engagement
 
-### 开源贡献
-- 为 AI 功能创建"新手友好"标签
-- 每月举办 AI 集成网络研讨会
-- 启动 AI 集成展示仓库
-- 创建 Discord 频道进行 AI 讨论
+### Open Source Contributions
+- Create "good first issue" labels for AI features
+- Host monthly webinars on AI integration
+- Launch AI integration showcase repository
+- Create Discord channel for AI discussions
 
-### 合作伙伴关系
-- 与 OpenAI 合作进行特色集成
-- 与 Anthropic 合作开发 Claude 示例
-- 与 Ollama 团队合作支持本地 LLM
+### Partnerships
+- Collaborate with OpenAI for featured integration
+- Work with Anthropic on Claude examples
+- Partner with Ollama team for local LLM support
 
-## 资源
+## Resources
 
-### 文档
-- [AI 集成指南](./guide/ai-integration.md)
-- [AI 安全指南](./guide/ai-safety.md)
-- [AI 能力路线图](./AI_CAPABILITIES_ROADMAP.md)
-- [GitHub 任务模板](./AI_GITHUB_ISSUES.md)
+### Documentation
+- [AI Integration Guide](./guide/ai-integration.md)
+- [AI Security Guide](./guide/ai-safety.md)
+- [AI Capabilities Roadmap](./AI_CAPABILITIES_ROADMAP.md)
+- [GitHub Task Templates](./AI_GITHUB_ISSUES.md)
 
-### 示例（计划中）
-- 自然语言查询界面
-- AI 数据分析师
-- 架构生成器
+### Examples (Planned)
+- Natural language query interface
+- AI data analyst
+- Schema generator
 
-## 总结
+## Summary
 
-我们已经为 ObjectQL 创建了全面的 AI 能力增强计划，包括：
+We have created a comprehensive AI capabilities enhancement plan for ObjectQL, including:
 
-1. **详细的技术文档**: AI 集成指南和安全最佳实践
-2. **清晰的实施路线图**: 6 个阶段，16-22 周完成
-3. **具体的任务安排**: 20+ 个详细的 GitHub Issue 模板
-4. **完整的安全框架**: 多层验证、权限控制、审计日志
+1. **Detailed technical documentation**: AI integration guide and security best practices
+2. **Clear implementation roadmap**: 6 phases, 16-22 weeks to complete
+3. **Specific task breakdown**: 20+ detailed GitHub Issue templates
+4. **Complete security framework**: Multi-layer validation, permission control, audit logging
 
-这个计划将使 ObjectQL 成为 AI 应用的首选数据层，支持自然语言查询、智能架构生成、AI 驱动的分析等功能。
+This plan will make ObjectQL the preferred data layer for AI applications, supporting natural language queries, intelligent schema generation, AI-driven analytics, and more.
 
 ---
 
-**文档版本**: 1.0  
-**最后更新**: 2026-01-09  
-**负责人**: ObjectQL AI 团队
+**Document Version**: 1.0  
+**Last Updated**: 2026-01-09  
+**Owner**: ObjectQL AI Team
