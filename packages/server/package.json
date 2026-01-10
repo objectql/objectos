@@ -9,7 +9,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
-    "build:client": "npm run build --workspace=@objectql/client"
+    "build:client": "pnpm --filter @objectql/client run build"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -17,7 +17,7 @@
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
-    "@objectos/preset-base": "*",
+    "@objectos/preset-base": "workspace:*",
     "@objectql/core": "*",
     "@objectql/driver-knex": "*",
     "@objectql/driver-mongo": "*",

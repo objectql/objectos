@@ -1,22 +1,16 @@
 {
   "name": "objectql-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "packages/presets/*",
-    "packages/plugins/*",
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run web\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
-    "server": "npm run dev --workspace=@objectos/server",
-    "web": "npm run dev --workspace=@objectos/web",
-    "build": "tsc -b && npm run build --workspaces",
-    "start": "npm run start --workspace=@objectos/server",
-    "test": "npm run test --workspaces",
+    "dev": "concurrently \"pnpm run server\" \"pnpm run web\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
+    "server": "pnpm --filter @objectos/server dev",
+    "web": "pnpm --filter @objectos/web dev",
+    "build": "tsc -b && pnpm -r build",
+    "start": "pnpm --filter @objectos/server start",
+    "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "npm run build && changeset publish",
+    "release": "pnpm run build && changeset publish",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
