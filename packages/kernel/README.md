@@ -1,8 +1,8 @@
-# @objectql/metadata
+# @objectos/kernel
 
-The metadata management system for ObjectQL. This package provides a generic framework for discovering, loading, and managing metadata from various sources (files, npm packages, etc.).
+The metadata management system for ObjectOS. This package provides a generic framework for discovering, loading, and managing metadata from various sources (files, npm packages, etc.).
 
-While it includes plugins specifically for ObjectQL schemas (Objects, Apps, Hooks), it is designed to be extensible for any metadata-driven application.
+While it includes plugins specifically for ObjectOS schemas (Objects, Apps, Hooks), it is designed to be extensible for any metadata-driven application.
 
 ## Features
 
@@ -14,7 +14,7 @@ While it includes plugins specifically for ObjectQL schemas (Objects, Apps, Hook
 ## Installation
 
 ```bash
-npm install @objectql/metadata
+npm install @objectos/kernel
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ npm install @objectql/metadata
 ### Basic Usage
 
 ```typescript
-import { MetadataRegistry, MetadataLoader } from '@objectql/metadata';
+import { MetadataRegistry, MetadataLoader } from '@objectos/kernel';
 
 const registry = new MetadataRegistry();
 const loader = new MetadataLoader(registry);
@@ -49,7 +49,7 @@ const reports = registry.list('report');
 If you are building a system that needs to understand ObjectQL schemas without running the full ORM:
 
 ```typescript
-import { MetadataRegistry, MetadataLoader, registerObjectQLPlugins } from '@objectql/metadata';
+import { MetadataRegistry, MetadataLoader, registerObjectQLPlugins } from '@objectos/kernel';
 
 const registry = new MetadataRegistry();
 const loader = new MetadataLoader(registry);
@@ -76,7 +76,7 @@ import {
     AppConfig, 
     AppMenuItem,
     isAppMenuSection 
-} from '@objectql/metadata';
+} from '@objectos/kernel';
 
 const registry = new MetadataRegistry();
 const loader = new MetadataLoader(registry);

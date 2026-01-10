@@ -1,4 +1,4 @@
-# @objectql/metadata
+# @objectos/kernel
 
 ## 0.2.0
 
