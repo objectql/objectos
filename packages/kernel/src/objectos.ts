@@ -1,18 +1,15 @@
 import { ObjectQL } from '@objectql/core';
-import { MetadataLoader } from './loader';
-import { registerObjectQLPlugins } from './plugins/objectql';
+import { AppPlugin } from './plugins/app';
+import { DataPlugin } from './plugins/data';
 
 export class ObjectOS extends ObjectQL {
-    public readonly componentLoader: MetadataLoader;
 
     constructor(config: { datasources?: any, packages?: string[] } = {}) {
         super({
             datasources: config.datasources || {},
-            packages: config.packages
+            packages: config.packages,
+            plugins: [AppPlugin, DataPlugin]
         });
-        
-        this.componentLoader = new MetadataLoader(this.metadata as any); 
-        registerObjectQLPlugins(this.componentLoader);
     }
     
     async init(options?: any) {
