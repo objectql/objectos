@@ -9,10 +9,10 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run web\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
-    "server": "npm run dev --workspace=@objectql/server",
-    "web": "npm run dev --workspace=@objectql/web",
+    "server": "npm run dev --workspace=@objectos/server",
+    "web": "npm run dev --workspace=@objectos/web",
     "build": "tsc -b && npm run build --workspaces",
-    "start": "npm run start --workspace=@objectql/server",
+    "start": "npm run start --workspace=@objectos/server",
     "test": "npm run test --workspaces",
     "changeset": "changeset",
     "version": "changeset version",
