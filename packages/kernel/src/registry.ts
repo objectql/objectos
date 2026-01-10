@@ -103,17 +103,6 @@ export class MetadataRegistry {
         return true;
     }
 
-    validateFieldCustomizable(objectName: string, fieldName: string): boolean {
-        // Implement logic if needed
-        return true;
-    }
-}
-            throw new Error(`Cannot modify system object '${objectName}'. This object is marked as non-customizable.`);
-        }
-        
-        return true;
-    }
-
     /**
      * Validates if a field can be modified based on its customizable flag.
      * Fields without the customizable property default to true (customizable).
@@ -123,11 +112,11 @@ export class MetadataRegistry {
      */
     validateFieldCustomizable(objectName: string, fieldName: string): boolean {
         const entry = this.getEntry('object', objectName);
-        if (!entry || !entry.content.fields) {
+        if (!entry || !(entry.content as any).fields) {
             return true; // Object or field doesn't exist yet, allow creation
         }
         
-        const field = entry.content.fields[fieldName];
+        const field = (entry.content as any).fields[fieldName];
         if (!field) {
             return true; // Field doesn't exist yet, allow creation
         }

@@ -1,11 +1,11 @@
 import { Provider } from '@nestjs/common';
-import { ObjectQL } from '@objectql/core';
+import { ObjectOS } from '@objectos/kernel';
 import { KnexDriver } from '@objectql/driver-knex';
 import * as path from 'path';
 import * as fs from 'fs';
 
 export const objectQLProvider: Provider = {
-    provide: ObjectQL,
+    provide: ObjectOS,
     useFactory: async () => {
         let config: any = {};
         
@@ -43,6 +43,14 @@ export const objectQLProvider: Provider = {
                         client: 'pg',
                         connection: datasourceConfig.url
                     });
+                } else if (datasourceConfig.type === 'sqlite') {
+                    datasources[key] = new KnexDriver({
+                        client: 'sqlite3',
+                        connection: {
+                            filename: datasourceConfig.filename
+                        },
+                        useNullAsDefault: true
+                    });
                 }
             }
         }
@@ -59,12 +67,12 @@ export const objectQLProvider: Provider = {
             });
         }
 
-        const objectql = new ObjectQL({
+        const objectos = new ObjectOS({
             datasources,
             packages: config.presets || ['@objectos/preset-base']
         });
         
-        await objectql.init();
-        return objectql;
+        await objectos.init();
+        return objectos;
     }
 };

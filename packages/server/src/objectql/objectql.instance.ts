@@ -1,7 +1,7 @@
-import { ObjectQL } from '@objectql/core';
+import { ObjectOS } from '@objectos/kernel';
 import { KnexDriver } from '@objectql/driver-knex';
 
-export const objectql = new ObjectQL({
+export const objectql = new ObjectOS({
   datasources: {
       default: new KnexDriver({ 
           client: 'sqlite3',
