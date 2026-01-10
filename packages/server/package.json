@@ -1,5 +1,5 @@
 {
-  "name": "@objectos/api",
+  "name": "@objectos/server",
   "version": "0.2.0",
   "private": true,
   "scripts": {
@@ -12,13 +12,12 @@
     "build:client": "npm run build --workspace=@objectql/client"
   },
   "dependencies": {
-    "@example/project-management": "*",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
-    "@objectos/platform": "*",
+    "@objectos/preset-base": "*",
     "@objectql/core": "*",
     "@objectql/driver-knex": "*",
     "@objectql/driver-mongo": "*",

@@ -64,8 +64,8 @@ graph TD
     end
     
     subgraph "The Interface (apps/platform)"
-        Kernel <-->|API| SDK[@objectos/sdk]
-        SDK --> Renderer[@objectos/renderer]
+        Kernel <-->|API| SDK["@objectos/sdk"]
+        SDK --> Renderer["@objectos/renderer"]
         Renderer --> UI[Unified React UI]
     end
     
@@ -127,10 +127,9 @@ You will see a **Data Grid** for Deals. Click "New" to see the **Form**. All CRU
 
 | Package | Description |
 | --- | --- |
-| **`apps/platform`** | The unified frontend application (React + Shadcn UI). |
+| **`apps/web`** | The unified frontend application (React + Shadcn UI). |
 | **`@objectos/kernel`** | The backend logic engine. |
 | **`@objectos/server`** | The NestJS API gateway. |
-| **`@objectos/plugin-auth`** | Authentication via Better-Auth. |
 
 ---
 

@@ -1,4 +1,4 @@
-# @objectql/platform
+# @objectql/preset-base
 
 Metadata package for ObjectQL providing platform-level object definitions.
 

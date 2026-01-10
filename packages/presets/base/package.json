@@ -1,7 +1,7 @@
 {
-  "name": "@objectos/platform",
+  "name": "@objectos/preset-base",
   "version": "0.1.0",
-  "description": "Better-Auth integration for ObjectQL",
+  "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

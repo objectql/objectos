@@ -3,14 +3,16 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "packages/presets/*",
+    "packages/plugins/*",
+    "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\" --kill-others --names \"SERVER,CLIENT\" -c \"magenta,blue\"",
-    "server": "npm run dev --workspace=@objectql/api",
-    "client": "npm run dev --workspace=@objectql/client",
+    "dev": "concurrently \"npm run server\" \"npm run web\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
+    "server": "npm run dev --workspace=@objectql/server",
+    "web": "npm run dev --workspace=@objectql/web",
     "build": "tsc -b && npm run build --workspaces",
-    "start": "npm run start --workspace=@objectql/api",
+    "start": "npm run start --workspace=@objectql/server",
     "test": "npm run test --workspaces",
     "changeset": "changeset",
     "version": "changeset version",
