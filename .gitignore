@@ -1,11 +1,5 @@
-node_modules
-dist
+node_modules/
+dist/
+*.log
 .DS_Store
-*.tsbuildinfo
-
-.env
-.env.local
-
-# VitePress cache
-docs/.vitepress/cache
-docs/.vitepress/dist
+package-lock.json
