@@ -94,7 +94,7 @@ function AppContent() {
         <div className="flex flex-col min-h-screen w-full bg-background">
             <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6 bg-card sticky top-0 z-50">
                 <div className="flex items-center gap-2 font-bold text-lg">
-                    <span>ObjectQL</span>
+                    <span>ObjectOS</span>
                 </div>
                 <div className="ml-auto flex items-center gap-2">
                     {/* User Menu */}

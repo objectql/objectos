@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "ObjectQL",
+  title: "ObjectOS",
   description: "A Unified Data Management Framework",
   
   // Scans the docs directory
@@ -62,7 +62,7 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2026 ObjectQL'
+      copyright: 'Copyright © 2026 ObjectOS'
     }
   }
 })

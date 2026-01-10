@@ -139,7 +139,7 @@ export function AppSidebar({ objects, appMetadata, ...props }: React.ComponentPr
                 <LucideIcons.Database className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{appMetadata?.label || 'ObjectQL'}</span>
+                <span className="truncate font-semibold">{appMetadata?.label || 'ObjectOS'}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

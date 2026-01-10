@@ -23,7 +23,7 @@ export function SettingsView({ objectCount = 0 }: SettingsViewProps) {
                 </div>
                 <Card>
                     <CardHeader>
-                        <CardTitle>About ObjectQL</CardTitle>
+                        <CardTitle>About ObjectOS</CardTitle>
                         <CardDescription>System information and status.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

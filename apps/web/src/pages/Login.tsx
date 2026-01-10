@@ -46,7 +46,7 @@ export default function Login() {
                         {isSignIn ? 'Welcome back' : 'Create account'}
                     </h1>
                     <p className="text-muted-foreground text-sm mt-2">
-                       {isSignIn ? 'Enter your details to access your workspace' : 'Start your journey with ObjectQL'}
+                       {isSignIn ? 'Enter your details to access your workspace' : 'Start your journey with ObjectOS'}
                     </p>
                 </div>
 
