@@ -5,7 +5,7 @@
 **Open-source alternative to Salesforce & Airtable.**
 *A full-stack low-code platform with metadata-driven backend and auto-generated React UI.*
 
-[Documentation](https://objectos.org) · [Protocol Specs](https://github.com/objectql/objectql) · [Live Demo](https://demo.objectos.org)
+[Documentation](https://objectos.org) · [Protocol Specs](https://github.com/objectql/objectql) · [AI Builder](https://www.builder6.ai)
 
 </div>
 
