@@ -98,6 +98,16 @@ export class MetadataRegistry {
         }
         
         if (!this.isObjectCustomizable(entry.content)) {
+             throw new Error(`Cannot modify object '${objectName}'. It is marked as non-customizable.`);
+        }
+        return true;
+    }
+
+    validateFieldCustomizable(objectName: string, fieldName: string): boolean {
+        // Implement logic if needed
+        return true;
+    }
+}
             throw new Error(`Cannot modify system object '${objectName}'. This object is marked as non-customizable.`);
         }
         

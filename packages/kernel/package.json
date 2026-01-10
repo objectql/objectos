@@ -8,6 +8,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@objectql/core": "^1.2.0",
+    "@objectql/types": "^1.2.0",
     "fast-glob": "^3.3.2",
     "js-yaml": "^4.1.0"
   },

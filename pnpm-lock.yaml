@@ -130,6 +130,12 @@ importers:
 
   packages/kernel:
     dependencies:
+      '@objectql/core':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@objectql/types':
+        specifier: ^1.2.0
+        version: 1.2.0
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
