@@ -28,9 +28,9 @@ ObjectQL (Protocol) → ObjectOS (Runtime) → Your Application
 ```bash
 git clone https://github.com/objectql/objectos.git
 cd objectos
-npm install
-npm run build
-npm run dev
+pnpm install
+pnpm run build
+pnpm run dev
 ```
 
 ### Create Your First Object
