@@ -16,6 +16,6 @@ module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
   transformIgnorePatterns: [
-    'node_modules/(?!better-auth)'
+    'node_modules/(?!(better-auth|@better-auth)/)'
   ],
 };
