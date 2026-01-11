@@ -4,7 +4,12 @@ import { HookContext, ObjectQLContext } from '@objectql/types';
 export const listenTo = 'projects';
 
 export async function beforeFind(context: any) {
-    if (!context.ctx) return;
+    // Safety check for context
+    if (!context || !context.ctx) {
+        // console.warn('[File Hook] Projects: Missing context or ctx');
+        return;
+    }
+
     if (!context.ctx.isSystem && context.ctx.userId) {
         console.log(`[File Hook] Projects: Restricting access for ${context.ctx.userId}`);
         context.utils.restrict(['owner', '=', context.ctx.userId]);
