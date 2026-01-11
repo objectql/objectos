@@ -6,6 +6,7 @@ export default {
         }
     },
     presets: [
-        '@objectos/preset-base'
+        '@objectos/preset-base',
+        '@example/project-management'
     ]
 };
