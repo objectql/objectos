@@ -259,7 +259,7 @@ console.log('✅ Kernel initialized with objects:', kernel.getObjects());
 If using the monorepo, the server is already configured. Otherwise, create a NestJS server:
 
 ```bash
-npm install @nestjs/core @nestjs/common @nestjs/platform-express
+pnpm install @nestjs/core @nestjs/common @nestjs/platform-express
 ```
 
 The server will automatically expose endpoints:
