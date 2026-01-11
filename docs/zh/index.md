@@ -43,7 +43,7 @@
 
 - [GitHub 仓库](https://github.com/objectql/objectos)
 - [ObjectQL 协议规范](https://github.com/objectql/objectql)
-- [英文文档](../guide/)
+- [英文文档](/guide/)
 - [AI Builder](https://www.builder6.ai)
 
 ---

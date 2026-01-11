@@ -16,7 +16,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'Specifications', link: '/spec/' },
-      { text: '中文文档', link: '/zh/项目简介' },
+      { text: '中文文档', link: '/zh/' },
     ],
 
     // Sidebar Configuration
