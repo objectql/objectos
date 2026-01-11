@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@objectql/core':
-        specifier: ^1.1.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
       '@objectql/driver-knex':
-        specifier: ^1.1.0
-        version: 1.2.0(pg@8.16.3)(sqlite3@5.1.7)
+        specifier: ^1.4.0
+        version: 1.4.0
       '@objectql/driver-mongo':
-        specifier: ^1.1.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
       build:
         specifier: ^0.1.4
         version: 0.1.4
@@ -147,11 +147,11 @@ importers:
   packages/kernel:
     dependencies:
       '@objectql/core':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
       '@objectql/types':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
@@ -159,9 +159,18 @@ importers:
         specifier: ^4.1.0
         version: 4.1.1
     devDependencies:
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
       '@types/node':
         specifier: ^20.10.0
         version: 20.19.28
+      jest:
+        specifier: ^30.2.0
+        version: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      ts-jest:
+        specifier: ^29.4.6
+        version: 29.4.6(@babel/core@7.28.5)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)))(typescript@5.6.3)
       typescript:
         specifier: ^5.3.0
         version: 5.6.3
@@ -1685,14 +1694,29 @@ packages:
   '@objectql/core@1.2.0':
     resolution: {integrity: sha512-KKOCEvPuW1rGVpDBEAnnjqRHqGoDi9LZdOMEl0y8RZmpqu4U/NXjKZr7ePF+t2bTdHZQ41p67sPtT7C9DzgTHw==}
 
+  '@objectql/core@1.4.0':
+    resolution: {integrity: sha512-UlrQhwOj9gb0xw4Dsk8ixLQbJPfGqReKthlHEU8bEDd2TrC+IwIJ9VfDl/hVTql3bJUB4saMVvM1/jB4DnHl0Q==}
+
   '@objectql/driver-knex@1.2.0':
     resolution: {integrity: sha512-dZRswF9byeOZAcuWxkrs8Mn167HLr+ORn4YGLrVWogpoznQUay2hAJr88/SPt7RW200VlTl4jcxZfcUm5pdZqQ==}
+
+  '@objectql/driver-knex@1.4.0':
+    resolution: {integrity: sha512-23hOagZ8Uvc77UnrDJSRhYobxAw7eYxuC0FyruUumQTRu1SOQTNWUXXBGPFGq8mqomlXVBwKi6Hht36MyYMO3g==}
 
   '@objectql/driver-mongo@1.2.0':
     resolution: {integrity: sha512-8WGCILC6ykiL9XIDrOPWXdHbLMnlGz/wxbpwg56SuX84UyjLS77KqU7WRl9dB0sfYFpjI6m50f+FfZ6HIWF4Qg==}
 
+  '@objectql/driver-mongo@1.4.0':
+    resolution: {integrity: sha512-hAuZnohd/hUFP1myziWH4lF2KWofNJv6MBON8F+bh0C0BEGKGNAY0BVlZTHb9x4fFXXmrW8X4TjMr2RrYp1uHQ==}
+
+  '@objectql/driver-remote@1.4.0':
+    resolution: {integrity: sha512-hV3tWWX/QmMR/lbsy7sdEdUKNR03+cIXAOTfrebt7+oO0yrMP30Jnx+K/PKE1+N/N1OxIISxjLtn15wxMfsL6A==}
+
   '@objectql/types@1.2.0':
     resolution: {integrity: sha512-2Weg0UNTY9te7jRhyYVHq4pC8Hn5LygDTXu95PXRLPIAu0uFUqdkMN3x0YOAFGtmNevJs4anRCfHWx9ostsO6Q==}
+
+  '@objectql/types@1.4.0':
+    resolution: {integrity: sha512-0gzSm1ZFZbPOVJv0+hmvIflWHdu6MixNqRhqj+NR5tPJso9EH/OdTeeurqqIlnoy8vE1Wsf0rG6T4fTeEE/DJA==}
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -7949,9 +7973,30 @@ snapshots:
       fast-glob: 3.3.3
       js-yaml: 4.1.1
 
+  '@objectql/core@1.4.0':
+    dependencies:
+      '@objectql/driver-remote': 1.4.0
+      '@objectql/types': 1.4.0
+      fast-glob: 3.3.3
+      js-yaml: 4.1.1
+
   '@objectql/driver-knex@1.2.0(pg@8.16.3)(sqlite3@5.1.7)':
     dependencies:
       '@objectql/types': 1.2.0
+      knex: 3.1.0(pg@8.16.3)(sqlite3@5.1.7)
+    transitivePeerDependencies:
+      - better-sqlite3
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
+
+  '@objectql/driver-knex@1.4.0':
+    dependencies:
+      '@objectql/types': 1.4.0
       knex: 3.1.0(pg@8.16.3)(sqlite3@5.1.7)
     transitivePeerDependencies:
       - better-sqlite3
@@ -7974,7 +8019,24 @@ snapshots:
       - mongodb-client-encryption
       - snappy
 
+  '@objectql/driver-mongo@1.4.0':
+    dependencies:
+      '@objectql/types': 1.4.0
+      mongodb: 5.9.2
+    transitivePeerDependencies:
+      - '@aws-sdk/credential-providers'
+      - '@mongodb-js/zstd'
+      - kerberos
+      - mongodb-client-encryption
+      - snappy
+
+  '@objectql/driver-remote@1.4.0':
+    dependencies:
+      '@objectql/types': 1.4.0
+
   '@objectql/types@1.2.0': {}
+
+  '@objectql/types@1.4.0': {}
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
