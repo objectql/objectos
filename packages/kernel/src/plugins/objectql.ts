@@ -23,7 +23,8 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
                         });
                     }
                 } catch (e) {
-                     console.error(`Error loading app from ${ctx.file}:`, e);
+                     console.error(`Error loading app from ${ctx.file}: ${e instanceof Error ? e.message : String(e)}`);
+                     console.error('Expected YAML structure: { name: string, label: string, menu?: [...] }');
                 }
             }
         });
@@ -46,10 +47,13 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
                         const config = entry.content as any;
                         config.data = data; 
                     } else {
+                        const availableObjects = Array.from((ctx.registry as any).store.get('object')?.keys() || []).join(', ') || 'none';
                         console.warn(`Found data for unknown object '${objectName}' in ${ctx.file}`);
+                        console.warn(`Ensure the corresponding ${objectName}.object.yml file exists. Available objects: ${availableObjects}`);
                     }
                 } catch (e) {
-                    console.error(`Error loading data from ${ctx.file}:`, e);
+                    console.error(`Error loading data from ${ctx.file}: ${e instanceof Error ? e.message : String(e)}`);
+                    console.error('Expected YAML structure: Array of objects with field values');
                 }
             }
         });

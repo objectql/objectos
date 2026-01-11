@@ -67,12 +67,23 @@ export const objectQLProvider: Provider = {
             });
         }
 
+        const presets = config.presets || ['@objectos/preset-base'];
+        
         const objectos = new ObjectOS({
             datasources,
-            presets: config.presets || ['@objectos/preset-base']
+            presets
         });
         
-        await objectos.init();
+        try {
+            await objectos.init();
+        } catch (error) {
+            console.error('Failed to initialize ObjectOS:', error);
+            if (error instanceof Error && error.message.includes('preset')) {
+                console.error(`Hint: Ensure preset packages are installed: ${presets.join(', ')}`);
+            }
+            throw error;
+        }
+        
         return objectos;
     }
 };
