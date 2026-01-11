@@ -4,9 +4,16 @@ import { AppModule } from './app.module.js';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
+  // Mainstream Pattern: Load from ENV, fallback to dev defaults
+  const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:5173', 'http://localhost:3000'];
+
   app.enableCors({
-      origin: ['http://localhost:5173', 'http://localhost:3000'],
-      credentials: true
+      origin: allowedOrigins,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
   
   // Listen on PORT or default to 3000 to match client proxy
