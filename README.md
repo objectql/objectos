@@ -13,14 +13,31 @@
 
 ## 📖 Introduction
 
-**ObjectOS** is the unified low-code platform for the AI era.
+**ObjectOS** is a high-performance, metadata-driven runtime engine that brings your enterprise applications to life.
+
+### The Two-Layer Architecture
+
+1. **[ObjectQL](https://github.com/objectql/objectql)** - The Metadata Standard
+   - Defines the protocol for describing business objects, fields, relationships, and logic
+   - Pure specification in YAML format (`*.object.yml`)
+   - Enables AI and tools to generate massive amounts of enterprise metadata
+
+2. **ObjectOS** - The Runtime Engine (This Repository)
+   - Interprets and executes ObjectQL metadata
+   - Generates fully functional enterprise applications from metadata
+   - Provides the kernel, drivers, server, and UI components
+
+Think of it as **ObjectQL is the blueprint language, ObjectOS is the builder**.
+
+### What You Get
 
 Most platforms force you to choose: flexibility (like **Airtable**) or structure (like **Salesforce**). ObjectOS gives you both in a single, open-source package.
 
-By defining your business logic in standard `*.object.yml` files (powered by [ObjectQL](https://github.com/objectql/objectql)), ObjectOS instantly generates:
+By defining your business logic in standard `*.object.yml` files, ObjectOS instantly generates:
 
 1. **A Powerful Backend:** Node.js kernel with built-in Auth, Permissions (RBAC/RLS), and Workflow.
 2. **A Unified Frontend:** A React application that combines high-performance Data Grids with enterprise-grade Detail Forms.
+3. **Database Agnostic:** Works with PostgreSQL, MongoDB, or SQLite through pluggable drivers.
 
 ## ✨ Key Features
 
@@ -49,29 +66,40 @@ ObjectOS is designed to be the "Execution Layer" for AI.
 
 ## 🏗 Architecture
 
-ObjectOS is a Monorepo that bridges the gap between Protocol and User Experience.
+ObjectOS implements a clean three-layer architecture following the principle:
+
+> **"Kernel handles logic, Drivers handle data, Server handles HTTP."**
 
 ```mermaid
 graph TD
-    subgraph "The Definition (ObjectQL)"
-        YAML[contact.object.yml] -->|Parses| Metadata
+    subgraph "Layer 1: Metadata Protocol"
+        YAML[*.object.yml files<br/>ObjectQL Format] -->|Parsed by| Parser
     end
     
-    subgraph "The Engine (@objectos/kernel)"
-        Metadata --> Kernel
-        Kernel -->|Auth & Logic| Plugins
-        Kernel -->|SQL/NoSQL| DB[(Database)]
+    subgraph "Layer 2: Runtime Engine"
+        Parser --> Kernel["@objectos/kernel<br/>Core Logic Engine"]
+        Kernel --> Plugins["Plugins<br/>Auth, Workflow, Validation"]
+        Kernel --> Driver["ObjectQL Drivers<br/>PostgreSQL, MongoDB, SQLite"]
+        Driver --> DB[(Database)]
     end
     
-    subgraph "The Interface (apps/platform)"
-        Kernel <-->|API| SDK["@objectos/sdk"]
-        SDK --> Renderer["@objectos/renderer"]
-        Renderer --> UI[Unified React UI]
+    subgraph "Layer 3: Application Layer"
+        Kernel <-->|REST API| Server["@objectos/server<br/>NestJS Gateway"]
+        Server --> UI["@objectos/ui<br/>React Components"]
+        UI --> App[Enterprise Application]
     end
     
-    style UI fill:#f9f,stroke:#333,stroke-width:2px
+    style Kernel fill:#4a9eff,stroke:#333,stroke-width:2px
+    style App fill:#f9f,stroke:#333,stroke-width:2px
 
 ```
+
+### Key Design Principles
+
+1. **Metadata-First**: Everything is defined declaratively in YAML
+2. **Protocol-Driven**: ObjectOS strictly implements the ObjectQL protocol
+3. **Database Agnostic**: Swap databases without changing business logic
+4. **Separation of Concerns**: Kernel never touches HTTP, Server never touches SQL
 
 ---
 
@@ -125,11 +153,21 @@ You will see a **Data Grid** for Deals. Click "New" to see the **Form**. All CRU
 
 ## 📦 Ecosystem
 
-| Package | Description |
-| --- | --- |
-| **`apps/web`** | The unified frontend application (React + Shadcn UI). |
-| **`@objectos/kernel`** | The backend logic engine. |
-| **`@objectos/server`** | The NestJS API gateway. |
+| Package | Description | Role |
+| --- | --- | --- |
+| **`@objectos/kernel`** | Core runtime engine that loads metadata, manages object registry, and coordinates data operations | Brain of ObjectOS |
+| **`@objectos/server`** | NestJS-based HTTP server that exposes REST APIs for CRUD operations | API Gateway |
+| **`@objectos/ui`** | React component library for building enterprise UIs (grids, forms, charts) | Frontend Components |
+| **`@objectos/preset-base`** | Standard metadata presets (User, Role, Permission objects) | Pre-built Objects |
+
+### External Dependencies
+
+| Package | Source | Purpose |
+| --- | --- | --- |
+| **`@objectql/core`** | [objectql/objectql](https://github.com/objectql/objectql) | Metadata parser and validator |
+| **`@objectql/types`** | [objectql/objectql](https://github.com/objectql/objectql) | TypeScript type definitions for ObjectQL protocol |
+| **`@objectql/driver-knex`** | [objectql/objectql](https://github.com/objectql/objectql) | PostgreSQL/MySQL/SQLite driver implementation |
+| **`@objectql/driver-mongo`** | [objectql/objectql](https://github.com/objectql/objectql) | MongoDB driver implementation |
 
 ---
 
