@@ -29,7 +29,7 @@ describe('AuthController (e2e)', () => {
 
   it('should sign up a new user', async () => {
     const response = await agent
-      .post('/api/v6/auth/sign-up/email')
+      .post('/api/auth/sign-up/email')
       .send({
         email,
         password,
@@ -45,7 +45,7 @@ describe('AuthController (e2e)', () => {
   it('should sign in', async () => {
       // In case sign up doesn't auto sign in (better-auth usually does), but testing sign-in is good.
       await agent
-        .post('/api/v6/auth/sign-in/email')
+        .post('/api/auth/sign-in/email')
         .send({
             email,
             password
@@ -55,7 +55,7 @@ describe('AuthController (e2e)', () => {
 
   it('should create an organization', async () => {
      const response = await agent
-        .post('/api/v6/auth/organization/create')
+        .post('/api/auth/organization/create')
         .send({
             name: orgName,
             slug: `test-org-${uniqueId}`
@@ -71,7 +71,7 @@ describe('AuthController (e2e)', () => {
       expect(organizationId).toBeDefined();
       
       const response = await agent
-        .post('/api/v6/auth/organization/create-team')
+        .post('/api/auth/organization/create-team')
         .send({
             name: 'Dev Team',
             organizationId: organizationId,
@@ -85,7 +85,7 @@ describe('AuthController (e2e)', () => {
 
   it('should get current session', async () => {
       const response = await agent
-        .get('/api/v6/auth/get-session')
+        .get('/api/auth/get-session')
         .expect(200);
 
       expect(response.body).toHaveProperty('session');
@@ -95,7 +95,7 @@ describe('AuthController (e2e)', () => {
 
   it('should list organizations', async () => {
       const response = await agent
-        .get('/api/v6/auth/organization/list')
+        .get('/api/auth/organization/list')
         .expect(200);
       
       expect(Array.isArray(response.body)).toBe(true);
@@ -107,21 +107,21 @@ describe('AuthController (e2e)', () => {
 
   it('should set active organization', async () => {
       const response = await agent
-        .post('/api/v6/auth/organization/set-active')
+        .post('/api/auth/organization/set-active')
         .send({
             organizationId
         })
         .expect(200);
       
       // Verify session has active org
-      const sessionResponse = await agent.get('/api/v6/auth/get-session');
+      const sessionResponse = await agent.get('/api/auth/get-session');
       expect(sessionResponse.body.session.activeOrganizationId).toBe(organizationId);
   });
 
   it('should update organization', async () => {
       const newName = `${orgName} Updated`;
       const response = await agent
-        .post('/api/v6/auth/organization/update')
+        .post('/api/auth/organization/update')
         .send({
             organizationId,
             data: {
@@ -136,7 +136,7 @@ describe('AuthController (e2e)', () => {
   it('should create invitation', async () => {
       const inviteEmail = `invitee.${uniqueId}@example.com`;
       const response = await agent
-        .post('/api/v6/auth/organization/invite-member')
+        .post('/api/auth/organization/invite-member')
         .send({
             organizationId,
             email: inviteEmail,
@@ -151,12 +151,12 @@ describe('AuthController (e2e)', () => {
 
   it('should sign out', async () => {
       await agent
-        .post('/api/v6/auth/sign-out')
+        .post('/api/auth/sign-out')
         .send({}) // Must send empty body to set Content-Type: application/json
         .expect(200);
       
       const response = await agent
-        .get('/api/v6/auth/get-session')
+        .get('/api/auth/get-session')
         .expect(200);
       
       expect(response.body).toBe(null);

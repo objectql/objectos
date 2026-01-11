@@ -24,7 +24,7 @@ describe('AuthController (e2e)', () => {
     let organizationId;
     it('should sign up a new user', async () => {
         const response = await agent
-            .post('/api/v6/auth/sign-up/email')
+            .post('/api/auth/sign-up/email')
             .send({
             email,
             password,
@@ -37,7 +37,7 @@ describe('AuthController (e2e)', () => {
     });
     it('should sign in', async () => {
         await agent
-            .post('/api/v6/auth/sign-in/email')
+            .post('/api/auth/sign-in/email')
             .send({
             email,
             password
@@ -46,7 +46,7 @@ describe('AuthController (e2e)', () => {
     });
     it('should create an organization', async () => {
         const response = await agent
-            .post('/api/v6/auth/organization/create')
+            .post('/api/auth/organization/create')
             .send({
             name: orgName,
             slug: `test-org-${uniqueId}`
@@ -59,7 +59,7 @@ describe('AuthController (e2e)', () => {
     it('should create a team (verifying team and teamMember tables)', async () => {
         expect(organizationId).toBeDefined();
         const response = await agent
-            .post('/api/v6/auth/organization/create-team')
+            .post('/api/auth/organization/create-team')
             .send({
             name: 'Dev Team',
             organizationId: organizationId,

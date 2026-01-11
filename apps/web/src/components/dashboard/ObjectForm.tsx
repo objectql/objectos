@@ -17,7 +17,7 @@ export function ObjectForm({ objectName, initialValues, onSubmit, onCancel, head
     });
 
     useEffect(() => {
-         fetch(`/api/v6/metadata/object/${objectName}`, { headers })
+         fetch(`/api/metadata/object/${objectName}`, { headers })
             .then(res => res.json())
             .then(res => {
                 setSchema(res);

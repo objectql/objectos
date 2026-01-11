@@ -50,7 +50,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (user) {
-            fetch('/api/v6/data/app?limit=100', { headers: getHeaders() })
+            fetch('/api/data/app?limit=100', { headers: getHeaders() })
                 .then(res => res.json())
                 .then(result => {
                     const data = Array.isArray(result) ? result : (result.data || []);
@@ -59,7 +59,7 @@ export default function Dashboard() {
                 .catch(console.error);
 
             // Fetch objects
-            fetch('/api/v6/metadata/object', { headers: getHeaders() })
+            fetch('/api/metadata/object', { headers: getHeaders() })
                 .then(res => res.json())
                 .then(result => {
                     // Convert array to map

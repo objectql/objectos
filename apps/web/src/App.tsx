@@ -29,7 +29,7 @@ function AppContent() {
         
         lastFetchedApp.current = appName;
         
-        fetch(`/api/v6/metadata/app/${appName}`)
+        fetch(`/api/metadata/app/${appName}`)
             .then(res => {
                 if (!res.ok) throw new Error('App not found');
                 return res.json();

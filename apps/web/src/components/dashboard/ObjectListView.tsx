@@ -102,7 +102,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
             }
         }
         
-        fetch(`/api/v6/data/${objectName}?${params.toString()}`, { headers: getHeaders() })
+        fetch(`/api/data/${objectName}?${params.toString()}`, { headers: getHeaders() })
             .then(async res => {
                 if (!res.ok) {
                     const contentType = res.headers.get("content-type");
@@ -131,7 +131,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
     }, [objectName, user, sortConfig, debouncedSearch]);
 
     const handleCreate = (formData: any) => {
-        fetch(`/api/v6/data/${objectName}`, {
+        fetch(`/api/data/${objectName}`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify(formData)
@@ -153,7 +153,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
         if (!confirm('Are you sure you want to delete this record?')) return;
         const id = row.id || row._id;
         
-        fetch(`/api/v6/data/${objectName}/${id}`, {
+        fetch(`/api/data/${objectName}/${id}`, {
             method: 'DELETE',
             headers: getHeaders()
         })

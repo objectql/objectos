@@ -1,5 +1,5 @@
 import { Module, Global } from '@nestjs/common';
-import { objectQLProvider } from './objectql.provider';
+import { objectQLProvider } from './objectql.provider.js';
 
 @Global()
 @Module({

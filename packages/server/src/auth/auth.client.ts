@@ -10,11 +10,11 @@ export const getAuth = async () => {
     
     try {
         const pool = new Pool({
-            connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/objectql'
+            connectionString: process.env.OBJECTQL_DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/objectql'
         });
         authInstance = betterAuth({
             database: pool,
-            baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000/api/v6/auth",
+            baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000/api/auth",
             trustedOrigins: ["http://localhost:5173", "http://localhost:3000", "http://localhost:3000"],
             emailAndPassword: {
                 enabled: true
@@ -91,4 +91,6 @@ export const getAuth = async () => {
         throw e;
     }
 };
+
+export default { getAuth };
 

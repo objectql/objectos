@@ -9,11 +9,18 @@ export const objectQLProvider: Provider = {
     useFactory: async () => {
         let config: any = {};
         
-        // Try to locate objectos.config.js
+        // Try to locate objectql.config.ts or objectql.config.js
         // 1. Check process.cwd()
         // 2. Check up to 2 levels up (in case running from packages/server)
         
         const candidates = [
+            path.resolve(process.cwd(), 'objectql.config.ts'),
+            path.resolve(process.cwd(), 'objectql.config.js'),
+            path.resolve(process.cwd(), '../objectql.config.ts'),
+            path.resolve(process.cwd(), '../objectql.config.js'),
+            path.resolve(process.cwd(), '../../objectql.config.ts'),
+            path.resolve(process.cwd(), '../../objectql.config.js'),
+            // Legacy fallbacks
             path.resolve(process.cwd(), 'objectos.config.js'),
             path.resolve(process.cwd(), '../objectos.config.js'),
             path.resolve(process.cwd(), '../../objectos.config.js'),
@@ -87,3 +94,5 @@ export const objectQLProvider: Provider = {
         return objectos;
     }
 };
+
+export default objectQLProvider;

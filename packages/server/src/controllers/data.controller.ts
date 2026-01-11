@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus, Req, Inject } from '@nestjs/common';
 import { ObjectOS } from '@objectos/kernel';
 
-@Controller('api/v6/data/:objectName')
+@Controller('api/data/:objectName')
 export class DataController {
     
     constructor(@Inject(ObjectOS) private objectql: ObjectOS) {}

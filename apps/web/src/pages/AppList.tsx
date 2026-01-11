@@ -30,7 +30,7 @@ export default function AppList() {
     const { navigate } = useRouter();
 
     useEffect(() => {
-        fetch('/api/v6/metadata/app', { headers: getHeaders() })
+        fetch('/api/metadata/app', { headers: getHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {

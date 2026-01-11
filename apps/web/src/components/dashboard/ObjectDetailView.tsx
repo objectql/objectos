@@ -22,11 +22,11 @@ export function ObjectDetailView({ objectName, recordId, navigate, objectSchema 
     useEffect(() => {
         setLoading(true);
         Promise.all([
-            fetch(`/api/v6/data/${objectName}/${recordId}`, { headers: getHeaders() }).then(async r => {
+            fetch(`/api/data/${objectName}/${recordId}`, { headers: getHeaders() }).then(async r => {
                     if (!r.ok) throw new Error("Failed to load record");
                     return r.json();
             }),
-            fetch(`/api/v6/metadata/object/${objectName}`, { headers: getHeaders() }).then(r => r.json())
+            fetch(`/api/metadata/object/${objectName}`, { headers: getHeaders() }).then(r => r.json())
         ]).then(([record, schemaData]) => {
             setData(record);
             setSchema(schemaData);
@@ -36,7 +36,7 @@ export function ObjectDetailView({ objectName, recordId, navigate, objectSchema 
 
     const handleDelete = () => {
             if (!confirm('Are you sure you want to delete this record?')) return;
-            fetch(`/api/v6/data/${objectName}/${recordId}`, {
+            fetch(`/api/data/${objectName}/${recordId}`, {
             method: 'DELETE',
             headers: getHeaders()
         }).then(() => navigate(`/object/${objectName}`))
@@ -44,7 +44,7 @@ export function ObjectDetailView({ objectName, recordId, navigate, objectSchema 
     };
     
     const handleUpdate = (formData: any) => {
-            fetch(`/api/v6/data/${objectName}/${recordId}`, {
+            fetch(`/api/data/${objectName}/${recordId}`, {
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify(formData)
@@ -54,7 +54,7 @@ export function ObjectDetailView({ objectName, recordId, navigate, objectSchema 
         }).then(() => {
             setIsEditing(false);
             // Reload data
-            fetch(`/api/v6/data/${objectName}/${recordId}`, { headers: getHeaders() })
+            fetch(`/api/data/${objectName}/${recordId}`, { headers: getHeaders() })
                 .then(r => r.json())
                 .then(setData);
         }).catch(e => alert(e.message));
