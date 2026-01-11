@@ -47,10 +47,20 @@ export class AuthMiddleware implements NestMiddleware {
               spaceId: req.headers['x-space-id'] as string,
               isSystem: isAdmin
           };
+      } else {
+          // Anonymous user
+          req['user'] = {
+              roles: ['guest'],
+              isSystem: false
+          };
       }
     } catch (e) {
       // ignore auth error
       console.error("Auth Middleware Error:", e);
+      req['user'] = {
+        roles: ['guest'],
+        isSystem: false
+      }
     }
     
     next();
