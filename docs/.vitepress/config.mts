@@ -26,6 +26,7 @@ export default defineConfig({
           text: 'Getting Started',
           items: [
             { text: 'Introduction', link: '/guide/' },
+            { text: 'Architecture Overview', link: '/guide/architecture' },
             { text: 'Data Modeling', link: '/guide/data-modeling' },
             { text: 'Security Guide', link: '/guide/security-guide' }
           ]
