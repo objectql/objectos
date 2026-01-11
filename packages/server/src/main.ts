@@ -5,8 +5,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // Mainstream Pattern: Load from ENV, fallback to dev defaults
-  const allowedOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
+  const allowedOrigins = process.env.OBJECTQL_CORS_ORIGINS
+    ? process.env.OBJECTQL_CORS_ORIGINS.split(',').map(origin => origin.trim())
     : ['http://localhost:5173', 'http://localhost:3000'];
 
   app.enableCors({
@@ -17,7 +17,7 @@ async function bootstrap() {
   });
   
   // Listen on PORT or default to 3000 to match client proxy
-  const port = process.env.PORT || 3000;
+  const port = process.env.OBJECTQL_PORT || 3000;
   await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
