@@ -106,8 +106,5 @@ export class AppModule implements NestModule {
         .apply(stripPrefix('/api/objectql', objectQLHandler))
         .forRoutes({ path: 'api/objectql*', method: RequestMethod.ALL });
         
-    consumer
-        .apply(stripPrefix('/studio', studioHandler))
-        .forRoutes({ path: 'studio*', method: RequestMethod.ALL });
   }
 }
