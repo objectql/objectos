@@ -1,0 +1,6 @@
+- name: John Doe
+  email: john@example.com
+  phone: "555-0001"
+- name: Jane Smith
+  email: jane@example.com
+  phone: "555-0002"

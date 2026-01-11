@@ -69,7 +69,7 @@ export const objectQLProvider: Provider = {
 
         const objectos = new ObjectOS({
             datasources,
-            packages: config.presets || ['@objectos/preset-base']
+            presets: config.presets || ['@objectos/preset-base']
         });
         
         await objectos.init();

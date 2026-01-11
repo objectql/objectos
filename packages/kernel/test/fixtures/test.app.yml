@@ -1,0 +1,10 @@
+name: test-app
+label: Test Application
+icon: ri-dashboard-line
+menu:
+  - label: Dashboard
+    type: page
+    url: /dashboard
+  - label: Contacts
+    type: object
+    object: contacts

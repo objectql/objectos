@@ -1,16 +1,18 @@
 import { ObjectQL } from '@objectql/core';
-// Note: AppPlugin and DataPlugin are temporarily disabled because ObjectQL core
-// doesn't yet support the addLoader API they require
-// import { AppPlugin } from './plugins/app';
-// import { DataPlugin } from './plugins/data';
+import { ObjectQLConfig } from '@objectql/types';
+import { ObjectOSPlugin } from './plugins/objectql';
 
 export class ObjectOS extends ObjectQL {
 
-    constructor(config: { datasources?: any, packages?: string[] } = {}) {
+    constructor(config: ObjectQLConfig = {}) {
         super({
             datasources: config.datasources || {},
-            packages: config.packages,
-            // plugins: [AppPlugin, DataPlugin] // Temporarily disabled - waiting for ObjectQL core plugin API
+            presets: config.presets || config.packages,
+            plugins: [ObjectOSPlugin, ...(config.plugins || [])],
+            source: config.source,
+            objects: config.objects,
+            connection: config.connection,
+            remotes: config.remotes,
         });
     }
     

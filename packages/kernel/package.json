@@ -8,13 +8,16 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectql/core": "^1.2.0",
-    "@objectql/types": "^1.2.0",
+    "@objectql/core": "^1.4.0",
+    "@objectql/types": "^1.4.0",
     "fast-glob": "^3.3.2",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.3.0"
   }
 }

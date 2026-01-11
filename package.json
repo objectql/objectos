@@ -31,9 +31,9 @@
   },
   "version": "0.1.0",
   "dependencies": {
-    "@objectql/core": "^1.1.0",
-    "@objectql/driver-knex": "^1.1.0",
-    "@objectql/driver-mongo": "^1.1.0",
+    "@objectql/core": "^1.4.0",
+    "@objectql/driver-knex": "^1.4.0",
+    "@objectql/driver-mongo": "^1.4.0",
     "build": "^0.1.4"
   }
 }

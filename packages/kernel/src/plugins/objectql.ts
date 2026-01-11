@@ -1,14 +1,15 @@
 import * as yaml from 'js-yaml';
 import * as path from 'path';
+import { ObjectQLPlugin, IObjectQL } from '@objectql/types';
 
-export const ObjectOSPlugin = {
+export const ObjectOSPlugin: ObjectQLPlugin = {
     name: 'objectos-core',
-    setup(app: any) {
+    setup(app: IObjectQL) {
         // Apps
         app.addLoader({
             name: 'app',
             glob: ['**/*.app.yml', '**/*.app.yaml'],
-            handler: (ctx: any) => {
+            handler: (ctx) => {
                 try {
                     const doc = yaml.load(ctx.content) as any;
                     const id = doc.code || doc.id || doc.name;
@@ -31,7 +32,7 @@ export const ObjectOSPlugin = {
         app.addLoader({
             name: 'data',
             glob: ['**/*.data.yml', '**/*.data.yaml'],
-            handler: (ctx: any) => {
+            handler: (ctx) => {
                 try {
                     const content = ctx.content;
                     const data = yaml.load(content);

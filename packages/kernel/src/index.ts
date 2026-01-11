@@ -1,4 +1,5 @@
 export * from './objectos';
+export { ObjectOSPlugin } from './plugins/objectql';
 
 // Re-export specific types if needed to avoid conflicts
 export { 

@@ -1,0 +1,17 @@
+name: contacts
+label: Contact
+icon: user
+fields:
+  name:
+    type: text
+    label: Name
+    required: true
+  
+  email:
+    type: email
+    label: Email
+    unique: true
+  
+  phone:
+    type: text
+    label: Phone
