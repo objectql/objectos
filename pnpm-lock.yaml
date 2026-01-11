@@ -217,6 +217,9 @@ importers:
       '@objectql/driver-mongo':
         specifier: '*'
         version: 1.2.0
+      '@objectql/server':
+        specifier: ^1.4.0
+        version: 1.4.0
       better-auth:
         specifier: ^1.4.10
         version: 1.4.10(pg@8.16.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vue@3.5.26(typescript@5.6.3))
@@ -1711,6 +1714,9 @@ packages:
 
   '@objectql/driver-remote@1.4.0':
     resolution: {integrity: sha512-hV3tWWX/QmMR/lbsy7sdEdUKNR03+cIXAOTfrebt7+oO0yrMP30Jnx+K/PKE1+N/N1OxIISxjLtn15wxMfsL6A==}
+
+  '@objectql/server@1.4.0':
+    resolution: {integrity: sha512-crbEq8D0QPAj8xYywIS7yK8kzCy9oZE28LZrkiyDXoKPQFeyMSwkz7wKC4Xo7qIls2Ws0qxAjIoCoX61Tvtx4g==}
 
   '@objectql/types@1.2.0':
     resolution: {integrity: sha512-2Weg0UNTY9te7jRhyYVHq4pC8Hn5LygDTXu95PXRLPIAu0uFUqdkMN3x0YOAFGtmNevJs4anRCfHWx9ostsO6Q==}
@@ -8033,6 +8039,12 @@ snapshots:
   '@objectql/driver-remote@1.4.0':
     dependencies:
       '@objectql/types': 1.4.0
+
+  '@objectql/server@1.4.0':
+    dependencies:
+      '@objectql/core': 1.4.0
+      '@objectql/types': 1.4.0
+      js-yaml: 4.1.1
 
   '@objectql/types@1.2.0': {}
 

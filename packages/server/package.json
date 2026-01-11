@@ -23,6 +23,7 @@
     "@objectql/core": "*",
     "@objectql/driver-knex": "*",
     "@objectql/driver-mongo": "*",
+    "@objectql/server": "^1.4.0",
     "better-auth": "^1.4.10",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
