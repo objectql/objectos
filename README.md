@@ -177,6 +177,15 @@ We are building the future of open-source business software.
 
 * **Core Protocol:** Contribute to [objectql/objectql](https://github.com/objectql/objectql).
 * **Runtime & UI:** Submit PRs to this repository.
+* **Read the Guide:** See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+## 📚 Documentation
+
+- **[Quick Reference](./QUICK_REFERENCE.md)** - Command reference and common patterns
+- **[Architecture](./ARCHITECTURE.md)** - Deep dive into the three-layer architecture
+- **[Roadmap](./ROADMAP.md)** - Development plan and feature roadmap
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
+- **[Online Documentation](https://objectos.org)** - Full guides and API reference
 
 ## 📄 License
 
