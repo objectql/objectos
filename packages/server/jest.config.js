@@ -1,12 +1,11 @@
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/test/**/*.test.ts'],
   transform: {
-    '^.+\\.(t|j|m)s$': ['ts-jest', {
-      useESM: true,
+    '^.+\\.ts$': ['ts-jest', {
       tsconfig: {
-        module: 'esnext',
+        module: 'commonjs',
         moduleResolution: 'node',
         allowJs: true,
         allowSyntheticDefaultImports: true,
@@ -14,12 +13,8 @@ module.exports = {
       }
     }]
   },
-  extensionsToTreatAsEsm: ['.ts'],
-  moduleFileExtensions: ['js', 'json', 'ts', 'mjs'],
+  moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
   transformIgnorePatterns: [
     'node_modules/(?!better-auth)'
   ],

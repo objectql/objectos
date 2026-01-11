@@ -4,3 +4,9 @@ packages:
   - packages/plugins/*
   - apps/*
   - examples/*
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - esbuild
+  - sqlite3
+  - unrs-resolver
