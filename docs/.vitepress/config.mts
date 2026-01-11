@@ -16,6 +16,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'Specifications', link: '/spec/' },
+      { text: '中文文档', link: '/zh/项目简介' },
     ],
 
     // Sidebar Configuration
@@ -49,6 +50,18 @@ export default defineConfig({
             { text: 'Metadata Format', link: '/spec/metadata-format' },
             { text: 'Query Language', link: '/spec/query-language' },
             { text: 'HTTP Protocol', link: '/spec/http-protocol' }
+          ]
+        }
+      ],
+
+      // Sidebar for Chinese Documentation
+      '/zh/': [
+        {
+          text: 'ObjectOS 中文文档',
+          items: [
+            { text: '项目简介', link: '/zh/项目简介' },
+            { text: '商业战略', link: '/zh/商业战略' },
+            { text: '开发计划', link: '/zh/开发计划' }
           ]
         }
       ]
