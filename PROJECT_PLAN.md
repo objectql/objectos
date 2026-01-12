@@ -929,9 +929,9 @@ ObjectOS 项目团队
 
 ### C. 联系方式
 - **GitHub**: https://github.com/objectql/objectos
-- **文档**: https://objectos.org
-- **邮件**: team@objectos.org (计划中)
-- **Discord**: https://discord.gg/objectos (计划中)
+- **文档**: https://objectos.org (待建设)
+- **邮件**: [待确定] (计划中)
+- **Discord**: [待创建] (计划中)
 
 ---
 

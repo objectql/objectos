@@ -74,7 +74,8 @@ jobs:
 
 1. `packages/kernel/test/helpers/mock-driver.ts`
 ```typescript
-import { ObjectQLDriver } from '@objectql/types';
+// Note: Verify this import path matches your actual project structure
+import type { ObjectQLDriver } from '@objectql/types';
 
 export function createMockDriver(): jest.Mocked<ObjectQLDriver> {
   return {
@@ -299,22 +300,25 @@ describe('HookManager', () => {
         handler,
       });
 
-      expect(manager['hooks'].get('beforeInsert')).toHaveLength(1);
+      // Note: Consider adding a public method like getHookCount() instead of accessing private members
+      // For now, we can verify by executing the hook
+      const context = { objectName: 'test' };
+      manager.execute('beforeInsert', context);
+      expect(handler).toHaveBeenCalled();
     });
 
-    it('should sort hooks by priority', () => {
-      const handler1 = jest.fn();
-      const handler2 = jest.fn();
-      const handler3 = jest.fn();
+    it('should sort hooks by priority', async () => {
+      const order: number[] = [];
 
-      manager.register({ type: 'beforeInsert', handler: handler1, priority: 200 });
-      manager.register({ type: 'beforeInsert', handler: handler2, priority: 50 });
-      manager.register({ type: 'beforeInsert', handler: handler3, priority: 100 });
+      manager.register({ type: 'beforeInsert', handler: async () => { order.push(200); }, priority: 200 });
+      manager.register({ type: 'beforeInsert', handler: async () => { order.push(50); }, priority: 50 });
+      manager.register({ type: 'beforeInsert', handler: async () => { order.push(100); }, priority: 100 });
 
-      const hooks = manager['hooks'].get('beforeInsert')!;
-      expect(hooks[0].handler).toBe(handler2); // priority 50
-      expect(hooks[1].handler).toBe(handler3); // priority 100
-      expect(hooks[2].handler).toBe(handler1); // priority 200
+      const context = { objectName: 'test' };
+      await manager.execute('beforeInsert', context);
+      
+      // Verify hooks executed in priority order (lowest priority number first)
+      expect(order).toEqual([50, 100, 200]);
     });
   });
 
@@ -385,7 +389,7 @@ describe('HookManager', () => {
 
 ```typescript
 import { HookManager } from './hooks/manager';
-import { HookConfig, HookType, HookContext } from './hooks/types';
+import { HookConfig, HookType, HookContext, HookFunction } from './hooks/types';
 
 export class ObjectOS {
   private registry: Map<string, ObjectConfig> = new Map();
