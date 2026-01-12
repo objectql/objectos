@@ -88,6 +88,12 @@ const DateCellRenderer = (props: ICellRendererParams) => {
   
   try {
     const date = value instanceof Date ? value : new Date(value)
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return <span className="text-muted-foreground">{String(value)}</span>
+    }
+    
     // Format based on field type from colDef
     const extendedColDef = colDef as ExtendedColDef
     const fieldType = extendedColDef.fieldType
@@ -189,12 +195,41 @@ const LookupCellRenderer = (props: ICellRendererParams) => {
   }
   
   // If value is an object with _id and name/label
-  if (typeof value === 'object') {
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
     const displayValue = value.name || value.label || value.title || value._id
     return <span>{displayValue}</span>
   }
   
   return <span>{String(value)}</span>
+}
+
+/**
+ * Sanitize email to prevent XSS attacks
+ */
+const sanitizeEmail = (email: string): string => {
+  // Remove any potential JavaScript protocol injection
+  const sanitized = String(email).trim();
+  // Basic validation - must contain @ and not start with javascript:
+  if (!sanitized.includes('@') || sanitized.toLowerCase().startsWith('javascript:')) {
+    return '';
+  }
+  return sanitized;
+}
+
+/**
+ * Sanitize URL to prevent XSS attacks
+ */
+const sanitizeUrl = (url: string): string => {
+  const sanitized = String(url).trim();
+  // Only allow http and https protocols
+  if (!sanitized.match(/^https?:\/\//i)) {
+    return '';
+  }
+  // Prevent javascript: protocol and other dangerous protocols
+  if (sanitized.toLowerCase().match(/^(javascript|data|vbscript):/)) {
+    return '';
+  }
+  return sanitized;
 }
 
 /**
@@ -207,13 +242,19 @@ const EmailCellRenderer = (props: ICellRendererParams) => {
     return <span className="text-muted-foreground">-</span>
   }
   
+  const sanitizedEmail = sanitizeEmail(value);
+  
+  if (!sanitizedEmail) {
+    return <span className="text-muted-foreground">{String(value)}</span>
+  }
+  
   return (
     <a 
-      href={`mailto:${value}`} 
+      href={`mailto:${sanitizedEmail}`} 
       className="text-primary hover:underline"
       onClick={(e) => e.stopPropagation()}
     >
-      {value}
+      {sanitizedEmail}
     </a>
   )
 }
@@ -228,9 +269,15 @@ const UrlCellRenderer = (props: ICellRendererParams) => {
     return <span className="text-muted-foreground">-</span>
   }
   
+  const sanitizedUrl = sanitizeUrl(value);
+  
+  if (!sanitizedUrl) {
+    return <span className="text-muted-foreground">{String(value)}</span>
+  }
+  
   return (
     <a 
-      href={value} 
+      href={sanitizedUrl} 
       target="_blank" 
       rel="noopener noreferrer"
       className="text-primary hover:underline"

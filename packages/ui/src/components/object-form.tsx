@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useForm, Controller, UseFormReturn } from "react-hook-form"
+import { useForm, Controller, UseFormReturn, RegisterOptions } from "react-hook-form"
 import type { ObjectConfig, FieldConfig } from '@objectql/types'
 
 import { Button } from "@/components/ui/button"
@@ -69,8 +69,8 @@ function shouldHideField(fieldName: string, fieldConfig: FieldConfig): boolean {
 /**
  * Generate validation rules for react-hook-form based on field config
  */
-function getValidationRules(fieldConfig: FieldConfig) {
-  const rules: any = {}
+function getValidationRules(fieldConfig: FieldConfig): RegisterOptions {
+  const rules: RegisterOptions = {}
   
   if (fieldConfig.required) {
     rules.required = `${fieldConfig.label || 'This field'} is required`

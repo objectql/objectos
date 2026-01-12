@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ObjectGridTable } from '@objectos/ui';
 import type { ObjectConfig } from '@objectql/types';
 
@@ -18,14 +18,14 @@ export function EnhancedObjectListView({ objectName, user }: EnhancedObjectListV
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const getHeaders = () => {
+    const getHeaders = useCallback(() => {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         // Use the actual user ID from props instead of hard-coded value
         if (user?.id || user?._id) {
             headers['x-user-id'] = user.id || user._id;
         }
         return headers;
-    };
+    }, [user]);
 
     // Fetch object metadata
     useEffect(() => {
@@ -45,7 +45,7 @@ export function EnhancedObjectListView({ objectName, user }: EnhancedObjectListV
                 console.error('Failed to load object metadata:', err);
                 setError(err.message);
             });
-    }, [objectName, user]);
+    }, [objectName, getHeaders]);
 
     // Fetch data
     useEffect(() => {
@@ -76,7 +76,7 @@ export function EnhancedObjectListView({ objectName, user }: EnhancedObjectListV
                 setData([]);
             })
             .finally(() => setLoading(false));
-    }, [objectName, user]);
+    }, [objectName, getHeaders]);
 
     const handleSelectionChanged = (selectedRows: any[]) => {
         console.log('Selected rows:', selectedRows);
