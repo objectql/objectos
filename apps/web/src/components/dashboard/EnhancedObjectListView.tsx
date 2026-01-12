@@ -20,7 +20,10 @@ export function EnhancedObjectListView({ objectName, user }: EnhancedObjectListV
 
     const getHeaders = () => {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-        headers['x-user-id'] = 'admin';
+        // Use the actual user ID from props instead of hard-coded value
+        if (user?.id || user?._id) {
+            headers['x-user-id'] = user.id || user._id;
+        }
         return headers;
     };
 

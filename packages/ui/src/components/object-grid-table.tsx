@@ -24,6 +24,14 @@ import { cn } from "@/lib/utils"
 import type { ObjectConfig, FieldConfig, FieldType } from '@objectql/types'
 
 /**
+ * Extended ColDef with custom properties for field metadata
+ */
+export interface ExtendedColDef extends ColDef {
+  fieldType?: FieldType
+  fieldOptions?: any[]
+}
+
+/**
  * Props for ObjectGridTable component
  */
 export interface ObjectGridTableProps {
@@ -74,7 +82,7 @@ const BooleanCellRenderer = (props: ICellRendererParams) => {
  * Cell renderer for date/datetime fields
  */
 const DateCellRenderer = (props: ICellRendererParams) => {
-  const { value } = props
+  const { value, colDef } = props
   
   if (!value) {
     return <span className="text-muted-foreground">-</span>
@@ -83,7 +91,8 @@ const DateCellRenderer = (props: ICellRendererParams) => {
   try {
     const date = value instanceof Date ? value : new Date(value)
     // Format based on field type from colDef
-    const fieldType = (props.colDef as any).fieldType
+    const extendedColDef = colDef as ExtendedColDef
+    const fieldType = extendedColDef.fieldType
     
     if (fieldType === 'datetime') {
       return (
@@ -109,13 +118,14 @@ const DateCellRenderer = (props: ICellRendererParams) => {
  * Cell renderer for number fields (including currency and percent)
  */
 const NumberCellRenderer = (props: ICellRendererParams) => {
-  const { value } = props
+  const { value, colDef } = props
   
   if (value === null || value === undefined) {
     return <span className="text-muted-foreground">-</span>
   }
   
-  const fieldType = (props.colDef as any).fieldType
+  const extendedColDef = colDef as ExtendedColDef
+  const fieldType = extendedColDef.fieldType
   const num = Number(value)
   
   if (isNaN(num)) {
@@ -125,7 +135,12 @@ const NumberCellRenderer = (props: ICellRendererParams) => {
   let formatted = num.toLocaleString()
   
   if (fieldType === 'currency') {
-    formatted = `$${num.toFixed(2)}`
+    // Use Intl.NumberFormat for better currency support
+    // Default to USD, but this should ideally come from field config
+    formatted = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(num)
   } else if (fieldType === 'percent') {
     formatted = `${num.toFixed(2)}%`
   }
@@ -137,8 +152,9 @@ const NumberCellRenderer = (props: ICellRendererParams) => {
  * Cell renderer for select fields with options
  */
 const SelectCellRenderer = (props: ICellRendererParams) => {
-  const { value } = props
-  const options = (props.colDef as any).fieldOptions || []
+  const { value, colDef } = props
+  const extendedColDef = colDef as ExtendedColDef
+  const options = extendedColDef.fieldOptions || []
   
   if (!value) {
     return <span className="text-muted-foreground">-</span>
@@ -273,8 +289,8 @@ function getCellRendererForFieldType(fieldType: FieldType): any {
 /**
  * Generate AG Grid column definitions from ObjectQL object metadata
  */
-function generateColumnDefs(objectConfig: ObjectConfig): ColDef[] {
-  const columnDefs: ColDef[] = []
+function generateColumnDefs(objectConfig: ObjectConfig): ExtendedColDef[] {
+  const columnDefs: ExtendedColDef[] = []
   
   const fields = objectConfig.fields || {}
   
@@ -284,7 +300,7 @@ function generateColumnDefs(objectConfig: ObjectConfig): ColDef[] {
       return
     }
     
-    const colDef: ColDef & { fieldType?: FieldType; fieldOptions?: any[] } = {
+    const colDef: ExtendedColDef = {
       field: fieldName,
       headerName: fieldConfig.label || fieldName,
       sortable: true,
