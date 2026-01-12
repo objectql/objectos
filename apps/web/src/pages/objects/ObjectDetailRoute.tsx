@@ -6,7 +6,7 @@ import { Spinner } from '@objectos/ui';
 import { useRouter } from '../../hooks/useRouter';
 
 export function ObjectDetailRoute() {
-    const { objectName, recordId, appName } = useParams(); // Matches /view/:recordId
+    const { objectName, recordId } = useParams(); // Matches /view/:recordId
     // Also support legacy param if needed by checking path, but let's stick to standard params
     const id = recordId; 
 

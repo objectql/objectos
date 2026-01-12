@@ -10,7 +10,7 @@ import {
 } from '@objectos/ui';
 import { useRouter } from '../hooks/useRouter';
 import { getHeaders } from '../lib/api';
-import { AppWindow, Settings, ChevronRight } from 'lucide-react';
+import { AppWindow, ChevronRight } from 'lucide-react';
 import { DynamicIcon } from '../components/DynamicIcon';
 
 interface App {

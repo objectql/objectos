@@ -7,7 +7,7 @@ import { Spinner } from '@objectos/ui';
 import { useRouter } from '../../hooks/useRouter';
 
 export function ObjectListRoute({ isCreating = false }: { isCreating?: boolean }) {
-    const { objectName, appName } = useParams();
+    const { objectName } = useParams();
     const { schema, loading, error } = useObjectSchema(objectName || '');
     const { user } = useAuth();
     const { navigate } = useRouter();

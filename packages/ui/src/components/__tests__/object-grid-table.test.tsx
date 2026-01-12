@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import { ObjectGridTable } from '../object-grid-table'
 import { ObjectConfig } from '@objectql/types'
 import { describe, it, expect } from 'vitest'
@@ -6,8 +7,8 @@ import { describe, it, expect } from 'vitest'
 const mockConfig: ObjectConfig = {
   name: 'testObject',
   fields: {
-    name: { type: 'string', label: 'Name' },
-    age: { type: 'integer', label: 'Age' }
+    name: { type: 'text', label: 'Name' },
+    age: { type: 'number', label: 'Age' }
   }
 }
 

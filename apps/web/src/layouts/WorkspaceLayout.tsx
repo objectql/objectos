@@ -10,11 +10,10 @@ import {
     BreadcrumbPage 
 } from '@objectos/ui';
 import { AppSidebar } from '../components/app-sidebar';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 export function WorkspaceLayout() {
     const location = useLocation();
-    const params = useParams();
     const [currentAppMetadata, setCurrentAppMetadata] = useState<any>(null);
     const lastFetchedApp = useRef<string | null>(null);
 

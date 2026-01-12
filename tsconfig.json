@@ -3,7 +3,6 @@
   "references": [
     { "path": "./packages/kernel" },
     { "path": "./packages/server" },
-    { "path": "./packages/ui" },
-    { "path": "./examples/project-management" }
+    { "path": "./packages/ui" }
   ]
 }
