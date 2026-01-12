@@ -1,6 +1,14 @@
 {
   "name": "objectql-monorepo",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "sqlite3",
+      "@nestjs/core",
+      "esbuild"
+    ]
+  },
   "scripts": {
     "dev": "concurrently \"pnpm run server\" \"pnpm run web\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
     "server": "pnpm --filter @objectos/server dev",

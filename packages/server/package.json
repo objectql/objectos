@@ -25,6 +25,8 @@
     "@objectql/driver-mongo": "*",
     "@objectql/server": "^1.4.0",
     "better-auth": "^1.4.10",
+    "better-sqlite3": "^12.6.0",
+    "mongodb": "^7.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

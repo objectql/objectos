@@ -2,7 +2,7 @@ export default {
     datasource: {
         default: {
             type: 'sqlite',
-            filename: ':memory:'
+            filename: 'objectos.db'
         }
     },
     presets: [
