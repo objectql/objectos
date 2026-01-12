@@ -91,14 +91,21 @@ These "Smart Components" implement the specific logic for each View Type defined
 ### `ObjectGridView`
 **Implements:** `type: list`, `type: grid`
 
-A high-density data table based on **TanStack Table**.
+A high-density, interactive data table based on **AG Grid**.
 
 - **Features**:
-  - **Inline Editing**: Double-click to edit (if `type: grid`).
-  - **Columns**: Resizable, sortable, toggleable.
-  - **Selection**: Checkbox row selection for Bulk Actions.
-  - **Pagination**: Infinite scroll or paged navigation.
-- **Config Support**: `columns`, `sort`, `filters`, `row_actions`, `bulk_actions`.
+  - **Advanced Layout**: Supports Tabs for switching Views (e.g., "Outline", "Summary").
+  - **Row Drag & Drop**: Manual reordering of records.
+  - **Selection**: Checkbox selection with "Select All" and Indeterminate states.
+  - **Cell Rendering**:
+    - **Status**: Visual badges with icons.
+    - **User/Reviewer**: User avatars or dropdown assignment.
+    - **Progress**: visual progress bars or drag handles.
+  - **Columns**:
+    - **Visibility Control**: Users can toggle columns via dropdown.
+    - **Resizing & Sorting**: Built-in AG Grid capabilities.
+  - **Pagination**: Custom footer with "Rows per page" and navigation controls.
+- **Config Support**: `columns`, `sort`, `filters`, `row_actions`, `bulk_actions`, `tabs`.
 
 ### `ObjectKanbanView`
 **Implements:** `type: kanban`

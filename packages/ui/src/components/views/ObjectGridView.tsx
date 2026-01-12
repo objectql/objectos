@@ -24,7 +24,7 @@ import {
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "../../hooks/use-mobile"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -259,10 +259,10 @@ const ActionsRenderer = () => {
   )
 }
 
-export function AgGridTable({
+export function ObjectGridView({
   data: initialData,
 }: {
-  data: z.infer<typeof schema>[]
+  data: any[]
 }) {
   const [data, setData] = React.useState(() => initialData)
   const [gridApi, setGridApi] = React.useState<GridApi | null>(null)

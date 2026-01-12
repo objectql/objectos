@@ -1,5 +1,7 @@
 import './styles.css';
 export * from './lib/utils';
+
+// UI Atoms (Shadcn)
 export * from './components/ui/button';
 export * from './components/ui/input';
 export * from './components/ui/label';
@@ -16,7 +18,6 @@ export * from './components/ui/context-menu';
 export * from './components/ui/tabs';
 export * from './components/ui/avatar';
 export * from './components/ui/tooltip';
-export * from './components/fields';
 export * from './components/ui/switch';
 export * from './components/ui/badge';
 export * from './components/ui/scroll-area';
@@ -49,18 +50,43 @@ export * from './components/ui/toggle';
 export * from './components/ui/toggle-group';
 export * from './components/ui/spinner';
 export { useIsMobile } from './hooks/use-mobile';
-// AG Grid table components
-// AgGridTable: Alternative export name for flexibility
-// DataTable: Primary table component with AG Grid (recommended)
-// ObjectGridTable: Metadata-driven AG Grid table (uses ObjectConfig)
-export { AgGridTable } from './components/ag-grid-table';
-export { DataTable, schema } from './components/data-table';
-export { ObjectGridTable } from './components/object-grid-table';
-export type { ObjectGridTableProps } from './components/object-grid-table';
 
-// Form components
-// ObjectForm: Metadata-driven form component (uses ObjectConfig)
+// Fields
+export * from './components/fields';
+
+// Page Architecture
+export * from './components/layouts/ObjectPage';
+export * from './components/layouts/DashboardLayout';
+export * from './components/layouts/SingleColumnLayout';
+
+// Widgets
+export * from './components/widgets/WidgetMetric';
+export * from './components/widgets/WidgetChart';
+export * from './components/widgets/WidgetView';
+export * from './components/widgets/WidgetHtml';
+
+// Views
+export * from './components/views/ObjectView';
+export * from './components/views/ObjectGridView';
+export * from './components/views/ObjectKanbanView';
+export * from './components/views/ObjectCalendarView';
+export * from './components/views/ObjectTimelineView';
+export * from './components/views/ObjectGalleryView';
+export * from './components/views/ObjectDetailView';
+export * from './components/views/ObjectFormView';
+
+// Layout & Shell
+export * from './components/shell/ViewToolbar';
+export * from './components/shell/FilterBuilder';
+
+// Visualizations
+export * from './components/visualizations/ChartAreaInteractive';
+export * from './components/visualizations/ChartBarInteractive';
+export * from './components/visualizations/ChartDonut';
+
+// Legacy exports (keeping for backward compatibility or refactoring)
+export { DataTable, schema } from './components/data-table';
 export { ObjectForm, useObjectForm } from './components/object-form';
 export type { ObjectFormProps } from './components/object-form';
-
-// Export shadcn components as they are added
+export { ObjectGridTable } from './components/object-grid-table';
+export type { ObjectGridTableProps } from './components/object-grid-table';
