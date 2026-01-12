@@ -189,7 +189,7 @@ const LookupCellRenderer = (props: ICellRendererParams) => {
   }
   
   // If value is an object with _id and name/label
-  if (typeof value === 'object' && value !== null) {
+  if (typeof value === 'object') {
     const displayValue = value.name || value.label || value.title || value._id
     return <span>{displayValue}</span>
   }
