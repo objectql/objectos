@@ -57,4 +57,10 @@ export { AgGridTable } from './components/ag-grid-table';
 export { DataTable, schema } from './components/data-table';
 export { ObjectGridTable } from './components/object-grid-table';
 export type { ObjectGridTableProps } from './components/object-grid-table';
+
+// Form components
+// ObjectForm: Metadata-driven form component (uses ObjectConfig)
+export { ObjectForm, useObjectForm } from './components/object-form';
+export type { ObjectFormProps } from './components/object-form';
+
 // Export shadcn components as they are added
