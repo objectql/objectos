@@ -4,12 +4,12 @@ import { AppService } from './app.service.js';
 import { ObjectQLModule } from './objectql/objectql.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
 import { AuthMiddleware } from './auth/auth.middleware.js';
 import { ObjectOS } from '@objectos/kernel';
 import { createRESTHandler, createMetadataHandler, createNodeHandler, createStudioHandler } from '@objectql/server';
 
-const clientDistPath = resolve(process.cwd(), process.cwd().endsWith('api') ? '../client/dist' : 'packages/client/dist');
+const clientDistPath = resolve(dirname(require.resolve('@objectos/web/package.json')), 'dist');
 
 @Module({
   imports: [

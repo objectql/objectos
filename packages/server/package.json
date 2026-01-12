@@ -20,6 +20,7 @@
     "@nestjs/serve-static": "^4.0.2",
     "@objectos/kernel": "workspace:*",
     "@objectos/preset-base": "workspace:*",
+    "@objectos/web": "workspace:*",
     "@objectql/core": "*",
     "@objectql/driver-knex": "*",
     "@objectql/driver-mongo": "*",

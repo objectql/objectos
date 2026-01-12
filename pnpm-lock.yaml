@@ -211,6 +211,9 @@ importers:
       '@objectos/preset-base':
         specifier: workspace:*
         version: link:../presets/base
+      '@objectos/web':
+        specifier: workspace:*
+        version: link:../../apps/web
       '@objectql/core':
         specifier: '*'
         version: 1.2.0
