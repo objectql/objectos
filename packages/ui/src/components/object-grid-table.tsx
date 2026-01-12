@@ -17,7 +17,6 @@ import {
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 
 // Import types from @objectql/types
@@ -136,7 +135,10 @@ const NumberCellRenderer = (props: ICellRendererParams) => {
   
   if (fieldType === 'currency') {
     // Use Intl.NumberFormat for better currency support
-    // Default to USD, but this should ideally come from field config
+    // TODO: Future enhancement - add currency and locale to FieldConfig
+    // For now, default to USD. To support other currencies, extend FieldConfig with:
+    // - currency: string (e.g., 'USD', 'EUR', 'CNY')
+    // - locale: string (e.g., 'en-US', 'zh-CN')
     formatted = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
