@@ -76,6 +76,33 @@ export function buildAmisCRUDSchema(objectMeta: any, apiEndpoint: string) {
         false: "<span class='label label-default'>否</span>",
         '*': "-"
       };
+    } else if (fieldConfig.type === 'lookup' || fieldConfig.type === 'master_detail') {
+      // For lookup fields, use mapping to display related object data
+      column.type = 'mapping';
+      const referenceTo = fieldConfig.reference_to;
+      const labelField = fieldConfig.label_field || 'name';
+      
+      // Use source to fetch and map reference data
+      column.source = {
+        method: 'post',
+        url: `/api/data/${referenceTo}/query`,
+        data: {
+          fields: ['_id', labelField],
+          pageSize: 1000,
+        },
+        adaptor: `
+          // Create mapping for lookup values
+          const items = payload.data || [];
+          const mapping = {};
+          items.forEach(item => {
+            mapping[item._id] = item.${labelField} || item._id;
+          });
+          return mapping;
+        `,
+      };
+      
+      // Fallback to plain text if source fails
+      column.placeholder = '-';
     } else if (fieldConfig.type === 'currency') {
       column.prefix = '$';
       column.precision = fieldConfig.precision || 2;
@@ -136,11 +163,79 @@ export function buildAmisCRUDSchema(objectMeta: any, apiEndpoint: string) {
         value: opt,
       }));
     } else if (fieldConfig.type === 'lookup' || fieldConfig.type === 'master_detail') {
-      // For lookup fields, we would need to fetch reference data
+      // Enhanced lookup field with better API integration
       field.type = 'select';
-      field.source = `/api/data/${fieldConfig.reference_to}/query`;
-      field.labelField = 'name';
-      field.valueField = '_id';
+      
+      // Configure data source with proper API endpoint
+      const referenceTo = fieldConfig.reference_to;
+      field.source = {
+        method: 'post',
+        url: `/api/data/${referenceTo}/query`,
+        data: {
+          fields: fieldConfig.reference_fields || ['_id', 'name'],
+          pageSize: 100,
+        },
+        adaptor: `
+          // Transform response to AMIS format
+          const items = payload.data || [];
+          return {
+            status: 0,
+            msg: 'success',
+            data: {
+              options: items.map(item => ({
+                label: item.name || item._id,
+                value: item._id,
+                ...item
+              }))
+            }
+          };
+        `,
+      };
+      
+      // Enable search for better UX
+      field.searchable = true;
+      field.clearable = true;
+      
+      // Configure display fields
+      field.labelField = fieldConfig.label_field || 'name';
+      field.valueField = fieldConfig.value_field || '_id';
+      
+      // For master-detail, mark as required by default
+      if (fieldConfig.type === 'master_detail') {
+        field.required = true;
+      }
+      
+      // Add option to create new record inline (if enabled)
+      if (fieldConfig.allow_create) {
+        field.creatable = true;
+        field.createBtnLabel = `新建${fieldConfig.reference_label || referenceTo}`;
+        field.addControls = [
+          {
+            type: 'text',
+            name: 'name',
+            label: '名称',
+            required: true,
+          },
+        ];
+        field.addApi = {
+          method: 'post',
+          url: `/api/data/${referenceTo}`,
+        };
+      }
+      
+      // Add dependent field filtering if specified
+      if (fieldConfig.filters) {
+        field.source.data = {
+          ...field.source.data,
+          filters: fieldConfig.filters,
+        };
+      }
+      
+      // Support for multiple selection (for many-to-many relationships)
+      if (fieldConfig.multiple) {
+        field.multiple = true;
+        field.type = 'multi-select';
+      }
     } else if (fieldConfig.type === 'textarea') {
       field.minRows = 3;
       field.maxRows = 10;

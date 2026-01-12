@@ -59,13 +59,24 @@ Password: yourpassword
 - ✓ 筛选器
 - ✓ 批量选择和操作
 - ✓ 导出功能
+- ✓ Lookup 字段显示关联对象名称
 
 **表单功能:**
 - ✓ 新建记录（模态对话框）
 - ✓ 编辑记录（模态对话框）
 - ✓ 字段验证
 - ✓ 必填字段提示
-- ✓ 关联对象选择器
+- ✓ 关联对象选择器（增强的 Lookup 组件）
+
+**Lookup 组件特性:**
+- ✓ 可搜索的下拉选择
+- ✓ 支持创建新关联记录
+- ✓ 多选支持（多对多关系）
+- ✓ 过滤选项
+- ✓ 自定义显示字段
+- ✓ Master-Detail 关系支持
+
+详见 [LOOKUP_GUIDE.md](./LOOKUP_GUIDE.md)
 
 **操作:**
 - ✓ 创建 - "新建" 按钮
@@ -188,6 +199,7 @@ import 'amis/lib/themes/cxd.css';
 ## 📖 文档
 
 - [详细实现文档](./IMPLEMENTATION.md) - 架构、工作原理、自定义指南
+- [Lookup 组件指南](./LOOKUP_GUIDE.md) - 关联字段完整使用指南
 - [AMIS 官方文档](https://aisuda.bce.baidu.com/amis/zh-CN/docs/index)
 - [ObjectOS 文档](https://github.com/objectql/objectos)
 

@@ -254,7 +254,8 @@ describe('schemaBuilder', () => {
       const customerField = formFields.find((f: any) => f.name === 'customer')
 
       expect(customerField.type).toBe('select')
-      expect(customerField.source).toContain('/api/data/customers')
+      expect(customerField.source).toBeDefined()
+      expect(customerField.source.url).toContain('/api/data/customers')
       expect(customerField.labelField).toBe('name')
       expect(customerField.valueField).toBe('_id')
     })
