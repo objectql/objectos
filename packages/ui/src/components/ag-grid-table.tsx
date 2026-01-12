@@ -259,7 +259,7 @@ const ActionsRenderer = () => {
   )
 }
 
-export function DataTable({
+export function AgGridTable({
   data: initialData,
 }: {
   data: z.infer<typeof schema>[]

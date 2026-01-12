@@ -49,4 +49,9 @@ export * from './components/ui/toggle';
 export * from './components/ui/toggle-group';
 export * from './components/ui/spinner';
 export { useIsMobile } from './hooks/use-mobile';
+// AG Grid table components
+// AgGridTable: Alternative export name for flexibility
+// DataTable: Primary table component with AG Grid (recommended)
+export { AgGridTable } from './components/ag-grid-table';
+export { DataTable, schema } from './components/data-table';
 // Export shadcn components as they are added

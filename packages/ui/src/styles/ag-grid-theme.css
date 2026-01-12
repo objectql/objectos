@@ -1,0 +1,125 @@
+/* AG Grid Theme Customization for ObjectOS */
+
+/* Base theme overrides to match our design system */
+.ag-theme-alpine-dark {
+  --ag-background-color: hsl(var(--background));
+  --ag-foreground-color: hsl(var(--foreground));
+  --ag-header-background-color: hsl(var(--muted));
+  --ag-header-foreground-color: hsl(var(--muted-foreground));
+  --ag-odd-row-background-color: hsl(var(--background));
+  --ag-row-hover-color: hsl(var(--muted) / 0.5);
+  --ag-selected-row-background-color: hsl(var(--muted));
+  --ag-border-color: hsl(var(--border));
+  --ag-row-border-color: hsl(var(--border));
+  --ag-font-family: var(--font-sans);
+  --ag-font-size: 14px;
+  --ag-grid-size: 4px;
+  --ag-cell-horizontal-padding: calc(var(--ag-grid-size) * 3);
+}
+
+/* Light theme support */
+.ag-theme-alpine {
+  --ag-background-color: hsl(var(--background));
+  --ag-foreground-color: hsl(var(--foreground));
+  --ag-header-background-color: hsl(var(--muted));
+  --ag-header-foreground-color: hsl(var(--muted-foreground));
+  --ag-odd-row-background-color: hsl(var(--background));
+  --ag-row-hover-color: hsl(var(--muted) / 0.5);
+  --ag-selected-row-background-color: hsl(var(--muted));
+  --ag-border-color: hsl(var(--border));
+  --ag-row-border-color: hsl(var(--border));
+  --ag-font-family: var(--font-sans);
+  --ag-font-size: 14px;
+  --ag-grid-size: 4px;
+  --ag-cell-horizontal-padding: calc(var(--ag-grid-size) * 3);
+}
+
+/* Remove rounded corners on the grid container to match our design */
+.ag-root-wrapper {
+  border-radius: 0;
+}
+
+/* Header styling to match our table headers */
+.ag-header {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.ag-header-cell {
+  font-weight: 500;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Cell styling */
+.ag-cell {
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+}
+
+/* Row styling */
+.ag-row {
+  border-bottom: 1px solid hsl(var(--border));
+  transition: background-color 0.2s;
+}
+
+.ag-row-selected {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* Pagination (hidden as we use custom controls) */
+.ag-paging-panel {
+  display: none;
+}
+
+/* Column resizing */
+.ag-header-cell-resize {
+  opacity: 0.5;
+}
+
+.ag-header-cell-resize:hover {
+  opacity: 1;
+}
+
+/* Drag and drop styling */
+.ag-row-dragging {
+  opacity: 0.5;
+  z-index: 10;
+}
+
+.ag-row-drag {
+  cursor: move;
+}
+
+/* Focus styling */
+.ag-cell-focus,
+.ag-cell-no-focus {
+  border: none !important;
+}
+
+/* Remove default checkbox styling */
+.ag-checkbox-input-wrapper {
+  display: none;
+}
+
+/* Sorting icons */
+.ag-header-cell-sorted-asc .ag-header-icon,
+.ag-header-cell-sorted-desc .ag-header-icon {
+  color: hsl(var(--primary));
+}
+
+/* Filter icon */
+.ag-header-cell-filtered .ag-header-icon {
+  color: hsl(var(--primary));
+}
+
+/* Loading overlay */
+.ag-overlay-loading-wrapper {
+  background-color: hsl(var(--background) / 0.8);
+}
+
+/* No rows overlay */
+.ag-overlay-no-rows-wrapper {
+  background-color: hsl(var(--background));
+  color: hsl(var(--muted-foreground));
+}
