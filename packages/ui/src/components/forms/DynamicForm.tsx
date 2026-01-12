@@ -185,7 +185,10 @@ function buildZodSchema(objectConfig: ObjectConfig): z.ZodObject<any> {
         fieldSchema = z.string()
     }
 
-    // Apply string validations - need to capture the returned value
+    // Apply string validations
+    // Note: Using 'as any' here is necessary due to Zod 4.x TypeScript limitations
+    // TypeScript loses type information after instanceof checks with Zod's builder pattern
+    // We use 'in' operator to safely check for method existence before calling
     let stringSchema = fieldSchema as any
     if (field.min_length !== undefined && 'min' in stringSchema) {
       stringSchema = stringSchema.min(field.min_length, { message: `Minimum length is ${field.min_length} characters` })
@@ -199,6 +202,7 @@ function buildZodSchema(objectConfig: ObjectConfig): z.ZodObject<any> {
     fieldSchema = stringSchema
 
     // Handle required fields
+    // Using 'as any' with 'in' check for type safety - Zod 4.x limitation
     if (field.required) {
       if ('min' in fieldSchema) {
         fieldSchema = (fieldSchema as any).min(1, { message: `${field.label || fieldName} is required` })
