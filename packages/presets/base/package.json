@@ -9,7 +9,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectql/core": "*"
+    "@objectql/core": "^1.6.1"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

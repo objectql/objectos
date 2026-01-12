@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@objectos/ui": "workspace:*",
-    "@objectql/types": "^1.4.0",
+    "@objectql/types": "^1.6.1",
     "better-auth": "^1.4.10",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",
