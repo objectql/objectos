@@ -251,7 +251,8 @@ const EmailCellRenderer = (props: ICellRendererParams) => {
   const sanitizedEmail = sanitizeEmail(value);
   
   if (!sanitizedEmail) {
-    return <span className="text-muted-foreground">{String(value)}</span>
+    // Don't display potentially malicious content
+    return <span className="text-muted-foreground">Invalid email</span>
   }
   
   return (
@@ -278,7 +279,8 @@ const UrlCellRenderer = (props: ICellRendererParams) => {
   const sanitizedUrl = sanitizeUrl(value);
   
   if (!sanitizedUrl) {
-    return <span className="text-muted-foreground">{String(value)}</span>
+    // Don't display potentially malicious content
+    return <span className="text-muted-foreground">Invalid URL</span>
   }
   
   return (
@@ -289,7 +291,7 @@ const UrlCellRenderer = (props: ICellRendererParams) => {
       className="text-primary hover:underline"
       onClick={(e) => e.stopPropagation()}
     >
-      {value}
+      {sanitizedUrl}
     </a>
   )
 }

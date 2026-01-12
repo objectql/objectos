@@ -7,6 +7,8 @@ import {
   LayoutListIcon,
   TrashIcon,
   MoreHorizontalIcon,
+  CalendarIcon,
+  KanbanIcon,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -112,8 +114,8 @@ export function GridToolbar({
   const viewIcons: Record<ViewMode, React.ReactNode> = {
     grid: <LayoutGridIcon className="h-4 w-4" />,
     list: <LayoutListIcon className="h-4 w-4" />,
-    kanban: <LayoutGridIcon className="h-4 w-4" />,
-    calendar: <LayoutGridIcon className="h-4 w-4" />,
+    kanban: <KanbanIcon className="h-4 w-4" />,
+    calendar: <CalendarIcon className="h-4 w-4" />,
   }
 
   return (

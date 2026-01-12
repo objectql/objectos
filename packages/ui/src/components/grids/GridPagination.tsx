@@ -66,7 +66,8 @@ export function GridPagination({
 
   const handleJumpToPage = (e: React.FormEvent) => {
     e.preventDefault()
-    const pageNum = parseInt(jumpToPage, 10) - 1 // Convert to 0-indexed
+    // Convert to 0-indexed
+    const pageNum = parseInt(jumpToPage, 10) - 1
     if (!isNaN(pageNum) && pageNum >= 0 && pageNum < totalPages) {
       onPageChange(pageNum)
       setJumpToPage("")
