@@ -181,25 +181,38 @@ function buildZodSchema(objectConfig: ObjectConfig): z.ZodObject<any> {
         fieldSchema = z.union([z.string(), z.date()]).optional()
         break
       
+      // Explicit cases for common field types
+      case 'text':
+      case 'password':
+      case 'phone':
+      case 'textarea':
+      case 'markdown':
+      case 'html':
+      case 'select':
+      case 'lookup':
+        fieldSchema = z.string()
+        break
+      
       default:
+        // Fallback for any other field types
         fieldSchema = z.string()
     }
 
-    // Apply string validations
+    // Apply string-related validations
     // Note: Using 'as any' here is necessary due to Zod 4.x TypeScript limitations
     // TypeScript loses type information after instanceof checks with Zod's builder pattern
     // We use 'in' operator to safely check for method existence before calling
-    let stringSchema = fieldSchema as any
-    if (field.min_length !== undefined && 'min' in stringSchema) {
-      stringSchema = stringSchema.min(field.min_length, { message: `Minimum length is ${field.min_length} characters` })
+    let currentSchema = fieldSchema as any
+    if (field.min_length !== undefined && 'min' in currentSchema) {
+      currentSchema = currentSchema.min(field.min_length, { message: `Minimum length is ${field.min_length} characters` })
     }
-    if (field.max_length !== undefined && 'max' in stringSchema) {
-      stringSchema = stringSchema.max(field.max_length, { message: `Maximum length is ${field.max_length} characters` })
+    if (field.max_length !== undefined && 'max' in currentSchema) {
+      currentSchema = currentSchema.max(field.max_length, { message: `Maximum length is ${field.max_length} characters` })
     }
-    if (field.regex && 'regex' in stringSchema) {
-      stringSchema = stringSchema.regex(new RegExp(field.regex), { message: 'Invalid format' })
+    if (field.regex && 'regex' in currentSchema) {
+      currentSchema = currentSchema.regex(new RegExp(field.regex), { message: 'Invalid format' })
     }
-    fieldSchema = stringSchema
+    fieldSchema = currentSchema
 
     // Handle required fields
     // Using 'as any' with 'in' check for type safety - Zod 4.x limitation
