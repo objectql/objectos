@@ -115,7 +115,7 @@ cd my-app
 npm init -y
 
 # Install ObjectOS packages
-npm install @objectos/kernel @objectos/server @objectql/driver-knex
+npm install @objectos/kernel @objectos/server @objectql/driver-sql
 
 # Install database driver
 npm install pg  # for PostgreSQL
@@ -215,7 +215,7 @@ Create `src/main.ts`:
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import { PostgresDriver } from '@objectql/driver-knex';
+import { PostgresDriver } from '@objectql/driver-sql';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';

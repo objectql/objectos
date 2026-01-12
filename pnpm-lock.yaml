@@ -11,12 +11,12 @@ importers:
       '@objectql/core':
         specifier: ^1.7.0
         version: 1.7.0
-      '@objectql/driver-knex':
-        specifier: ^1.5.0
-        version: 1.5.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/driver-mongo':
         specifier: ^1.7.0
         version: 1.7.0
+      '@objectql/driver-sql':
+        specifier: ^1.7.0
+        version: 1.7.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/starter-basic':
         specifier: ^1.7.0
         version: 1.7.0(@objectql/core@1.7.0)(@objectql/driver-sql@1.7.0(sqlite3@5.1.7))(@objectql/platform-node@1.7.0)(@objectql/types@1.7.0)(sqlite3@5.1.7)
@@ -219,12 +219,12 @@ importers:
       '@objectql/core':
         specifier: ^1.7.0
         version: 1.7.0
-      '@objectql/driver-knex':
-        specifier: ^1.5.0
-        version: 1.5.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/driver-mongo':
         specifier: ^1.7.0
         version: 1.7.0
+      '@objectql/driver-sql':
+        specifier: ^1.7.0
+        version: 1.7.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/server':
         specifier: ^1.7.0
         version: 1.7.0
@@ -1782,9 +1782,6 @@ packages:
   '@objectql/core@1.7.0':
     resolution: {integrity: sha512-2n1E+rnlwko2viE2WrT0JHwMWi/1EFqQh0ccJm6PTJeChScBaBk0ipV/W4KowhFe6Lc8PgbeNuRAMmXj5mudNQ==}
 
-  '@objectql/driver-knex@1.5.0':
-    resolution: {integrity: sha512-+ye0CNGKryzhWoaWIenFrSAq6N5fNMpLJ26ZN7Rxbrtm3s+iNaHOCHcrAbcKu/Avmcz4skSRb8Reui9kA3JIjw==}
-
   '@objectql/driver-mongo@1.7.0':
     resolution: {integrity: sha512-lGijdCYqg300ay7Qfs9/potvfv7LoCV72Mi9xpl7do5GDj57jFBs6DOY7ZXRGzeTjHE3I2BJiuQHGpkMyM+J2A==}
 
@@ -1814,9 +1811,6 @@ packages:
       '@objectql/platform-node': 1.7.0
       '@objectql/types': 1.7.0
       sqlite3: ^5.1.7
-
-  '@objectql/types@1.5.0':
-    resolution: {integrity: sha512-Z8OgQ30vnr5QLRkZuPJSy736us2JQpUWNerpxgeMfL0FlKuI33HEXt1yuR8GLha/wMp/OfYdpNlSXG0B+rw/Iw==}
 
   '@objectql/types@1.7.0':
     resolution: {integrity: sha512-CbYH5zW4kuOUDDpvuvhbhe5iAzCl6EgVy+TtUoRQGy04am36s8PgKxV/7hbToCPzPt95CwxlEROU2oHBUmjxwQ==}
@@ -8472,20 +8466,6 @@ snapshots:
     dependencies:
       '@objectql/types': 1.7.0
 
-  '@objectql/driver-knex@1.5.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)':
-    dependencies:
-      '@objectql/types': 1.5.0
-      knex: 3.1.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
-    transitivePeerDependencies:
-      - better-sqlite3
-      - mysql
-      - mysql2
-      - pg
-      - pg-native
-      - sqlite3
-      - supports-color
-      - tedious
-
   '@objectql/driver-mongo@1.7.0':
     dependencies:
       '@objectql/types': 1.7.0
@@ -8497,7 +8477,7 @@ snapshots:
       - mongodb-client-encryption
       - snappy
 
-  '@objectql/driver-sql@1.7.0(sqlite3@5.1.7)':
+  '@objectql/driver-sql@1.7.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)':
     dependencies:
       '@objectql/types': 1.7.0
       knex: 3.1.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
@@ -8527,7 +8507,7 @@ snapshots:
   '@objectql/starter-basic@1.7.0(@objectql/core@1.7.0)(@objectql/driver-sql@1.7.0(sqlite3@5.1.7))(@objectql/platform-node@1.7.0)(@objectql/types@1.7.0)(sqlite3@5.1.7)':
     dependencies:
       '@objectql/core': 1.7.0
-      '@objectql/driver-sql': 1.7.0(sqlite3@5.1.7)
+      '@objectql/driver-sql': 1.7.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/platform-node': 1.7.0
       '@objectql/types': 1.7.0
       sqlite3: 5.1.7
@@ -8535,12 +8515,10 @@ snapshots:
   '@objectql/starter-enterprise@1.7.0(@objectql/core@1.7.0)(@objectql/driver-sql@1.7.0(sqlite3@5.1.7))(@objectql/platform-node@1.7.0)(@objectql/types@1.7.0)(sqlite3@5.1.7)':
     dependencies:
       '@objectql/core': 1.7.0
-      '@objectql/driver-sql': 1.7.0(sqlite3@5.1.7)
+      '@objectql/driver-sql': 1.7.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/platform-node': 1.7.0
       '@objectql/types': 1.7.0
       sqlite3: 5.1.7
-
-  '@objectql/types@1.5.0': {}
 
   '@objectql/types@1.7.0': {}
 

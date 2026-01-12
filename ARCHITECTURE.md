@@ -12,7 +12,7 @@ ObjectOS is a **metadata-driven runtime engine** that transforms declarative YAM
 - **Key Packages**:
   - `@objectql/core` - Metadata parser, AST builder, query compiler
   - `@objectql/types` - TypeScript type definitions for the protocol
-  - `@objectql/driver-knex` - SQL database driver (PostgreSQL, MySQL, SQLite)
+  - `@objectql/driver-sql` - SQL database driver (PostgreSQL, MySQL, SQLite)
   - `@objectql/driver-mongo` - MongoDB driver
 
 ### ObjectOS Repository (Runtime Implementation)
@@ -206,7 +206,7 @@ interface ObjectQLDriver {
 
 | Driver | Package | Databases |
 |--------|---------|-----------|
-| Knex Driver | `@objectql/driver-knex` | PostgreSQL, MySQL, SQLite |
+| SQL Driver | `@objectql/driver-sql` | PostgreSQL, MySQL, SQLite |
 | MongoDB Driver | `@objectql/driver-mongo` | MongoDB |
 
 ## Layer 4: HTTP Layer (@objectos/server)

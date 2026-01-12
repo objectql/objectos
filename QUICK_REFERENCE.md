@@ -57,7 +57,7 @@ fields:
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import { PostgresDriver } from '@objectql/driver-knex';
+import { PostgresDriver } from '@objectql/driver-sql';
 
 const kernel = new ObjectOS();
 const driver = new PostgresDriver({ /* config */ });

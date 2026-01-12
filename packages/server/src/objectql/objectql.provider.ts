@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { ObjectOS } from '@objectos/kernel';
-import { KnexDriver } from '@objectql/driver-knex';
+import { KnexDriver } from '@objectql/driver-sql';
 import * as path from 'path';
 import * as fs from 'fs';
 

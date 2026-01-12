@@ -166,7 +166,7 @@ You will see a **Data Grid** for Deals. Click "New" to see the **Form**. All CRU
 | --- | --- | --- |
 | **`@objectql/core`** | [objectql/objectql](https://github.com/objectql/objectql) | Metadata parser and validator |
 | **`@objectql/types`** | [objectql/objectql](https://github.com/objectql/objectql) | TypeScript type definitions for ObjectQL protocol |
-| **`@objectql/driver-knex`** | [objectql/objectql](https://github.com/objectql/objectql) | PostgreSQL/MySQL/SQLite driver implementation |
+| **`@objectql/driver-sql`** | [objectql/objectql](https://github.com/objectql/objectql) | PostgreSQL/MySQL/SQLite driver implementation |
 | **`@objectql/driver-mongo`** | [objectql/objectql](https://github.com/objectql/objectql) | MongoDB driver implementation |
 
 ---
