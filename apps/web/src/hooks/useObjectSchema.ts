@@ -35,15 +35,22 @@ export function useObjectSchema(objectName: string) {
             })
             .then(data => {
                 if (data) {
+                    // Normalize fields from Array to Record if needed
+                    if (data.fields && Array.isArray(data.fields)) {
+                        const fieldRecord: Record<string, any> = {};
+                        data.fields.forEach((f: any) => {
+                            if (f.name) fieldRecord[f.name] = f;
+                        });
+                        data.fields = fieldRecord;
+                    }
+
                     schemaCache[objectName] = data;
                     setSchema(data);
+                    setLoading(false);
                 } else {
-                    // Try bulk fetch fallback if 404/error on single? 
-                    // Assuming 404 meant endponit doesn't exist, not object.
-                    // But actually, if object doesn't exist, we want null.
-                     setError(new Error('Object not found'));
+                    // Trigger fallback
+                    throw new Error('Not found');
                 }
-                setLoading(false);
             })
             .catch(() => {
                 // Fallback: Fetch all

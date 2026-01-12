@@ -6,7 +6,7 @@ import { ObjectNotFound } from '../../components/dashboard/ObjectNotFound';
 import { Spinner } from '@objectos/ui';
 import { useRouter } from '../../hooks/useRouter';
 
-export function ObjectListRoute() {
+export function ObjectListRoute({ isCreating = false }: { isCreating?: boolean }) {
     const { objectName, appName } = useParams();
     const { schema, loading, error } = useObjectSchema(objectName || '');
     const { user } = useAuth();
@@ -21,7 +21,7 @@ export function ObjectListRoute() {
         <ObjectListView 
             objectName={objectName!} 
             user={user}
-            isCreating={false}
+            isCreating={isCreating}
             navigate={navigate}
             objectSchema={schema}
         />

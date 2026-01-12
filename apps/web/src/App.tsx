@@ -48,7 +48,8 @@ function AppContent() {
             <Route path={paths.APP_ROOT} element={<AppDashboard />} />
             
             {/* Object Routes */}
-            <Route path={paths.APP_OBJECT_LIST} element={<ObjectListRoute />} />
+            <Route path={paths.APP_OBJECT_LIST} element={<ObjectListRoute isCreating={false} />} />
+            <Route path={paths.APP_OBJECT_NEW} element={<ObjectListRoute isCreating={true} />} />
             <Route path={paths.APP_OBJECT_DETAIL} element={<ObjectDetailRoute />} />
             {/* Legacy/Compat routes support */}
             <Route path="/app/:appName/object/:objectName/:recordId" element={<ObjectDetailRoute />} />

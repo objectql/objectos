@@ -41,11 +41,19 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
         
         const params = new URLSearchParams();
         if (searchTerm) {
-             const textFields = objectSchema?.fields ? 
-                Object.entries(objectSchema.fields)
-                    .filter(([_, field]: [string, any]) => !field.type || field.type === 'string')
-                    .map(([key]) => key) 
-                : ['name', 'title', 'description', 'email'];
+             let textFields: string[] = [];
+             
+             if (objectSchema?.fields) {
+               const fieldsArr = Array.isArray(objectSchema.fields) 
+                 ? objectSchema.fields 
+                 : Object.values(objectSchema.fields);
+                 
+               textFields = fieldsArr
+                 .filter((field: any) => !field.type || field.type === 'string')
+                 .map((field: any) => field.name);
+             } else {
+               textFields = ['name', 'title', 'description', 'email'];
+             }
                 
             if (textFields.length > 0) {
                  const searchFilters: any[] = [];
@@ -67,7 +75,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
                 return res.json();
             })
             .then(result => {
-                const items = Array.isArray(result) ? result : (result.list || []);
+                const items = Array.isArray(result) ? result : (result.list || result.data || result.value || []);
                 setData(items);
             })
             .catch(err => {
@@ -92,7 +100,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
             return res.json();
         })
         .then(() => {
-            navigate(`/object/${objectName}`);
+            navigate('..');
             fetchData();
         })
         .catch(err => alert(err.message));
@@ -100,11 +108,11 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
 
     const onRowClick = (event: any) => {
         const id = event.data?.id || event.data?._id;
-        if (id) navigate(`/object/${objectName}/${id}`);
+        if (id) navigate(`${id}`);
     };
 
     return (
-        <div className="h-full flex flex-col space-y-4 p-4 overflow-hidden">
+        <div className="h-full flex flex-col space-y-4 overflow-hidden">
             <div className="flex items-center justify-between shrink-0">
                 <div className="flex items-center space-x-2">
                     <h1 className="text-2xl font-bold tracking-tight">{label}</h1>
@@ -127,7 +135,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
                     </Button>
-                    <Button onClick={() => navigate(`/object/${objectName}/new`)} size="sm">
+                    <Button onClick={() => navigate('new')} size="sm">
                         <Plus className="h-4 w-4 mr-2" />
                         New
                     </Button>
@@ -153,7 +161,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
 
             <Dialog 
                 open={isCreating} 
-                onOpenChange={(open) => !open && navigate(`/object/${objectName}`)}
+                onOpenChange={(open) => !open && navigate('..')}
             >
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
@@ -164,7 +172,7 @@ export function ObjectListView({ objectName, user, isCreating, navigate, objectS
                         initialValues={{}}
                         headers={getHeaders()}
                         onSubmit={handleCreate} 
-                        onCancel={() => navigate(`/object/${objectName}`)} 
+                        onCancel={() => navigate('..')} 
                     />
                 </DialogContent>
             </Dialog>

@@ -1,12 +1,18 @@
 import * as React from "react"
 import { AgGridReact } from "ag-grid-react"
-import type { 
-  ColDef, 
-  GridReadyEvent, 
-  CellClickedEvent,
-  GridApi,
-  ICellRendererParams
+import { 
+  ModuleRegistry, 
+  AllCommunityModule,
+  type ColDef, 
+  type GridReadyEvent, 
+  type CellClickedEvent,
+  type GridApi,
+  type ICellRendererParams
 } from "ag-grid-community"
+
+// Register AG Grid Modules
+ModuleRegistry.registerModules([ AllCommunityModule ]);
+
 import "ag-grid-community/styles/ag-grid.css"
 import "ag-grid-community/styles/ag-theme-alpine.css"
 import { format } from "date-fns"
@@ -79,24 +85,18 @@ const BooleanCellRenderer = (props: ICellRendererParams) => {
 /**
  * Cell renderer for date/datetime fields
  */
-const DateCellRenderer = (props: ICellRendererParams) => {
-  const { value, colDef } = props
+const DateCellRenderer = (props: ICellRendererParams & { fieldType?: FieldType }) => {
+  const { value, fieldType } = props
   
   if (!value) {
     return <span className="text-muted-foreground">-</span>
   }
   
   try {
-    const date = value instanceof Date ? value : new Date(value)
-    
-    // Check if date is valid
+    const date = new Date(value)
     if (isNaN(date.getTime())) {
       return <span className="text-muted-foreground">{String(value)}</span>
     }
-    
-    // Format based on field type from colDef
-    const extendedColDef = colDef as ExtendedColDef
-    const fieldType = extendedColDef.fieldType
     
     if (fieldType === 'datetime') {
       return (
@@ -121,15 +121,13 @@ const DateCellRenderer = (props: ICellRendererParams) => {
 /**
  * Cell renderer for number fields (including currency and percent)
  */
-const NumberCellRenderer = (props: ICellRendererParams) => {
-  const { value, colDef } = props
+const NumberCellRenderer = (props: ICellRendererParams & { fieldType?: FieldType }) => {
+  const { value, fieldType } = props
   
   if (value === null || value === undefined) {
     return <span className="text-muted-foreground">-</span>
   }
   
-  const extendedColDef = colDef as ExtendedColDef
-  const fieldType = extendedColDef.fieldType
   const num = Number(value)
   
   if (isNaN(num)) {
@@ -158,10 +156,9 @@ const NumberCellRenderer = (props: ICellRendererParams) => {
 /**
  * Cell renderer for select fields with options
  */
-const SelectCellRenderer = (props: ICellRendererParams) => {
-  const { value, colDef } = props
-  const extendedColDef = colDef as ExtendedColDef
-  const options = extendedColDef.fieldOptions || []
+const SelectCellRenderer = (props: ICellRendererParams & { fieldOptions?: any[] }) => {
+  const { value, fieldOptions } = props
+  const options = fieldOptions || []
   
   if (!value) {
     return <span className="text-muted-foreground">-</span>
@@ -337,26 +334,32 @@ function getCellRendererForFieldType(fieldType: FieldType): any {
 /**
  * Generate AG Grid column definitions from ObjectQL object metadata
  */
-function generateColumnDefs(objectConfig: ObjectConfig): ExtendedColDef[] {
-  const columnDefs: ExtendedColDef[] = []
+function generateColumnDefs(objectConfig: ObjectConfig): ColDef[] {
+  const columnDefs: ColDef[] = []
   
   const fields = objectConfig.fields || {}
   
-  Object.entries(fields).forEach(([fieldName, fieldConfig]: [string, FieldConfig]) => {
+  const entries: [string, FieldConfig][] = Array.isArray(fields) 
+    ? fields.map((f: any) => [f.name, f])
+    : Object.entries(fields);
+
+  entries.forEach(([fieldName, fieldConfig]: [string, FieldConfig]) => {
     // Skip hidden fields
     if (fieldConfig.hidden) {
       return
     }
     
-    const colDef: ExtendedColDef = {
+    const colDef: ColDef = {
       field: fieldName,
       headerName: fieldConfig.label || fieldName,
       sortable: true,
       filter: true,
       resizable: true,
       // Store field type and options for cell renderers
-      fieldType: fieldConfig.type,
-      fieldOptions: fieldConfig.options,
+      cellRendererParams: {
+        fieldType: fieldConfig.type,
+        fieldOptions: fieldConfig.options,
+      }
     }
     
     // Set appropriate cell renderer based on field type
@@ -435,12 +438,21 @@ export function ObjectGridTable({
     onSelectionChanged(selectedRows)
   }, [gridApi, onSelectionChanged])
 
+  const selection = React.useMemo(() => {
+      if (!rowSelection) return undefined;
+      return {
+          mode: rowSelection === true || rowSelection === 'multiple' ? 'multiRow' : 'singleRow',
+          enableClickSelection: false,
+      } as const;
+  }, [rowSelection]);
+
   return (
     <div 
       className="ag-theme-alpine dark:ag-theme-alpine-dark overflow-hidden rounded-lg border"
       style={{ height: typeof height === 'number' ? `${height}px` : height, width: '100%' }}
     >
       <AgGridReact
+        theme="legacy"
         ref={gridRef}
         rowData={data}
         columnDefs={columnDefs}
@@ -448,11 +460,11 @@ export function ObjectGridTable({
         onGridReady={handleGridReady}
         onCellClicked={onCellClicked}
         onSelectionChanged={handleSelectionChanged}
-        rowSelection={rowSelection === true ? 'multiple' : rowSelection || undefined}
-        suppressRowClickSelection={true}
+        rowSelection={selection}
         animateRows={true}
         pagination={pagination}
         paginationPageSize={pageSize}
+        paginationPageSizeSelector={[10, 20, 50, 100]}
         getRowId={(params) => params.data._id || params.data.id}
       />
     </div>
