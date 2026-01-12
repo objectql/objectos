@@ -11,9 +11,11 @@
   },
   "scripts": {
     "dev": "concurrently \"pnpm run server\" \"pnpm run web:watch\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
+    "dev:amis": "concurrently \"pnpm run server\" \"pnpm run amis\" --kill-others --names \"SERVER,AMIS\" -c \"magenta,green\"",
     "server": "pnpm --filter @objectos/server dev",
     "web": "pnpm --filter @objectos/web dev",
     "web:watch": "pnpm --filter @objectos/web build:watch",
+    "amis": "pnpm --filter @objectos/amis dev",
     "build": "tsc -b && pnpm -r build",
     "start": "pnpm --filter @objectos/server start:prod",
     "test": "pnpm -r test",
