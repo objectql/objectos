@@ -45,7 +45,7 @@ export function EnhancedObjectListView({ objectName, user }: EnhancedObjectListV
                 console.error('Failed to load object metadata:', err);
                 setError(err.message);
             });
-    }, [objectName]);
+    }, [objectName, user]);
 
     // Fetch data
     useEffect(() => {
