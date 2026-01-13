@@ -1,27 +1,34 @@
 name: organization
+label: Organization
 description: Organization for multi-tenant apps
 customizable: false
 fields:
   name:
     type: string
+    label: Name
     description: Organization name
     required: true
   slug:
     type: string
+    label: Slug
     description: Unique url friendly identifier
     unique: true
     required: true
   logo:
     type: string
+    label: Logo
     description: Organization logo URL
   metadata:
     type: json
+    label: Metadata
     description: Additional metadata
   createdAt:
     type: datetime
+    label: Created At
     default: now()
     customizable: false
   updatedAt:
     type: datetime
+    label: Updated At
     default: now()
     customizable: false

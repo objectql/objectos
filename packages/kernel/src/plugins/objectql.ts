@@ -4,12 +4,6 @@ import * as fs from 'fs';
 import glob from 'fast-glob';
 import { ObjectQLPlugin, IObjectQL } from '@objectql/types';
 
-import * as yaml from 'js-yaml';
-import * as path from 'path';
-import * as fs from 'fs';
-import glob from 'fast-glob';
-import { ObjectQLPlugin, IObjectQL } from '@objectql/types';
-
 /**
  * Loads metadata files from configured sources and preset packages.
  * 

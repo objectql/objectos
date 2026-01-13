@@ -1,45 +1,57 @@
 name: user
+label: User
 description: System user for authentication
 customizable: false
 fields:
   name:
     type: string
+    label: Name
     description: User's display name
   email:
     type: string
+    label: Email
     description: User's email address
     unique: true
   emailVerified:
     type: boolean
+    label: Email Verified
     description: Whether the email is verified
     default: false
   image:
     type: string
+    label: Avatar
     description: URL to user's avatar
   createdAt:
     type: datetime
+    label: Created At
     default: now()
     customizable: false
   updatedAt:
     type: datetime
+    label: Updated At
     default: now()
     customizable: false
   # Better Auth Specifics
   password:
     type: string
+    label: Password
     description: Hashed password
     hidden: true
   role:
     type: string
+    label: Role
     description: User role (admin, user, etc)
     default: user
   banned:
     type: boolean
+    label: Banned
     description: Whether the user is banned
     default: false
   banReason:
     type: string
+    label: Ban Reason
     description: Reason for ban
   banExpires:
     type: datetime
+    label: Ban Expires
     description: When the ban expires

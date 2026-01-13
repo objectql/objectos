@@ -1,24 +1,30 @@
 name: member
+label: Member
 description: Organization membership
 customizable: false
 fields:
   organizationId:
     type: string
+    label: Organization
     description: ID of the organization
     required: true
   userId:
     type: string
+    label: User
     description: ID of the user
     required: true
   role:
     type: string
+    label: Role
     description: Role in the organization (admin, member, owner)
     required: true
   createdAt:
     type: datetime
+    label: Created At
     default: now()
     customizable: false
   updatedAt:
     type: datetime
+    label: Updated At
     default: now()
     customizable: false
