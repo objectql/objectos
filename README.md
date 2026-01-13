@@ -189,4 +189,31 @@ We are building the future of open-source business software.
 
 ## 📄 License
 
-MIT © [ObjectOS Team](https://objectos.org)
+This project is licensed under the **PolyForm Shield License 1.0.0**.
+
+### What This Means for You
+
+✅ **You CAN freely use ObjectOS to:**
+- Build and deploy any end-user applications (CRM, ERP, e-commerce, etc.)
+- Use it as your internal data platform or backend engine
+- Modify the code for your own products
+- Distribute it as part of your solution
+
+❌ **You CANNOT:**
+- Create a competing low-code platform or BaaS engine using ObjectOS code
+- Build a general-purpose database middleware that competes with ObjectOS
+- Market a product as a direct alternative to ObjectOS
+
+**Simple Rule:** Build **WITH** ObjectOS (allowed), not **AGAINST** ObjectOS (prohibited).
+
+For full license terms, see [LICENSE](./LICENSE).  
+For trademark usage guidelines, see [TRADEMARK_POLICY.md](./TRADEMARK_POLICY.md).
+
+### Why PolyForm Shield?
+
+We chose this license to ensure:
+1. **Developers can freely use ObjectOS** for building applications without restrictions
+2. **The project remains sustainable** by preventing direct commercial clones
+3. **Innovation is protected** while keeping the code open and auditable
+
+If you have questions about whether your use case is permitted, please open an issue or contact us at legal@objectos.org.
