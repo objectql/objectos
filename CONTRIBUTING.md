@@ -456,7 +456,7 @@ pnpm release
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the PolyForm Shield License 1.0.0.
 
 ---
 

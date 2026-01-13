@@ -72,7 +72,7 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the MIT License.',
+      message: 'Released under the PolyForm Shield License 1.0.0.',
       copyright: 'Copyright © 2026 ObjectOS'
     }
   }

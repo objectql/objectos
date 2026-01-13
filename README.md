@@ -189,4 +189,6 @@ We are building the future of open-source business software.
 
 ## 📄 License
 
-MIT © [ObjectOS Team](https://objectos.org)
+[PolyForm Shield License 1.0.0](./LICENSE) © [ObjectOS Team](https://objectos.org)
+
+This project is licensed under the PolyForm Shield License, which allows free use for non-competing purposes. See the [LICENSE](./LICENSE) file for details.
