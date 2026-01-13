@@ -189,6 +189,6 @@ We are building the future of open-source business software.
 
 ## 📄 License
 
-[PolyForm Shield License 1.0.0](./LICENSE) © [ObjectOS Team](https://objectos.org)
+[GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE) © [ObjectOS Team](https://objectos.org)
 
-This project is licensed under the PolyForm Shield License, which allows free use for non-competing purposes. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0, which is a strong copyleft license that ensures the software remains free and open source. See the [LICENSE](./LICENSE) file for details.

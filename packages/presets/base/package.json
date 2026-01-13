@@ -1,7 +1,7 @@
 {
   "name": "@objectos/preset-base",
   "version": "0.1.0",
-  "license": "PolyForm-Shield-1.0.0",
+  "license": "AGPL-3.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
