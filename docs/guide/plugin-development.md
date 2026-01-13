@@ -1612,7 +1612,287 @@ describe('Plugin Integration', () => {
 
 ## 7. Examples
 
-### 7.1 Minimal Plugin
+### 7.1 Full-Stack Plugin: Simple Approval Workflow
+
+A complete plugin demonstrating metadata, hooks, actions, APIs, and UI:
+
+```typescript
+import type { IObjectOSPlugin, PluginContext, PluginMetadata, PluginCapabilities } from '@objectos/web-framework';
+
+export class ApprovalPlugin implements IObjectOSPlugin {
+  name = '@example/approval-plugin';
+  version = '1.0.0';
+  category = 'feature';
+  
+  metadata: PluginMetadata = {
+    displayName: 'Simple Approvals',
+    description: 'Add approval workflows to any object',
+    author: 'Example Corp',
+    category: 'integration',
+    license: 'MIT',
+    pricing: { type: 'free' },
+    tags: ['workflow', 'approval', 'collaboration']
+  };
+  
+  capabilities: PluginCapabilities = {
+    // Frontend components
+    provides: {
+      components: ['approval-widget', 'approval-history']
+    },
+    
+    // Metadata: New objects
+    metadata: {
+      objects: ['approval_request'],
+      fields: ['approval_status', 'approved_by', 'approval_date'],
+      actions: ['request_approval', 'approve', 'reject']
+    },
+    
+    // Backend capabilities
+    backend: {
+      hooks: ['approval:beforeSubmit', 'approval:afterDecision'],
+      actions: ['approval.request', 'approval.approve', 'approval.reject'],
+      apis: ['/api/approval/pending', '/api/approval/history'],
+      services: ['ApprovalNotificationService']
+    }
+  };
+  
+  async initialize(context: PluginContext) {
+    // 1. Register metadata
+    this.registerMetadata(context);
+    
+    // 2. Register hooks
+    this.registerHooks(context);
+    
+    // 3. Register actions
+    this.registerActions(context);
+    
+    // 4. Register APIs
+    this.registerAPIs(context);
+    
+    // 5. Register UI components
+    this.registerComponents(context);
+  }
+  
+  private registerMetadata(context: PluginContext) {
+    // Register ApprovalRequest object
+    context.metadata.registerObject({
+      name: 'approval_request',
+      label: 'Approval Request',
+      fields: {
+        record_id: { type: 'text', label: 'Record ID', required: true },
+        record_type: { type: 'text', label: 'Object Name', required: true },
+        requester: { type: 'lookup', label: 'Requester', reference_to: 'users' },
+        approver: { type: 'lookup', label: 'Approver', reference_to: 'users', required: true },
+        status: {
+          type: 'select',
+          label: 'Status',
+          options: ['Pending', 'Approved', 'Rejected'],
+          default: 'Pending'
+        },
+        comments: { type: 'textarea', label: 'Comments' },
+        decision_date: { type: 'datetime', label: 'Decision Date' }
+      }
+    });
+    
+    // Add approval fields to all objects
+    context.metadata.addField('*', {
+      name: 'approval_status',
+      type: 'select',
+      label: 'Approval Status',
+      options: ['Not Submitted', 'Pending', 'Approved', 'Rejected'],
+      default: 'Not Submitted'
+    });
+    
+    context.metadata.addField('*', {
+      name: 'approved_by',
+      type: 'lookup',
+      label: 'Approved By',
+      reference_to: 'users'
+    });
+  }
+  
+  private registerHooks(context: PluginContext) {
+    // Hook: Set initial approval status
+    context.hooks.register('beforeInsert', async (hookContext) => {
+      if (!hookContext.record.approval_status) {
+        hookContext.record.approval_status = 'Not Submitted';
+      }
+    });
+    
+    // Hook: Prevent updates to approved records
+    context.hooks.register('beforeUpdate', async (hookContext) => {
+      if (hookContext.previousRecord.approval_status === 'Approved') {
+        throw new Error('Cannot modify approved records');
+      }
+    });
+  }
+  
+  private registerActions(context: PluginContext) {
+    // Action: Request approval
+    context.actions.register({
+      name: 'approval.request',
+      label: 'Request Approval',
+      description: 'Submit record for approval',
+      parameters: {
+        approver_id: { type: 'lookup', reference_to: 'users', required: true },
+        comments: { type: 'textarea' }
+      },
+      execute: async (params, actionContext) => {
+        // Create approval request
+        const request = await context.kernel.insert('approval_request', {
+          record_id: actionContext.recordId,
+          record_type: actionContext.objectName,
+          requester: actionContext.user.id,
+          approver: params.approver_id,
+          status: 'Pending',
+          comments: params.comments
+        });
+        
+        // Update record status
+        await context.kernel.update(actionContext.objectName, actionContext.recordId, {
+          approval_status: 'Pending'
+        });
+        
+        // Send notification
+        await this.sendNotification(params.approver_id, request.id);
+        
+        return { success: true, request_id: request.id };
+      }
+    });
+    
+    // Action: Approve
+    context.actions.register({
+      name: 'approval.approve',
+      label: 'Approve',
+      description: 'Approve the request',
+      parameters: {
+        request_id: { type: 'text', required: true },
+        comments: { type: 'textarea' }
+      },
+      execute: async (params, actionContext) => {
+        const request = await context.kernel.findOne('approval_request', params.request_id);
+        
+        // Verify user is the approver
+        if (request.approver !== actionContext.user.id) {
+          throw new Error('You are not authorized to approve this request');
+        }
+        
+        // Update approval request
+        await context.kernel.update('approval_request', params.request_id, {
+          status: 'Approved',
+          decision_date: new Date(),
+          comments: params.comments
+        });
+        
+        // Update original record
+        await context.kernel.update(request.record_type, request.record_id, {
+          approval_status: 'Approved',
+          approved_by: actionContext.user.id,
+          approval_date: new Date()
+        });
+        
+        return { success: true, message: 'Approved successfully' };
+      }
+    });
+  }
+  
+  private registerAPIs(context: PluginContext) {
+    // API: Get pending approvals for current user
+    context.routes.register('GET', '/api/approval/pending', async (req, res) => {
+      const userId = req.user.id;
+      
+      const pending = await context.kernel.find('approval_request', {
+        filters: [
+          ['approver', '=', userId],
+          ['status', '=', 'Pending']
+        ]
+      });
+      
+      res.json({ approvals: pending });
+    });
+    
+    // API: Get approval history for a record
+    context.routes.register('GET', '/api/approval/history/:objectName/:recordId', async (req, res) => {
+      const { objectName, recordId } = req.params;
+      
+      const history = await context.kernel.find('approval_request', {
+        filters: [
+          ['record_type', '=', objectName],
+          ['record_id', '=', recordId]
+        ],
+        sort: { field: 'created_at', order: 'desc' }
+      });
+      
+      res.json({ history });
+    });
+  }
+  
+  private registerComponents(context: PluginContext) {
+    // Register approval widget component
+    context.components.register('approval-widget', ApprovalWidget);
+    
+    // Register approval history component
+    context.components.register('approval-history', ApprovalHistory);
+  }
+  
+  private async sendNotification(userId: string, requestId: string) {
+    // Send email/notification to approver
+    console.log(`Sending approval notification to user ${userId} for request ${requestId}`);
+  }
+}
+
+// UI Component: Approval Widget
+function ApprovalWidget({ recordId, objectName }: { recordId: string; objectName: string }) {
+  const [approvals, setApprovals] = useState([]);
+  
+  useEffect(() => {
+    fetch(`/api/approval/history/${objectName}/${recordId}`)
+      .then(res => res.json())
+      .then(data => setApprovals(data.history));
+  }, [recordId, objectName]);
+  
+  const requestApproval = async () => {
+    // Show approval request dialog
+  };
+  
+  return (
+    <div className="approval-widget">
+      <h3>Approval Status</h3>
+      <div className="current-status">
+        {/* Display current approval status */}
+      </div>
+      <button onClick={requestApproval}>Request Approval</button>
+      <div className="approval-history">
+        {approvals.map(approval => (
+          <div key={approval.id} className="approval-item">
+            {/* Display approval history */}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+**Usage:**
+
+```typescript
+// Install and enable the plugin
+const framework = createFramework({
+  plugins: [
+    new ApprovalPlugin()
+  ]
+});
+
+// The plugin automatically:
+// 1. Adds approval_status field to all objects
+// 2. Provides "Request Approval" action on records
+// 3. Adds approval widget to record detail pages
+// 4. Prevents editing of approved records
+// 5. Provides /api/approval/pending endpoint
+```
+
+### 7.2 Minimal Plugin
 
 The simplest possible plugin:
 

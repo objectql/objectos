@@ -19,25 +19,29 @@ The ObjectOS Web Framework is a **plugin-based, extensible architecture** for bu
 ### 2.1 Framework Layers
 
 ```
-┌─────────────────────────────────────────┐
-│         Application Layer               │
-│  (User's App, Routes, Pages)            │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│         Plugin Layer                    │
-│  (Tables, Forms, Charts, Widgets)       │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│         Framework Core                  │
-│  (Plugin Registry, Event Bus, Context)  │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│         Foundation Layer                │
-│  (React, UI Primitives, Theme)          │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│              Application Layer                      │
+│  (User's App, Routes, Pages, Business Logic)        │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│              Plugin Layer                           │
+│  ┌──────────────┐  ┌──────────────┐                │
+│  │   Frontend   │  │   Backend    │                │
+│  │   Plugins    │  │   Plugins    │                │
+│  │  (UI, Forms) │  │(Hooks, APIs) │                │
+│  └──────────────┘  └──────────────┘                │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│              Framework Core                         │
+│  (Plugin Registry, Event Bus, Context, Metadata)    │
+└─────────────────────────────────────────────────────┘
+            ↓                           ↓
+┌─────────────────────┐    ┌───────────────────────┐
+│  Foundation Layer   │    │   ObjectOS Kernel     │
+│  (React, UI, Theme) │    │  (Hooks, Actions, DB) │
+└─────────────────────┘    └───────────────────────┘
 ```
 
 ### 2.2 Core Modules
@@ -51,6 +55,10 @@ The framework core provides:
 | **ThemeProvider** | Theming and styling system | Core |
 | **ContextManager** | Application state and configuration | Core |
 | **ComponentRegistry** | Component override and extension system | Core |
+| **MetadataRegistry** | Plugin-provided object definitions and metadata | Core |
+| **HookRegistry** | Server-side hook registration and execution | Core |
+| **ActionRegistry** | Custom action registration and invocation | Core |
+| **RouteRegistry** | Plugin-provided API endpoint registration | Core |
 
 ---
 
@@ -136,11 +144,27 @@ interface PluginMetadata {
 }
 
 interface PluginCapabilities {
-  // What components does this plugin provide?
+  // Frontend: What UI components does this plugin provide?
   provides?: {
-    components?: string[];  // e.g., ['table', 'table.advanced']
+    components?: string[];  // e.g., ['table', 'table.advanced', 'workflow-designer']
     hooks?: string[];       // e.g., ['data:transform']
     services?: string[];    // e.g., ['export', 'analytics']
+  };
+  
+  // Backend: What metadata does this plugin add?
+  metadata?: {
+    objects?: string[];     // e.g., ['workflow', 'workflow_step', 'workflow_instance']
+    fields?: string[];      // e.g., ['workflow_status'] - adds fields to existing objects
+    views?: string[];       // e.g., ['workflow_board', 'workflow_timeline']
+    actions?: string[];     // e.g., ['start_workflow', 'approve_step']
+  };
+  
+  // Backend: What server-side capabilities does this plugin add?
+  backend?: {
+    hooks?: string[];       // e.g., ['beforeInsert', 'afterUpdate'] - server-side lifecycle hooks
+    actions?: string[];     // e.g., ['workflow.start', 'workflow.approve'] - custom business logic
+    apis?: string[];        // e.g., ['/api/workflow/execute', '/api/workflow/status'] - new endpoints
+    services?: string[];    // e.g., ['WorkflowEngine', 'ApprovalService'] - background services
   };
   
   // What components/services does this plugin extend?
@@ -165,11 +189,16 @@ interface PluginContext {
   // Event bus for pub/sub
   events: EventBus;
   
-  // Component registry for overrides
-  components: ComponentRegistry;
+  // Frontend registries
+  components: ComponentRegistry;  // Register UI components
+  theme: ThemeProvider;          // Access theme system
   
-  // Theme system access
-  theme: ThemeProvider;
+  // Backend registries
+  metadata: MetadataRegistry;    // Register objects, fields, views
+  hooks: HookRegistry;           // Register server-side hooks
+  actions: ActionRegistry;       // Register custom actions
+  routes: RouteRegistry;         // Register API endpoints
+
   
   // Application configuration
   config: AppConfig;
@@ -478,7 +507,470 @@ class CommercialPlugin implements IObjectOSPlugin {
 
 ---
 
-## 4. Component Plugin System
+## 4. Full-Stack Plugin Architecture
+
+Plugins in ObjectOS are not limited to frontend UI components. A complete plugin can provide:
+- **Metadata**: New object definitions, fields, views
+- **Backend Logic**: Hooks, actions, services
+- **APIs**: Custom endpoints
+- **Frontend**: UI components, pages, widgets
+
+### 4.1 Plugin Types
+
+| Plugin Type | Provides | Example |
+|-------------|----------|---------|
+| **UI Plugin** | Frontend components only | Table, Form, Chart components |
+| **Backend Plugin** | Server-side hooks and actions | Audit Trail, Validation Rules |
+| **Integration Plugin** | External service integration + UI | Email, SMS, Payment Gateway |
+| **Feature Plugin** | Complete feature with metadata + backend + UI | Workflow, Approvals, Document Management |
+
+### 4.2 Full-Stack Plugin Example: Workflow
+
+A workflow plugin demonstrates all plugin capabilities:
+
+```typescript
+import type { IObjectOSPlugin, PluginContext } from '@objectos/web-framework';
+import type { ObjectConfig, HookConfig, ActionConfig } from '@objectql/types';
+
+export class WorkflowPlugin implements IObjectOSPlugin {
+  name = '@objectos/plugin-workflow';
+  version = '2.0.0';
+  category = 'feature';
+  
+  metadata: PluginMetadata = {
+    displayName: 'Workflow Engine',
+    description: 'Complete workflow and approval system',
+    author: 'ObjectOS Team',
+    category: 'integration',
+    license: 'Commercial',
+    pricing: {
+      type: 'subscription',
+      price: 49.99,
+      currency: 'USD'
+    }
+  };
+  
+  capabilities: PluginCapabilities = {
+    // Frontend components
+    provides: {
+      components: ['workflow-designer', 'workflow-board', 'approval-widget'],
+      services: ['workflow-engine']
+    },
+    
+    // Metadata: New objects this plugin adds
+    metadata: {
+      objects: ['workflow', 'workflow_step', 'workflow_instance', 'approval_request'],
+      fields: ['workflow_status', 'approval_stage'],  // Adds to existing objects
+      views: ['workflow_board', 'workflow_timeline'],
+      actions: ['start_workflow', 'approve', 'reject', 'delegate']
+    },
+    
+    // Backend capabilities
+    backend: {
+      hooks: ['workflow:beforeStart', 'workflow:afterComplete', 'approval:beforeDecision'],
+      actions: ['workflow.start', 'workflow.cancel', 'approval.approve', 'approval.reject'],
+      apis: ['/api/workflow/execute', '/api/workflow/status', '/api/approval/pending'],
+      services: ['WorkflowEngine', 'ApprovalService', 'NotificationService']
+    },
+    
+    features: {
+      parallelApprovals: true,
+      conditionalRouting: true,
+      emailNotifications: true,
+      escalation: true
+    }
+  };
+  
+  async initialize(context: PluginContext) {
+    // 1. Register metadata (objects, fields, views)
+    await this.registerMetadata(context);
+    
+    // 2. Register server-side hooks
+    await this.registerHooks(context);
+    
+    // 3. Register custom actions
+    await this.registerActions(context);
+    
+    // 4. Register API endpoints
+    await this.registerAPIs(context);
+    
+    // 5. Register UI components
+    await this.registerComponents(context);
+    
+    // 6. Start background services
+    await this.startServices(context);
+  }
+  
+  // Register new object definitions
+  private async registerMetadata(context: PluginContext) {
+    // Register Workflow object
+    context.metadata.registerObject({
+      name: 'workflow',
+      label: 'Workflow',
+      icon: 'workflow',
+      fields: {
+        name: { type: 'text', label: 'Workflow Name', required: true },
+        description: { type: 'textarea', label: 'Description' },
+        status: {
+          type: 'select',
+          label: 'Status',
+          options: ['Draft', 'Active', 'Archived'],
+          default: 'Draft'
+        },
+        trigger_type: {
+          type: 'select',
+          label: 'Trigger',
+          options: ['Manual', 'On Create', 'On Update', 'Scheduled']
+        },
+        steps: {
+          type: 'json',
+          label: 'Workflow Steps'
+        }
+      },
+      permissions: {
+        allowRead: true,
+        allowCreate: ['admin', 'workflow_manager'],
+        allowEdit: ['admin', 'workflow_manager'],
+        allowDelete: ['admin']
+      }
+    });
+    
+    // Register WorkflowInstance object
+    context.metadata.registerObject({
+      name: 'workflow_instance',
+      label: 'Workflow Instance',
+      fields: {
+        workflow: {
+          type: 'lookup',
+          label: 'Workflow',
+          reference_to: 'workflow',
+          required: true
+        },
+        record_id: { type: 'text', label: 'Related Record ID' },
+        record_type: { type: 'text', label: 'Related Object' },
+        status: {
+          type: 'select',
+          label: 'Status',
+          options: ['Pending', 'InProgress', 'Completed', 'Cancelled']
+        },
+        current_step: { type: 'text', label: 'Current Step' },
+        started_at: { type: 'datetime', label: 'Started At' },
+        completed_at: { type: 'datetime', label: 'Completed At' }
+      }
+    });
+    
+    // Add workflow_status field to other objects
+    context.metadata.addField('*', {
+      name: 'workflow_status',
+      type: 'select',
+      label: 'Workflow Status',
+      options: ['Not Started', 'In Progress', 'Approved', 'Rejected'],
+      hidden: true  // Only shown when workflow is enabled for the object
+    });
+    
+    // Register custom view
+    context.metadata.registerView({
+      object: 'workflow_instance',
+      name: 'workflow_board',
+      label: 'Workflow Board',
+      type: 'kanban',
+      group_by: 'status',
+      card: {
+        title: 'workflow.name',
+        subtitle: 'current_step',
+        fields: ['started_at', 'record_type']
+      }
+    });
+  }
+  
+  // Register server-side hooks
+  private async registerHooks(context: PluginContext) {
+    // Hook: Auto-start workflow when record is created
+    context.hooks.register('afterInsert', async (hookContext) => {
+      const { objectName, record } = hookContext;
+      
+      // Check if object has workflows configured
+      const workflows = await this.getActiveWorkflows(objectName, 'On Create');
+      
+      for (const workflow of workflows) {
+        await this.startWorkflow(workflow.id, record.id, objectName);
+      }
+    });
+    
+    // Hook: Update workflow when record is updated
+    context.hooks.register('afterUpdate', async (hookContext) => {
+      const { objectName, record, previousRecord } = hookContext;
+      
+      // Check for field changes that should trigger workflow
+      if (record.status !== previousRecord.status) {
+        await this.handleStatusChange(record, objectName);
+      }
+    });
+    
+    // Custom workflow hook
+    context.hooks.register('workflow:beforeStart', async (hookContext) => {
+      // Validate workflow can start
+      const { workflow, record } = hookContext;
+      
+      // Check permissions
+      if (!this.canStartWorkflow(hookContext.user, workflow)) {
+        throw new Error('Permission denied');
+      }
+    });
+  }
+  
+  // Register custom actions
+  private async registerActions(context: PluginContext) {
+    // Action: Start a workflow
+    context.actions.register({
+      name: 'workflow.start',
+      label: 'Start Workflow',
+      description: 'Initiates a workflow for the selected record',
+      parameters: {
+        workflow_id: { type: 'lookup', reference_to: 'workflow', required: true },
+        record_id: { type: 'text', required: true },
+        object_name: { type: 'text', required: true }
+      },
+      execute: async (params, actionContext) => {
+        const instance = await this.startWorkflow(
+          params.workflow_id,
+          params.record_id,
+          params.object_name
+        );
+        
+        return {
+          success: true,
+          instance_id: instance.id,
+          message: 'Workflow started successfully'
+        };
+      }
+    });
+    
+    // Action: Approve workflow step
+    context.actions.register({
+      name: 'approval.approve',
+      label: 'Approve',
+      description: 'Approve current workflow step',
+      parameters: {
+        instance_id: { type: 'text', required: true },
+        comments: { type: 'textarea' }
+      },
+      execute: async (params, actionContext) => {
+        await this.approveStep(
+          params.instance_id,
+          actionContext.user.id,
+          params.comments
+        );
+        
+        return { success: true, message: 'Approved successfully' };
+      }
+    });
+  }
+  
+  // Register API endpoints
+  private async registerAPIs(context: PluginContext) {
+    // API: Execute workflow
+    context.routes.register('POST', '/api/workflow/execute', async (req, res) => {
+      const { workflow_id, record_id, object_name } = req.body;
+      
+      const instance = await this.startWorkflow(workflow_id, record_id, object_name);
+      
+      res.json({
+        success: true,
+        instance: instance
+      });
+    });
+    
+    // API: Get workflow status
+    context.routes.register('GET', '/api/workflow/status/:instanceId', async (req, res) => {
+      const instance = await this.getWorkflowInstance(req.params.instanceId);
+      
+      res.json({
+        status: instance.status,
+        current_step: instance.current_step,
+        history: await this.getWorkflowHistory(instance.id)
+      });
+    });
+    
+    // API: Get pending approvals
+    context.routes.register('GET', '/api/approval/pending', async (req, res) => {
+      const userId = req.user.id;
+      const pending = await this.getPendingApprovals(userId);
+      
+      res.json({ approvals: pending });
+    });
+  }
+  
+  // Register UI components
+  private async registerComponents(context: PluginContext) {
+    // Register workflow designer component
+    context.components.register('workflow-designer', WorkflowDesignerComponent);
+    
+    // Register workflow board view
+    context.components.register('workflow-board', WorkflowBoardComponent);
+    
+    // Register approval widget
+    context.components.register('approval-widget', ApprovalWidgetComponent);
+  }
+  
+  // Start background services
+  private async startServices(context: PluginContext) {
+    // Start workflow engine
+    this.workflowEngine = new WorkflowEngine(context);
+    await this.workflowEngine.start();
+    
+    // Start notification service
+    this.notificationService = new NotificationService(context);
+    await this.notificationService.start();
+    
+    // Register cleanup on destroy
+    context.events.on('plugin:destroy', async () => {
+      await this.workflowEngine.stop();
+      await this.notificationService.stop();
+    });
+  }
+  
+  // Implementation methods
+  private async startWorkflow(workflowId: string, recordId: string, objectName: string) {
+    // Workflow execution logic
+  }
+  
+  private async getActiveWorkflows(objectName: string, trigger: string) {
+    // Query workflows
+  }
+  
+  // ... other helper methods
+}
+```
+
+### 4.3 Plugin Metadata Registration
+
+Plugins can register new objects, fields, and views:
+
+```typescript
+interface MetadataRegistry {
+  // Register a complete object definition
+  registerObject(config: ObjectConfig): void;
+  
+  // Add a field to existing object(s)
+  addField(objectName: string | '*', fieldConfig: FieldConfig): void;
+  
+  // Register a custom view
+  registerView(viewConfig: ViewConfig): void;
+  
+  // Register a custom action
+  registerAction(actionConfig: ActionConfig): void;
+}
+```
+
+### 4.4 Hook Registration
+
+Plugins can register server-side lifecycle hooks:
+
+```typescript
+interface HookRegistry {
+  // Register a hook for lifecycle events
+  register(event: HookEvent, handler: HookHandler): void;
+}
+
+type HookEvent =
+  | 'beforeInsert' | 'afterInsert'
+  | 'beforeUpdate' | 'afterUpdate'
+  | 'beforeDelete' | 'afterDelete'
+  | 'beforeFind' | 'afterFind'
+  | string;  // Custom hooks like 'workflow:beforeStart'
+
+interface HookHandler {
+  (context: HookContext): void | Promise<void>;
+}
+
+interface HookContext {
+  objectName: string;
+  record?: any;
+  previousRecord?: any;
+  user: User;
+  query?: FindOptions;
+  // Plugin can add custom properties
+  [key: string]: any;
+}
+```
+
+### 4.5 Action Registration
+
+Plugins can register custom business logic actions:
+
+```typescript
+interface ActionRegistry {
+  register(config: ActionConfig): void;
+}
+
+interface ActionConfig {
+  name: string;  // e.g., 'workflow.start'
+  label: string;
+  description: string;
+  parameters: Record<string, ParameterConfig>;
+  execute: (params: any, context: ActionContext) => Promise<any>;
+  
+  // Where can this action be used?
+  availableOn?: {
+    objects?: string[];  // Which objects
+    views?: string[];    // Which view types
+    triggers?: ('button' | 'menu' | 'api')[];
+  };
+}
+
+interface ActionContext {
+  user: User;
+  objectName?: string;
+  recordId?: string;
+  selectedRecords?: any[];
+}
+```
+
+### 4.6 Route Registration
+
+Plugins can register custom API endpoints:
+
+```typescript
+interface RouteRegistry {
+  register(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+    path: string,
+    handler: RouteHandler,
+    options?: RouteOptions
+  ): void;
+}
+
+interface RouteHandler {
+  (req: Request, res: Response): void | Promise<void>;
+}
+
+interface RouteOptions {
+  auth?: boolean;  // Require authentication (default: true)
+  permissions?: string[];  // Required permissions
+  rateLimit?: {
+    max: number;
+    windowMs: number;
+  };
+}
+
+// Example: Register a webhook endpoint
+context.routes.register('POST', '/api/webhooks/stripe', async (req, res) => {
+  const event = req.body;
+  
+  // Handle Stripe webhook
+  await handleStripeEvent(event);
+  
+  res.json({ received: true });
+}, {
+  auth: false,  // Stripe sends unauthenticated requests
+  rateLimit: { max: 100, windowMs: 60000 }
+});
+```
+
+---
+
+## 5. Component Plugin System
 
 ### 4.1 Component Plugin Categories
 
