@@ -12,3 +12,12 @@ export {
     PageComponent
 } from './types';
 
+// Export merge utilities
+export {
+    mergeObjectConfig,
+    mergeFieldConfig,
+    mergeFields,
+    isDeleted,
+    DELETED_MARKER
+} from './utils/merge';
+

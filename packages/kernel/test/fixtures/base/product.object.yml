@@ -1,0 +1,40 @@
+name: product
+label: Product
+icon: package
+description: Base product definition
+fields:
+  name:
+    type: text
+    label: Product Name
+    required: true
+  
+  sku:
+    type: text
+    label: SKU
+    required: true
+    unique: true
+  
+  description:
+    type: textarea
+    label: Description
+  
+  price:
+    type: currency
+    label: Price
+    required: true
+  
+  category:
+    type: select
+    label: Category
+    options:
+      - label: Electronics
+        value: electronics
+      - label: Clothing
+        value: clothing
+      - label: Food
+        value: food
+  
+  stock:
+    type: number
+    label: Stock Quantity
+    min: 0

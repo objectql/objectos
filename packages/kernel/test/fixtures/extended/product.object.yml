@@ -1,0 +1,36 @@
+# This file extends the base product object
+# Demonstrates: override, extend, and delete capabilities
+name: product
+label: Extended Product  # Override: Change label
+description: Extended product with additional features  # Override: Change description
+
+fields:
+  # Override: Make SKU not required (override sub-property)
+  sku:
+    required: false
+  
+  # Delete: Remove category field
+  category: null
+  
+  # Override: Change price to allow negative values (for discounts/refunds)
+  price:
+    min: -10000
+  
+  # Extend: Add new fields
+  brand:
+    type: text
+    label: Brand Name
+  
+  manufacturer:
+    type: text
+    label: Manufacturer
+  
+  tags:
+    type: text
+    label: Tags
+    multiple: true
+  
+  # Override: Change stock field properties
+  stock:
+    label: Inventory Count  # Override label
+    help_text: "Current stock quantity in warehouse"  # Add help text

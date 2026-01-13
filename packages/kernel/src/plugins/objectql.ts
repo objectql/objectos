@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import glob from 'fast-glob';
 import { ObjectQLPlugin, IObjectQL } from '@objectql/types';
+import { mergeObjectConfig } from '../utils/merge';
 
 async function loadFiles(app: IObjectQL, patterns: string[], handler: (ctx: any) => void, extraRoots: string[] = []) {
     const config = (app as any).config || {};
@@ -76,16 +77,29 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
                 const doc = yaml.load(ctx.content) as any;
                 const name = doc.name;
                 if (name) {
-                    // Check if object already exists?
-                    // Presets are loaded after? Or concurrent?
-                    // We register blindly, last one wins (or registry throws if strict)
-                    ctx.registry.register('object', {
-                        type: 'object',
-                        id: name,
-                        path: ctx.file,
-                        package: ctx.packageName,
-                        content: doc
-                    });
+                    // Check if object already exists - if so, merge instead of replacing
+                    const existing = ctx.registry.getEntry('object', name);
+                    
+                    if (existing) {
+                        // Merge new definition with existing
+                        const mergedContent = mergeObjectConfig(existing.content, doc);
+                        ctx.registry.register('object', {
+                            type: 'object',
+                            id: name,
+                            path: ctx.file,
+                            package: ctx.packageName,
+                            content: mergedContent
+                        });
+                    } else {
+                        // Register new object
+                        ctx.registry.register('object', {
+                            type: 'object',
+                            id: name,
+                            path: ctx.file,
+                            package: ctx.packageName,
+                            content: doc
+                        });
+                    }
                 }
             } catch (e) {
                     console.error(`Error loading object from ${ctx.file}: ${e instanceof Error ? e.message : String(e)}`);
