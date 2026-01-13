@@ -1,6 +1,16 @@
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 
+/**
+ * Data Loader Plugin (Legacy)
+ * 
+ * This plugin is deprecated in favor of the integrated ObjectOSPlugin.
+ * It loads seed data files (*.data.yml) and attaches them to corresponding objects.
+ * 
+ * @deprecated Use ObjectOSPlugin instead, which handles apps, objects, and data in a unified manner.
+ * 
+ * @see {@link ObjectOSPlugin}
+ */
 export const DataPlugin = {
     name: 'objectos-data-loader',
     setup(app: any) {

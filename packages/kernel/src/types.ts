@@ -1,8 +1,33 @@
+// Re-export all types from ObjectQL protocol
+// Rule #1: The Dependency Wall - NEVER redefine types. Always import from @objectql/types.
 export * from '@objectql/types';
 
 /**
  * Menu item configuration for app interfaces.
+ * 
+ * Represents a single navigation item in an application's menu structure.
  * Similar to Airtable's interface menu structure.
+ * 
+ * @example
+ * ```yaml
+ * # Simple menu item
+ * - label: Dashboard
+ *   icon: ri-dashboard-line
+ *   type: page
+ *   url: /dashboard
+ * 
+ * # Object reference
+ * - label: Contacts
+ *   icon: ri-contacts-line
+ *   type: object
+ *   object: contacts
+ * 
+ * # External link
+ * - label: Documentation
+ *   icon: ri-book-line
+ *   type: url
+ *   url: https://objectos.org
+ * ```
  */
 export interface AppMenuItem {
     /** Unique identifier for the menu item */
@@ -27,6 +52,23 @@ export interface AppMenuItem {
 
 /**
  * Menu section/group configuration for organizing menu items.
+ * 
+ * Sections allow grouping related menu items with optional labels and collapsible behavior.
+ * Use sections to organize complex navigation hierarchies.
+ * 
+ * @example
+ * ```yaml
+ * # Collapsible section with label
+ * - label: Sales
+ *   collapsible: true
+ *   items:
+ *     - label: Leads
+ *       type: object
+ *       object: leads
+ *     - label: Opportunities
+ *       type: object
+ *       object: opportunities
+ * ```
  */
 export interface AppMenuSection {
     /** Section title/label */
@@ -41,8 +83,27 @@ export interface AppMenuSection {
 
 /**
  * Type guard to check if a menu entry is a section vs a direct menu item.
+ * 
  * A section has an 'items' array and lacks menu item-specific properties like 'type', 'object', or 'url'.
  * It may also have section-specific properties like 'collapsible' or 'collapsed'.
+ * 
+ * Use this guard when processing menu configurations that can contain both sections and items.
+ * 
+ * @param entry - The menu entry to check
+ * @returns true if the entry is a section, false if it's a menu item
+ * 
+ * @example
+ * ```typescript
+ * const menu = app.menu || [];
+ * menu.forEach(entry => {
+ *   if (isAppMenuSection(entry)) {
+ *     console.log('Section:', entry.label);
+ *     entry.items.forEach(item => console.log('  -', item.label));
+ *   } else {
+ *     console.log('Item:', entry.label);
+ *   }
+ * });
+ * ```
  */
 export function isAppMenuSection(entry: AppMenuSection | AppMenuItem): entry is AppMenuSection {
     return 'items' in entry && 
@@ -54,7 +115,35 @@ export function isAppMenuSection(entry: AppMenuSection | AppMenuItem): entry is 
 
 /**
  * App configuration metadata.
- * Represents an application or interface with its own menu structure.
+ * 
+ * Represents an application or interface with its own menu structure and settings.
+ * Apps are the top-level organizational unit in ObjectOS, similar to Airtable's "Bases"
+ * or Salesforce's "Apps".
+ * 
+ * Each app can have:
+ * - A unique navigation menu
+ * - Custom branding (icon, color)
+ * - Specific objects and pages
+ * 
+ * @example
+ * ```yaml
+ * # sales.app.yml
+ * name: sales
+ * label: Sales CRM
+ * description: Manage leads, opportunities, and accounts
+ * icon: ri-briefcase-line
+ * color: blue
+ * menu:
+ *   - label: Dashboard
+ *     type: page
+ *     url: /dashboard
+ *   - label: Leads
+ *     type: object
+ *     object: leads
+ *   - label: Opportunities
+ *     type: object
+ *     object: opportunities
+ * ```
  */
 export interface AppConfig {
     /** Unique identifier or code for the app */
@@ -86,8 +175,33 @@ export interface AppConfig {
     menu?: AppMenuSection[] | AppMenuItem[];
 }
 
+/** Supported chart types for data visualization */
 export type ChartType = 'bar' | 'line' | 'pie' | 'area';
 
+/**
+ * Chart configuration for data visualization.
+ * 
+ * Defines how to render data from an object as a chart.
+ * Charts can be embedded in pages or dashboards.
+ * 
+ * @example
+ * ```yaml
+ * # revenue-chart.chart.yml
+ * name: monthly_revenue
+ * label: Monthly Revenue
+ * type: bar
+ * object: opportunities
+ * xAxisKey: close_date
+ * yAxisKeys:
+ *   - amount
+ * filters:
+ *   - field: stage
+ *     operator: equals
+ *     value: Won
+ * showGrid: true
+ * showLegend: true
+ * ```
+ */
 export interface ChartConfig {
     name: string;
     label?: string;
@@ -105,14 +219,65 @@ export interface ChartConfig {
     sort?: [string, 'asc' | 'desc'][];
 }
 
+/** Supported page layout types for component arrangement */
 export type PageLayoutType = 'grid' | 'flex' | 'stack' | 'tabs';
 
+/**
+ * Page component configuration.
+ * 
+ * Defines a UI component to render on a page.
+ * Components can be nested to create complex layouts.
+ * 
+ * @example
+ * ```yaml
+ * type: Card
+ * props:
+ *   title: Welcome
+ *   description: Get started with ObjectOS
+ * children:
+ *   - type: Button
+ *     props:
+ *       label: Learn More
+ *       variant: primary
+ * ```
+ */
 export interface PageComponent {
+    /** Component type identifier (e.g., 'Card', 'Button', 'ObjectGrid') */
     type: string;
+    /** Component properties/attributes */
     props?: Record<string, any>;
+    /** Nested child components */
     children?: PageComponent[];
 }
 
+/**
+ * Page configuration metadata.
+ * 
+ * Defines a custom page with layout and components.
+ * Pages can be referenced in app menus to create custom views
+ * beyond the auto-generated object grids and forms.
+ * 
+ * @example
+ * ```yaml
+ * # dashboard.page.yml
+ * name: dashboard
+ * label: Sales Dashboard
+ * description: Overview of sales metrics
+ * icon: ri-dashboard-line
+ * layout: grid
+ * components:
+ *   - type: Chart
+ *     props:
+ *       chartName: monthly_revenue
+ *   - type: ObjectGrid
+ *     props:
+ *       objectName: leads
+ *       limit: 10
+ *       filters:
+ *         - field: status
+ *           value: New
+ * ```
+ */
 export interface PageConfig {
     name: string;
     label?: string;
