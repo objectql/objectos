@@ -13,11 +13,9 @@ Choose your path based on your needs:
 ### 🏗️ Architecture Deep Dive (30 minutes)
 **Want to understand the design in detail?**
 
-Choose your language:
-- 🇨🇳 **Chinese**: [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
-- 🇺🇸 **English**: [FRONTEND_PLUGIN_FRAMEWORK_EN.md](../FRONTEND_PLUGIN_FRAMEWORK_EN.md)
+Read: [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
 
-Both documents contain:
+The document contains:
 - Complete architecture design
 - Plugin specification
 - Extension point mechanism
@@ -26,7 +24,7 @@ Both documents contain:
 
 ### 👨‍💻 For Developers (After Implementation)
 **Want to build a plugin?**
-1. Read the "Plugin Development Guide" section in the main documents
+1. Read the "Plugin Development Guide" section in the main document
 2. Follow the "Advanced Grid Plugin" example
 3. Check the API reference appendices
 
@@ -40,12 +38,11 @@ Both documents contain:
 
 ## 📚 Document Index
 
-### Main Design Documents
+### Main Design Document
 
-| Document | Language | Size | Content |
-|----------|----------|------|---------|
-| [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md) | 🇨🇳 Chinese | ~28KB | Complete design specification |
-| [FRONTEND_PLUGIN_FRAMEWORK_EN.md](../FRONTEND_PLUGIN_FRAMEWORK_EN.md) | 🇺🇸 English | ~36KB | Full English translation |
+| Document | Size | Content |
+|----------|------|---------|
+| [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md) | ~36KB | Complete design specification |
 
 ### Supporting Documents
 
@@ -60,24 +57,20 @@ Both documents contain:
 ## 🎯 Key Sections by Topic
 
 ### Architecture
-- **Chinese**: FRONTEND_PLUGIN_FRAMEWORK.md → Section 2 (框架核心架构)
-- **English**: FRONTEND_PLUGIN_FRAMEWORK_EN.md → Section 2 (Core Framework Architecture)
+FRONTEND_PLUGIN_FRAMEWORK.md → Section 2 (Core Framework Architecture)
 
 ### Plugin System
-- **Chinese**: FRONTEND_PLUGIN_FRAMEWORK.md → Section 3 (插件系统设计)
-- **English**: FRONTEND_PLUGIN_FRAMEWORK_EN.md → Section 3 (Plugin System Design)
+FRONTEND_PLUGIN_FRAMEWORK.md → Section 3 (Plugin System Design)
 
 ### Plugin Development
-- **Chinese**: FRONTEND_PLUGIN_FRAMEWORK.md → Section 4 (插件开发指南)
-- **English**: FRONTEND_PLUGIN_FRAMEWORK_EN.md → Section 4 (Plugin Development Guide)
+FRONTEND_PLUGIN_FRAMEWORK.md → Section 4 (Plugin Development Guide)
 
 ### Advanced Grid Example
-- **Chinese**: FRONTEND_PLUGIN_FRAMEWORK.md → Section 5 (替换标准对象表格)
-- **English**: FRONTEND_PLUGIN_FRAMEWORK_EN.md → Section 5 (Replacing Standard Object Grid)
-- **Visual**: VISUAL_SUMMARY.md → Section "Real Example"
+- FRONTEND_PLUGIN_FRAMEWORK.md → Section 5 (Replacing Standard Object Grid)
+- VISUAL_SUMMARY.md → Section "Real Example"
 
 ### Implementation Plan
-- **Chinese**: FRONTEND_PLUGIN_FRAMEWORK.md → Section 6 (框架实现计划)
+FRONTEND_PLUGIN_FRAMEWORK.md → Section 6 (Implementation Roadmap)
 - **English**: FRONTEND_PLUGIN_FRAMEWORK_EN.md → Section 6 (Implementation Roadmap)
 - **Visual**: VISUAL_SUMMARY.md → Section "Implementation Roadmap"
 
@@ -148,16 +141,16 @@ packages/
 → Read [VISUAL_SUMMARY.md](./VISUAL_SUMMARY.md) first!
 
 **Q: I want the full technical spec**
-→ Choose your language: [Chinese](../FRONTEND_PLUGIN_FRAMEWORK.md) or [English](../FRONTEND_PLUGIN_FRAMEWORK_EN.md)
+→ Read [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
 
 **Q: How long will implementation take?**
-→ 10 weeks, 5 phases. See Section 6 in main documents.
+→ 10 weeks, 5 phases. See Section 6 in the main document.
 
 **Q: Will this break existing code?**
-→ No! Backward compatibility guaranteed. See Section 8 in main documents.
+→ No! Backward compatibility guaranteed. See Section 8 in the main document.
 
 **Q: Can I see a real example?**
-→ Yes! The "Advanced Grid Plugin" example in Section 5 of main documents.
+→ Yes! The "Advanced Grid Plugin" example in Section 5 of the main document.
 
 **Q: How do I provide feedback?**
 → Comment on the GitHub issue or PR where this was shared.
@@ -166,7 +159,7 @@ packages/
 
 ## 📝 Next Steps
 
-1. ✅ **Review** - Read the design documents
+1. ✅ **Review** - Read the design document
 2. ✅ **Discuss** - Provide feedback on the approach
 3. ✅ **Confirm** - Approve to proceed with implementation
 4. ⏳ **Implement** - Follow the 10-week roadmap

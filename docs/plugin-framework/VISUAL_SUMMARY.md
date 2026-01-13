@@ -350,11 +350,10 @@ A: Official plugins are reviewed. Community plugins require certification. Futur
 
 ## 📚 More Information
 
-- **Full Chinese Design:** [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
-- **Full English Design:** [FRONTEND_PLUGIN_FRAMEWORK_EN.md](../FRONTEND_PLUGIN_FRAMEWORK_EN.md)
+- **Full Design Document:** [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
 - **Main README:** [README.md](./README.md)
 
 ---
 
 **Ready to Review?** 👀  
-Please read the full design documents and provide feedback!
+Please read the full design document and provide feedback!

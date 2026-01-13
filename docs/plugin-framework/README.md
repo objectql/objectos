@@ -2,23 +2,11 @@
 
 This directory contains comprehensive design documentation for transforming the ObjectOS frontend into a plugin-based framework architecture.
 
-## Available Documents
+## Main Design Document
 
-### Chinese Version (中文版)
-📄 [../FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
+📄 [FRONTEND_PLUGIN_FRAMEWORK.md](../FRONTEND_PLUGIN_FRAMEWORK.md)
 
-完整的中文设计文档，包含：
-- 框架核心架构
-- 插件系统设计
-- 扩展点机制
-- 插件开发指南
-- 替换标准对象表格的详细示例
-- 10 周实施路线图
-
-### English Version
-📄 [../FRONTEND_PLUGIN_FRAMEWORK_EN.md](../FRONTEND_PLUGIN_FRAMEWORK_EN.md)
-
-Complete English design document covering:
+Complete design document covering:
 - Core framework architecture
 - Plugin system design
 - Extension point mechanism
@@ -97,7 +85,7 @@ export const advancedGridPlugin: Plugin = {
 
 ## Next Steps
 
-1. **Review the design documents** (choose your preferred language)
+1. **Review the design document**
 2. **Provide feedback** on the proposed architecture
 3. **Confirm the approach** before implementation begins
 4. **Prioritize features** if needed

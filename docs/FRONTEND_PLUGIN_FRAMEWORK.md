@@ -1,195 +1,195 @@
-# ObjectOS Frontend Plugin Framework 设计文档
+# ObjectOS Frontend Plugin Framework Design Document
 
-## 一、概述
+## 1. Overview
 
-### 1.1 设计目标
+### 1.1 Design Goals
 
-将 ObjectOS 前端项目从单体应用改造成可扩展的插件化框架，实现以下目标：
+Transform the ObjectOS frontend from a monolithic application into an extensible plugin-based framework to achieve:
 
-1. **核心框架精简化**：将核心功能提取到基础框架，保持最小可运行集
-2. **插件化架构**：通过插件方式实现各种复杂功能
-3. **可替换性**：允许插件替换或增强标准组件（如对象表格视图）
-4. **开发者友好**：提供清晰的插件开发规范和工具链
-5. **向后兼容**：保持现有功能的正常运行
+1. **Minimized Core Framework**: Extract core functionality into a base framework with minimal viable features
+2. **Plugin Architecture**: Implement complex features through a plugin system
+3. **Replaceability**: Allow plugins to replace or enhance standard components (e.g., object grid view)
+4. **Developer-Friendly**: Provide clear plugin development specifications and tooling
+5. **Backward Compatibility**: Maintain existing functionality during transition
 
-### 1.2 架构原则
+### 1.2 Architecture Principles
 
-- **最小核心原则**：核心框架只包含路由、布局、插件加载器等基础设施
-- **插件隔离原则**：插件之间相互独立，通过标准接口通信
-- **渐进增强原则**：框架提供默认实现，插件可选择性替换
-- **类型安全原则**：全程使用 TypeScript，确保类型安全
-- **性能优先原则**：插件按需加载，支持代码分割
+- **Minimal Core Principle**: Core framework includes only essential infrastructure (routing, layouts, plugin loader)
+- **Plugin Isolation Principle**: Plugins are independent and communicate through standard interfaces
+- **Progressive Enhancement Principle**: Framework provides default implementations that plugins can optionally replace
+- **Type Safety Principle**: Full TypeScript support throughout
+- **Performance First Principle**: Lazy loading of plugins with code splitting support
 
 ---
 
-## 二、框架核心架构
+## 2. Core Framework Architecture
 
-### 2.1 框架分层结构
+### 2.1 Framework Layers
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     应用层 (Apps)                        │
-│                  apps/web (主应用)                       │
+│                  Application Layer (Apps)                │
+│                  apps/web (Main App)                     │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────┴────────────────────────────────┐
-│                   插件层 (Plugins)                       │
+│                   Plugin Layer (Plugins)                 │
 │  @objectos/plugin-auth     │  @objectos/plugin-grid      │
 │  @objectos/plugin-form     │  @objectos/plugin-workflow  │
-│  @objectos/plugin-chart    │  ... (用户自定义插件)       │
+│  @objectos/plugin-chart    │  ... (Custom Plugins)       │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────┴────────────────────────────────┐
-│                 核心框架层 (Core Framework)              │
+│              Core Framework Layer (Core Framework)       │
 │  @objectos/framework   │  @objectos/ui-core             │
-│  - 插件管理器          │  - 基础组件                     │
-│  - 路由系统            │  - 布局系统                     │
-│  - 状态管理            │  - 主题系统                     │
-│  - 扩展点机制          │  - 工具函数                     │
+│  - Plugin Manager      │  - Base Components              │
+│  - Router System       │  - Layout System                │
+│  - State Management    │  - Theme System                 │
+│  - Extension Points    │  - Utility Functions            │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────┴────────────────────────────────┐
-│                 运行时层 (Runtime)                       │
+│                  Runtime Layer (Runtime)                 │
 │  @objectos/kernel      │  @objectos/server              │
-│  (后端逻辑引擎)        │  (API 服务)                     │
+│  (Backend Logic)       │  (API Service)                  │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 核心框架内容
+### 2.2 Core Framework Components
 
-#### 2.2.1 @objectos/framework 包
+#### 2.2.1 @objectos/framework Package
 
-**职责**：提供插件管理、扩展点、生命周期管理等核心能力
+**Responsibilities**: Provide plugin management, extension points, lifecycle management
 
-**主要模块**：
+**Main Modules**:
 
 ```typescript
 @objectos/framework
-├── plugin-manager/         # 插件管理器
-│   ├── PluginRegistry.ts   # 插件注册表
-│   ├── PluginLoader.ts     # 插件加载器
-│   └── PluginLifecycle.ts  # 生命周期管理
-├── extension-points/       # 扩展点系统
-│   ├── ExtensionPoint.ts   # 扩展点定义
-│   ├── SlotRegistry.ts     # 插槽注册表
-│   └── ComponentRegistry.ts # 组件注册表
-├── router/                 # 路由系统
-│   ├── PluginRoute.ts      # 插件路由
-│   └── RouteRegistry.ts    # 路由注册表
-├── context/                # 全局上下文
-│   ├── FrameworkContext.ts # 框架上下文
-│   └── PluginContext.ts    # 插件上下文
-└── types/                  # 类型定义
-    ├── plugin.ts           # 插件类型
-    └── extension.ts        # 扩展点类型
+├── plugin-manager/         # Plugin management
+│   ├── PluginRegistry.ts   # Plugin registry
+│   ├── PluginLoader.ts     # Plugin loader
+│   └── PluginLifecycle.ts  # Lifecycle management
+├── extension-points/       # Extension point system
+│   ├── ExtensionPoint.ts   # Extension point definition
+│   ├── SlotRegistry.ts     # Slot registry
+│   └── ComponentRegistry.ts # Component registry
+├── router/                 # Router system
+│   ├── PluginRoute.ts      # Plugin routes
+│   └── RouteRegistry.ts    # Route registry
+├── context/                # Global context
+│   ├── FrameworkContext.ts # Framework context
+│   └── PluginContext.ts    # Plugin context
+└── types/                  # Type definitions
+    ├── plugin.ts           # Plugin types
+    └── extension.ts        # Extension types
 ```
 
-#### 2.2.2 @objectos/ui-core 包
+#### 2.2.2 @objectos/ui-core Package
 
-**职责**：提供基础 UI 组件、布局系统、主题系统
+**Responsibilities**: Provide base UI components, layout system, theme system
 
-**主要模块**：
+**Main Modules**:
 
 ```typescript
 @objectos/ui-core
-├── layouts/                # 布局组件
-│   ├── MainLayout.tsx      # 主布局
-│   ├── WorkspaceLayout.tsx # 工作区布局
-│   └── SidebarLayout.tsx   # 侧边栏布局
-├── components/             # 基础组件
-│   ├── ErrorBoundary.tsx   # 错误边界
-│   ├── LoadingFallback.tsx # 加载占位
-│   └── ui/                 # Shadcn UI 组件
-├── hooks/                  # 通用 Hooks
-│   ├── useFramework.ts     # 框架钩子
-│   ├── usePlugin.ts        # 插件钩子
-│   └── useExtension.ts     # 扩展点钩子
-├── theme/                  # 主题系统
-│   ├── ThemeProvider.tsx   # 主题提供者
-│   └── themes/             # 主题配置
-└── utils/                  # 工具函数
-    ├── cn.ts               # className 合并
-    └── lazy.ts             # 懒加载工具
+├── layouts/                # Layout components
+│   ├── MainLayout.tsx      # Main layout
+│   ├── WorkspaceLayout.tsx # Workspace layout
+│   └── SidebarLayout.tsx   # Sidebar layout
+├── components/             # Base components
+│   ├── ErrorBoundary.tsx   # Error boundary
+│   ├── LoadingFallback.tsx # Loading fallback
+│   └── ui/                 # Shadcn UI components
+├── hooks/                  # Common hooks
+│   ├── useFramework.ts     # Framework hook
+│   ├── usePlugin.ts        # Plugin hook
+│   └── useExtension.ts     # Extension hook
+├── theme/                  # Theme system
+│   ├── ThemeProvider.tsx   # Theme provider
+│   └── themes/             # Theme configs
+└── utils/                  # Utilities
+    ├── cn.ts               # className merger
+    └── lazy.ts             # Lazy loading utilities
 ```
 
 ---
 
-## 三、插件系统设计
+## 3. Plugin System Design
 
-### 3.1 插件规范
+### 3.1 Plugin Specification
 
-#### 3.1.1 插件接口定义
+#### 3.1.1 Plugin Interface Definition
 
 ```typescript
 // @objectos/framework/types/plugin.ts
 
 /**
- * 插件元数据
+ * Plugin metadata
  */
 export interface PluginMetadata {
-  /** 插件唯一标识符 */
+  /** Unique plugin identifier */
   id: string;
-  /** 插件名称 */
+  /** Plugin name */
   name: string;
-  /** 插件版本 */
+  /** Plugin version */
   version: string;
-  /** 插件描述 */
+  /** Plugin description */
   description?: string;
-  /** 作者信息 */
+  /** Author information */
   author?: string;
-  /** 插件依赖 */
+  /** Plugin dependencies */
   dependencies?: string[];
-  /** 插件配置 schema */
+  /** Plugin configuration schema */
   configSchema?: any;
 }
 
 /**
- * 插件生命周期钩子
+ * Plugin lifecycle hooks
  */
 export interface PluginLifecycle {
-  /** 插件初始化前 */
+  /** Before plugin initialization */
   beforeInit?(): void | Promise<void>;
-  /** 插件初始化 */
+  /** Plugin initialization */
   onInit?(): void | Promise<void>;
-  /** 插件激活 */
+  /** Plugin activation */
   onActivate?(): void | Promise<void>;
-  /** 插件停用 */
+  /** Plugin deactivation */
   onDeactivate?(): void | Promise<void>;
-  /** 插件卸载 */
+  /** Plugin unload */
   onUnload?(): void | Promise<void>;
 }
 
 /**
- * 插件扩展贡献
+ * Plugin contributions
  */
 export interface PluginContributions {
-  /** 注册的组件 */
+  /** Registered components */
   components?: Record<string, React.ComponentType<any>>;
-  /** 注册的路由 */
+  /** Registered routes */
   routes?: PluginRoute[];
-  /** 注册的扩展点实现 */
+  /** Extension point implementations */
   extensions?: ExtensionContribution[];
-  /** 注册的菜单项 */
+  /** Menu items */
   menus?: MenuContribution[];
-  /** 注册的命令 */
+  /** Commands */
   commands?: CommandContribution[];
 }
 
 /**
- * 完整的插件接口
+ * Complete plugin interface
  */
 export interface Plugin extends PluginLifecycle {
-  /** 插件元数据 */
+  /** Plugin metadata */
   metadata: PluginMetadata;
-  /** 插件贡献 */
+  /** Plugin contributions */
   contributions?: PluginContributions;
 }
 ```
 
-#### 3.1.2 插件开发模板
+#### 3.1.2 Plugin Development Template
 
 ```typescript
-// 插件开发示例：@objectos/plugin-advanced-grid
+// Plugin example: @objectos/plugin-advanced-grid
 
 import { Plugin, ExtensionPoint } from '@objectos/framework';
 import { AdvancedObjectGrid } from './components/AdvancedObjectGrid';
@@ -199,12 +199,12 @@ export const advancedGridPlugin: Plugin = {
     id: 'advanced-grid',
     name: 'Advanced Object Grid',
     version: '1.0.0',
-    description: '高级对象表格视图，支持虚拟滚动、行分组、聚合计算',
+    description: 'Advanced object grid with virtual scrolling, grouping, and aggregation',
     author: 'ObjectOS Team',
     dependencies: ['@objectos/ui-core']
   },
 
-  // 生命周期钩子
+  // Lifecycle hooks
   async onInit() {
     console.log('Advanced Grid Plugin initialized');
   },
@@ -213,15 +213,15 @@ export const advancedGridPlugin: Plugin = {
     console.log('Advanced Grid Plugin activated');
   },
 
-  // 插件贡献
+  // Plugin contributions
   contributions: {
-    // 注册组件到扩展点
+    // Register component to extension point
     extensions: [
       {
         point: 'objectos.views.objectList',
         id: 'advanced-grid-view',
         component: AdvancedObjectGrid,
-        priority: 100, // 高优先级，替换默认实现
+        priority: 100, // High priority, replaces default
         metadata: {
           label: 'Advanced Grid View',
           description: 'Enhanced grid with grouping and aggregation'
@@ -229,7 +229,7 @@ export const advancedGridPlugin: Plugin = {
       }
     ],
 
-    // 注册菜单项
+    // Register menu items
     menus: [
       {
         id: 'toggle-advanced-grid',
@@ -239,7 +239,7 @@ export const advancedGridPlugin: Plugin = {
       }
     ],
 
-    // 注册命令
+    // Register commands
     commands: [
       {
         id: 'advanced-grid.toggle',
@@ -254,41 +254,41 @@ export const advancedGridPlugin: Plugin = {
 export default advancedGridPlugin;
 ```
 
-### 3.2 扩展点机制
+### 3.2 Extension Point Mechanism
 
-#### 3.2.1 核心扩展点定义
+#### 3.2.1 Core Extension Points Definition
 
 ```typescript
 // @objectos/framework/extension-points/core-extensions.ts
 
 export const CORE_EXTENSION_POINTS = {
-  // 视图扩展点
-  OBJECT_LIST_VIEW: 'objectos.views.objectList',        // 对象列表视图
-  OBJECT_DETAIL_VIEW: 'objectos.views.objectDetail',    // 对象详情视图
-  OBJECT_FORM_VIEW: 'objectos.views.objectForm',        // 对象表单视图
-  DASHBOARD_VIEW: 'objectos.views.dashboard',           // 仪表板视图
+  // View extension points
+  OBJECT_LIST_VIEW: 'objectos.views.objectList',        // Object list view
+  OBJECT_DETAIL_VIEW: 'objectos.views.objectDetail',    // Object detail view
+  OBJECT_FORM_VIEW: 'objectos.views.objectForm',        // Object form view
+  DASHBOARD_VIEW: 'objectos.views.dashboard',           // Dashboard view
 
-  // 组件扩展点
-  FIELD_RENDERER: 'objectos.components.fieldRenderer',  // 字段渲染器
-  FILTER_BUILDER: 'objectos.components.filterBuilder',  // 过滤器构建器
-  CHART_RENDERER: 'objectos.components.chartRenderer',  // 图表渲染器
+  // Component extension points
+  FIELD_RENDERER: 'objectos.components.fieldRenderer',  // Field renderer
+  FILTER_BUILDER: 'objectos.components.filterBuilder',  // Filter builder
+  CHART_RENDERER: 'objectos.components.chartRenderer',  // Chart renderer
 
-  // 功能扩展点
-  AUTH_PROVIDER: 'objectos.features.authProvider',      // 认证提供者
-  DATA_TRANSFORMER: 'objectos.features.dataTransformer',// 数据转换器
-  EXPORT_HANDLER: 'objectos.features.exportHandler',    // 导出处理器
+  // Feature extension points
+  AUTH_PROVIDER: 'objectos.features.authProvider',      // Auth provider
+  DATA_TRANSFORMER: 'objectos.features.dataTransformer',// Data transformer
+  EXPORT_HANDLER: 'objectos.features.exportHandler',    // Export handler
 
-  // 布局扩展点
-  SIDEBAR_ITEM: 'objectos.layout.sidebarItem',          // 侧边栏项
-  TOOLBAR_ITEM: 'objectos.layout.toolbarItem',          // 工具栏项
-  ACTION_BUTTON: 'objectos.layout.actionButton',        // 操作按钮
+  // Layout extension points
+  SIDEBAR_ITEM: 'objectos.layout.sidebarItem',          // Sidebar item
+  TOOLBAR_ITEM: 'objectos.layout.toolbarItem',          // Toolbar item
+  ACTION_BUTTON: 'objectos.layout.actionButton',        // Action button
 } as const;
 ```
 
-#### 3.2.2 扩展点使用方式
+#### 3.2.2 Extension Point Usage
 
 ```typescript
-// 框架中定义扩展点
+// Define extension point in framework
 import { ExtensionSlot } from '@objectos/framework';
 
 function ObjectListPage({ objectName }: { objectName: string }) {
@@ -296,7 +296,7 @@ function ObjectListPage({ objectName }: { objectName: string }) {
     <div>
       <h1>Object List: {objectName}</h1>
       
-      {/* 扩展点：对象列表视图 */}
+      {/* Extension point: object list view */}
       <ExtensionSlot
         point="objectos.views.objectList"
         props={{ objectName }}
@@ -306,7 +306,7 @@ function ObjectListPage({ objectName }: { objectName: string }) {
   );
 }
 
-// ExtensionSlot 实现
+// ExtensionSlot implementation
 import { useExtensions } from '@objectos/framework';
 
 export function ExtensionSlot<T = any>({
@@ -320,7 +320,7 @@ export function ExtensionSlot<T = any>({
 }) {
   const extensions = useExtensions(point);
   
-  // 按优先级排序，选择最高优先级的扩展
+  // Sort by priority and select the highest
   const activeExtension = extensions.sort((a, b) => 
     (b.priority || 0) - (a.priority || 0)
   )[0];
@@ -334,9 +334,9 @@ export function ExtensionSlot<T = any>({
 }
 ```
 
-### 3.3 插件加载机制
+### 3.3 Plugin Loading Mechanism
 
-#### 3.3.1 静态插件加载
+#### 3.3.1 Static Plugin Loading
 
 ```typescript
 // apps/web/src/plugins/index.ts
@@ -347,72 +347,72 @@ import formPlugin from '@objectos/plugin-form';
 import advancedGridPlugin from '@objectos/plugin-advanced-grid';
 
 export function registerPlugins(registry: PluginRegistry) {
-  // 注册核心插件
+  // Register core plugins
   registry.register(authPlugin);
   registry.register(gridPlugin);
   registry.register(formPlugin);
   
-  // 注册第三方插件
+  // Register third-party plugins
   registry.register(advancedGridPlugin);
 }
 ```
 
-#### 3.3.2 动态插件加载（未来支持）
+#### 3.3.2 Dynamic Plugin Loading (Future)
 
 ```typescript
-// 动态加载远程插件
+// Load remote plugin dynamically
 async function loadRemotePlugin(url: string) {
   const module = await import(/* @vite-ignore */ url);
   const plugin = module.default;
   
-  // 验证插件
+  // Validate plugin
   if (!isValidPlugin(plugin)) {
     throw new Error('Invalid plugin format');
   }
   
-  // 注册插件
+  // Register plugin
   pluginRegistry.register(plugin);
 }
 ```
 
 ---
 
-## 四、插件开发指南
+## 4. Plugin Development Guide
 
-### 4.1 创建新插件
+### 4.1 Creating a New Plugin
 
-#### 步骤 1：初始化插件项目
+#### Step 1: Initialize Plugin Project
 
 ```bash
-# 使用 CLI 创建插件（未来功能）
+# Using CLI (future feature)
 npx @objectos/cli create-plugin my-advanced-grid
 
-# 或手动创建
+# Or manually
 mkdir packages/plugin-advanced-grid
 cd packages/plugin-advanced-grid
 pnpm init
 ```
 
-#### 步骤 2：定义插件结构
+#### Step 2: Define Plugin Structure
 
 ```
 packages/plugin-advanced-grid/
 ├── src/
-│   ├── index.ts              # 插件入口
-│   ├── plugin.ts             # 插件定义
-│   ├── components/           # 组件
+│   ├── index.ts              # Plugin entry
+│   ├── plugin.ts             # Plugin definition
+│   ├── components/           # Components
 │   │   ├── AdvancedGrid.tsx
 │   │   └── GridToolbar.tsx
-│   ├── hooks/                # 自定义 Hooks
+│   ├── hooks/                # Custom hooks
 │   │   └── useGridState.ts
-│   └── types/                # 类型定义
+│   └── types/                # Type definitions
 │       └── index.ts
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-#### 步骤 3：实现插件
+#### Step 3: Implement Plugin
 
 ```typescript
 // src/plugin.ts
@@ -441,7 +441,7 @@ export const plugin: Plugin = {
 export default plugin;
 ```
 
-#### 步骤 4：实现组件
+#### Step 4: Implement Component
 
 ```typescript
 // src/components/AdvancedGrid.tsx
@@ -460,7 +460,7 @@ export function AdvancedGrid({ objectName }: AdvancedGridProps) {
   return (
     <div className="advanced-grid">
       <h2>Advanced Grid for {objectName}</h2>
-      {/* 高级表格实现 */}
+      {/* Advanced grid implementation */}
       <table>
         {/* ... */}
       </table>
@@ -469,10 +469,10 @@ export function AdvancedGrid({ objectName }: AdvancedGridProps) {
 }
 ```
 
-### 4.2 插件配置
+### 4.2 Plugin Configuration
 
 ```typescript
-// 插件可以定义配置 schema
+// Plugins can define configuration schema
 export const plugin: Plugin = {
   metadata: {
     id: 'advanced-grid',
@@ -482,40 +482,40 @@ export const plugin: Plugin = {
         enableVirtualScroll: {
           type: 'boolean',
           default: true,
-          description: '启用虚拟滚动'
+          description: 'Enable virtual scrolling'
         },
         pageSize: {
           type: 'number',
           default: 50,
-          description: '每页显示行数'
+          description: 'Rows per page'
         },
         theme: {
           type: 'string',
           enum: ['light', 'dark', 'auto'],
           default: 'auto',
-          description: '主题'
+          description: 'Theme'
         }
       }
     }
   },
 
   async onInit() {
-    // 读取配置
+    // Read configuration
     const config = this.getConfig();
     console.log('Grid config:', config);
   }
 };
 ```
 
-### 4.3 插件间通信
+### 4.3 Plugin Communication
 
-#### 4.3.1 事件总线
+#### 4.3.1 Event Bus
 
 ```typescript
-// 使用事件总线在插件间通信
+// Use event bus for inter-plugin communication
 import { useEventBus } from '@objectos/framework';
 
-// 插件 A：发布事件
+// Plugin A: Publish event
 function PluginA() {
   const eventBus = useEventBus();
   
@@ -526,7 +526,7 @@ function PluginA() {
   return <button onClick={handleAction}>Select Row</button>;
 }
 
-// 插件 B：订阅事件
+// Plugin B: Subscribe to event
 function PluginB() {
   const eventBus = useEventBus();
   
@@ -542,10 +542,10 @@ function PluginB() {
 }
 ```
 
-#### 4.3.2 共享状态
+#### 4.3.2 Shared State
 
 ```typescript
-// 使用框架提供的状态管理
+// Use framework-provided state management
 import { useSharedState } from '@objectos/framework';
 
 function PluginA() {
@@ -567,26 +567,26 @@ function PluginB() {
 
 ---
 
-## 五、典型场景：替换标准对象表格
+## 5. Example: Replacing Standard Object Grid
 
-### 5.1 场景描述
+### 5.1 Scenario
 
-开发者想要使用高级表格组件替换标准的对象列表视图，实现以下功能：
-- 虚拟滚动支持海量数据
-- 行分组和聚合计算
-- 自定义列渲染器
-- 导出到 Excel
+Developer wants to replace the standard object list view with an advanced grid component featuring:
+- Virtual scrolling for large datasets
+- Row grouping and aggregation
+- Custom column renderers
+- Export to Excel
 
-### 5.2 实现步骤
+### 5.2 Implementation Steps
 
-#### 步骤 1：创建插件
+#### Step 1: Create Plugin
 
 ```bash
 mkdir packages/plugin-advanced-grid
 cd packages/plugin-advanced-grid
 ```
 
-#### 步骤 2：安装依赖
+#### Step 2: Install Dependencies
 
 ```json
 // package.json
@@ -603,7 +603,7 @@ cd packages/plugin-advanced-grid
 }
 ```
 
-#### 步骤 3：实现高级表格组件
+#### Step 3: Implement Advanced Grid Component
 
 ```typescript
 // src/components/AdvancedObjectGrid.tsx
@@ -627,7 +627,7 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
   const { data, loading } = useObjectData(objectName);
   const { schema } = useObjectSchema(objectName);
 
-  // 根据 schema 生成列定义
+  // Generate column definitions from schema
   const columns = useMemo<ColumnDef<any>[]>(() => {
     if (!schema) return [];
     
@@ -635,13 +635,13 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
       id: fieldName,
       accessorKey: fieldName,
       header: fieldConfig.label || fieldName,
-      // 支持分组和聚合
+      // Support grouping and aggregation
       enableGrouping: true,
       aggregationFn: fieldConfig.type === 'number' ? 'sum' : 'count',
-      // 自定义单元格渲染
+      // Custom cell rendering
       cell: (info) => {
         const value = info.getValue();
-        // 根据字段类型渲染
+        // Render based on field type
         if (fieldConfig.type === 'currency') {
           return `$${value?.toFixed(2) || '0.00'}`;
         }
@@ -650,7 +650,7 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
     }));
   }, [schema]);
 
-  // 创建表格实例
+  // Create table instance
   const table = useReactTable({
     data: data || [],
     columns,
@@ -659,10 +659,10 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
     getAggregatedRowModel: getAggregatedRowModel(),
   });
 
-  // 虚拟滚动容器引用
+  // Virtual scroll container ref
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
-  // 虚拟化行
+  // Virtualize rows
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
     getScrollElement: () => tableContainerRef.current,
@@ -676,7 +676,7 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
 
   return (
     <div className="advanced-object-grid">
-      {/* 工具栏 */}
+      {/* Toolbar */}
       <div className="grid-toolbar">
         <button onClick={() => exportToExcel(data)}>
           Export to Excel
@@ -686,7 +686,7 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
         </button>
       </div>
 
-      {/* 虚拟滚动表格 */}
+      {/* Virtual scrolling table */}
       <div 
         ref={tableContainerRef}
         className="grid-container"
@@ -737,14 +737,14 @@ export function AdvancedObjectGrid({ objectName }: AdvancedObjectGridProps) {
   );
 }
 
-// 导出到 Excel 的辅助函数
+// Export to Excel helper
 function exportToExcel(data: any[]) {
-  // 实现导出逻辑
+  // Implementation
   console.log('Exporting to Excel:', data);
 }
 ```
 
-#### 步骤 4：定义插件
+#### Step 4: Define Plugin
 
 ```typescript
 // src/plugin.ts
@@ -756,7 +756,7 @@ export const advancedGridPlugin: Plugin = {
     id: 'advanced-grid',
     name: 'Advanced Object Grid',
     version: '1.0.0',
-    description: '高级对象表格，支持虚拟滚动、分组、聚合和导出',
+    description: 'Advanced object grid with virtual scrolling, grouping, and export',
     author: 'Your Name'
   },
 
@@ -765,13 +765,13 @@ export const advancedGridPlugin: Plugin = {
   },
 
   contributions: {
-    // 注册为对象列表视图的扩展
+    // Register as object list view extension
     extensions: [
       {
         point: 'objectos.views.objectList',
         id: 'advanced-grid-view',
         component: AdvancedObjectGrid,
-        priority: 100, // 高优先级，替换默认实现
+        priority: 100, // High priority, replaces default
         metadata: {
           label: 'Advanced Grid',
           description: 'Enhanced grid with virtual scrolling and grouping',
@@ -780,7 +780,7 @@ export const advancedGridPlugin: Plugin = {
       }
     ],
 
-    // 添加菜单项，允许用户切换
+    // Add menu item for toggling
     menus: [
       {
         id: 'view.toggle-advanced-grid',
@@ -790,7 +790,7 @@ export const advancedGridPlugin: Plugin = {
       }
     ],
 
-    // 注册命令
+    // Register commands
     commands: [
       {
         id: 'advanced-grid.enable',
@@ -801,7 +801,7 @@ export const advancedGridPlugin: Plugin = {
       {
         id: 'advanced-grid.export',
         handler: (context) => {
-          // 触发导出逻辑
+          // Trigger export logic
         }
       }
     ]
@@ -811,7 +811,7 @@ export const advancedGridPlugin: Plugin = {
 export default advancedGridPlugin;
 ```
 
-#### 步骤 5：在应用中注册插件
+#### Step 5: Register Plugin in App
 
 ```typescript
 // apps/web/src/main.tsx
@@ -820,13 +820,13 @@ import advancedGridPlugin from '@objectos/plugin-advanced-grid';
 
 const pluginRegistry = new PluginRegistry();
 
-// 注册插件
+// Register plugin
 pluginRegistry.register(advancedGridPlugin);
 
-// 初始化所有插件
+// Initialize all plugins
 await pluginRegistry.initializeAll();
 
-// 渲染应用
+// Render app
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <FrameworkProvider registry={pluginRegistry}>
     <App />
@@ -834,7 +834,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 
-#### 步骤 6：在页面中使用
+#### Step 6: Use in Page
 
 ```typescript
 // apps/web/src/pages/objects/ObjectListRoute.tsx
@@ -846,7 +846,7 @@ export function ObjectListRoute({ objectName }: { objectName: string }) {
     <div className="object-list-page">
       <h1>{objectName}</h1>
       
-      {/* 扩展点会自动使用高级表格（如果已注册且优先级高） */}
+      {/* Extension slot will automatically use advanced grid if registered with higher priority */}
       <ExtensionSlot
         point="objectos.views.objectList"
         props={{ objectName }}
@@ -857,210 +857,210 @@ export function ObjectListRoute({ objectName }: { objectName: string }) {
 }
 ```
 
-### 5.3 结果
+### 5.3 Result
 
-现在，当用户访问任何对象列表页面时：
-1. 框架会查找 `objectos.views.objectList` 扩展点的所有注册
-2. 按优先级排序（`advanced-grid-view` 优先级为 100）
-3. 自动使用 `AdvancedObjectGrid` 组件替换默认的表格
-4. 用户享受虚拟滚动、分组、聚合等高级功能
+When users visit any object list page:
+1. Framework looks up all registrations for `objectos.views.objectList` extension point
+2. Sorts by priority (`advanced-grid-view` has priority 100)
+3. Automatically uses `AdvancedObjectGrid` component to replace default grid
+4. Users enjoy advanced features like virtual scrolling, grouping, and aggregation
 
 ---
 
-## 六、框架实现计划
+## 6. Implementation Roadmap
 
-### 6.1 阶段一：核心框架搭建（Week 1-2）
+### 6.1 Phase 1: Core Framework Setup (Week 1-2)
 
-**目标**：建立基础的插件系统架构
+**Goal**: Establish basic plugin system architecture
 
-**任务**：
-1. 创建 `@objectos/framework` 包
-   - 插件注册表 (`PluginRegistry`)
-   - 插件加载器 (`PluginLoader`)
-   - 生命周期管理 (`PluginLifecycle`)
+**Tasks**:
+1. Create `@objectos/framework` package
+   - Plugin Registry (`PluginRegistry`)
+   - Plugin Loader (`PluginLoader`)
+   - Lifecycle Manager (`PluginLifecycle`)
    
-2. 创建 `@objectos/ui-core` 包
-   - 提取通用布局组件
-   - 提取基础 UI 组件
-   - 实现 `ExtensionSlot` 组件
+2. Create `@objectos/ui-core` package
+   - Extract common layout components
+   - Extract base UI components
+   - Implement `ExtensionSlot` component
 
-3. 定义核心类型
-   - `Plugin` 接口
-   - `ExtensionPoint` 接口
-   - `PluginContribution` 类型
+3. Define core types
+   - `Plugin` interface
+   - `ExtensionPoint` interface
+   - `PluginContribution` types
 
-**验收标准**：
-- 能够注册和加载简单插件
-- 插件生命周期钩子正常工作
-- 扩展点机制基本可用
+**Acceptance Criteria**:
+- Can register and load simple plugins
+- Plugin lifecycle hooks work correctly
+- Extension point mechanism is functional
 
-### 6.2 阶段二：核心插件迁移（Week 3-4）
+### 6.2 Phase 2: Core Plugin Migration (Week 3-4)
 
-**目标**：将现有功能拆分为标准插件
+**Goal**: Split existing features into standard plugins
 
-**任务**：
-1. 创建 `@objectos/plugin-auth`
-   - 迁移认证相关逻辑
-   - 提供认证 Hooks 和组件
+**Tasks**:
+1. Create `@objectos/plugin-auth`
+   - Migrate authentication logic
+   - Provide auth hooks and components
 
-2. 创建 `@objectos/plugin-grid`
-   - 迁移 `ObjectGrid` 组件
-   - 注册到 `objectos.views.objectList` 扩展点
+2. Create `@objectos/plugin-grid`
+   - Migrate `ObjectGrid` component
+   - Register to `objectos.views.objectList` extension point
 
-3. 创建 `@objectos/plugin-form`
-   - 迁移 `ObjectForm` 组件
-   - 注册到 `objectos.views.objectForm` 扩展点
+3. Create `@objectos/plugin-form`
+   - Migrate `ObjectForm` component
+   - Register to `objectos.views.objectForm` extension point
 
-4. 创建 `@objectos/plugin-dashboard`
-   - 迁移仪表板相关组件
+4. Create `@objectos/plugin-dashboard`
+   - Migrate dashboard-related components
 
-**验收标准**：
-- 原有功能在插件化后保持正常
-- 所有测试通过
-- 应用启动和运行无异常
+**Acceptance Criteria**:
+- Original features work normally after plugin migration
+- All tests pass
+- Application starts and runs without issues
 
-### 6.3 阶段三：扩展点完善（Week 5-6）
+### 6.3 Phase 3: Extension Point Enhancement (Week 5-6)
 
-**目标**：实现完整的扩展点体系
+**Goal**: Implement complete extension point system
 
-**任务**：
-1. 定义所有核心扩展点
-   - 视图扩展点
-   - 组件扩展点
-   - 功能扩展点
-   - 布局扩展点
+**Tasks**:
+1. Define all core extension points
+   - View extension points
+   - Component extension points
+   - Feature extension points
+   - Layout extension points
 
-2. 实现扩展点优先级机制
-   - 支持多个扩展共存
-   - 支持扩展选择和切换
+2. Implement extension point priority mechanism
+   - Support multiple extensions coexisting
+   - Support extension selection and switching
 
-3. 实现插件间通信
-   - 事件总线 (`EventBus`)
-   - 共享状态 (`SharedState`)
+3. Implement plugin communication
+   - Event Bus (`EventBus`)
+   - Shared State (`SharedState`)
 
-**验收标准**：
-- 所有扩展点都有文档说明
-- 扩展点替换机制工作正常
-- 插件间可以正常通信
+**Acceptance Criteria**:
+- All extension points are documented
+- Extension replacement mechanism works
+- Plugins can communicate normally
 
-### 6.4 阶段四：开发者工具（Week 7-8）
+### 6.4 Phase 4: Developer Tools (Week 7-8)
 
-**目标**：提供插件开发工具链
+**Goal**: Provide plugin development toolchain
 
-**任务**：
-1. 创建插件开发模板
-   - TypeScript 模板
-   - 包含最佳实践
+**Tasks**:
+1. Create plugin development template
+   - TypeScript template
+   - Include best practices
 
-2. 编写插件开发文档
-   - 快速开始指南
-   - API 参考
-   - 最佳实践
+2. Write plugin development documentation
+   - Quick start guide
+   - API reference
+   - Best practices
 
-3. 实现插件调试工具
-   - 插件状态查看器
-   - 扩展点检查器
+3. Implement plugin debugging tools
+   - Plugin state viewer
+   - Extension point inspector
 
-4. 创建示例插件
-   - 简单插件示例
-   - 高级插件示例（如本文档中的高级表格）
+4. Create example plugins
+   - Simple plugin example
+   - Advanced plugin example (like the grid in this doc)
 
-**验收标准**：
-- 开发者能够快速创建插件
-- 文档清晰完整
-- 示例代码可运行
+**Acceptance Criteria**:
+- Developers can quickly create plugins
+- Documentation is clear and complete
+- Example code is runnable
 
-### 6.5 阶段五：测试和优化（Week 9-10）
+### 6.5 Phase 5: Testing and Optimization (Week 9-10)
 
-**目标**：确保框架稳定性和性能
+**Goal**: Ensure framework stability and performance
 
-**任务**：
-1. 编写单元测试
-   - 插件系统测试
-   - 扩展点测试
+**Tasks**:
+1. Write unit tests
+   - Plugin system tests
+   - Extension point tests
 
-2. 编写集成测试
-   - 插件加载测试
-   - 插件交互测试
+2. Write integration tests
+   - Plugin loading tests
+   - Plugin interaction tests
 
-3. 性能优化
-   - 插件懒加载
-   - 代码分割
+3. Performance optimization
+   - Plugin lazy loading
+   - Code splitting
 
-4. 安全加固
-   - 插件沙箱（隔离）
-   - 权限控制
+4. Security hardening
+   - Plugin sandbox (isolation)
+   - Permission control
 
-**验收标准**：
-- 测试覆盖率达到 80%+
-- 应用启动时间无明显增加
-- 插件加载按需进行
-
----
-
-## 七、插件生态规划
-
-### 7.1 官方插件
-
-| 插件名称 | 说明 | 优先级 |
-|---------|------|--------|
-| `@objectos/plugin-auth` | 认证和授权 | 高 |
-| `@objectos/plugin-grid` | 标准对象表格 | 高 |
-| `@objectos/plugin-form` | 标准对象表单 | 高 |
-| `@objectos/plugin-dashboard` | 仪表板视图 | 高 |
-| `@objectos/plugin-chart` | 图表组件 | 中 |
-| `@objectos/plugin-kanban` | 看板视图 | 中 |
-| `@objectos/plugin-calendar` | 日历视图 | 中 |
-| `@objectos/plugin-workflow` | 工作流引擎 | 低 |
-| `@objectos/plugin-import-export` | 数据导入导出 | 低 |
-
-### 7.2 社区插件（示例）
-
-| 插件名称 | 说明 | 作者 |
-|---------|------|------|
-| `@company/plugin-advanced-grid` | 高级表格（虚拟滚动、分组） | 第三方 |
-| `@company/plugin-gantt` | 甘特图视图 | 第三方 |
-| `@company/plugin-ai-assistant` | AI 助手 | 第三方 |
-| `@company/plugin-custom-theme` | 自定义主题 | 第三方 |
-
-### 7.3 插件发现和分发
-
-**短期**（静态加载）：
-- 插件通过 npm 包分发
-- 在应用中手动注册
-
-**中期**（插件市场）：
-- 创建插件市场网站
-- 插件可在线浏览和搜索
-- 提供安装指南
-
-**长期**（动态加载）：
-- 支持运行时安装插件
-- 插件沙箱和权限管理
-- 自动更新机制
+**Acceptance Criteria**:
+- Test coverage reaches 80%+
+- No significant increase in app startup time
+- Plugins load on-demand
 
 ---
 
-## 八、向后兼容策略
+## 7. Plugin Ecosystem Planning
 
-### 8.1 兼容性保证
+### 7.1 Official Plugins
 
-1. **API 兼容性**：现有的公开 API 保持不变
-2. **组件兼容性**：现有组件仍可导入和使用
-3. **路由兼容性**：现有路由结构保持不变
-4. **配置兼容性**：现有配置文件继续有效
+| Plugin Name | Description | Priority |
+|-------------|-------------|----------|
+| `@objectos/plugin-auth` | Authentication and authorization | High |
+| `@objectos/plugin-grid` | Standard object grid | High |
+| `@objectos/plugin-form` | Standard object form | High |
+| `@objectos/plugin-dashboard` | Dashboard view | High |
+| `@objectos/plugin-chart` | Chart components | Medium |
+| `@objectos/plugin-kanban` | Kanban view | Medium |
+| `@objectos/plugin-calendar` | Calendar view | Medium |
+| `@objectos/plugin-workflow` | Workflow engine | Low |
+| `@objectos/plugin-import-export` | Data import/export | Low |
 
-### 8.2 迁移路径
+### 7.2 Community Plugins (Examples)
+
+| Plugin Name | Description | Author |
+|-------------|-------------|--------|
+| `@company/plugin-advanced-grid` | Advanced grid (virtual scroll, grouping) | Third-party |
+| `@company/plugin-gantt` | Gantt chart view | Third-party |
+| `@company/plugin-ai-assistant` | AI assistant | Third-party |
+| `@company/plugin-custom-theme` | Custom theme | Third-party |
+
+### 7.3 Plugin Discovery and Distribution
+
+**Short-term** (Static loading):
+- Plugins distributed via npm packages
+- Manually registered in app
+
+**Mid-term** (Plugin marketplace):
+- Create plugin marketplace website
+- Browse and search plugins online
+- Provide installation guide
+
+**Long-term** (Dynamic loading):
+- Support runtime plugin installation
+- Plugin sandbox and permission management
+- Auto-update mechanism
+
+---
+
+## 8. Backward Compatibility Strategy
+
+### 8.1 Compatibility Guarantees
+
+1. **API Compatibility**: Existing public APIs remain unchanged
+2. **Component Compatibility**: Existing components can still be imported and used
+3. **Route Compatibility**: Existing route structure stays the same
+4. **Config Compatibility**: Existing config files continue to work
+
+### 8.2 Migration Path
 
 ```typescript
-// 旧代码（继续支持）
+// Old code (still supported)
 import { ObjectGrid } from '@objectos/ui';
 
 function MyPage() {
   return <ObjectGrid objectName="contacts" />;
 }
 
-// 新代码（推荐）
+// New code (recommended)
 import { ExtensionSlot } from '@objectos/framework';
 
 function MyPage() {
@@ -1073,27 +1073,27 @@ function MyPage() {
 }
 ```
 
-### 8.3 弃用计划
+### 8.3 Deprecation Plan
 
-- **阶段 1**（v0.3.0）：引入框架，旧 API 标记为 Deprecated
-- **阶段 2**（v0.4.0）：提供自动迁移工具
-- **阶段 3**（v1.0.0）：移除旧 API（主版本升级）
+- **Phase 1** (v0.3.0): Introduce framework, mark old APIs as Deprecated
+- **Phase 2** (v0.4.0): Provide automatic migration tool
+- **Phase 3** (v1.0.0): Remove old APIs (major version upgrade)
 
 ---
 
-## 九、性能考虑
+## 9. Performance Considerations
 
-### 9.1 插件懒加载
+### 9.1 Plugin Lazy Loading
 
 ```typescript
-// 使用动态导入实现插件懒加载
+// Use dynamic imports for lazy loading plugins
 const lazyPlugins = {
   'advanced-grid': () => import('@objectos/plugin-advanced-grid'),
   'kanban': () => import('@objectos/plugin-kanban'),
   'calendar': () => import('@objectos/plugin-calendar')
 };
 
-// 只在需要时加载
+// Load only when needed
 async function loadPlugin(id: string) {
   const loader = lazyPlugins[id];
   if (!loader) return;
@@ -1103,10 +1103,10 @@ async function loadPlugin(id: string) {
 }
 ```
 
-### 9.2 代码分割
+### 9.2 Code Splitting
 
 ```typescript
-// Vite 配置
+// Vite configuration
 export default defineConfig({
   build: {
     rollupOptions: {
@@ -1123,154 +1123,154 @@ export default defineConfig({
 });
 ```
 
-### 9.3 性能指标
+### 9.3 Performance Metrics
 
-| 指标 | 目标 |
-|------|------|
-| 首屏加载时间 | < 2s |
-| 插件加载时间 | < 500ms |
-| 扩展点解析时间 | < 50ms |
-| 内存占用增加 | < 10% |
+| Metric | Target |
+|--------|--------|
+| First screen load time | < 2s |
+| Plugin load time | < 500ms |
+| Extension point resolution | < 50ms |
+| Memory overhead increase | < 10% |
 
 ---
 
-## 十、安全考虑
+## 10. Security Considerations
 
-### 10.1 插件隔离
+### 10.1 Plugin Isolation
 
 ```typescript
-// 插件沙箱（未来功能）
+// Plugin sandbox (future feature)
 class PluginSandbox {
   execute(plugin: Plugin, context: PluginContext) {
-    // 限制插件访问范围
+    // Limit plugin access scope
     const sandbox = {
       console: createSafeConsole(),
       fetch: createSafeFetch(),
-      // 不暴露 window, document 等全局对象
+      // Don't expose window, document, etc.
     };
     
-    // 在隔离环境中执行插件代码
+    // Execute plugin code in isolated environment
     return executeSandboxed(plugin, sandbox, context);
   }
 }
 ```
 
-### 10.2 权限控制
+### 10.2 Permission Control
 
 ```typescript
-// 插件权限声明
+// Plugin permission declaration
 export const plugin: Plugin = {
   metadata: {
     id: 'advanced-grid',
     permissions: [
-      'read:objects',      // 读取对象数据
-      'write:preferences', // 写入用户偏好
-      'network:export'     // 网络请求（导出）
+      'read:objects',      // Read object data
+      'write:preferences', // Write user preferences
+      'network:export'     // Network requests (export)
     ]
   }
 };
 
-// 运行时权限检查
+// Runtime permission check
 if (!context.hasPermission('network:export')) {
   throw new PermissionError('Plugin does not have export permission');
 }
 ```
 
-### 10.3 代码审查
+### 10.3 Code Review
 
-- 官方插件：通过代码审查和安全扫描
-- 社区插件：需要通过认证流程
-- 未认证插件：显示安全警告
+- Official plugins: Pass code review and security scanning
+- Community plugins: Require certification process
+- Uncertified plugins: Display security warning
 
 ---
 
-## 十一、文档和示例
+## 11. Documentation and Examples
 
-### 11.1 文档结构
+### 11.1 Documentation Structure
 
 ```
 docs/
 ├── framework/
-│   ├── README.md                 # 框架概述
-│   ├── plugin-development.md    # 插件开发指南
-│   ├── extension-points.md      # 扩展点参考
-│   ├── api-reference.md         # API 参考
-│   └── best-practices.md        # 最佳实践
+│   ├── README.md                 # Framework overview
+│   ├── plugin-development.md    # Plugin development guide
+│   ├── extension-points.md      # Extension point reference
+│   ├── api-reference.md         # API reference
+│   └── best-practices.md        # Best practices
 ├── plugins/
-│   ├── official-plugins.md      # 官方插件列表
-│   ├── plugin-auth.md           # 认证插件文档
-│   ├── plugin-grid.md           # 表格插件文档
+│   ├── official-plugins.md      # Official plugin list
+│   ├── plugin-auth.md           # Auth plugin docs
+│   ├── plugin-grid.md           # Grid plugin docs
 │   └── ...
 └── examples/
-    ├── simple-plugin/           # 简单插件示例
-    ├── advanced-grid/           # 高级表格示例
-    └── custom-theme/            # 自定义主题示例
+    ├── simple-plugin/           # Simple plugin example
+    ├── advanced-grid/           # Advanced grid example
+    └── custom-theme/            # Custom theme example
 ```
 
-### 11.2 示例代码仓库
+### 11.2 Example Code Repository
 
 ```
 examples/
-├── simple-hello-world/          # 最简单的插件
-├── advanced-grid-plugin/        # 高级表格插件
-├── custom-field-renderer/       # 自定义字段渲染器
-├── custom-theme/                # 自定义主题
-└── multi-plugin-app/            # 多插件集成应用
+├── simple-hello-world/          # Simplest plugin
+├── advanced-grid-plugin/        # Advanced grid plugin
+├── custom-field-renderer/       # Custom field renderer
+├── custom-theme/                # Custom theme
+└── multi-plugin-app/            # Multi-plugin integration app
 ```
 
 ---
 
-## 十二、总结
+## 12. Summary
 
-### 12.1 核心优势
+### 12.1 Core Advantages
 
-1. **灵活性**：通过插件扩展任意功能
-2. **可维护性**：核心框架保持精简
-3. **可扩展性**：社区可贡献插件
-4. **类型安全**：完整的 TypeScript 支持
-5. **性能**：按需加载，代码分割
+1. **Flexibility**: Extend any feature through plugins
+2. **Maintainability**: Keep core framework minimal
+3. **Extensibility**: Community can contribute plugins
+4. **Type Safety**: Full TypeScript support
+5. **Performance**: On-demand loading, code splitting
 
-### 12.2 实施要点
+### 12.2 Implementation Key Points
 
-1. **渐进式改造**：逐步将现有功能迁移到插件
-2. **保持兼容**：确保现有应用继续工作
-3. **文档先行**：先完善文档和示例
-4. **社区参与**：鼓励社区贡献插件
+1. **Progressive Transformation**: Gradually migrate existing features to plugins
+2. **Maintain Compatibility**: Ensure existing apps continue working
+3. **Documentation First**: Perfect documentation and examples first
+4. **Community Participation**: Encourage community to contribute plugins
 
-### 12.3 成功指标
+### 12.3 Success Metrics
 
-- **开发效率**：新功能开发时间减少 50%
-- **代码质量**：核心框架代码量减少 30%
-- **社区活跃度**：至少 10 个社区插件
-- **用户满意度**：插件使用率 > 80%
+- **Development Efficiency**: New feature development time reduced by 50%
+- **Code Quality**: Core framework code reduced by 30%
+- **Community Activity**: At least 10 community plugins
+- **User Satisfaction**: Plugin usage rate > 80%
 
 ---
 
-## 附录 A：核心 API 参考
+## Appendix A: Core API Reference
 
 ### PluginRegistry API
 
 ```typescript
 class PluginRegistry {
-  /** 注册插件 */
+  /** Register plugin */
   register(plugin: Plugin): void;
   
-  /** 卸载插件 */
+  /** Unregister plugin */
   unregister(pluginId: string): void;
   
-  /** 获取插件 */
+  /** Get plugin */
   getPlugin(pluginId: string): Plugin | undefined;
   
-  /** 获取所有插件 */
+  /** Get all plugins */
   getAllPlugins(): Plugin[];
   
-  /** 初始化所有插件 */
+  /** Initialize all plugins */
   async initializeAll(): Promise<void>;
   
-  /** 激活插件 */
+  /** Activate plugin */
   async activate(pluginId: string): Promise<void>;
   
-  /** 停用插件 */
+  /** Deactivate plugin */
   async deactivate(pluginId: string): Promise<void>;
 }
 ```
@@ -1279,19 +1279,19 @@ class PluginRegistry {
 
 ```typescript
 interface ExtensionPoint {
-  /** 扩展点 ID */
+  /** Extension point ID */
   id: string;
   
-  /** 扩展点描述 */
+  /** Extension point description */
   description?: string;
   
-  /** 注册扩展 */
+  /** Register extension */
   register(extension: Extension): void;
   
-  /** 获取所有扩展 */
+  /** Get all extensions */
   getExtensions(): Extension[];
   
-  /** 获取最高优先级的扩展 */
+  /** Get active extension with highest priority */
   getActive(): Extension | undefined;
 }
 ```
@@ -1311,24 +1311,24 @@ function usePlugin(pluginId: string): Plugin | undefined;
 
 ---
 
-## 附录 B：扩展点清单
+## Appendix B: Extension Point Checklist
 
-| 扩展点 ID | 说明 | 接受的 Props | 默认实现 |
-|-----------|------|--------------|---------|
-| `objectos.views.objectList` | 对象列表视图 | `{ objectName: string }` | `ObjectGrid` |
-| `objectos.views.objectDetail` | 对象详情视图 | `{ objectName: string, recordId: string }` | `ObjectDetailView` |
-| `objectos.views.objectForm` | 对象表单视图 | `{ objectName: string, recordId?: string }` | `ObjectForm` |
-| `objectos.components.fieldRenderer` | 字段渲染器 | `{ field: FieldConfig, value: any }` | `DefaultFieldRenderer` |
-| `objectos.components.filterBuilder` | 过滤器构建器 | `{ objectName: string, onFilterChange: Function }` | `DefaultFilterBuilder` |
-| `objectos.layout.sidebarItem` | 侧边栏项 | `{ item: MenuItem }` | `DefaultSidebarItem` |
+| Extension Point ID | Description | Accepted Props | Default Implementation |
+|--------------------|-------------|----------------|------------------------|
+| `objectos.views.objectList` | Object list view | `{ objectName: string }` | `ObjectGrid` |
+| `objectos.views.objectDetail` | Object detail view | `{ objectName: string, recordId: string }` | `ObjectDetailView` |
+| `objectos.views.objectForm` | Object form view | `{ objectName: string, recordId?: string }` | `ObjectForm` |
+| `objectos.components.fieldRenderer` | Field renderer | `{ field: FieldConfig, value: any }` | `DefaultFieldRenderer` |
+| `objectos.components.filterBuilder` | Filter builder | `{ objectName: string, onFilterChange: Function }` | `DefaultFilterBuilder` |
+| `objectos.layout.sidebarItem` | Sidebar item | `{ item: MenuItem }` | `DefaultSidebarItem` |
 
 ---
 
-## 附录 C：常见问题
+## Appendix C: FAQ
 
-**Q1: 插件如何访问后端 API？**
+**Q1: How do plugins access backend APIs?**
 
-A: 插件可以使用框架提供的 API 客户端：
+A: Plugins can use the API client provided by the framework:
 
 ```typescript
 import { useAPI } from '@objectos/framework';
@@ -1343,9 +1343,9 @@ function MyPlugin() {
 }
 ```
 
-**Q2: 插件如何存储配置？**
+**Q2: How do plugins store configuration?**
 
-A: 使用框架提供的配置 API：
+A: Use the configuration API provided by the framework:
 
 ```typescript
 import { usePluginConfig } from '@objectos/framework';
@@ -1364,27 +1364,27 @@ function MyPlugin() {
 }
 ```
 
-**Q3: 如何调试插件？**
+**Q3: How to debug plugins?**
 
-A: 使用 React DevTools 和框架提供的调试工具：
+A: Use React DevTools and framework-provided debugging tools:
 
 ```typescript
-// 在浏览器控制台
-window.__OBJECTOS_DEBUG__.plugins // 查看所有插件
-window.__OBJECTOS_DEBUG__.extensions // 查看所有扩展点
-window.__OBJECTOS_DEBUG__.events // 查看事件日志
+// In browser console
+window.__OBJECTOS_DEBUG__.plugins // View all plugins
+window.__OBJECTOS_DEBUG__.extensions // View all extension points
+window.__OBJECTOS_DEBUG__.events // View event log
 ```
 
 ---
 
-## 附录 D：版本历史
+## Appendix D: Version History
 
-| 版本 | 日期 | 变更说明 |
-|------|------|---------|
-| 1.0 | 2026-01-13 | 初始版本 |
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-01-13 | Initial version |
 
 ---
 
-**文档维护者**：ObjectOS Team  
-**最后更新**：2026-01-13  
-**反馈渠道**：GitHub Issues / Discord
+**Maintained by**: ObjectOS Team  
+**Last Updated**: 2026-01-13  
+**Feedback**: GitHub Issues / Discord
