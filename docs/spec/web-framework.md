@@ -576,6 +576,528 @@ interface IChartPlugin extends IObjectOSPlugin {
 }
 ```
 
+### 4.5 Metadata-Driven UI Generation
+
+All plugins must support **metadata-driven UI generation**, where components automatically render based on ObjectQL object definitions.
+
+#### Standard Props Interface
+
+Every plugin category has a standardized props interface that receives object metadata:
+
+```typescript
+// Base interface for all metadata-driven components
+interface MetadataDrivenProps {
+  // Object metadata from ObjectQL
+  objectConfig: ObjectConfig;
+  
+  // View metadata (optional, for view-specific rendering)
+  viewConfig?: ViewConfig;
+  
+  // Runtime data
+  data?: any[];
+  
+  // Event handlers
+  onDataChange?: (data: any[]) => void;
+  onError?: (error: Error) => void;
+}
+```
+
+#### Table Plugin Props (Standardized)
+
+```typescript
+interface TableProps extends MetadataDrivenProps {
+  // Object definition (automatically provides columns)
+  objectConfig: ObjectConfig;
+  
+  // Optional view configuration
+  viewConfig?: {
+    type: 'list' | 'grid';
+    columns?: ColumnConfig[];  // Override default columns
+    sort?: SortConfig;
+    filters?: FilterConfig;
+    pagination?: PaginationConfig;
+  };
+  
+  // Runtime data
+  data: any[];
+  
+  // Selection state
+  selection?: {
+    mode: 'single' | 'multiple' | 'none';
+    selectedIds?: string[];
+    onSelectionChange?: (ids: string[]) => void;
+  };
+  
+  // Event handlers
+  onRowClick?: (row: any) => void;
+  onSort?: (sort: SortConfig) => void;
+  onFilter?: (filters: FilterConfig) => void;
+  onPageChange?: (page: number) => void;
+  
+  // Actions
+  actions?: {
+    create?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+    export?: boolean;
+    customActions?: ActionConfig[];
+  };
+}
+
+// Column configuration derived from field metadata
+interface ColumnConfig {
+  id: string;
+  field: string;  // Maps to ObjectConfig.fields[field]
+  label?: string;  // Defaults to field.label
+  type?: string;   // Auto-derived from field.type
+  width?: string;
+  sortable?: boolean;  // Auto-derived from field type
+  filterable?: boolean;
+  visible?: boolean;
+  render?: (value: any, row: any) => React.ReactNode;
+}
+```
+
+**Example: Auto-generating columns from object definition**
+
+```typescript
+class TablePlugin implements ITablePlugin {
+  renderTable(props: TableProps) {
+    // Auto-generate columns from object metadata if not provided
+    const columns = props.viewConfig?.columns || 
+      this.generateColumnsFromObject(props.objectConfig);
+    
+    return <TableComponent {...props} columns={columns} />;
+  }
+  
+  private generateColumnsFromObject(objectConfig: ObjectConfig): ColumnConfig[] {
+    return Object.entries(objectConfig.fields).map(([fieldName, fieldConfig]) => ({
+      id: fieldName,
+      field: fieldName,
+      label: fieldConfig.label || fieldName,
+      type: fieldConfig.type,
+      sortable: this.isFieldSortable(fieldConfig.type),
+      filterable: this.isFieldFilterable(fieldConfig.type),
+      visible: !fieldConfig.hidden,
+      width: this.getDefaultWidth(fieldConfig.type)
+    }));
+  }
+  
+  private isFieldSortable(type: string): boolean {
+    return !['textarea', 'image', 'file'].includes(type);
+  }
+  
+  private isFieldFilterable(type: string): boolean {
+    return ['text', 'number', 'select', 'boolean', 'date'].includes(type);
+  }
+  
+  private getDefaultWidth(type: string): string {
+    const widthMap: Record<string, string> = {
+      'boolean': '80px',
+      'date': '120px',
+      'datetime': '180px',
+      'number': '100px',
+      'currency': '120px',
+      'select': '150px'
+    };
+    return widthMap[type] || '200px';
+  }
+}
+```
+
+#### Form Plugin Props (Standardized)
+
+```typescript
+interface FormProps extends MetadataDrivenProps {
+  // Object definition (automatically provides fields)
+  objectConfig: ObjectConfig;
+  
+  // Form mode
+  mode: 'create' | 'edit' | 'view';
+  
+  // Record data (for edit/view)
+  record?: any;
+  
+  // Form configuration
+  formConfig?: {
+    layout?: 'vertical' | 'horizontal' | 'grid';
+    sections?: SectionConfig[];  // Group fields into sections
+    fieldOrder?: string[];       // Custom field order
+    hiddenFields?: string[];     // Fields to hide
+    readonlyFields?: string[];   // Fields to make readonly
+  };
+  
+  // Validation
+  validationRules?: ValidationRules;
+  
+  // Event handlers
+  onSubmit?: (data: any) => void | Promise<void>;
+  onChange?: (field: string, value: any) => void;
+  onValidate?: (errors: ValidationErrors) => void;
+  onCancel?: () => void;
+  
+  // Form state
+  loading?: boolean;
+  errors?: ValidationErrors;
+}
+
+// Auto-generated field renderer
+interface FieldRendererProps {
+  fieldName: string;
+  fieldConfig: FieldConfig;  // From ObjectConfig.fields
+  value: any;
+  onChange: (value: any) => void;
+  error?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+}
+```
+
+**Example: Auto-generating form from object definition**
+
+```typescript
+class FormPlugin implements IFormPlugin {
+  renderForm(props: FormProps) {
+    // Auto-generate fields from object metadata
+    const fields = this.generateFieldsFromObject(props.objectConfig, props.formConfig);
+    
+    return (
+      <Form onSubmit={props.onSubmit}>
+        {fields.map(field => (
+          <FieldRenderer
+            key={field.name}
+            fieldName={field.name}
+            fieldConfig={field.config}
+            value={props.record?.[field.name]}
+            onChange={(value) => props.onChange?.(field.name, value)}
+            error={props.errors?.[field.name]}
+            disabled={props.loading}
+            readonly={props.mode === 'view' || field.readonly}
+          />
+        ))}
+        
+        {props.mode !== 'view' && (
+          <FormActions>
+            <Button type="submit" loading={props.loading}>
+              {props.mode === 'create' ? 'Create' : 'Save'}
+            </Button>
+            <Button type="button" onClick={props.onCancel}>
+              Cancel
+            </Button>
+          </FormActions>
+        )}
+      </Form>
+    );
+  }
+  
+  private generateFieldsFromObject(
+    objectConfig: ObjectConfig,
+    formConfig?: FormProps['formConfig']
+  ) {
+    const allFields = Object.entries(objectConfig.fields);
+    const hiddenFields = formConfig?.hiddenFields || [];
+    const readonlyFields = formConfig?.readonlyFields || [];
+    const fieldOrder = formConfig?.fieldOrder || Object.keys(objectConfig.fields);
+    
+    return fieldOrder
+      .filter(name => !hiddenFields.includes(name))
+      .map(name => ({
+        name,
+        config: objectConfig.fields[name],
+        readonly: readonlyFields.includes(name)
+      }));
+  }
+}
+```
+
+#### Chart Plugin Props (Standardized)
+
+```typescript
+interface ChartProps extends MetadataDrivenProps {
+  // Chart type
+  type: 'bar' | 'line' | 'pie' | 'area' | 'scatter';
+  
+  // Data configuration
+  dataConfig: {
+    // Field mappings
+    xField?: string;  // Maps to ObjectConfig.fields[xField]
+    yField?: string;  // Maps to ObjectConfig.fields[yField]
+    seriesField?: string;
+    groupBy?: string;
+    
+    // Data aggregation
+    aggregation?: {
+      type: 'sum' | 'avg' | 'count' | 'min' | 'max';
+      field: string;
+    };
+  };
+  
+  // Chart configuration
+  chartConfig?: {
+    title?: string;
+    width?: number | string;
+    height?: number | string;
+    legend?: boolean;
+    tooltip?: boolean;
+    colors?: string[];
+  };
+  
+  // Data
+  data: any[];
+  
+  // Event handlers
+  onDataPointClick?: (point: any) => void;
+  onLegendClick?: (series: string) => void;
+}
+```
+
+#### Calendar Plugin Props (Standardized)
+
+```typescript
+interface CalendarProps extends MetadataDrivenProps {
+  // Object definition
+  objectConfig: ObjectConfig;
+  
+  // Field mappings (must be date/datetime fields)
+  fieldMapping: {
+    titleField: string;      // Maps to ObjectConfig.fields
+    startDateField: string;  // Must be date/datetime type
+    endDateField?: string;   // Optional, for events with duration
+    colorField?: string;     // Optional, for color coding
+    descriptionField?: string;
+  };
+  
+  // Calendar configuration
+  calendarConfig?: {
+    view: 'month' | 'week' | 'day' | 'agenda';
+    firstDay?: 0 | 1;  // 0 = Sunday, 1 = Monday
+    timeSlotDuration?: number;  // Minutes
+    businessHours?: {
+      start: string;
+      end: string;
+    };
+  };
+  
+  // Data
+  data: any[];
+  
+  // Event handlers
+  onEventClick?: (event: any) => void;
+  onDateClick?: (date: Date) => void;
+  onEventDrop?: (event: any, newStart: Date, newEnd?: Date) => void;
+}
+```
+
+#### Kanban Plugin Props (Standardized)
+
+```typescript
+interface KanbanProps extends MetadataDrivenProps {
+  // Object definition
+  objectConfig: ObjectConfig;
+  
+  // Field mappings
+  fieldMapping: {
+    titleField: string;       // Card title
+    statusField: string;      // Field that determines column (must be select type)
+    assigneeField?: string;   // Optional
+    descriptionField?: string;
+    imageField?: string;
+  };
+  
+  // Column configuration (auto-generated from select field options)
+  columns?: {
+    id: string;
+    title: string;
+    limit?: number;  // WIP limit
+    color?: string;
+  }[];
+  
+  // Data
+  data: any[];
+  
+  // Event handlers
+  onCardClick?: (card: any) => void;
+  onCardMove?: (card: any, fromColumn: string, toColumn: string) => void;
+  onColumnClick?: (column: string) => void;
+}
+```
+
+### 4.6 Field Type Rendering
+
+Plugins must provide consistent rendering for all ObjectQL field types:
+
+```typescript
+interface FieldTypeRenderer {
+  // Required: Render field in table cell
+  renderCell(value: any, fieldConfig: FieldConfig): React.ReactNode;
+  
+  // Required: Render field in form input
+  renderInput(props: FieldRendererProps): React.ReactNode;
+  
+  // Optional: Render field in detail view
+  renderDetail?(value: any, fieldConfig: FieldConfig): React.ReactNode;
+  
+  // Optional: Custom filter component
+  renderFilter?(fieldConfig: FieldConfig, onChange: (value: any) => void): React.ReactNode;
+}
+
+// Standard field type renderers
+const fieldTypeRenderers: Record<string, FieldTypeRenderer> = {
+  text: {
+    renderCell: (value) => <span>{value}</span>,
+    renderInput: (props) => <Input {...props} type="text" />,
+    renderFilter: (config, onChange) => <Input onChange={e => onChange(e.target.value)} />
+  },
+  
+  number: {
+    renderCell: (value) => <span>{value?.toLocaleString()}</span>,
+    renderInput: (props) => <Input {...props} type="number" />,
+    renderFilter: (config, onChange) => <NumberRangeFilter onChange={onChange} />
+  },
+  
+  boolean: {
+    renderCell: (value) => <Checkbox checked={value} disabled />,
+    renderInput: (props) => <Checkbox {...props} />,
+    renderFilter: (config, onChange) => <BooleanFilter onChange={onChange} />
+  },
+  
+  date: {
+    renderCell: (value) => <span>{formatDate(value)}</span>,
+    renderInput: (props) => <DatePicker {...props} />,
+    renderFilter: (config, onChange) => <DateRangeFilter onChange={onChange} />
+  },
+  
+  select: {
+    renderCell: (value, config) => <Badge>{value}</Badge>,
+    renderInput: (props) => <Select {...props} options={props.fieldConfig.options} />,
+    renderFilter: (config, onChange) => <MultiSelect options={config.options} onChange={onChange} />
+  },
+  
+  lookup: {
+    renderCell: (value) => <Link to={`/records/${value.id}`}>{value.name}</Link>,
+    renderInput: (props) => <LookupField {...props} />,
+    renderFilter: (config, onChange) => <LookupFilter referenceTo={config.reference_to} onChange={onChange} />
+  },
+  
+  currency: {
+    renderCell: (value, config) => <span>{formatCurrency(value, config.currency)}</span>,
+    renderInput: (props) => <CurrencyInput {...props} />,
+    renderFilter: (config, onChange) => <NumberRangeFilter onChange={onChange} />
+  },
+  
+  image: {
+    renderCell: (value) => <Avatar src={value} />,
+    renderInput: (props) => <ImageUpload {...props} />,
+    renderDetail: (value) => <Image src={value} />
+  },
+  
+  file: {
+    renderCell: (value) => <FileLink href={value.url}>{value.name}</FileLink>,
+    renderInput: (props) => <FileUpload {...props} />
+  }
+};
+```
+
+### 4.7 Validation Rules Generation
+
+Plugins should auto-generate validation rules from object metadata:
+
+```typescript
+interface ValidationRulesGenerator {
+  generateRules(objectConfig: ObjectConfig): ValidationRules;
+}
+
+class FormPlugin implements IFormPlugin {
+  generateValidationRules(objectConfig: ObjectConfig): ValidationRules {
+    const rules: ValidationRules = {};
+    
+    Object.entries(objectConfig.fields).forEach(([fieldName, fieldConfig]) => {
+      const fieldRules: FieldValidationRule[] = [];
+      
+      // Required validation
+      if (fieldConfig.required) {
+        fieldRules.push({
+          type: 'required',
+          message: `${fieldConfig.label} is required`
+        });
+      }
+      
+      // Type-specific validation
+      switch (fieldConfig.type) {
+        case 'email':
+          fieldRules.push({
+            type: 'email',
+            message: `${fieldConfig.label} must be a valid email`
+          });
+          break;
+          
+        case 'url':
+          fieldRules.push({
+            type: 'url',
+            message: `${fieldConfig.label} must be a valid URL`
+          });
+          break;
+          
+        case 'number':
+        case 'currency':
+          if (fieldConfig.min !== undefined) {
+            fieldRules.push({
+              type: 'min',
+              value: fieldConfig.min,
+              message: `${fieldConfig.label} must be at least ${fieldConfig.min}`
+            });
+          }
+          if (fieldConfig.max !== undefined) {
+            fieldRules.push({
+              type: 'max',
+              value: fieldConfig.max,
+              message: `${fieldConfig.label} must be at most ${fieldConfig.max}`
+            });
+          }
+          break;
+          
+        case 'text':
+          if (fieldConfig.minLength) {
+            fieldRules.push({
+              type: 'minLength',
+              value: fieldConfig.minLength,
+              message: `${fieldConfig.label} must be at least ${fieldConfig.minLength} characters`
+            });
+          }
+          if (fieldConfig.maxLength) {
+            fieldRules.push({
+              type: 'maxLength',
+              value: fieldConfig.maxLength,
+              message: `${fieldConfig.label} must be at most ${fieldConfig.maxLength} characters`
+            });
+          }
+          if (fieldConfig.pattern) {
+            fieldRules.push({
+              type: 'pattern',
+              value: new RegExp(fieldConfig.pattern),
+              message: `${fieldConfig.label} format is invalid`
+            });
+          }
+          break;
+      }
+      
+      // Unique validation
+      if (fieldConfig.unique) {
+        fieldRules.push({
+          type: 'unique',
+          message: `${fieldConfig.label} must be unique`,
+          async: true
+        });
+      }
+      
+      rules[fieldName] = fieldRules;
+    });
+    
+    return rules;
+  }
+}
+```
+
 ---
 
 ## 5. Component Override System

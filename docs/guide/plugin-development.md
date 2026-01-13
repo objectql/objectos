@@ -289,15 +289,231 @@ export class MyTablePlugin implements ITablePlugin {
 }
 ```
 
-**Table Component Implementation:**
+**Table Component Implementation with Metadata-Driven UI:**
 
 ```typescript
 // src/components/MyTable.tsx
 import React, { useMemo } from 'react';
-import type { TableProps } from '@objectos/web-framework';
+import type { TableProps, ObjectConfig, ColumnConfig } from '@objectos/web-framework';
 
 export function MyTableComponent(props: TableProps) {
-  const { data, columns, onRowClick, onSort, sorting } = props;
+  const { objectConfig, viewConfig, data, onRowClick, onSort, sorting } = props;
+  
+  // Auto-generate columns from object metadata if not provided
+  const columns = useMemo(() => {
+    if (viewConfig?.columns) {
+      return viewConfig.columns;
+    }
+    
+    // Generate columns from object definition
+    return generateColumnsFromObject(objectConfig);
+  }, [objectConfig, viewConfig]);
+  
+  const sortedData = useMemo(() => {
+    if (!sorting) return data;
+    
+    return [...data].sort((a, b) => {
+      const aVal = a[sorting.field];
+      const bVal = b[sorting.field];
+      const order = sorting.order === 'asc' ? 1 : -1;
+      
+      if (aVal < bVal) return -1 * order;
+      if (aVal > bVal) return 1 * order;
+      return 0;
+    });
+  }, [data, sorting]);
+  
+  const handleHeaderClick = (field: string) => {
+    const newOrder = sorting?.field === field && sorting.order === 'asc' 
+      ? 'desc' 
+      : 'asc';
+    onSort?.({ field, order: newOrder });
+  };
+  
+  return (
+    <div className="overflow-auto">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b">
+            {columns.map(col => (
+              <th 
+                key={col.id}
+                onClick={() => col.sortable && handleHeaderClick(col.field)}
+                className={`px-4 py-2 text-left ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+              >
+                {col.label}
+                {sorting?.field === col.field && (
+                  <span className="ml-2">
+                    {sorting.order === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedData.map((row, idx) => (
+            <tr 
+              key={row.id || idx}
+              onClick={() => onRowClick?.(row)}
+              className="border-b hover:bg-gray-50 cursor-pointer"
+            >
+              {columns.map(col => {
+                const fieldConfig = objectConfig.fields[col.field];
+                const value = row[col.field];
+                
+                return (
+                  <td key={col.id} className="px-4 py-2">
+                    {col.render 
+                      ? col.render(value, row)
+                      : renderFieldValue(value, fieldConfig)
+                    }
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Helper: Generate columns from object definition
+function generateColumnsFromObject(objectConfig: ObjectConfig): ColumnConfig[] {
+  return Object.entries(objectConfig.fields)
+    .filter(([_, fieldConfig]) => !fieldConfig.hidden)
+    .map(([fieldName, fieldConfig]) => ({
+      id: fieldName,
+      field: fieldName,
+      label: fieldConfig.label || fieldName,
+      type: fieldConfig.type,
+      sortable: isFieldSortable(fieldConfig.type),
+      filterable: isFieldFilterable(fieldConfig.type),
+      visible: true,
+      width: getDefaultWidth(fieldConfig.type)
+    }));
+}
+
+// Helper: Determine if field type is sortable
+function isFieldSortable(type: string): boolean {
+  return !['textarea', 'image', 'file', 'json'].includes(type);
+}
+
+// Helper: Determine if field type is filterable
+function isFieldFilterable(type: string): boolean {
+  return ['text', 'number', 'select', 'boolean', 'date', 'datetime', 'email', 'url'].includes(type);
+}
+
+// Helper: Get default column width based on type
+function getDefaultWidth(type: string): string {
+  const widthMap: Record<string, string> = {
+    'boolean': '80px',
+    'date': '120px',
+    'datetime': '180px',
+    'number': '100px',
+    'currency': '120px',
+    'select': '150px',
+    'email': '200px',
+    'url': '200px'
+  };
+  return widthMap[type] || '200px';
+}
+
+// Helper: Render field value based on type
+function renderFieldValue(value: any, fieldConfig: any): React.ReactNode {
+  if (value === null || value === undefined) {
+    return <span className="text-gray-400">—</span>;
+  }
+  
+  switch (fieldConfig.type) {
+    case 'boolean':
+      return <input type="checkbox" checked={value} disabled />;
+      
+    case 'date':
+      return <span>{new Date(value).toLocaleDateString()}</span>;
+      
+    case 'datetime':
+      return <span>{new Date(value).toLocaleString()}</span>;
+      
+    case 'currency':
+      return <span>${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>;
+      
+    case 'number':
+      return <span>{Number(value).toLocaleString()}</span>;
+      
+    case 'select':
+      return <span className="px-2 py-1 bg-gray-100 rounded">{value}</span>;
+      
+    case 'email':
+      return <a href={`mailto:${value}`} className="text-blue-600 hover:underline">{value}</a>;
+      
+    case 'url':
+      return <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{value}</a>;
+      
+    case 'lookup':
+      return <span className="text-blue-600">{value.name || value.id}</span>;
+      
+    default:
+      return <span>{String(value)}</span>;
+  }
+}
+```
+
+**Usage Example:**
+
+```typescript
+// Object definition
+const contactObject: ObjectConfig = {
+  name: 'contacts',
+  label: 'Contact',
+  fields: {
+    first_name: {
+      type: 'text',
+      label: 'First Name',
+      required: true
+    },
+    last_name: {
+      type: 'text',
+      label: 'Last Name',
+      required: true
+    },
+    email: {
+      type: 'email',
+      label: 'Email',
+      unique: true
+    },
+    phone: {
+      type: 'text',
+      label: 'Phone'
+    },
+    is_active: {
+      type: 'boolean',
+      label: 'Active'
+    },
+    created_at: {
+      type: 'datetime',
+      label: 'Created'
+    }
+  }
+};
+
+// Use table plugin with object metadata
+<MyTableComponent
+  objectConfig={contactObject}
+  data={contacts}
+  onRowClick={handleRowClick}
+  onSort={handleSort}
+/>
+
+// Columns are auto-generated:
+// - First Name (text, sortable, 200px)
+// - Last Name (text, sortable, 200px)
+// - Email (email, sortable, 200px, with mailto link)
+// - Phone (text, sortable, 200px)
+// - Active (boolean, sortable, 80px, checkbox)
+// - Created (datetime, sortable, 180px, formatted date)
+```
   
   const sortedData = useMemo(() => {
     if (!sorting) return data;
@@ -364,11 +580,11 @@ export function MyTableComponent(props: TableProps) {
 
 ### 3.2 Form Plugin
 
-Create a custom form component plugin:
+Create a custom form component plugin with metadata-driven UI generation:
 
 ```typescript
 // src/MyFormPlugin.ts
-import type { IFormPlugin, FormProps, PluginContext } from '@objectos/web-framework';
+import type { IFormPlugin, FormProps, PluginContext, ObjectConfig } from '@objectos/web-framework';
 import { MyFormComponent } from './components/MyForm';
 
 export class MyFormPlugin implements IFormPlugin {
@@ -398,28 +614,348 @@ export class MyFormPlugin implements IFormPlugin {
     return <MyFormComponent {...props} />;
   }
   
-  // Optional: Custom validator
-  createValidator(schema: any) {
+  // Auto-generate validation rules from object metadata
+  createValidator(objectConfig: ObjectConfig) {
     return (values: any) => {
       const errors: Record<string, string> = {};
       
-      for (const [field, rules] of Object.entries(schema)) {
-        const value = values[field];
-        const fieldRules = rules as any;
+      Object.entries(objectConfig.fields).forEach(([fieldName, fieldConfig]) => {
+        const value = values[fieldName];
         
-        if (fieldRules.required && !value) {
-          errors[field] = 'This field is required';
+        // Required validation
+        if (fieldConfig.required && !value) {
+          errors[fieldName] = `${fieldConfig.label} is required`;
         }
         
-        if (fieldRules.minLength && value?.length < fieldRules.minLength) {
-          errors[field] = `Minimum length is ${fieldRules.minLength}`;
+        // Type-specific validation
+        if (value) {
+          switch (fieldConfig.type) {
+            case 'email':
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                errors[fieldName] = `${fieldConfig.label} must be a valid email`;
+              }
+              break;
+              
+            case 'url':
+              try {
+                new URL(value);
+              } catch {
+                errors[fieldName] = `${fieldConfig.label} must be a valid URL`;
+              }
+              break;
+              
+            case 'number':
+            case 'currency':
+              if (fieldConfig.min !== undefined && value < fieldConfig.min) {
+                errors[fieldName] = `${fieldConfig.label} must be at least ${fieldConfig.min}`;
+              }
+              if (fieldConfig.max !== undefined && value > fieldConfig.max) {
+                errors[fieldName] = `${fieldConfig.label} must be at most ${fieldConfig.max}`;
+              }
+              break;
+              
+            case 'text':
+              if (fieldConfig.minLength && value.length < fieldConfig.minLength) {
+                errors[fieldName] = `${fieldConfig.label} must be at least ${fieldConfig.minLength} characters`;
+              }
+              if (fieldConfig.maxLength && value.length > fieldConfig.maxLength) {
+                errors[fieldName] = `${fieldConfig.label} must be at most ${fieldConfig.maxLength} characters`;
+              }
+              break;
+          }
         }
-      }
+      });
       
       return errors;
     };
   }
 }
+```
+
+**Form Component Implementation with Metadata-Driven UI:**
+
+```typescript
+// src/components/MyForm.tsx
+import React, { useState } from 'react';
+import type { FormProps, ObjectConfig, FieldConfig } from '@objectos/web-framework';
+
+export function MyFormComponent(props: FormProps) {
+  const { objectConfig, mode, record, formConfig, onSubmit, onChange, errors, loading } = props;
+  
+  const [formData, setFormData] = useState(record || {});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>(errors || {});
+  
+  // Generate field list from object metadata
+  const fields = generateFieldsFromObject(objectConfig, formConfig);
+  
+  const handleFieldChange = (fieldName: string, value: any) => {
+    const newData = { ...formData, [fieldName]: value };
+    setFormData(newData);
+    onChange?.(fieldName, value);
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate before submit
+    const errors = validateForm(formData, objectConfig);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    
+    await onSubmit?.(formData);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {formConfig?.sections ? (
+        // Render with sections
+        formConfig.sections.map(section => (
+          <div key={section.id} className="space-y-4">
+            <h3 className="text-lg font-medium">{section.label}</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {section.fields.map(fieldName => {
+                const fieldConfig = objectConfig.fields[fieldName];
+                if (!fieldConfig) return null;
+                
+                return (
+                  <FieldRenderer
+                    key={fieldName}
+                    fieldName={fieldName}
+                    fieldConfig={fieldConfig}
+                    value={formData[fieldName]}
+                    onChange={(value) => handleFieldChange(fieldName, value)}
+                    error={validationErrors[fieldName]}
+                    disabled={loading}
+                    readonly={mode === 'view'}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        ))
+      ) : (
+        // Render all fields
+        <div className="grid grid-cols-2 gap-4">
+          {fields.map(({ fieldName, fieldConfig }) => (
+            <FieldRenderer
+              key={fieldName}
+              fieldName={fieldName}
+              fieldConfig={fieldConfig}
+              value={formData[fieldName]}
+              onChange={(value) => handleFieldChange(fieldName, value)}
+              error={validationErrors[fieldName]}
+              disabled={loading}
+              readonly={mode === 'view'}
+            />
+          ))}
+        </div>
+      )}
+      
+      {mode !== 'view' && (
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            {loading ? 'Saving...' : (mode === 'create' ? 'Create' : 'Save')}
+          </button>
+          <button
+            type="button"
+            onClick={props.onCancel}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </form>
+  );
+}
+
+// Field Renderer Component - Auto-renders based on field type
+function FieldRenderer(props: {
+  fieldName: string;
+  fieldConfig: FieldConfig;
+  value: any;
+  onChange: (value: any) => void;
+  error?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+}) {
+  const { fieldName, fieldConfig, value, onChange, error, disabled, readonly } = props;
+  
+  const renderInput = () => {
+    if (readonly) {
+      return <div className="px-3 py-2 bg-gray-50 rounded">{value || '—'}</div>;
+    }
+    
+    switch (fieldConfig.type) {
+      case 'text':
+      case 'email':
+      case 'url':
+        return (
+          <input
+            type={fieldConfig.type}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder={fieldConfig.placeholder}
+          />
+        );
+        
+      case 'textarea':
+        return (
+          <textarea
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            rows={4}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder={fieldConfig.placeholder}
+          />
+        );
+        
+      case 'number':
+      case 'currency':
+        return (
+          <input
+            type="number"
+            value={value || ''}
+            onChange={(e) => onChange(Number(e.target.value))}
+            disabled={disabled}
+            min={fieldConfig.min}
+            max={fieldConfig.max}
+            step={fieldConfig.scale ? 1 / Math.pow(10, fieldConfig.scale) : 1}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+        );
+        
+      case 'boolean':
+        return (
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={value || false}
+              onChange={(e) => onChange(e.target.checked)}
+              disabled={disabled}
+              className="w-4 h-4"
+            />
+            <span>{fieldConfig.label}</span>
+          </label>
+        );
+        
+      case 'select':
+        return (
+          <select
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select {fieldConfig.label}</option>
+            {fieldConfig.options?.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        );
+        
+      case 'date':
+        return (
+          <input
+            type="date"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+        );
+        
+      case 'datetime':
+        return (
+          <input
+            type="datetime-local"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+        );
+        
+      default:
+        return (
+          <input
+            type="text"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+        );
+    }
+  };
+  
+  return (
+    <div className="space-y-1">
+      <label className="block text-sm font-medium">
+        {fieldConfig.label}
+        {fieldConfig.required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      {renderInput()}
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      {fieldConfig.helpText && (
+        <p className="text-sm text-gray-500">{fieldConfig.helpText}</p>
+      )}
+    </div>
+  );
+}
+
+// Helper functions
+function generateFieldsFromObject(objectConfig: ObjectConfig, formConfig?: any) {
+  const allFields = Object.entries(objectConfig.fields);
+  const hiddenFields = formConfig?.hiddenFields || [];
+  
+  return allFields
+    .filter(([fieldName]) => !hiddenFields.includes(fieldName))
+    .map(([fieldName, fieldConfig]) => ({ fieldName, fieldConfig }));
+}
+
+function validateForm(data: any, objectConfig: ObjectConfig): Record<string, string> {
+  const errors: Record<string, string> = {};
+  
+  Object.entries(objectConfig.fields).forEach(([fieldName, fieldConfig]) => {
+    const value = data[fieldName];
+    
+    if (fieldConfig.required && !value) {
+      errors[fieldName] = `${fieldConfig.label} is required`;
+    }
+  });
+  
+  return errors;
+}
+```
+
+**Usage Example:**
+
+```typescript
+// Same contact object definition
+<MyFormComponent
+  objectConfig={contactObject}
+  mode="create"
+  onSubmit={handleCreate}
+  onChange={handleFieldChange}
+/>
+
+// Form is auto-generated with:
+// - Text input for first_name (required)
+// - Text input for last_name (required)
+// - Email input for email (with validation)
+// - Text input for phone
+// - Checkbox for is_active
+// - All with proper labels, validation, and error messages
 ```
 
 ### 3.3 Chart Plugin
