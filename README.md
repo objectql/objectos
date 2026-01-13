@@ -123,20 +123,48 @@ Create `objects/deal.object.yml`:
 ```yaml
 name: deals
 label: Sales Deal
-icon: dollar-sign
+description: Track sales opportunities and deals
+icon: ri-money-dollar-circle-line
 fields:
   title:
     type: text
+    label: Deal Title
+    description: Name of the sales opportunity
     required: true
   amount:
     type: currency
+    label: Amount
+    description: Expected revenue
     scale: 2
   stage:
     type: select
-    options: ["New", "Negotiation", "Won", "Lost"]
+    label: Stage
+    description: Current stage in sales pipeline
+    options:
+      - label: New Lead
+        value: new
+      - label: In Negotiation
+        value: negotiation
+      - label: Closed Won
+        value: won
+      - label: Closed Lost
+        value: lost
+    default_value: new
   close_date:
     type: date
+    label: Expected Close Date
+    description: Projected closing date
+  account:
+    type: lookup
+    label: Account
+    description: Related company account
+    reference_to: accounts
 
+permission_set:
+  allowRead: true
+  allowCreate: ['sales', 'admin']
+  allowEdit: ['sales', 'admin']
+  allowDelete: ['admin']
 ```
 
 ### 3. Run the Platform
@@ -179,6 +207,30 @@ We are building the future of open-source business software.
 * **Runtime & UI:** Submit PRs to this repository.
 * **Read the Guide:** See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
+### Development Guidelines
+
+ObjectOS follows strict architectural principles documented in [`.github/copilot-instructions.md`](.github/copilot-instructions.md). Key rules:
+
+#### The Iron Rules
+
+1. **The Dependency Wall**: Never redefine types. Always import from `@objectql/types`. Never implement Driver logic here.
+2. **The Security Wrapper Pattern**: ObjectOS wraps ObjectQL to add security. Every operation must go through the guard layer.
+3. **NestJS Native DI**: Use dependency injection strictly. Never use `new ObjectOS()` in application code.
+4. **The Headless Principle**: Serve metadata-rich APIs for UI consumption. Never generate React components or CSS in this repository.
+
+#### Naming Conventions
+
+- **Database fields**: `snake_case` (e.g., `first_name`, `created_at`)
+- **API responses**: `camelCase` (handled automatically by serializer)
+- **Object metadata**: Always include `label` and `description` for UI rendering
+
+#### Code Quality
+
+- Write comprehensive JSDoc comments for all public APIs
+- Add inline comments for complex logic
+- Follow existing patterns in the codebase
+- Ensure all tests pass before submitting PR
+
 ## 📚 Documentation
 
 - **[Quick Reference](./QUICK_REFERENCE.md)** - Command reference and common patterns
@@ -186,6 +238,12 @@ We are building the future of open-source business software.
 - **[Roadmap](./ROADMAP.md)** - Development plan and feature roadmap
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
 - **[Online Documentation](https://objectos.org)** - Full guides and API reference
+
+### Package Documentation
+
+- **[@objectos/kernel](./packages/kernel/README.md)** - Core runtime engine documentation
+- **[@objectos/server](./packages/server/README.md)** - HTTP server and API reference
+- **[@objectos/preset-base](./packages/presets/base/README.md)** - System objects documentation
 
 ## 📄 License
 
