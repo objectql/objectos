@@ -20,7 +20,7 @@ import { ObjectQLPlugin, IObjectQL } from '@objectql/types';
  * 
  * @internal
  */
-async function loadFiles(app: IObjectQL, patterns: string[], handler: (ctx: any) => void, extraRoots: string[] = []) {
+async function _loadFiles(app: IObjectQL, patterns: string[], handler: (ctx: any) => void, extraRoots: string[] = []) {
     const config = (app as any).config || {};
     const configSources: string[] = config.source ? (Array.isArray(config.source) ? config.source : [config.source]) : ['.'];
     // Merge config sources with extra roots (presets)
@@ -140,7 +140,7 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
 
         // Phase 2: Load Object Definitions
         // Objects are the core metadata type, defining business entities, fields, and relationships
-        await loadFiles(app, ['**/*.object.yml', '**/*.object.yaml'], (ctx) => {
+        await _loadFiles(app, ['**/*.object.yml', '**/*.object.yaml'], (ctx) => {
              try {
                 const doc = yaml.load(ctx.content) as any;
                 const name = doc.name;
@@ -163,7 +163,7 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
 
         // Phase 3: Load Application Definitions
         // Apps define navigation menus, branding, and organize objects into cohesive applications
-        await loadFiles(app, ['**/*.app.yml', '**/*.app.yaml'], (ctx) => {
+        await _loadFiles(app, ['**/*.app.yml', '**/*.app.yaml'], (ctx) => {
             try {
                 const doc = yaml.load(ctx.content) as any;
                 // App ID can come from 'code', 'id', or 'name' (legacy support)
@@ -186,7 +186,7 @@ export const ObjectOSPlugin: ObjectQLPlugin = {
         // Phase 4: Load Seed Data
         // Data files contain arrays of records to insert into objects
         // Named as <objectname>.data.yml, the data is attached to the corresponding object
-        await loadFiles(app, ['**/*.data.yml', '**/*.data.yaml'], (ctx) => {
+        await _loadFiles(app, ['**/*.data.yml', '**/*.data.yaml'], (ctx) => {
             try {
                 const content = ctx.content;
                 const data = yaml.load(content);
