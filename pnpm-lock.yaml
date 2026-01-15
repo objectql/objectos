@@ -10,29 +10,29 @@ importers:
     dependencies:
       '@objectql/core':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
       '@objectql/driver-mongo':
         specifier: ^1.8.1
-        version: 1.8.1
+        version: 1.8.4
       '@objectql/driver-sql':
         specifier: ^1.8.1
-        version: 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 1.8.4(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)
       '@objectql/platform-node':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
       '@objectql/starter-basic':
         specifier: ^1.8.1
-        version: 1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)
+        version: 1.8.4(@objectql/core@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.4(sqlite3@5.1.7))(@objectql/platform-node@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.4)(sqlite3@5.1.7)
       '@objectql/starter-enterprise':
         specifier: ^1.8.1
-        version: 1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)
+        version: 1.8.4(@objectql/core@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.4(sqlite3@5.1.7))(@objectql/platform-node@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.4)(sqlite3@5.1.7)
       build:
         specifier: ^0.1.4
         version: 0.1.4
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.8
-        version: 2.29.8(@types/node@20.19.28)
+        version: 2.29.8(@types/node@20.19.29)
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -41,7 +41,7 @@ importers:
         version: 4.0.9
       '@types/node':
         specifier: ^20.10.0
-        version: 20.19.28
+        version: 20.19.29
       '@types/supertest':
         specifier: ^6.0.3
         version: 6.0.3
@@ -50,7 +50,7 @@ importers:
         version: 9.2.1
       jest:
         specifier: ^30.2.0
-        version: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+        version: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -59,13 +59,13 @@ importers:
         version: 7.2.2
       ts-jest:
         specifier: ^29.4.6
-        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)))(typescript@5.6.3)
+        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)))(typescript@5.6.3)
       typescript:
         specifier: ^5.3.0
         version: 5.6.3
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.46.2)(@types/node@20.19.28)(@types/react@18.3.27)(postcss@8.5.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.6.3)
+        version: 1.6.4(@algolia/client-search@5.46.3)(@types/node@20.19.29)(@types/react@18.3.27)(postcss@8.5.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.6.3)
 
   apps/web:
     dependencies:
@@ -74,7 +74,7 @@ importers:
         version: link:../../packages/ui
       '@objectql/types':
         specifier: ^1.8.1
-        version: 1.8.1
+        version: 1.8.4
       ag-grid-community:
         specifier: ^35.0.0
         version: 35.0.0
@@ -83,7 +83,7 @@ importers:
         version: 35.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       better-auth:
         specifier: ^1.4.10
-        version: 1.4.11(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.16.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
+        version: 1.4.13(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.17.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
@@ -98,7 +98,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       react-hook-form:
         specifier: ^7.54.2
-        version: 7.71.0(react@18.3.1)
+        version: 7.71.1(react@18.3.1)
       react-router-dom:
         specifier: ^7.12.0
         version: 7.12.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -117,7 +117,7 @@ importers:
         version: 18.3.7(@types/react@18.3.27)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.7.0(vite@6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1))
+        version: 4.7.0(vite@6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.23(postcss@8.5.6)
@@ -150,16 +150,16 @@ importers:
         version: 8.53.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.6.3)
       vite:
         specifier: ^6.0.5
-        version: 6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1)
+        version: 6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1)
 
   packages/kernel:
     dependencies:
       '@objectql/core':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
       '@objectql/types':
         specifier: ^1.8.1
-        version: 1.8.1
+        version: 1.8.4
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
@@ -172,13 +172,13 @@ importers:
         version: 30.0.0
       '@types/node':
         specifier: ^20.10.0
-        version: 20.19.28
+        version: 20.19.29
       jest:
         specifier: ^30.2.0
-        version: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+        version: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       ts-jest:
         specifier: ^29.4.6
-        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)))(typescript@5.6.3)
+        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)))(typescript@5.6.3)
       typescript:
         specifier: ^5.3.0
         version: 5.6.3
@@ -187,7 +187,7 @@ importers:
     dependencies:
       '@objectql/core':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
     devDependencies:
       typescript:
         specifier: ^5.0.0
@@ -221,19 +221,19 @@ importers:
         version: link:../../apps/web
       '@objectql/core':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
       '@objectql/driver-mongo':
         specifier: ^1.8.1
-        version: 1.8.1
+        version: 1.8.4
       '@objectql/driver-sql':
         specifier: ^1.8.1
-        version: 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 1.8.4(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)
       '@objectql/server':
         specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        version: 1.8.4(encoding@0.1.13)(ws@8.19.0)
       better-auth:
         specifier: ^1.4.10
-        version: 1.4.11(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.16.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
+        version: 1.4.13(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.17.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
       better-sqlite3:
         specifier: ^12.6.0
         version: 12.6.0
@@ -242,7 +242,7 @@ importers:
         version: 7.0.0(socks@2.8.7)
       pg:
         specifier: ^8.11.3
-        version: 8.16.3
+        version: 8.17.1
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
@@ -267,13 +267,13 @@ importers:
         version: 4.17.25
       '@types/node':
         specifier: ^20.3.1
-        version: 20.19.28
+        version: 20.19.29
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.19.28)(typescript@5.6.3)
+        version: 10.9.2(@types/node@20.19.29)(typescript@5.6.3)
       typescript:
         specifier: ^5.1.3
         version: 5.6.3
@@ -294,10 +294,10 @@ importers:
         version: 3.2.2(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^5.2.2
-        version: 5.2.2(react-hook-form@7.71.0(react@18.3.1))
+        version: 5.2.2(react-hook-form@7.71.1(react@18.3.1))
       '@objectql/types':
         specifier: ^1.8.1
-        version: 1.8.1
+        version: 1.8.4
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -414,10 +414,10 @@ importers:
         version: 9.13.0(react@18.3.1)
       react-hook-form:
         specifier: ^7.70.0
-        version: 7.71.0(react@18.3.1)
+        version: 7.71.1(react@18.3.1)
       react-resizable-panels:
         specifier: ^4.3.3
-        version: 4.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       recharts:
         specifier: ^2.15.4
         version: 2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -475,7 +475,7 @@ importers:
         version: 5.6.3
       vitest:
         specifier: ^4.0.16
-        version: 4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1)
+        version: 4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1)
 
 packages:
 
@@ -485,8 +485,8 @@ packages:
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
 
-  '@algolia/abtesting@1.12.2':
-    resolution: {integrity: sha512-oWknd6wpfNrmRcH0vzed3UPX0i17o4kYLM5OMITyMVM2xLgaRbIafoxL0e8mcrNNb0iORCJA0evnNDKRYth5WQ==}
+  '@algolia/abtesting@1.12.3':
+    resolution: {integrity: sha512-0SpSdnME0RCS6UHSs9XD3ox4bMcCg1JTmjAJ3AU6rcTlX54CZOAEPc2as8uSghX6wfKGT0HWes4TeUpjJMg6FQ==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/autocomplete-core@1.17.7':
@@ -509,56 +509,56 @@ packages:
       '@algolia/client-search': '>= 4.9.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
 
-  '@algolia/client-abtesting@5.46.2':
-    resolution: {integrity: sha512-oRSUHbylGIuxrlzdPA8FPJuwrLLRavOhAmFGgdAvMcX47XsyM+IOGa9tc7/K5SPvBqn4nhppOCEz7BrzOPWc4A==}
+  '@algolia/client-abtesting@5.46.3':
+    resolution: {integrity: sha512-i2C8sBcl3EKXuCd5nlGohW+pZ9pY3P3JKJ2OYqsbCPg6wURiR32hNDiDvDq7/dqJ7KWWwC2snxJhokZzGlckgQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-analytics@5.46.2':
-    resolution: {integrity: sha512-EPBN2Oruw0maWOF4OgGPfioTvd+gmiNwx0HmD9IgmlS+l75DatcBkKOPNJN+0z3wBQWUO5oq602ATxIfmTQ8bA==}
+  '@algolia/client-analytics@5.46.3':
+    resolution: {integrity: sha512-uFmD7m3LOym1SAURHeiqupHT9jui+9HK0lAiIvm077gXEscOM5KKXM4rg/ICzQ3UDHLZEA0Lb5TglWsXnieE6w==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-common@5.46.2':
-    resolution: {integrity: sha512-Hj8gswSJNKZ0oyd0wWissqyasm+wTz1oIsv5ZmLarzOZAp3vFEda8bpDQ8PUhO+DfkbiLyVnAxsPe4cGzWtqkg==}
+  '@algolia/client-common@5.46.3':
+    resolution: {integrity: sha512-SN+yK840nXa+2+mF72hrDfGd8+B7eBjF8TK/8KoRMdjlAkO/P3o3vtpjKRKI/Sk4L8kYYkB/avW8l+cwR+O1Ew==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-insights@5.46.2':
-    resolution: {integrity: sha512-6dBZko2jt8FmQcHCbmNLB0kCV079Mx/DJcySTL3wirgDBUH7xhY1pOuUTLMiGkqM5D8moVZTvTdRKZUJRkrwBA==}
+  '@algolia/client-insights@5.46.3':
+    resolution: {integrity: sha512-5ic1liG0VucNPi6gKCWh5bEUGWQfyEmVeXiNKS+rOSppg7B7nKH0PEEJOFXBbHmgK5aPfNNZINiKcyUoH4XsFA==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-personalization@5.46.2':
-    resolution: {integrity: sha512-1waE2Uqh/PHNeDXGn/PM/WrmYOBiUGSVxAWqiJIj73jqPqvfzZgzdakHscIVaDl6Cp+j5dwjsZ5LCgaUr6DtmA==}
+  '@algolia/client-personalization@5.46.3':
+    resolution: {integrity: sha512-f4HNitgTip8tntKgluYBTc1LWSOkbNCdxZvRA3rRBZnEAYSvLe7jpE+AxRep6RY+prSWwMtyeCFhA/F1Um+TuQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-query-suggestions@5.46.2':
-    resolution: {integrity: sha512-EgOzTZkyDcNL6DV0V/24+oBJ+hKo0wNgyrOX/mePBM9bc9huHxIY2352sXmoZ648JXXY2x//V1kropF/Spx83w==}
+  '@algolia/client-query-suggestions@5.46.3':
+    resolution: {integrity: sha512-/AaVqah2aYyJj7Cazu5QRkgcV3HF3lkBJo5TRkgqQ26xR4iHNRbLF2YsWJfJpJEFghlTF2HOCh7IgzaUCnM+8A==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-search@5.46.2':
-    resolution: {integrity: sha512-ZsOJqu4HOG5BlvIFnMU0YKjQ9ZI6r3C31dg2jk5kMWPSdhJpYL9xa5hEe7aieE+707dXeMI4ej3diy6mXdZpgA==}
+  '@algolia/client-search@5.46.3':
+    resolution: {integrity: sha512-hfpCIukPuwkrlwsYfJEWdU5R5bduBHEq2uuPcqmgPgNq5MSjmiNIzRuzxGZZgiBKcre6gZT00DR7G1AFn//wiQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/ingestion@1.46.2':
-    resolution: {integrity: sha512-1Uw2OslTWiOFDtt83y0bGiErJYy5MizadV0nHnOoHFWMoDqWW0kQoMFI65pXqRSkVvit5zjXSLik2xMiyQJDWQ==}
+  '@algolia/ingestion@1.46.3':
+    resolution: {integrity: sha512-ChVzNkCzAVxKozTnTgPWCG69WQLjzW7X6OqD91zUh8U38ZhPEX/t3qGhXs+M9ZNaHcJ7xToMB3jywNwONhpLGA==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/monitoring@1.46.2':
-    resolution: {integrity: sha512-xk9f+DPtNcddWN6E7n1hyNNsATBCHIqAvVGG2EAGHJc4AFYL18uM/kMTiOKXE/LKDPyy1JhIerrh9oYb7RBrgw==}
+  '@algolia/monitoring@1.46.3':
+    resolution: {integrity: sha512-MZa+Z5iPmVMxVAQ0aq4HpGsja5utSLEMcOuY01X8D46vvMrSPkP8DnlDFtu1PgJ0RwyIGqqx7v+ClFo6iRJ6bA==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/recommend@5.46.2':
-    resolution: {integrity: sha512-NApbTPj9LxGzNw4dYnZmj2BoXiAc8NmbbH6qBNzQgXklGklt/xldTvu+FACN6ltFsTzoNU6j2mWNlHQTKGC5+Q==}
+  '@algolia/recommend@5.46.3':
+    resolution: {integrity: sha512-cr3atJRJBKgAKZl/Oxo4sig6Se0+ukbyIOOluPV5H+ZAXVcxuMoXQgwQ1M5UHPnCnEsZ4uBXhBmilRgUQpUegw==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-browser-xhr@5.46.2':
-    resolution: {integrity: sha512-ekotpCwpSp033DIIrsTpYlGUCF6momkgupRV/FA3m62SreTSZUKjgK6VTNyG7TtYfq9YFm/pnh65bATP/ZWJEg==}
+  '@algolia/requester-browser-xhr@5.46.3':
+    resolution: {integrity: sha512-/Ku9GImJf2SKoRM2S3e03MjCVaWJCP5olih4k54DRhNDdmxBkd3nsWuUXvDElY3Ucw/arBYGs5SYz79SoS5APw==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-fetch@5.46.2':
-    resolution: {integrity: sha512-gKE+ZFi/6y7saTr34wS0SqYFDcjHW4Wminv8PDZEi0/mE99+hSrbKgJWxo2ztb5eqGirQTgIh1AMVacGGWM1iw==}
+  '@algolia/requester-fetch@5.46.3':
+    resolution: {integrity: sha512-Uw+SPy/zpfwbH1AxQaeOWvWVzPEcO0XbtLbbSz0HPcEIiBGWyfa9LUCxD5UferbDjrSQNVimmzl3FaWi4u8Ykw==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-node-http@5.46.2':
-    resolution: {integrity: sha512-ciPihkletp7ttweJ8Zt+GukSVLp2ANJHU+9ttiSxsJZThXc4Y2yJ8HGVWesW5jN1zrsZsezN71KrMx/iZsOYpg==}
+  '@algolia/requester-node-http@5.46.3':
+    resolution: {integrity: sha512-4No9iTjr1GZ0JWsFbQJj9aZBnmKyY1sTxOoEud9+SGe3U6iAulF0A0lI4cWi/F/Gcfg8V3jkaddcqSQKDnE45w==}
     engines: {node: '>= 14.0.0'}
 
   '@alloc/quick-lru@5.2.0':
@@ -773,8 +773,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@better-auth/core@1.4.11':
-    resolution: {integrity: sha512-BYKiYx5GVp5a4rIZXRJwCsDhpSRXd1mfcPn4AKXeuLhcKrurs4uWWN5iBFq+tJ2eNgAcs0WV5pFm/uoz0oFdQQ==}
+  '@better-auth/core@1.4.13':
+    resolution: {integrity: sha512-+8OrU/9T9mkNNKCfTv9UMlNhl9qBKsXIS8d1JNrtuCkud8Ps0+jYvbBlwa90nFmDy8X96c9UIsq+eMhPs1SDXA==}
     peerDependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.21
@@ -783,10 +783,10 @@ packages:
       kysely: ^0.28.5
       nanostores: ^1.0.1
 
-  '@better-auth/telemetry@1.4.11':
-    resolution: {integrity: sha512-PUtmnBZ7QQpuQUmwMf8pQBUGKEutUC9s5TsJAhoR69crAqWHKZCfR48iN+/4C5JMs2mpO75Ygsi6h9yJ/UqAIg==}
+  '@better-auth/telemetry@1.4.13':
+    resolution: {integrity: sha512-bH77Scx0K0lRIuRuHUUBLLMJ/rd9T2Tties1RniDLU8kclVwjboJQbfUY5FIamZwdayf2o0psNgS4rkaZUq+Qg==}
     peerDependencies:
-      '@better-auth/core': 1.4.11
+      '@better-auth/core': 1.4.13
 
   '@better-auth/utils@0.3.0':
     resolution: {integrity: sha512-W+Adw6ZA6mgvnSnhOki270rwJ42t4XzSK6YWGF//BbVXL6SwCLWfyzBc1lN2m/4RM28KubdBKQ4X5VMoLRNPQw==}
@@ -1805,41 +1805,41 @@ packages:
     engines: {node: '>=8.0.0', npm: '>=5.0.0'}
     hasBin: true
 
-  '@objectql/core@1.8.1':
-    resolution: {integrity: sha512-TcoklYJNQlIL77Qj5XFNfgOHSQ1YauqHbhyUCB3HbR0UCdC/MG2+GjOX0scjOk7aWuLfuQP/y14iNISaNxouNw==}
+  '@objectql/core@1.8.4':
+    resolution: {integrity: sha512-F8HTNaag0L5HQf+fwNqtU1ybKK2aDK2eB4+m65n5TG/3XPgD0jjMH9f4X4Ilgpx0GHp4IqeFz6OQyCJrg0VYwA==}
 
-  '@objectql/driver-mongo@1.8.1':
-    resolution: {integrity: sha512-+ndjWkry3qnsEfpim3DFMdhbRTKXBW93yNNfZCXoD2PmG3Zay9aDpgSHD9NopCyh9qPJDgtAYa/O78as2hYJSQ==}
+  '@objectql/driver-mongo@1.8.4':
+    resolution: {integrity: sha512-lLmvuTX2VwLIQ8Vpu9aWHmdfXyH8lfjUnNJ58wEdCguu+kKLABc32vpe+Yai9Plh4KweT/78pd/hWAP8LQUAFg==}
 
-  '@objectql/driver-sql@1.8.1':
-    resolution: {integrity: sha512-iDjiLy9F4rN8OmLYXUS9ftNdVOVR9BOVAHAXsbBNlR+uxtvqPLgotdjM0KIW9z0YjRe1jQY9rAx4oCKL5y3ovw==}
+  '@objectql/driver-sql@1.8.4':
+    resolution: {integrity: sha512-5qisDd7I53k/Y8PEZ6fPpsJY+2XK6b8m8NsboJuRyuF9UoVycnxqqMNkbRXndy0La/HDbLIiKklmmHUQCZNdHw==}
 
-  '@objectql/platform-node@1.8.1':
-    resolution: {integrity: sha512-PngXcyJK3eVZeDV1gvFWf4OWA/1DtlfHrU2lf97dsUFIJQfFZdxLJ7J0LF0w3e4DmbnaJrUKRuAwcPA55kQUIA==}
+  '@objectql/platform-node@1.8.4':
+    resolution: {integrity: sha512-Q5JIuB8s53r48VO35WgcAwQnmf4d3TQcHDq0TGRpmtSqRH5vGqQyJYy5zdNeGN1QLsPi7BZ8YHJFaACnDmoxDA==}
 
-  '@objectql/server@1.8.1':
-    resolution: {integrity: sha512-ENfMb8raPWsrp6M1eU+H3Y8ww2HjCF3/7TBt/id/m8WFqG4GoTNOP+MTIGRI6CXdgDedX1djEEEsAMaLGu+GSw==}
+  '@objectql/server@1.8.4':
+    resolution: {integrity: sha512-j65gB7ieKZO66d4iqUuFVng8maGViWYUsnvmMFXKbAeQAd4puDHDWQ8njOX7jJ7xNicVv9HS6b4g0C83199i0w==}
 
-  '@objectql/starter-basic@1.8.1':
-    resolution: {integrity: sha512-sykpQl5uzNoRG1REb+tWjydUWSg2dksFZ/AZELC2ZtxlEclagzF7+hrFJ3qasymGIzp/Nd5Yzx5SA2BQnEEaEw==}
+  '@objectql/starter-basic@1.8.4':
+    resolution: {integrity: sha512-HPHP5Su7HwK8vpjFqgSDkotwFhs8OdMznztgHgG1PSSdOH/u+9i/GeAB5+t4sYPGL3kMzMPrjBwUGE1Eo12hVw==}
     peerDependencies:
-      '@objectql/core': 1.8.1
-      '@objectql/driver-sql': 1.8.1
-      '@objectql/platform-node': 1.8.1
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4
+      '@objectql/driver-sql': 1.8.4
+      '@objectql/platform-node': 1.8.4
+      '@objectql/types': 1.8.4
       sqlite3: ^5.1.7
 
-  '@objectql/starter-enterprise@1.8.1':
-    resolution: {integrity: sha512-vjMv6coB04/Y+p/+hM97tEAoomva0DKE3DeBTHicjOXSuvNhPsyYvGvdE0W8WrbVAgviqwRe7dT/Mp6O8unopw==}
+  '@objectql/starter-enterprise@1.8.4':
+    resolution: {integrity: sha512-fc5g79DIGDTxu93+qWx7cnoEsThBo8ixhHZ7LkAkw4DZgsSR93J+PhKtdH15YcWNe6bJJzxbvU0QrtVC2OB5Wg==}
     peerDependencies:
-      '@objectql/core': 1.8.1
-      '@objectql/driver-sql': 1.8.1
-      '@objectql/platform-node': 1.8.1
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4
+      '@objectql/driver-sql': 1.8.4
+      '@objectql/platform-node': 1.8.4
+      '@objectql/types': 1.8.4
       sqlite3: ^5.1.7
 
-  '@objectql/types@1.8.1':
-    resolution: {integrity: sha512-aHa1igwxLYmfWQj5lrJQkpwbeBKkAk/AYKpDOsgzJ5q2uFhzzM1UD2UD9x5Xi/modyFL1GPhgtDFq//RxP2oeQ==}
+  '@objectql/types@1.8.4':
+    resolution: {integrity: sha512-3oqpe1UbTT+TBa1JC1gNMlmicw0/+ILAj7J3wM+N2V21rIRWYJCpO6Cl9CgUqU9ze+MNfZ2dlHDZBVpFvVDg2Q==}
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -2848,8 +2848,8 @@ packages:
   '@types/node@18.19.130':
     resolution: {integrity: sha512-GRaXQx6jGfL8sKfaIDD6OupbIHBr9jv7Jnaml9tB7l4v068PAOXqfcujMMo5PhbIs6ggR1XODELqahT2R8v0fg==}
 
-  '@types/node@20.19.28':
-    resolution: {integrity: sha512-VyKBr25BuFDzBFCK5sUM6ZXiWfqgCTwTAOK8qzGV/m9FCirXYDlmczJ+d5dXBAQALGCdRRdbteKYfJ84NGEusw==}
+  '@types/node@20.19.29':
+    resolution: {integrity: sha512-YrT9ArrGaHForBaCNwFjoqJWmn8G1Pr7+BH/vwyLHciA9qT/wSiuOhxGCT50JA5xLvFBd6PIiGkE3afxcPE1nw==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -3332,8 +3332,8 @@ packages:
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
-  algoliasearch@5.46.2:
-    resolution: {integrity: sha512-qqAXW9QvKf2tTyhpDA4qXv1IfBwD2eduSW6tUEBFIfCeE9gn9HQ9I5+MaKoenRuHrzk5sQoNh1/iof8mY7uD6Q==}
+  algoliasearch@5.46.3:
+    resolution: {integrity: sha512-n/NdPglzmkcNYZfIT3Fo8pnDR/lKiK1kZ1Yaa315UoLyHymADhWw15+bzN5gBxrCA8KyeNu0JJD6mLtTov43lQ==}
     engines: {node: '>= 14.0.0'}
 
   ansi-colors@4.1.3:
@@ -3470,13 +3470,13 @@ packages:
     resolution: {integrity: sha512-B0xUquLkiGLgHhpPBqvl7GWegWBUNuujQ6kXd/r1U38ElPT6Ok8KZ8e+FpUGEc2ZoRQUzq/aUnaKFc/svWUGSg==}
     hasBin: true
 
-  better-auth@1.4.11:
-    resolution: {integrity: sha512-UvBokjRrLK+6mFvmZVhXEDe+ghqdR60DwfRvdth6R2cNnFn/VAGL6WcLVwEKBYjBplNMdslR62vOhUM+CSN0ww==}
+  better-auth@1.4.13:
+    resolution: {integrity: sha512-frGQmYT0rglidLpx91SP9n4ztaNBFGBb0JrWSdMTAHvhBkmQlUT/43e0IboMK2mPrAZFlvhdcMV8jCnqpYVE9A==}
     peerDependencies:
       '@lynx-js/react': '*'
       '@prisma/client': ^5.0.0 || ^6.0.0 || ^7.0.0
       '@sveltejs/kit': ^2.0.0
-      '@tanstack/react-start': ^1.0.0
+      '@tanstack/start-server-core': ^1.0.0
       better-sqlite3: ^12.0.0
       drizzle-kit: '>=0.31.4'
       drizzle-orm: '>=0.41.0'
@@ -3498,7 +3498,7 @@ packages:
         optional: true
       '@sveltejs/kit':
         optional: true
-      '@tanstack/react-start':
+      '@tanstack/start-server-core':
         optional: true
       better-sqlite3:
         optional: true
@@ -3946,8 +3946,8 @@ packages:
     resolution: {integrity: sha512-wR/XK3D3XcLIZwpbvQwQ5fK+8Ykds1ip7A2Txe0yxncXSdq1L9skcG7blcedkOX+ZcgxGAmLX1FrRGbADwzi0w==}
     engines: {node: '>=12'}
 
-  d3-format@3.1.0:
-    resolution: {integrity: sha512-YyUI6AEuY/Wpt8KWLgZHsIU86atmikuoOmCfommt0LYHiQSPjvX2AcFc38PX0CBpr2RCyZhjex+NS/LPOv6YqA==}
+  d3-format@3.1.2:
+    resolution: {integrity: sha512-AJDdYOdnyRDV5b6ArilzCPPwc1ejkHcoyFarqlPqT7zRYjhavcT3uSrqcMvsgh2CgoPbK3RCwyHaVyxYcP2Arg==}
     engines: {node: '>=12'}
 
   d3-interpolate@3.0.1:
@@ -5711,33 +5711,33 @@ packages:
   perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
 
-  pg-cloudflare@1.2.7:
-    resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
+  pg-cloudflare@1.3.0:
+    resolution: {integrity: sha512-6lswVVSztmHiRtD6I8hw4qP/nDm1EJbKMRhf3HCYaqud7frGysPv7FYJ5noZQdhQtN2xJnimfMtvQq21pdbzyQ==}
+
+  pg-connection-string@2.10.0:
+    resolution: {integrity: sha512-ur/eoPKzDx2IjPaYyXS6Y8NSblxM7X64deV2ObV57vhjsWiwLvUD6meukAzogiOsu60GO8m/3Cb6FdJsWNjwXg==}
 
   pg-connection-string@2.6.2:
     resolution: {integrity: sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==}
-
-  pg-connection-string@2.9.1:
-    resolution: {integrity: sha512-nkc6NpDcvPVpZXxrreI/FOtX3XemeLl8E0qFr6F2Lrm/I8WOnaWNhIPK2Z7OHpw7gh5XJThi6j6ppgNoaT1w4w==}
 
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
 
-  pg-pool@3.10.1:
-    resolution: {integrity: sha512-Tu8jMlcX+9d8+QVzKIvM/uJtp07PKr82IUOYEphaWcoBhIYkoHpLXN3qO59nAI11ripznDsEzEv8nUxBVWajGg==}
+  pg-pool@3.11.0:
+    resolution: {integrity: sha512-MJYfvHwtGp870aeusDh+hg9apvOe2zmpZJpyt+BMtzUWlVqbhFmMK6bOBXLBUPd7iRtIF9fZplDc7KrPN3PN7w==}
     peerDependencies:
       pg: '>=8.0'
 
-  pg-protocol@1.10.3:
-    resolution: {integrity: sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==}
+  pg-protocol@1.11.0:
+    resolution: {integrity: sha512-pfsxk2M9M3BuGgDOfuy37VNRRX3jmKgMjcvAcWqNDpZSf4cUmv8HSOl5ViRQFsfARFn0KuUQTgLxVMbNq5NW3g==}
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
 
-  pg@8.16.3:
-    resolution: {integrity: sha512-enxc1h0jA/aq5oSDMvqyW3q89ra6XIIDZgCX9vkMrnz5DFTw/Ny3Li2lFQ+pt3L6MCgm/5o2o8HW9hiJji+xvw==}
+  pg@8.17.1:
+    resolution: {integrity: sha512-EIR+jXdYNSMOrpRp7g6WgQr7SaZNZfS7IzZIO0oTNEeibq956JxeD15t3Jk3zZH0KH8DmOIx38qJfQenoE8bXQ==}
     engines: {node: '>= 16.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -5945,8 +5945,8 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  react-hook-form@7.71.0:
-    resolution: {integrity: sha512-oFDt/iIFMV9ZfV52waONXzg4xuSlbwKUPvXVH2jumL1me5qFhBMc4knZxuXiZ2+j6h546sYe3ZKJcg/900/iHw==}
+  react-hook-form@7.71.1:
+    resolution: {integrity: sha512-9SUJKCGKo8HUSsCO+y0CtqkqI5nNuaDqTxyqPsZPqIwudpj4rCrAz/jZV+jn57bx5gtZKOh3neQu94DXMc+w5w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -5984,8 +5984,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-resizable-panels@4.4.0:
-    resolution: {integrity: sha512-vGH1rIhyDOL4RSWYTx3eatjDohDFIRxJCAXUOaeL9HyamptUnUezqndjMtBo9hQeaq1CIP0NBbc7ZV3lBtlgxA==}
+  react-resizable-panels@4.4.1:
+    resolution: {integrity: sha512-dpM9oI6rGlAq7VYDeafSRA1JmkJv8aNuKySR+tZLQQLfaeqTnQLSM52EcoI/QdowzsjVUCk6jViKS0xHWITVRQ==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -6446,8 +6446,8 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
-  synckit@0.11.11:
-    resolution: {integrity: sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw==}
+  synckit@0.11.12:
+    resolution: {integrity: sha512-Bh7QjT8/SuKUIfObSXNHNSK6WHo6J1tHCqJsuaFDP7gP0fkzSfTxI8y85JrppZ0h8l0maIgc2tfuZQ6/t3GtnQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
   tabbable@6.4.0:
@@ -6738,8 +6738,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ufo@1.6.2:
-    resolution: {integrity: sha512-heMioaxBcG9+Znsda5Q8sQbWnLJSl98AFDXTO80wELWEzX3hordXsTdxrIfMQoO9IY1MEnoGoPjpoKpMj+Yx0Q==}
+  ufo@1.6.3:
+    resolution: {integrity: sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==}
 
   uglify-js@1.3.5:
     resolution: {integrity: sha512-YPX1DjKtom8l9XslmPFQnqWzTBkvI4N0pbkzLuPZZ4QTyig0uQqvZz9NgUdfEV+qccJzi7fVcGWdESvRIjWptQ==}
@@ -6999,8 +6999,8 @@ packages:
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
 
-  watchpack@2.5.0:
-    resolution: {integrity: sha512-e6vZvY6xboSwLz2GD36c16+O/2Z6fKvIf4pOXptw2rY9MVwE/TXc6RGqxD3I3x0a28lwBY7DE+76uTPSsBrrCA==}
+  watchpack@2.5.1:
+    resolution: {integrity: sha512-Zn5uXdcFNIA1+1Ei5McRd+iRzfhENPCe7LeABkJtNulSxjma+l7ltNx55BWZkRlwRnpOgHqxnjyaDgJnNXnqzg==}
     engines: {node: '>=10.13.0'}
 
   wcwidth@1.0.1:
@@ -7171,117 +7171,117 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@algolia/abtesting@1.12.2':
+  '@algolia/abtesting@1.12.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/autocomplete-core@1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)(search-insights@2.17.3)':
+  '@algolia/autocomplete-core@1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)(search-insights@2.17.3)
-      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)
+      '@algolia/autocomplete-plugin-algolia-insights': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)(search-insights@2.17.3)
+      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
       - search-insights
 
-  '@algolia/autocomplete-plugin-algolia-insights@1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-algolia-insights@1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)
+      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)
       search-insights: 2.17.3
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
 
-  '@algolia/autocomplete-preset-algolia@1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)':
+  '@algolia/autocomplete-preset-algolia@1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)':
     dependencies:
-      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)
-      '@algolia/client-search': 5.46.2
-      algoliasearch: 5.46.2
+      '@algolia/autocomplete-shared': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)
+      '@algolia/client-search': 5.46.3
+      algoliasearch: 5.46.3
 
-  '@algolia/autocomplete-shared@1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)':
+  '@algolia/autocomplete-shared@1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)':
     dependencies:
-      '@algolia/client-search': 5.46.2
-      algoliasearch: 5.46.2
+      '@algolia/client-search': 5.46.3
+      algoliasearch: 5.46.3
 
-  '@algolia/client-abtesting@5.46.2':
+  '@algolia/client-abtesting@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/client-analytics@5.46.2':
+  '@algolia/client-analytics@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/client-common@5.46.2': {}
+  '@algolia/client-common@5.46.3': {}
 
-  '@algolia/client-insights@5.46.2':
+  '@algolia/client-insights@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/client-personalization@5.46.2':
+  '@algolia/client-personalization@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/client-query-suggestions@5.46.2':
+  '@algolia/client-query-suggestions@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/client-search@5.46.2':
+  '@algolia/client-search@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/ingestion@1.46.2':
+  '@algolia/ingestion@1.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/monitoring@1.46.2':
+  '@algolia/monitoring@1.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/recommend@5.46.2':
+  '@algolia/recommend@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/client-common': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
-  '@algolia/requester-browser-xhr@5.46.2':
+  '@algolia/requester-browser-xhr@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
+      '@algolia/client-common': 5.46.3
 
-  '@algolia/requester-fetch@5.46.2':
+  '@algolia/requester-fetch@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
+      '@algolia/client-common': 5.46.3
 
-  '@algolia/requester-node-http@5.46.2':
+  '@algolia/requester-node-http@5.46.3':
     dependencies:
-      '@algolia/client-common': 5.46.2
+      '@algolia/client-common': 5.46.3
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -7536,7 +7536,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@better-auth/core@1.4.11(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)':
+  '@better-auth/core@1.4.13(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.21
@@ -7547,9 +7547,9 @@ snapshots:
       nanostores: 1.1.0
       zod: 4.3.5
 
-  '@better-auth/telemetry@1.4.11(@better-auth/core@1.4.11(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))':
+  '@better-auth/telemetry@1.4.13(@better-auth/core@1.4.13(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))':
     dependencies:
-      '@better-auth/core': 1.4.11(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
+      '@better-auth/core': 1.4.13(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.21
 
@@ -7588,7 +7588,7 @@ snapshots:
     dependencies:
       '@changesets/types': 6.1.0
 
-  '@changesets/cli@2.29.8(@types/node@20.19.28)':
+  '@changesets/cli@2.29.8(@types/node@20.19.29)':
     dependencies:
       '@changesets/apply-release-plan': 7.0.14
       '@changesets/assemble-release-plan': 6.0.9
@@ -7604,7 +7604,7 @@ snapshots:
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@changesets/write': 0.4.0
-      '@inquirer/external-editor': 1.0.3(@types/node@20.19.28)
+      '@inquirer/external-editor': 1.0.3(@types/node@20.19.29)
       '@manypkg/get-packages': 1.1.3
       ansi-colors: 4.1.3
       ci-info: 3.9.0
@@ -7776,9 +7776,9 @@ snapshots:
 
   '@docsearch/css@3.8.2': {}
 
-  '@docsearch/js@3.8.2(@algolia/client-search@5.46.2)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)':
+  '@docsearch/js@3.8.2(@algolia/client-search@5.46.3)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)':
     dependencies:
-      '@docsearch/react': 3.8.2(@algolia/client-search@5.46.2)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
+      '@docsearch/react': 3.8.2(@algolia/client-search@5.46.3)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
       preact: 10.28.2
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -7787,12 +7787,12 @@ snapshots:
       - react-dom
       - search-insights
 
-  '@docsearch/react@3.8.2(@algolia/client-search@5.46.2)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)':
+  '@docsearch/react@3.8.2(@algolia/client-search@5.46.3)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-core': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)(search-insights@2.17.3)
-      '@algolia/autocomplete-preset-algolia': 1.17.7(@algolia/client-search@5.46.2)(algoliasearch@5.46.2)
+      '@algolia/autocomplete-core': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)(search-insights@2.17.3)
+      '@algolia/autocomplete-preset-algolia': 1.17.7(@algolia/client-search@5.46.3)(algoliasearch@5.46.3)
       '@docsearch/css': 3.8.2
-      algoliasearch: 5.46.2
+      algoliasearch: 5.46.3
     optionalDependencies:
       '@types/react': 18.3.27
       react: 18.3.1
@@ -8135,10 +8135,10 @@ snapshots:
     dependencies:
       graphql: 16.12.0
 
-  '@hookform/resolvers@5.2.2(react-hook-form@7.71.0(react@18.3.1))':
+  '@hookform/resolvers@5.2.2(react-hook-form@7.71.1(react@18.3.1))':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.71.0(react@18.3.1)
+      react-hook-form: 7.71.1(react@18.3.1)
 
   '@humanfs/core@0.19.1': {}
 
@@ -8157,12 +8157,12 @@ snapshots:
 
   '@iconify/types@2.0.0': {}
 
-  '@inquirer/external-editor@1.0.3(@types/node@20.19.28)':
+  '@inquirer/external-editor@1.0.3(@types/node@20.19.29)':
     dependencies:
       chardet: 2.1.1
       iconv-lite: 0.7.2
     optionalDependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -8186,13 +8186,13 @@ snapshots:
   '@jest/console@30.2.0':
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       jest-message-util: 30.2.0
       jest-util: 30.2.0
       slash: 3.0.0
 
-  '@jest/core@30.2.0(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))':
+  '@jest/core@30.2.0(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))':
     dependencies:
       '@jest/console': 30.2.0
       '@jest/pattern': 30.0.1
@@ -8200,14 +8200,14 @@ snapshots:
       '@jest/test-result': 30.2.0
       '@jest/transform': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       ci-info: 4.3.1
       exit-x: 0.2.2
       graceful-fs: 4.2.11
       jest-changed-files: 30.2.0
-      jest-config: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      jest-config: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       jest-haste-map: 30.2.0
       jest-message-util: 30.2.0
       jest-regex-util: 30.0.1
@@ -8234,7 +8234,7 @@ snapshots:
     dependencies:
       '@jest/fake-timers': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jest-mock: 30.2.0
 
   '@jest/expect-utils@30.2.0':
@@ -8252,7 +8252,7 @@ snapshots:
     dependencies:
       '@jest/types': 30.2.0
       '@sinonjs/fake-timers': 13.0.5
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jest-message-util: 30.2.0
       jest-mock: 30.2.0
       jest-util: 30.2.0
@@ -8270,7 +8270,7 @@ snapshots:
 
   '@jest/pattern@30.0.1':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jest-regex-util: 30.0.1
 
   '@jest/reporters@30.2.0':
@@ -8281,7 +8281,7 @@ snapshots:
       '@jest/transform': 30.2.0
       '@jest/types': 30.2.0
       '@jridgewell/trace-mapping': 0.3.31
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       collect-v8-coverage: 1.0.3
       exit-x: 0.2.2
@@ -8358,7 +8358,7 @@ snapshots:
       '@jest/schemas': 30.0.5
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       '@types/yargs': 17.0.35
       chalk: 4.1.2
 
@@ -8570,9 +8570,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/core@1.8.4(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
-      '@objectql/types': 1.8.1
+      '@objectql/types': 1.8.4
       js-yaml: 4.1.1
       openai: 4.104.0(encoding@0.1.13)(ws@8.19.0)
     transitivePeerDependencies:
@@ -8580,9 +8580,9 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/driver-mongo@1.8.1':
+  '@objectql/driver-mongo@1.8.4':
     dependencies:
-      '@objectql/types': 1.8.1
+      '@objectql/types': 1.8.4
       mongodb: 5.9.2
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -8591,10 +8591,10 @@ snapshots:
       - mongodb-client-encryption
       - snappy
 
-  '@objectql/driver-sql@1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)':
+  '@objectql/driver-sql@1.8.4(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/types': 1.8.1
-      knex: 3.1.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+      '@objectql/types': 1.8.4
+      knex: 3.1.0(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)
     transitivePeerDependencies:
       - better-sqlite3
       - mysql
@@ -8605,10 +8605,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/platform-node@1.8.4(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 1.8.4
       fast-glob: 3.3.3
       js-yaml: 4.1.1
     transitivePeerDependencies:
@@ -8616,11 +8616,11 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/server@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/server@1.8.4(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
       '@graphql-tools/schema': 10.0.31(graphql@16.12.0)
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 1.8.4
       graphql: 16.12.0
       js-yaml: 4.1.1
     transitivePeerDependencies:
@@ -8628,23 +8628,23 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/starter-basic@1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)':
+  '@objectql/starter-basic@1.8.4(@objectql/core@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.4(sqlite3@5.1.7))(@objectql/platform-node@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.4)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/driver-sql': 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
-      '@objectql/platform-node': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/driver-sql': 1.8.4(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)
+      '@objectql/platform-node': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 1.8.4
       sqlite3: 5.1.7
 
-  '@objectql/starter-enterprise@1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)':
+  '@objectql/starter-enterprise@1.8.4(@objectql/core@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.4(sqlite3@5.1.7))(@objectql/platform-node@1.8.4(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.4)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/driver-sql': 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
-      '@objectql/platform-node': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/driver-sql': 1.8.4(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7)
+      '@objectql/platform-node': 1.8.4(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 1.8.4
       sqlite3: 5.1.7
 
-  '@objectql/types@1.8.1': {}
+  '@objectql/types@1.8.4': {}
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
@@ -9556,7 +9556,7 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
 
   '@types/chai@5.2.3':
     dependencies:
@@ -9565,7 +9565,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
 
   '@types/cookiejar@2.1.5': {}
 
@@ -9609,7 +9609,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.8':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -9665,7 +9665,7 @@ snapshots:
 
   '@types/node-fetch@2.6.13':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       form-data: 4.0.5
 
   '@types/node@12.20.55': {}
@@ -9674,7 +9674,7 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@20.19.28':
+  '@types/node@20.19.29':
     dependencies:
       undici-types: 6.21.0
 
@@ -9696,16 +9696,16 @@ snapshots:
   '@types/send@0.17.6':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
 
   '@types/serve-static@1.15.10':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       '@types/send': 0.17.6
 
   '@types/stack-utils@2.0.3': {}
@@ -9714,7 +9714,7 @@ snapshots:
     dependencies:
       '@types/cookiejar': 2.1.5
       '@types/methods': 1.1.4
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       form-data: 4.0.5
 
   '@types/supertest@6.0.3':
@@ -9736,7 +9736,7 @@ snapshots:
 
   '@types/whatwg-url@8.2.2':
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       '@types/webidl-conversions': 7.0.3
 
   '@types/yargs-parser@21.0.3': {}
@@ -9897,7 +9897,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitejs/plugin-react@4.7.0(vite@6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1))':
+  '@vitejs/plugin-react@4.7.0(vite@6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1))':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.6)
@@ -9905,13 +9905,13 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.27
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1)
+      vite: 6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-vue@5.2.4(vite@5.4.21(@types/node@20.19.28)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))':
+  '@vitejs/plugin-vue@5.2.4(vite@5.4.21(@types/node@20.19.29)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))':
     dependencies:
-      vite: 5.4.21(@types/node@20.19.28)(terser@5.44.1)
+      vite: 5.4.21(@types/node@20.19.29)(terser@5.44.1)
       vue: 3.5.26(typescript@5.6.3)
 
   '@vitest/expect@4.0.17':
@@ -9923,13 +9923,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.17(vite@6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1))':
+  '@vitest/mocker@4.0.17(vite@6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1))':
     dependencies:
       '@vitest/spy': 4.0.17
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1)
+      vite: 6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1)
 
   '@vitest/pretty-format@4.0.17':
     dependencies:
@@ -10228,22 +10228,22 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  algoliasearch@5.46.2:
+  algoliasearch@5.46.3:
     dependencies:
-      '@algolia/abtesting': 1.12.2
-      '@algolia/client-abtesting': 5.46.2
-      '@algolia/client-analytics': 5.46.2
-      '@algolia/client-common': 5.46.2
-      '@algolia/client-insights': 5.46.2
-      '@algolia/client-personalization': 5.46.2
-      '@algolia/client-query-suggestions': 5.46.2
-      '@algolia/client-search': 5.46.2
-      '@algolia/ingestion': 1.46.2
-      '@algolia/monitoring': 1.46.2
-      '@algolia/recommend': 5.46.2
-      '@algolia/requester-browser-xhr': 5.46.2
-      '@algolia/requester-fetch': 5.46.2
-      '@algolia/requester-node-http': 5.46.2
+      '@algolia/abtesting': 1.12.3
+      '@algolia/client-abtesting': 5.46.3
+      '@algolia/client-analytics': 5.46.3
+      '@algolia/client-common': 5.46.3
+      '@algolia/client-insights': 5.46.3
+      '@algolia/client-personalization': 5.46.3
+      '@algolia/client-query-suggestions': 5.46.3
+      '@algolia/client-search': 5.46.3
+      '@algolia/ingestion': 1.46.3
+      '@algolia/monitoring': 1.46.3
+      '@algolia/recommend': 5.46.3
+      '@algolia/requester-browser-xhr': 5.46.3
+      '@algolia/requester-fetch': 5.46.3
+      '@algolia/requester-node-http': 5.46.3
 
   ansi-colors@4.1.3: {}
 
@@ -10382,10 +10382,10 @@ snapshots:
 
   baseline-browser-mapping@2.9.14: {}
 
-  better-auth@1.4.11(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.16.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3)):
+  better-auth@1.4.13(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.17.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3)):
     dependencies:
-      '@better-auth/core': 1.4.11(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
-      '@better-auth/telemetry': 1.4.11(@better-auth/core@1.4.11(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))
+      '@better-auth/core': 1.4.13(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
+      '@better-auth/telemetry': 1.4.13(@better-auth/core@1.4.13(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.5))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.21
       '@noble/ciphers': 2.1.1
@@ -10399,10 +10399,10 @@ snapshots:
     optionalDependencies:
       better-sqlite3: 12.6.0
       mongodb: 7.0.0(socks@2.8.7)
-      pg: 8.16.3
+      pg: 8.17.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      vitest: 4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1)
+      vitest: 4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1)
       vue: 3.5.26(typescript@5.6.3)
 
   better-call@1.1.7(zod@4.3.5):
@@ -10826,7 +10826,7 @@ snapshots:
 
   d3-ease@3.0.1: {}
 
-  d3-format@3.1.0: {}
+  d3-format@3.1.2: {}
 
   d3-interpolate@3.0.1:
     dependencies:
@@ -10837,7 +10837,7 @@ snapshots:
   d3-scale@4.0.2:
     dependencies:
       d3-array: 3.2.4
-      d3-format: 3.1.0
+      d3-format: 3.1.2
       d3-interpolate: 3.0.1
       d3-time: 3.1.0
       d3-time-format: 4.1.0
@@ -11884,7 +11884,7 @@ snapshots:
       '@jest/expect': 30.2.0
       '@jest/test-result': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       co: 4.6.0
       dedent: 1.7.1
@@ -11904,15 +11904,15 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-cli@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)):
+  jest-cli@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)):
     dependencies:
-      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       '@jest/test-result': 30.2.0
       '@jest/types': 30.2.0
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      jest-config: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       jest-util: 30.2.0
       jest-validate: 30.2.0
       yargs: 17.7.2
@@ -11923,7 +11923,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-config@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)):
+  jest-config@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)):
     dependencies:
       '@babel/core': 7.28.6
       '@jest/get-type': 30.1.0
@@ -11950,8 +11950,8 @@ snapshots:
       slash: 3.0.0
       strip-json-comments: 3.1.1
     optionalDependencies:
-      '@types/node': 20.19.28
-      ts-node: 10.9.2(@types/node@20.19.28)(typescript@5.6.3)
+      '@types/node': 20.19.29
+      ts-node: 10.9.2(@types/node@20.19.29)(typescript@5.6.3)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -11980,7 +11980,7 @@ snapshots:
       '@jest/environment': 30.2.0
       '@jest/fake-timers': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jest-mock: 30.2.0
       jest-util: 30.2.0
       jest-validate: 30.2.0
@@ -11988,7 +11988,7 @@ snapshots:
   jest-haste-map@30.2.0:
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -12027,7 +12027,7 @@ snapshots:
   jest-mock@30.2.0:
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jest-util: 30.2.0
 
   jest-pnp-resolver@1.2.3(jest-resolve@30.2.0):
@@ -12061,7 +12061,7 @@ snapshots:
       '@jest/test-result': 30.2.0
       '@jest/transform': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       emittery: 0.13.1
       exit-x: 0.2.2
@@ -12090,7 +12090,7 @@ snapshots:
       '@jest/test-result': 30.2.0
       '@jest/transform': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       cjs-module-lexer: 2.2.0
       collect-v8-coverage: 1.0.3
@@ -12130,14 +12130,14 @@ snapshots:
       jest-util: 30.2.0
       pretty-format: 30.2.0
       semver: 7.7.3
-      synckit: 0.11.11
+      synckit: 0.11.12
     transitivePeerDependencies:
       - supports-color
 
   jest-util@30.2.0:
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       chalk: 4.1.2
       ci-info: 4.3.1
       graceful-fs: 4.2.11
@@ -12156,7 +12156,7 @@ snapshots:
     dependencies:
       '@jest/test-result': 30.2.0
       '@jest/types': 30.2.0
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.13.1
@@ -12165,24 +12165,24 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
   jest-worker@30.2.0:
     dependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       '@ungap/structured-clone': 1.3.0
       jest-util: 30.2.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)):
+  jest@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)):
     dependencies:
-      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       '@jest/types': 30.2.0
       import-local: 3.2.0
-      jest-cli: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      jest-cli: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -12278,7 +12278,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  knex@3.1.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7):
+  knex@3.1.0(better-sqlite3@12.6.0)(pg@8.17.1)(sqlite3@5.1.7):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -12296,7 +12296,7 @@ snapshots:
       tildify: 2.0.0
     optionalDependencies:
       better-sqlite3: 12.6.0
-      pg: 8.16.3
+      pg: 8.17.1
       sqlite3: 5.1.7
     transitivePeerDependencies:
       - supports-color
@@ -12559,7 +12559,7 @@ snapshots:
       acorn: 8.15.0
       pathe: 2.0.3
       pkg-types: 1.3.1
-      ufo: 1.6.2
+      ufo: 1.6.3
 
   mongodb-connection-string-url@2.6.0:
     dependencies:
@@ -12845,20 +12845,20 @@ snapshots:
 
   perfect-debounce@1.0.0: {}
 
-  pg-cloudflare@1.2.7:
+  pg-cloudflare@1.3.0:
     optional: true
+
+  pg-connection-string@2.10.0: {}
 
   pg-connection-string@2.6.2: {}
 
-  pg-connection-string@2.9.1: {}
-
   pg-int8@1.0.1: {}
 
-  pg-pool@3.10.1(pg@8.16.3):
+  pg-pool@3.11.0(pg@8.17.1):
     dependencies:
-      pg: 8.16.3
+      pg: 8.17.1
 
-  pg-protocol@1.10.3: {}
+  pg-protocol@1.11.0: {}
 
   pg-types@2.2.0:
     dependencies:
@@ -12868,15 +12868,15 @@ snapshots:
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
 
-  pg@8.16.3:
+  pg@8.17.1:
     dependencies:
-      pg-connection-string: 2.9.1
-      pg-pool: 3.10.1(pg@8.16.3)
-      pg-protocol: 1.10.3
+      pg-connection-string: 2.10.0
+      pg-pool: 3.11.0(pg@8.17.1)
+      pg-protocol: 1.11.0
       pg-types: 2.2.0
       pgpass: 1.0.5
     optionalDependencies:
-      pg-cloudflare: 1.2.7
+      pg-cloudflare: 1.3.0
 
   pgpass@1.0.5:
     dependencies:
@@ -13062,7 +13062,7 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
-  react-hook-form@7.71.0(react@18.3.1):
+  react-hook-form@7.71.1(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -13093,7 +13093,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.27
 
-  react-resizable-panels@4.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-resizable-panels@4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -13620,7 +13620,7 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
-  synckit@0.11.11:
+  synckit@0.11.12:
     dependencies:
       '@pkgr/core': 0.2.9
 
@@ -13799,12 +13799,12 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3)))(typescript@5.6.3):
+  ts-jest@29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3)))(typescript@5.6.3):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       handlebars: 4.7.8
-      jest: 30.2.0(@types/node@20.19.28)(ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3))
+      jest: 30.2.0(@types/node@20.19.29)(ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3))
       json5: 2.2.3
       lodash.memoize: 4.1.2
       make-error: 1.3.6
@@ -13819,14 +13819,14 @@ snapshots:
       babel-jest: 30.2.0(@babel/core@7.28.6)
       jest-util: 30.2.0
 
-  ts-node@10.9.2(@types/node@20.19.28)(typescript@5.6.3):
+  ts-node@10.9.2(@types/node@20.19.29)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       acorn: 8.15.0
       acorn-walk: 8.3.4
       arg: 4.1.3
@@ -13916,7 +13916,7 @@ snapshots:
 
   typescript@5.7.2: {}
 
-  ufo@1.6.2: {}
+  ufo@1.6.3: {}
 
   uglify-js@1.3.5: {}
 
@@ -14075,17 +14075,17 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite@5.4.21(@types/node@20.19.28)(terser@5.44.1):
+  vite@5.4.21(@types/node@20.19.29)(terser@5.44.1):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.6
       rollup: 4.55.1
     optionalDependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       fsevents: 2.3.3
       terser: 5.44.1
 
-  vite@6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1):
+  vite@6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.3)
@@ -14094,21 +14094,21 @@ snapshots:
       rollup: 4.55.1
       tinyglobby: 0.2.15
     optionalDependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       fsevents: 2.3.3
       jiti: 1.21.7
       terser: 5.44.1
 
-  vitepress@1.6.4(@algolia/client-search@5.46.2)(@types/node@20.19.28)(@types/react@18.3.27)(postcss@8.5.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.6.3):
+  vitepress@1.6.4(@algolia/client-search@5.46.3)(@types/node@20.19.29)(@types/react@18.3.27)(postcss@8.5.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.6.3):
     dependencies:
       '@docsearch/css': 3.8.2
-      '@docsearch/js': 3.8.2(@algolia/client-search@5.46.2)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
+      '@docsearch/js': 3.8.2(@algolia/client-search@5.46.3)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
       '@iconify-json/simple-icons': 1.2.66
       '@shikijs/core': 2.5.0
       '@shikijs/transformers': 2.5.0
       '@shikijs/types': 2.5.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 5.2.4(vite@5.4.21(@types/node@20.19.28)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
+      '@vitejs/plugin-vue': 5.2.4(vite@5.4.21(@types/node@20.19.29)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
       '@vue/devtools-api': 7.7.9
       '@vue/shared': 3.5.26
       '@vueuse/core': 12.8.2(typescript@5.6.3)
@@ -14117,7 +14117,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 2.5.0
-      vite: 5.4.21(@types/node@20.19.28)(terser@5.44.1)
+      vite: 5.4.21(@types/node@20.19.29)(terser@5.44.1)
       vue: 3.5.26(typescript@5.6.3)
     optionalDependencies:
       postcss: 8.5.6
@@ -14148,10 +14148,10 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest@4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1):
+  vitest@4.0.17(@types/node@20.19.29)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1):
     dependencies:
       '@vitest/expect': 4.0.17
-      '@vitest/mocker': 4.0.17(vite@6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1))
+      '@vitest/mocker': 4.0.17(vite@6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1))
       '@vitest/pretty-format': 4.0.17
       '@vitest/runner': 4.0.17
       '@vitest/snapshot': 4.0.17
@@ -14168,10 +14168,10 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 6.4.1(@types/node@20.19.28)(jiti@1.21.7)(terser@5.44.1)
+      vite: 6.4.1(@types/node@20.19.29)(jiti@1.21.7)(terser@5.44.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 20.19.28
+      '@types/node': 20.19.29
       jsdom: 27.4.0
     transitivePeerDependencies:
       - jiti
@@ -14204,7 +14204,7 @@ snapshots:
     dependencies:
       makeerror: 1.0.12
 
-  watchpack@2.5.0:
+  watchpack@2.5.1:
     dependencies:
       glob-to-regexp: 0.4.1
       graceful-fs: 4.2.11
@@ -14248,7 +14248,7 @@ snapshots:
       schema-utils: 3.3.0
       tapable: 2.3.0
       terser-webpack-plugin: 5.3.16(webpack@5.97.1)
-      watchpack: 2.5.0
+      watchpack: 2.5.1
       webpack-sources: 3.3.3
     transitivePeerDependencies:
       - '@swc/core'
