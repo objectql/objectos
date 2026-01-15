@@ -189,11 +189,11 @@ pnpm run test
 ```
 
 **About the pnpm-lock.yaml merge driver:**
-The repository is configured to automatically handle merge conflicts in `pnpm-lock.yaml` by regenerating the file using `pnpm install`. This is set up automatically during `pnpm install` via the postinstall script. If you need to manually configure it, run:
+The repository is configured to automatically handle merge conflicts in `pnpm-lock.yaml` by regenerating the file using `pnpm install --lockfile-only`. This is set up automatically during `pnpm install` via the postinstall script. If you need to manually configure it, run:
 
 ```bash
 git config merge.pnpm-merge.name "pnpm-lock.yaml merge driver"
-git config merge.pnpm-merge.driver "pnpm install"
+git config merge.pnpm-merge.driver "pnpm install --lockfile-only"
 ```
 
 ### Development Workflow

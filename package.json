@@ -11,7 +11,7 @@
     ]
   },
   "scripts": {
-    "postinstall": "git config merge.pnpm-merge.name \"pnpm-lock.yaml merge driver\" && git config merge.pnpm-merge.driver \"pnpm install\" || true",
+    "postinstall": "git rev-parse --git-dir > /dev/null 2>&1 && git config merge.pnpm-merge.name \"pnpm-lock.yaml merge driver\" && git config merge.pnpm-merge.driver \"pnpm install --lockfile-only\" || true",
     "dev": "concurrently \"pnpm run server\" \"pnpm run web:watch\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
     "server": "pnpm --filter @objectos/server dev",
     "web": "pnpm --filter @objectos/web dev",
