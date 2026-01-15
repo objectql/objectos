@@ -15,8 +15,6 @@ updates:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
-    reviewers:
-      - "objectstack-ai/maintainers"
     # Group all patch updates together
     groups:
       patch-updates:
