@@ -1,0 +1,2 @@
+# Automatically resolve pnpm-lock.yaml merge conflicts by regenerating it
+pnpm-lock.yaml merge=pnpm-lock

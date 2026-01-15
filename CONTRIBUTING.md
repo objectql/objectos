@@ -179,12 +179,18 @@ cd objectos
 # Install dependencies
 pnpm install
 
+# Setup the pnpm-lock.yaml merge driver (recommended)
+# This automatically resolves merge conflicts in pnpm-lock.yaml
+./scripts/setup-merge-driver.sh
+
 # Build all packages
 pnpm run build
 
 # Run tests
 pnpm run test
 ```
+
+**Note about pnpm-lock.yaml merge conflicts:** The repository is configured with a custom Git merge driver that automatically resolves conflicts in `pnpm-lock.yaml` by regenerating the lockfile. Run `./scripts/setup-merge-driver.sh` once after cloning to enable this feature.
 
 ### Development Workflow
 
@@ -446,6 +452,52 @@ pnpm release
 - **Discord**: Coming soon
 - **GitHub Issues**: For bugs and feature requests
 - **GitHub Discussions**: For questions and discussions
+
+## Handling pnpm-lock.yaml Merge Conflicts
+
+This repository includes a custom Git merge driver that automatically resolves conflicts in `pnpm-lock.yaml`.
+
+### First-Time Setup
+
+After cloning the repository, run the setup script once:
+
+```bash
+./scripts/setup-merge-driver.sh
+```
+
+This configures Git to use the custom merge driver for `pnpm-lock.yaml` files.
+
+### How It Works
+
+When Git detects a merge conflict in `pnpm-lock.yaml`:
+
+1. The custom merge driver (`scripts/merge-pnpm-lock.sh`) is automatically invoked
+2. It runs `pnpm install --lockfile-only` to regenerate the lockfile
+3. The regenerated lockfile incorporates changes from both branches
+4. The conflict is automatically resolved
+
+### Manual Resolution
+
+If you prefer to handle merge conflicts manually or if the automatic resolution fails:
+
+```bash
+# Manually regenerate the lockfile
+pnpm install --lockfile-only
+
+# Stage the resolved file
+git add pnpm-lock.yaml
+
+# Continue with your merge/rebase
+git merge --continue  # or git rebase --continue
+```
+
+### Troubleshooting
+
+If the merge driver doesn't work:
+
+1. Verify it's configured: `git config --get merge.pnpm-lock.driver`
+2. Re-run the setup script: `./scripts/setup-merge-driver.sh`
+3. Ensure pnpm is installed: `pnpm --version`
 
 ## Code of Conduct
 
