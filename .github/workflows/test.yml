@@ -8,8 +8,14 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+      fail-fast: false
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -19,17 +25,25 @@ jobs:
         with:
           version: 9
 
-      - name: Setup Node.js 20.x
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run build
 
       - name: Test
         run: pnpm run test
+
+      - name: Upload Coverage
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          files: ./coverage/coverage-final.json
+          fail_ci_if_error: false

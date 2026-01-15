@@ -1,0 +1,64 @@
+name: "PR Title Check"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  check-title:
+    name: Check PR Title Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure which types are allowed (must match conventional commits)
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          # Configure which scopes are allowed
+          scopes: |
+            kernel
+            server
+            ui
+            presets
+            plugins
+            deps
+            release
+          # Require a scope
+          requireScope: false
+          # Disable validation of the subject's case
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            doesn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+          # Validate the PR title, not individual commits
+          validateSingleCommit: false
+          # Custom message for invalid format
+          invalidMessage: |
+            ❌ PR title doesn't follow Conventional Commits format.
+            
+            Expected format: `type(scope): subject`
+            
+            Examples:
+            - `feat(kernel): add hook priority support`
+            - `fix(server): handle null values in query`
+            - `docs: update architecture guide`
+            
+            Valid types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+            
+            Please update your PR title to match this format.

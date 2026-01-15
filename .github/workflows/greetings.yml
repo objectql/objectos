@@ -1,0 +1,37 @@
+name: "Greetings"
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >
+            👋 Thanks for opening your first issue! We appreciate your contribution to ObjectOS.
+            
+            Please make sure you've provided all the necessary information and context.
+            Our team will review this as soon as possible.
+            
+            In the meantime, you might want to check out our [Contributing Guide](https://github.com/objectstack-ai/objectos/blob/main/CONTRIBUTING.md)
+            and [Documentation](https://objectos.org/docs).
+          pr-message: >
+            🎉 Thanks for opening your first pull request! We're excited to review your contribution.
+            
+            Please make sure:
+            - [ ] Your code follows our [coding standards](https://github.com/objectstack-ai/objectos/blob/main/CONTRIBUTING.md)
+            - [ ] All tests pass
+            - [ ] You've added tests for new features
+            - [ ] Documentation is updated (if needed)
+            
+            A maintainer will review your PR soon. Thanks for contributing to ObjectOS! 🚀

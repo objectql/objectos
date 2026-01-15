@@ -1,0 +1,39 @@
+name: "Lint"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Check TypeScript
+        run: pnpm run build
+
+      # Placeholder for ESLint/Prettier when added
+      # - name: Run ESLint
+      #   run: pnpm run lint
+      
+      # - name: Check Formatting
+      #   run: pnpm run format:check
