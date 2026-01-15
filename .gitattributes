@@ -1,0 +1,3 @@
+# Configure custom merge driver for pnpm-lock.yaml
+# This prevents merge conflicts by regenerating the lock file
+pnpm-lock.yaml merge=pnpm-merge

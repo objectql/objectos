@@ -177,6 +177,8 @@ git clone https://github.com/objectql/objectos.git
 cd objectos
 
 # Install dependencies
+# Note: This automatically configures the pnpm-lock.yaml merge driver
+# to prevent merge conflicts by regenerating the lock file
 pnpm install
 
 # Build all packages
@@ -184,6 +186,14 @@ pnpm run build
 
 # Run tests
 pnpm run test
+```
+
+**About the pnpm-lock.yaml merge driver:**
+The repository is configured to automatically handle merge conflicts in `pnpm-lock.yaml` by regenerating the file using `pnpm install`. This is set up automatically during `pnpm install` via the postinstall script. If you need to manually configure it, run:
+
+```bash
+git config merge.pnpm-merge.name "pnpm-lock.yaml merge driver"
+git config merge.pnpm-merge.driver "pnpm install"
 ```
 
 ### Development Workflow
