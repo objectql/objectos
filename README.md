@@ -77,10 +77,14 @@ git clone [https://github.com/objectql/objectos.git](https://github.com/objectql
 # Install dependencies
 pnpm install
 
+# Setup automatic merge conflict resolution for pnpm-lock.yaml (recommended)
+./scripts/setup-merge-driver.sh
+
 # Configure environment
 cp .env.example .env
 
 ```
+
 
 ### Running the Server
 
