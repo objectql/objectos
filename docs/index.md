@@ -112,11 +112,12 @@ states:
     on_enter:
       - action: notify_employee
 
+# Guards define permission checks before state transitions
 guards:
   can_submit:
-    condition: "user.id == record.owner"
+    condition: "user.id == record.owner"  # Only owner can submit
   can_approve:
-    condition: "user.role in ['manager', 'hr']"
+    condition: "user.role in ['manager', 'hr']"  # Only managers/HR can approve
 ```
 
 **The result?** Business analysts can modify approval flows without touching code. Developers avoid spaghetti logic. The kernel executes the transitions reliably.
@@ -161,7 +162,8 @@ ObjectOS follows the **micro-kernel pattern**: The core provides essential servi
 
 ```typescript
 // plugins/crm/manifest.ts
-import { PluginManifest } from '@objectos/types';
+// Note: This is a conceptual example of the plugin architecture
+import { PluginManifest } from '@objectos/kernel';
 
 export const CrmPlugin: PluginManifest = {
   id: 'steedos-crm',
@@ -327,7 +329,7 @@ Configurable per field:
 fields:
   email:
     type: email
-    sync_strategy: last_write_wins  # LWW: Timestamp wins
+    sync_strategy: last_write_wins  # Last Write Wins (LWW): Timestamp wins
   
   description:
     type: textarea
@@ -439,7 +441,7 @@ pnpm dev
 # objects/tasks.object.yml
 name: tasks
 label: Task
-icon: check-square
+icon: check-square  # Lucide icon name (https://lucide.dev)
 
 fields:
   title:
