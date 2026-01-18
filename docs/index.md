@@ -481,9 +481,9 @@ permission_set:
 
 ### Next Steps
 
-- [Architecture Guide](/guide/architecture) - Deep dive into the kernel design
-- [Plugin Development](/guide/logic-hooks) - Extend ObjectOS with custom logic
-- [Sync Protocol](/spec/http-protocol) - Build offline-first clients
+- [Architecture Guide](./guide/architecture.md) - Deep dive into the kernel design
+- [Plugin Development](./guide/logic-hooks.md) - Extend ObjectOS with custom logic
+- [Sync Protocol](./spec/http-protocol.md) - Build offline-first clients
 
 ---
 

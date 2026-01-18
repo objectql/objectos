@@ -8,6 +8,10 @@ exclude = [
     
     # Anchor links (internal page references)
     "^#",
+    
+    # VitePress internal routing (absolute paths in frontmatter)
+    "^/guide/",
+    "^/spec/",
 ]
 
 # HTTP request timeout in seconds
