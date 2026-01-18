@@ -7,7 +7,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join, resolve, dirname } from 'path';
 import { AuthMiddleware } from './auth/auth.middleware.js';
 import { ObjectOS } from '@objectos/kernel';
-import { createRESTHandler, createMetadataHandler, createNodeHandler, createStudioHandler } from '@objectql/server';
+import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@objectql/server';
 
 const clientDistPath = resolve(dirname(require.resolve('@objectos/web/package.json')), 'dist');
 
@@ -30,7 +30,6 @@ export class AppModule implements NestModule {
     const restHandler = createRESTHandler(this.objectos);
     const metadataHandler = createMetadataHandler(this.objectos);
     const objectQLHandler = createNodeHandler(this.objectos);
-    const studioHandler = createStudioHandler();
 
     const stripPrefix = (prefix: string, handler: any) => {
       return (req: any, res: any, next: any) => {
