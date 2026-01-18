@@ -31,6 +31,17 @@ jobs:
         with:
           version: 9
 
+      - name: Configure Git Merge Driver for pnpm-lock.yaml
+        run: |
+          # Configure custom merge driver for pnpm-lock.yaml
+          git config merge.pnpm-merge.name "pnpm-lock.yaml merge driver"
+          git config merge.pnpm-merge.driver \
+            "pnpm install --no-frozen-lockfile && \
+             test -f pnpm-lock.yaml && cp pnpm-lock.yaml %A || exit 1"
+
+          # Apply merge driver (CI-only, doesn't affect repository)
+          echo "pnpm-lock.yaml merge=pnpm-merge" >> .git/info/attributes
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@objectos/ui": "workspace:*",
-    "@objectql/types": "^1.8.1",
+    "@objectql/types": "^3.0.1",
     "ag-grid-community": "^35.0.0",
     "ag-grid-react": "^35.0.0",
     "better-auth": "^1.4.10",

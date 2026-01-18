@@ -16,6 +16,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'Specifications', link: '/spec/' },
+      { text: 'Development', link: '/guide/development-plan' },
     ],
 
     // Sidebar Configuration
@@ -49,6 +50,13 @@ export default defineConfig({
           text: 'User Interface',
           items: [
             { text: 'UI Framework Overview', link: '/guide/ui-framework' }
+          ]
+        },
+        {
+          text: 'Project Planning',
+          items: [
+            { text: 'Development Plan (Q1 2026)', link: '/guide/development-plan' },
+            { text: 'Contributing to Development', link: '/guide/contributing-development' }
           ]
         }
       ],

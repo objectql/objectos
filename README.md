@@ -72,7 +72,7 @@ ObjectOS is built as a modular Monorepo using **NestJS**.
 
 ```bash
 # Clone the repository
-git clone [https://github.com/objectql/objectos.git](https://github.com/objectql/objectos.git)
+git clone https://github.com/objectstack-ai/objectos.git
 
 # Install dependencies
 pnpm install
@@ -132,6 +132,23 @@ async function bootstrap() {
 bootstrap();
 
 ```
+
+---
+
+## 📋 Development & Roadmap
+
+Want to contribute or see what's coming next?
+
+- **[Development Plan (Q1 2026)](./docs/guide/development-plan.md)** - Detailed implementation plan for upcoming features
+- **[Long-term Roadmap](./ROADMAP.md)** - Strategic vision through 2026 and beyond
+- **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
+
+**Key Q1 2026 Goals:**
+- 🔐 Production-grade permission system (Object/Field/Record-level)
+- 🪝 Complete lifecycle hooks system
+- 🔗 Full relationship support (Lookup, Master-Detail, Many-to-Many)
+- 🧪 Test coverage (90% Kernel, 80% Server, 70% UI)
 
 ---
 
