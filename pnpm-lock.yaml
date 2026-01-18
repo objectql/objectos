@@ -9,23 +9,23 @@ importers:
   .:
     dependencies:
       '@objectql/core':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
       '@objectql/driver-mongo':
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^3.0.1
+        version: 3.0.1
       '@objectql/driver-sql':
-        specifier: ^1.8.1
-        version: 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+        specifier: ^3.0.1
+        version: 3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/platform-node':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
       '@objectql/starter-basic':
-        specifier: ^1.8.1
-        version: 1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)
+        specifier: ^1.8.4
+        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@3.0.1)(sqlite3@5.1.7)
       '@objectql/starter-enterprise':
-        specifier: ^1.8.1
-        version: 1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)
+        specifier: ^1.8.4
+        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@3.0.1)(sqlite3@5.1.7)
       build:
         specifier: ^0.1.4
         version: 0.1.4
@@ -73,8 +73,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ui
       '@objectql/types':
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^3.0.1
+        version: 3.0.1
       ag-grid-community:
         specifier: ^35.0.0
         version: 35.0.0
@@ -155,11 +155,11 @@ importers:
   packages/kernel:
     dependencies:
       '@objectql/core':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
       '@objectql/types':
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^3.0.1
+        version: 3.0.1
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
@@ -186,8 +186,8 @@ importers:
   packages/presets/base:
     dependencies:
       '@objectql/core':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
     devDependencies:
       typescript:
         specifier: ^5.0.0
@@ -220,17 +220,17 @@ importers:
         specifier: workspace:*
         version: link:../../apps/web
       '@objectql/core':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
       '@objectql/driver-mongo':
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^3.0.1
+        version: 3.0.1
       '@objectql/driver-sql':
-        specifier: ^1.8.1
-        version: 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+        specifier: ^3.0.1
+        version: 3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/server':
-        specifier: ^1.8.1
-        version: 1.8.1(encoding@0.1.13)(ws@8.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)
       better-auth:
         specifier: ^1.4.10
         version: 1.4.11(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(pg@8.16.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.0.17(@types/node@20.19.28)(jiti@1.21.7)(jsdom@27.4.0)(terser@5.44.1))(vue@3.5.26(typescript@5.6.3))
@@ -296,8 +296,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.0(react@18.3.1))
       '@objectql/types':
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^3.0.1
+        version: 3.0.1
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1805,41 +1805,41 @@ packages:
     engines: {node: '>=8.0.0', npm: '>=5.0.0'}
     hasBin: true
 
-  '@objectql/core@1.8.1':
-    resolution: {integrity: sha512-TcoklYJNQlIL77Qj5XFNfgOHSQ1YauqHbhyUCB3HbR0UCdC/MG2+GjOX0scjOk7aWuLfuQP/y14iNISaNxouNw==}
+  '@objectql/core@3.0.1':
+    resolution: {integrity: sha512-n70OVm2m6NV5e3c5C8y8QD7SiJQFKU1Kb0hkafXEaGx1M94eUtdSgbIguE8Y4X3li+iJnNCbMhfapH4jhvUggw==}
 
-  '@objectql/driver-mongo@1.8.1':
-    resolution: {integrity: sha512-+ndjWkry3qnsEfpim3DFMdhbRTKXBW93yNNfZCXoD2PmG3Zay9aDpgSHD9NopCyh9qPJDgtAYa/O78as2hYJSQ==}
+  '@objectql/driver-mongo@3.0.1':
+    resolution: {integrity: sha512-GpQfPGYHYgDYLuyXVlhWzgIZscN/iS6E7J6n7tvtdEfWv2vPV3W+VieSpqkj6CIgORNc0hyLsXoavnt34guzIw==}
 
-  '@objectql/driver-sql@1.8.1':
-    resolution: {integrity: sha512-iDjiLy9F4rN8OmLYXUS9ftNdVOVR9BOVAHAXsbBNlR+uxtvqPLgotdjM0KIW9z0YjRe1jQY9rAx4oCKL5y3ovw==}
+  '@objectql/driver-sql@3.0.1':
+    resolution: {integrity: sha512-uHQXIHdvHTmImd3yIYFpZyoJsd7aczbEQcD7MDUO9qX0ntEj9aNz7q6fL4wdEh/DIuWsGLLjiROTV7voh4IXQQ==}
 
-  '@objectql/platform-node@1.8.1':
-    resolution: {integrity: sha512-PngXcyJK3eVZeDV1gvFWf4OWA/1DtlfHrU2lf97dsUFIJQfFZdxLJ7J0LF0w3e4DmbnaJrUKRuAwcPA55kQUIA==}
+  '@objectql/platform-node@3.0.1':
+    resolution: {integrity: sha512-iiWAwtV+W7WodR1Devhy9xHtl1f3gpKdNB6UmiGoBw7XHA3F/D88igCFf5BcaIVhmAkkrUqbtkuo1WmULFmLsg==}
 
-  '@objectql/server@1.8.1':
-    resolution: {integrity: sha512-ENfMb8raPWsrp6M1eU+H3Y8ww2HjCF3/7TBt/id/m8WFqG4GoTNOP+MTIGRI6CXdgDedX1djEEEsAMaLGu+GSw==}
+  '@objectql/server@3.0.1':
+    resolution: {integrity: sha512-vMgleon9TUckj+9WHfdAnRBL8OS/IQaO71OmCEQfSELbxuHjbTnn6dn1DZWw+c7oGOiFWNnoMEUz64kqGQE1AA==}
 
-  '@objectql/starter-basic@1.8.1':
-    resolution: {integrity: sha512-sykpQl5uzNoRG1REb+tWjydUWSg2dksFZ/AZELC2ZtxlEclagzF7+hrFJ3qasymGIzp/Nd5Yzx5SA2BQnEEaEw==}
+  '@objectql/starter-basic@1.8.4':
+    resolution: {integrity: sha512-HPHP5Su7HwK8vpjFqgSDkotwFhs8OdMznztgHgG1PSSdOH/u+9i/GeAB5+t4sYPGL3kMzMPrjBwUGE1Eo12hVw==}
     peerDependencies:
-      '@objectql/core': 1.8.1
-      '@objectql/driver-sql': 1.8.1
-      '@objectql/platform-node': 1.8.1
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4
+      '@objectql/driver-sql': 1.8.4
+      '@objectql/platform-node': 1.8.4
+      '@objectql/types': 1.8.4
       sqlite3: ^5.1.7
 
-  '@objectql/starter-enterprise@1.8.1':
-    resolution: {integrity: sha512-vjMv6coB04/Y+p/+hM97tEAoomva0DKE3DeBTHicjOXSuvNhPsyYvGvdE0W8WrbVAgviqwRe7dT/Mp6O8unopw==}
+  '@objectql/starter-enterprise@1.8.4':
+    resolution: {integrity: sha512-fc5g79DIGDTxu93+qWx7cnoEsThBo8ixhHZ7LkAkw4DZgsSR93J+PhKtdH15YcWNe6bJJzxbvU0QrtVC2OB5Wg==}
     peerDependencies:
-      '@objectql/core': 1.8.1
-      '@objectql/driver-sql': 1.8.1
-      '@objectql/platform-node': 1.8.1
-      '@objectql/types': 1.8.1
+      '@objectql/core': 1.8.4
+      '@objectql/driver-sql': 1.8.4
+      '@objectql/platform-node': 1.8.4
+      '@objectql/types': 1.8.4
       sqlite3: ^5.1.7
 
-  '@objectql/types@1.8.1':
-    resolution: {integrity: sha512-aHa1igwxLYmfWQj5lrJQkpwbeBKkAk/AYKpDOsgzJ5q2uFhzzM1UD2UD9x5Xi/modyFL1GPhgtDFq//RxP2oeQ==}
+  '@objectql/types@3.0.1':
+    resolution: {integrity: sha512-L1G8WyZ8TEFatTaPMsSU6zDjCcaFQ5IN1vv3P0j5qwJhIBFUgoO6kl1HpB+CffKQH0F3z9iSpAlGjqExwhHTmw==}
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -8570,9 +8570,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
-      '@objectql/types': 1.8.1
+      '@objectql/types': 3.0.1
       js-yaml: 4.1.1
       openai: 4.104.0(encoding@0.1.13)(ws@8.19.0)
     transitivePeerDependencies:
@@ -8580,9 +8580,9 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/driver-mongo@1.8.1':
+  '@objectql/driver-mongo@3.0.1':
     dependencies:
-      '@objectql/types': 1.8.1
+      '@objectql/types': 3.0.1
       mongodb: 5.9.2
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -8591,9 +8591,9 @@ snapshots:
       - mongodb-client-encryption
       - snappy
 
-  '@objectql/driver-sql@1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)':
+  '@objectql/driver-sql@3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/types': 1.8.1
+      '@objectql/types': 3.0.1
       knex: 3.1.0(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
     transitivePeerDependencies:
       - better-sqlite3
@@ -8605,10 +8605,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 3.0.1
       fast-glob: 3.3.3
       js-yaml: 4.1.1
     transitivePeerDependencies:
@@ -8616,11 +8616,11 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/server@1.8.1(encoding@0.1.13)(ws@8.19.0)':
+  '@objectql/server@3.0.1(encoding@0.1.13)(ws@8.19.0)':
     dependencies:
       '@graphql-tools/schema': 10.0.31(graphql@16.12.0)
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 3.0.1
       graphql: 16.12.0
       js-yaml: 4.1.1
     transitivePeerDependencies:
@@ -8628,23 +8628,23 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/starter-basic@1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)':
+  '@objectql/starter-basic@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@3.0.1)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/driver-sql': 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
-      '@objectql/platform-node': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/driver-sql': 3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+      '@objectql/platform-node': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 3.0.1
       sqlite3: 5.1.7
 
-  '@objectql/starter-enterprise@1.8.1(@objectql/core@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@1.8.1(sqlite3@5.1.7))(@objectql/platform-node@1.8.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@1.8.1)(sqlite3@5.1.7)':
+  '@objectql/starter-enterprise@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0))(@objectql/types@3.0.1)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/core': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/driver-sql': 1.8.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
-      '@objectql/platform-node': 1.8.1(encoding@0.1.13)(ws@8.19.0)
-      '@objectql/types': 1.8.1
+      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/driver-sql': 3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
+      '@objectql/platform-node': 3.0.1(encoding@0.1.13)(ws@8.19.0)
+      '@objectql/types': 3.0.1
       sqlite3: 5.1.7
 
-  '@objectql/types@1.8.1': {}
+  '@objectql/types@3.0.1': {}
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
