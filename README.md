@@ -9,7 +9,6 @@
 
   [![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
   [![Stack](https://img.shields.io/badge/stack-Node.js%20%7C%20NestJS-E0234E.svg)](https://nestjs.com/)
-  [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](docker-compose.yml)
 
 ---
 
@@ -166,7 +165,7 @@ Want to contribute or see what's coming next?
 
 If you wish to build proprietary/closed-source SaaS applications using ObjectOS, or cannot comply with the AGPL, you must purchase a **Commercial License**.
 
-👉 [Contact Sales for Enterprise Licensing](https://www.objectos.org/enterprise)
+👉 Contact us for Enterprise Licensing: [GitHub Issues](https://github.com/objectstack-ai/objectos/issues)
 
 ---
 

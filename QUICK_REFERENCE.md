@@ -458,10 +458,8 @@ fields:
 
 ## Resources
 
-- **Documentation**: [docs.objectos.org](https://docs.objectos.org)
-- **GitHub**: [github.com/objectql/objectos](https://github.com/objectql/objectos)
-- **Protocol Spec**: [github.com/objectql/objectql](https://github.com/objectql/objectql)
-- **Examples**: [github.com/objectql/objectos/tree/main/examples](https://github.com/objectql/objectos/tree/main/examples)
+- **GitHub**: [github.com/objectstack-ai/objectos](https://github.com/objectstack-ai/objectos)
+- **Protocol Spec**: [github.com/objectstack-ai/objectql](https://github.com/objectstack-ai/objectql)
 
 ## Commands
 
@@ -484,9 +482,8 @@ npm --prefix packages/server run test
 
 1. **Read the Guide**: [Getting Started](./docs/guide/index.md)
 2. **Learn Architecture**: [Architecture Deep Dive](./docs/guide/architecture.md)
-3. **Explore Examples**: Check the [examples/](./examples) directory
-4. **Join Community**: Discord (coming soon)
-5. **Contribute**: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+3. **Join Community**: Discord (coming soon)
+4. **Contribute**: See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ---
 

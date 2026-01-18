@@ -432,9 +432,8 @@ Check your `permission_set` in the object definition and ensure the user has the
 
 ## Resources
 
-- **[GitHub Repository](https://github.com/objectql/objectos)** - Source code
-- **[ObjectQL Protocol](https://github.com/objectql/objectql)** - Metadata standard
-- **[Examples](https://github.com/objectql/objectos/tree/main/examples)** - Sample applications
+- **[GitHub Repository](https://github.com/objectstack-ai/objectos)** - Source code
+- **[ObjectQL Protocol](https://github.com/objectstack-ai/objectql)** - Metadata standard
 - **[API Reference](./sdk-reference.md)** - Complete API docs
 
 ## Community

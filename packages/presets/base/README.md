@@ -416,16 +416,16 @@ await importUsers(kernel, {
 
 ## Contributing
 
-See the main [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
+See the main [CONTRIBUTING.md](../../../CONTRIBUTING.md) for guidelines.
 
 ## License
 
-AGPL-3.0 - See [LICENSE](../../LICENSE) for details.
+AGPL-3.0 - See [LICENSE](../../../LICENSE) for details.
 
 ## Documentation
 
-- [Complete Documentation](../../docs/guide/index.md)
-- [Security Guide](../../docs/guide/security-guide.md)
+- [Complete Documentation](../../../docs/guide/index.md)
+- [Security Guide](../../../docs/guide/security-guide.md)
 - [Better-Auth Integration](https://better-auth.com)
 
 ## Links

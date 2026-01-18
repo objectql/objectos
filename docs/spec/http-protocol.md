@@ -622,7 +622,7 @@ ws://localhost:3000/ws
 }
 ```
 
-See [Real-Time Guide](../guide/realtime.md) for details (coming soon).
+> **Note**: WebSocket real-time functionality is planned for a future release.
 
 ## API Versioning
 

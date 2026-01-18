@@ -513,12 +513,9 @@ We follow Semantic Versioning (SemVer):
 
 ## Contact & Links
 
-- **Website**: https://objectos.org
-- **GitHub**: https://github.com/objectql/objectos
-- **Protocol Spec**: https://github.com/objectql/objectql
-- **Documentation**: https://docs.objectos.org
-- **Discord**: https://discord.gg/objectos (coming soon)
-- **Twitter**: @ObjectOS (coming soon)
+- **GitHub**: https://github.com/objectstack-ai/objectos
+- **Protocol Spec**: https://github.com/objectstack-ai/objectql
+- **Discord**: https://discord.gg/objectos
 
 ---
 

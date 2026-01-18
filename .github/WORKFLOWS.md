@@ -221,11 +221,11 @@ docs: update architecture guide
 
 **Features:**
 - Checks all markdown files for broken links
-- Configurable via `.github/markdown-link-check-config.json`
+- Configurable via `lychee.toml` in repository root
 - Ignores localhost and internal anchors
 - Retries on 429 errors
 
-**Configuration:** `.github/markdown-link-check-config.json`
+**Configuration:** `lychee.toml`
 
 ---
 
@@ -279,7 +279,7 @@ Some workflows require repository secrets:
 
 You can view the status of all workflows:
 
-- **Actions tab:** [View workflows](../../actions)
+- **Actions tab:** [View workflows](https://github.com/objectstack-ai/objectos/actions)
 - **Badge:** Add workflow badges to README for quick status overview
 
 ---
@@ -292,7 +292,7 @@ To customize workflows:
 2. Update configuration files:
    - `.github/labeler.yml` - Label rules
    - `.github/dependabot.yml` - Dependency update settings
-   - `.github/markdown-link-check-config.json` - Link checker settings
+   - `lychee.toml` - Link checker settings (in repository root)
 
 ---
 

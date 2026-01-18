@@ -18,7 +18,6 @@ This directory contains all GitHub-specific configuration and automation for the
 │   └── check-links.yml # Documentation link validation
 ├── dependabot.yml      # Automated dependency updates
 ├── labeler.yml         # PR labeling rules
-├── markdown-link-check-config.json  # Link checker config
 └── WORKFLOWS.md        # Detailed workflow documentation
 ```
 
@@ -100,7 +99,7 @@ Key workflows:
 ## 🔍 Monitoring
 
 View workflow runs:
-- Go to the [Actions tab](../../actions)
+- Go to the [Actions tab](https://github.com/objectstack-ai/objectos/actions)
 - Filter by workflow name
 - Check logs for failures
 

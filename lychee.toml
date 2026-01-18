@@ -1,0 +1,36 @@
+# Lychee link checker configuration
+
+# Exclude these patterns from checking
+exclude = [
+    # Local development URLs
+    "^http://localhost",
+    "^https://localhost",
+    
+    # Anchor links (internal page references)
+    "^#",
+    
+    # VitePress internal routing (absolute paths in frontmatter)
+    "^/guide/",
+    "^/spec/",
+]
+
+# HTTP request timeout in seconds
+timeout = 20
+
+# Maximum number of retries
+max_retries = 3
+
+# Retry on 429 (Too Many Requests)
+retry_wait_time = 2
+
+# Accept these status codes as valid
+accept = [200, 201, 204, 206, 301, 302, 307, 308]
+
+# User agent
+user_agent = "Mozilla/5.0 (compatible; lychee/0.21.0)"
+
+# Maximum number of concurrent requests
+max_concurrency = 8
+
+# Include verbosity in output
+verbose = true
