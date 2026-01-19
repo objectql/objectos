@@ -1,7 +1,7 @@
 import { source } from '@/lib/source';
-import { DocsPage, DocsBody } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 
+export const dynamicParams = true;
 export const dynamic = 'force-dynamic';
 
 export default async function Page(props: {
@@ -14,14 +14,11 @@ export default async function Page(props: {
   const MDX = (page.data as any).exports?.default;
 
   return (
-    <DocsPage 
-      toc={(page.data as any).toc || []} 
-      full={(page.data as any).full}
-    >
-      <DocsBody>
-        <h1>{page.data.title || 'Untitled'}</h1>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-4">{page.data.title || 'Untitled'}</h1>
+      <div className="prose prose-gray max-w-none">
         {MDX && <MDX />}
-      </DocsBody>
-    </DocsPage>
+      </div>
+    </div>
   );
 }

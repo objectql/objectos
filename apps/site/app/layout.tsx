@@ -1,5 +1,4 @@
 import './global.css';
-import 'fumadocs-ui/style.css';
 import { RootProvider } from 'fumadocs-ui/provider';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
