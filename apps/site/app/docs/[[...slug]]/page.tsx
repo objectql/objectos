@@ -17,6 +17,12 @@ export default async function Page(props: {
     <DocsPage 
       toc={(page.data as any).toc ?? []}
       full={false}
+      lastUpdate={page.data.lastModified}
+      editOnGithub={{
+        owner: 'objectstack-ai',
+        repo: 'objectos',
+        path: `apps/site/content/docs/${page.file.path}`,
+      }}
     >
       <DocsBody>
         <h1>{page.data.title}</h1>
