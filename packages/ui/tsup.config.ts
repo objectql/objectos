@@ -21,5 +21,10 @@ export default defineConfig({
           'react': path.resolve(__dirname, 'src/shims/react.ts'),
           'react-dom': path.resolve(__dirname, 'src/shims/react-dom.ts'),
       };
+      // Ignore CSS imports - we build CSS separately
+      options.loader = {
+          ...options.loader,
+          '.css': 'empty',
+      };
   }
 })
