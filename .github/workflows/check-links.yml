@@ -6,11 +6,11 @@ on:
       - main
     paths:
       - '**/*.md'
-      - 'docs/**/*'
+      - 'apps/site/content/**/*.mdx'
   pull_request:
     paths:
       - '**/*.md'
-      - 'docs/**/*'
+      - 'apps/site/content/**/*.mdx'
   schedule:
     # Run weekly on Sundays at 00:00 UTC
     - cron: '0 0 * * 0'
@@ -25,7 +25,7 @@ jobs:
       - name: Check links in Markdown files
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --verbose --no-progress '**/*.md' 'docs/**/*.md'
+          args: --verbose --no-progress '**/*.md' 'apps/site/content/**/*.mdx'
           fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

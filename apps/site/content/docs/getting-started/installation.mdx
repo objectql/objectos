@@ -1,0 +1,70 @@
+---
+title: Installation
+description: Install and set up ObjectOS
+---
+
+# Installation
+
+This guide covers the installation process for ObjectOS.
+
+## System Requirements
+
+- **Node.js**: 18.0 or higher
+- **Package Manager**: pnpm (recommended)
+- **Operating System**: Linux, macOS, or Windows
+
+## Installation Steps
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/objectstack-ai/objectos.git
+cd objectos
+```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Build the Project
+
+```bash
+pnpm build
+```
+
+### 4. Start Development Server
+
+```bash
+pnpm dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+## Verify Installation
+
+To verify that ObjectOS is installed correctly, run:
+
+```bash
+pnpm test
+```
+
+All tests should pass successfully.
+
+## Next Steps
+
+Now that you have ObjectOS installed, explore the documentation to learn more about:
+
+- **Architecture** - Understand the system design
+- **Configuration** - Configure ObjectOS for your needs
+- **Development** - Start building with ObjectOS
+
+## Troubleshooting
+
+If you encounter any issues during installation:
+
+1. Ensure you have the correct Node.js version
+2. Clear your pnpm cache: `pnpm store prune`
+3. Delete `node_modules` and reinstall: `rm -rf node_modules && pnpm install`
+4. Check the [GitHub Issues](https://github.com/objectstack-ai/objectos/issues) for similar problems
