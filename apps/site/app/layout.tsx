@@ -14,6 +14,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         <RootProvider
           search={{
             enabled: true,
+            options: {
+              type: 'static',
+            },
           }}
         >
           {children}

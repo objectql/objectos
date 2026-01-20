@@ -20,7 +20,6 @@ export const blog = defineCollections({
 });
 
 export default defineConfig({
-  lastModifiedTime: 'git',
   mdxOptions: {
     remarkPlugins: [remarkInstall],
     rehypeCodeOptions: {
