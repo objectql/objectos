@@ -21,9 +21,9 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && changeset publish",
-    "docs:dev": "pnpm --filter @objectos/site dev",
-    "docs:build": "pnpm --filter @objectos/site build",
-    "docs:preview": "pnpm --filter @objectos/site start"
+    "site:dev": "pnpm --filter @objectos/site dev",
+    "site:build": "pnpm --filter @objectos/site build",
+    "site:preview": "pnpm --filter @objectos/site start"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
