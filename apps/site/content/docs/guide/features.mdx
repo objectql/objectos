@@ -1,0 +1,117 @@
+---
+title: Features Demo
+description: Demonstration of enhanced fumadocs features
+---
+
+## Code Highlighting with Themes
+
+The documentation now supports beautiful syntax highlighting with automatic light/dark theme switching using GitHub themes:
+
+```typescript
+import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
+
+export const { docs, meta } = defineDocs({
+  dir: 'content/docs',
+});
+
+export default defineConfig({
+  mdxOptions: {
+    remarkPlugins: [],
+    rehypeCodeOptions: {
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+    },
+  },
+});
+```
+
+## Multi-Language Support
+
+Syntax highlighting works for many languages:
+
+```python
+def greet(name: str) -> str:
+    """Greet someone by name."""
+    return f"Hello, {name}!"
+
+user = "ObjectOS"
+message = greet(user)
+print(message)
+```
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    user := "ObjectOS"
+    fmt.Printf("Hello, %s!\n", user)
+}
+```
+
+```bash
+# Install dependencies
+npm install fumadocs-ui fumadocs-core fumadocs-mdx
+
+# Start development server
+npm run dev
+```
+
+## JSON and YAML
+
+Configuration files are also highlighted:
+
+```json
+{
+  "name": "@objectos/site",
+  "version": "0.1.0",
+  "dependencies": {
+    "fumadocs-ui": "^16.4.7",
+    "fumadocs-core": "^16.4.7"
+  }
+}
+```
+
+```yaml
+name: docs_workflow
+states:
+  draft:
+    initial: true
+    transitions:
+      submit: pending_approval
+  pending_approval:
+    transitions:
+      approve: approved
+      reject: rejected
+```
+
+## Search Functionality
+
+Press `Ctrl+K` (or `Cmd+K` on Mac) to open the search dialog and quickly find any documentation page. The search is client-side and works even when offline!
+
+## Collapsible Sidebar
+
+The sidebar now supports collapsible sections for better organization and navigation. Click on folder icons to expand or collapse sections.
+
+## Edit on GitHub
+
+Each documentation page now includes an "Edit this page on GitHub" link in the footer, making it easy for contributors to suggest improvements.
+
+## Automatic Copy Button
+
+Hover over any code block to see the copy button appear in the top-right corner. Click it to copy the code to your clipboard.
+
+## Features Enabled
+
+✅ **Search** - Client-side search with keyboard shortcuts (`Ctrl+K`)  
+✅ **Syntax Highlighting** - Dual theme support (github-light/github-dark)  
+✅ **Collapsible Sidebar** - Better navigation organization  
+✅ **Edit on GitHub** - Easy contribution workflow  
+✅ **Typography Plugin** - Beautiful text formatting  
+✅ **Copy Button** - One-click code copying  
+✅ **Table of Contents** - Automatic page navigation  
+✅ **Transparent Navigation** - Smooth scrolling effects  
+✅ **GitHub Integration** - Direct links to source files  
