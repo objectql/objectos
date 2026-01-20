@@ -1,0 +1,143 @@
+---
+title: "Deep Dive: Inside the ObjectOS Sync Engine (HLCs & Merkle Trees)"
+description: "A technical walkthrough of how we implemented distributed consistency using Hybrid Logical Clocks, Merkle Trees, and Differential Synchronization."
+date: 2024-04-10
+author: "ObjectOS Engineering"
+---
+
+# Deep Dive: Inside the ObjectOS Sync Engine
+
+> **Warning:** This post assumes familiarity with distributed systems concepts like CAP Theorem, Eventual Consistency, and Logical Clocks.
+
+Building a **Local-First** application is deceptively difficult. It's not just about caching data; it's about distributed consistency. When hundreds of clients operate offline and push changes simultaneously, how do we ensure the system converges to a correct state without losing data?
+
+In this deep dive, we'll explain the internal architecture of `@objectos/sync`, covering Hybrid Logical Clocks (HLC), Merkle Trees for diff detection, and our implementation of Last-Write-Wins (LWW).
+
+## 1. The Time Problem: Hybrid Logical Clocks (HLC)
+
+Standard physical clocks (Wall Clock Time) are unreliable in distributed systems due to clock skew. Client A might be set to 10:00 AM while Client B is set to 9:55 AM. If both edit a record, physical timestamps might incorrectly discard the newer edit.
+
+We solve this using **Hybrid Logical Clocks (HLC)**.
+
+### HLC Structure
+
+An HLC timestamp is a 64-bit value composed of:
+1. **Physical Component (PT):** 48 bits representing the physical time (milliseconds).
+2. **Logical Component (LC):** 16 bits serving as a counter for events effectively happening within the "same" millisecond.
+
+```typescript
+// @objectos/sync/src/hlc.ts (Simplified)
+
+export class HLC {
+  static send(local: Timestamp, remote: Timestamp): Timestamp {
+    // When receiving a message, we must move our local clock forward
+    // to safeguard strong causality.
+    const now = Date.now();
+    const millis = Math.max(local.millis, remote.millis, now);
+    
+    let counter = local.counter;
+    
+    if (millis === local.millis && millis === remote.millis) {
+      // Tie-breaking via logical counter
+      counter = Math.max(local.counter, remote.counter) + 1;
+    } else if (millis === local.millis) {
+      counter += 1;
+    } else if (millis === remote.millis) {
+      counter = remote.counter + 1;
+    } else {
+      counter = 0;
+    }
+    
+    return new Timestamp(millis, counter, local.nodeId);
+  }
+}
+```
+
+Every mutation in ObjectOS carries an HLC timestamp. This allows us to establish a strictly monotonic ordering of events across disjoint distributed nodes.
+
+## 2. Fast Diff Detection: Merkle Trees
+
+When a client reconnects after being offline for a week, asking "What changed?" is expensive if we scan the entire table.
+
+We use **Merkle Trees** (Hash Trees) to optimize synchronization.
+
+### The Mechanism
+
+1. **Partitioning:** We bucket records based on their ID hashes.
+2. **Hashing:** Each bucket maintains a hash of its contents (XOR of the record hashes).
+3. **Comparison:** 
+   - Client sends its Root Hash.
+   - Server compares it with its Root Hash.
+   - If they match -> No changes.
+   - If they differ -> Descend into the tree branches to find the specific bucket that differs.
+
+This reduces the sync complexity from `O(n)` (scanning all records) to `O(log n)` (traversing the tree), dramatically reducing bandwidth for large datasets.
+
+## 3. The Sync Protocol (Push-Pull)
+
+Our synchronization protocol occurs over a WebSocket connection (for real-time) or HTTP (for recovery).
+
+### Phase 1: Push (Client -> Server)
+
+The client sends a "Mutation Log". Crucially, we do not send the *state*; we send the *intent*.
+
+```json
+{
+  "mutations": [
+    {
+      "op": "UPDATE",
+      "collection": "orders",
+      "id": "ord_123",
+      "changes": { "status": "shipped" },
+      "hlc": "1698771234000:001:node_a"
+    }
+  ]
+}
+```
+
+The Server applies these mutations using a **Last-Write-Wins (LWW) Register** Map.
+- If the incoming HLC > existing HLC for that field, update.
+- If incoming HLC < existing HLC, ignore (stale update).
+
+### Phase 2: Pull (Server -> Client)
+
+To get updates from other clients, the client requests a "Delta".
+
+```typescript
+// Server-side Delta Generation
+async function getChangesSince(cursor: HLC) {
+  // Query the 'Mutations' table, which is an append-only log
+  const changes = await db.mutationLog.find({
+    where: {
+      timestamp: { $gt: cursor.toString() }
+    }
+  });
+  
+  return compactChanges(changes);
+}
+```
+
+## 4. Conflict Resolution Strategies
+
+While LWW is the default, it is lossy. For complex scenarios, ObjectOS supports **CRDTs (Conflict-free Replicated Data Types)** for specific field types.
+
+### The JSON-Merge-Patch Problem
+
+If User A updates `{"color": "red"}` and User B updates `{"size": "large"}` on the same JSON blob, a naive LWW overwrites one.
+ObjectOS treats JSON fields as maps. We track timestamps *per key*.
+
+```typescript
+// Internal representation of a Resolve map
+{
+  "metadata": {
+    "color": { value: "red", ts: "HLC_A" },
+    "size": { value: "large", ts: "HLC_B" }
+  }
+}
+```
+
+This allows granular merging of concurrent edits on the same document.
+
+## Conclusion
+
+The `@objectos/sync` package is not just a standard API. It is a distributed consistency engine designed to make "Offline Mode" robust enough for enterprise data. By leveraging HLCs for time and Merkle Trees for efficiency, we achieve a balance of correctness and performance.

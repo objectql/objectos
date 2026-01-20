@@ -1,0 +1,76 @@
+---
+title: "Security as a Primitive: The Zero Trust Model"
+description: "How ObjectOS embeds Identity and RBAC into the core kernel, ensuring security is never an afterthought."
+date: 2024-03-20
+author: "ObjectOS Team"
+---
+
+# Security as a Primitive: The Zero Trust Model
+
+In many frameworks, security is middleware that you "bolt on" at the end. You build your API, and then you add a `RequiresAuth` decorator.
+
+In **ObjectOS**, Security is a **Primitive**. It is baked into the kernel itself. We follow a **Zero Trust** philosophy: **"Never trust, always verify."**
+
+## The Identity Subsystem (`@objectos/auth`)
+
+Identity is not just about logging in (Authentication); it's about what you can do (Authorization).
+
+In ObjectOS, every interaction with the system—whether it's an API call, a background job, or a sync event—must have an **Actor**.
+- An Actor can be a User.
+- An Actor can be a System Service (e.g., the Cron Scheduler).
+- An Actor can be an API Key.
+
+### Context is King
+
+We pass a `Context` object through every layer of the stack. This object contains the verified Identity and Session of the Actor.
+
+```typescript
+// The Context travels everywhere
+interface Context {
+  userId: string;
+  sessionId: string;
+  roles: string[];
+  permissions: Set<string>;
+  
+  // Security methods
+  assertPermission(permission: string): void;
+}
+```
+
+## Granular RBAC (Role-Based Access Control)
+
+ObjectOS implements a hierarchical RBAC system.
+- **Micro-Permissions:** We don't just check `isAdmin`. We check `sales_order.read`, `sales_order.create`, `sales_order.approve`.
+- **Profiles:** Permissions are grouped into Profiles (e.g., "Sales Rep", "Manager").
+- **Record-Level Security (Sharing Rules):** RBAC controls *what* you can do. Sharing Rules control *which records* you can do it to.
+  - *Example:* A Sales Rep can `view` Orders, but ONLY orders `where owner = me`.
+
+## The Permission Layer
+
+Developers are forbidden from bypassing the Permission Layer.
+Instead of calling `db.find()`, ObjectOS plugins call the Kernel's Broker.
+
+**Bad (Bypasses Checks):**
+```typescript
+const orders = await db.collection('orders').find({});
+```
+
+**Good (Enforces Checks):**
+```typescript
+const orders = await ctx.call('data.find', { object: 'orders' });
+```
+The Kernel intercepts this call, checks verify the Actor has `orders.read` permission, applies Record-Level scoping filters, and *then* returns the data.
+
+## Audit Logging
+
+Because every action goes through the Kernel, we get **Audit Logging for free**.
+- Who changed the record?
+- When?
+- What was the old value?
+- What is the new value?
+
+This is critical for enterprise compliance (SOC2, HIPAA).
+
+## Conclusion
+
+Security cannot be an afterthought. By making Identity and Permissions first-class citizens of the OS, ObjectOS ensures that your application is secure by default, not by configuration.
