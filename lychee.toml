@@ -33,4 +33,4 @@ user_agent = "Mozilla/5.0 (compatible; lychee/0.21.0)"
 max_concurrency = 8
 
 # Include verbosity in output
-verbose = true
+# Removed verbose option - use --verbose flag in CLI instead
