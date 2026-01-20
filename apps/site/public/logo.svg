@@ -1,32 +1,57 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad_blue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    <linearGradient id="plate_gradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#0f172a"/>
     </linearGradient>
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/>
+    <linearGradient id="core_gradient" x1="160" y1="160" x2="352" y2="352" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="15" flood-color="#3b82f6" flood-opacity="0.5"/>
     </filter>
   </defs>
 
-  <!-- Main Hexagon Shape Group -->
-  <g transform="translate(256 256)">
-    <!-- Top Face (Lightest) -->
-    <path d="M0 -160 L138.56 -80 L0 0 L-138.56 -80 Z" fill="#60a5fa" stroke="#eff6ff" stroke-width="4" stroke-linejoin="round"/>
-    
-    <!-- Right Face (Medium) -->
-    <path d="M0 0 L138.56 -80 V80 L0 160 Z" fill="#2563eb" stroke="#eff6ff" stroke-width="4" stroke-linejoin="round"/>
-    
-    <!-- Left Face (Darkest) -->
-    <path d="M0 0 L0 160 L-138.56 80 V-80 Z" fill="#1e40af" stroke="#eff6ff" stroke-width="4" stroke-linejoin="round"/>
-    
-    <!-- Inner Core / Circuitry (The "Kernel") -->
-    <path d="M0 -80 V-40" stroke="white" stroke-width="8" stroke-linecap="round" />
-    <path d="M69.28 -40 L34.64 -20" stroke="white" stroke-width="8" stroke-linecap="round" />
-    <path d="M-69.28 -40 L-34.64 -20" stroke="white" stroke-width="8" stroke-linecap="round" />
-    
-    <!-- Central Node -->
-    <circle cx="0" cy="0" r="24" fill="white" filter="url(#shadow)"/>
-    <circle cx="0" cy="0" r="12" fill="#3b82f6"/>
+  <!-- Pins Group -->
+  <g stroke="#64748b" stroke-width="32" stroke-linecap="round">
+    <!-- Top -->
+    <path d="M192 48 V96" />
+    <path d="M256 48 V96" />
+    <path d="M320 48 V96" />
+    <!-- Bottom -->
+    <path d="M192 416 V464" />
+    <path d="M256 416 V464" />
+    <path d="M320 416 V464" />
+    <!-- Left -->
+    <path d="M48 192 H96" />
+    <path d="M48 256 H96" />
+    <path d="M48 320 H96" />
+    <!-- Right -->
+    <path d="M416 192 H464" />
+    <path d="M416 256 H464" />
+    <path d="M416 320 H464" />
   </g>
+
+  <!-- Main Chassis -->
+  <rect x="96" y="96" width="320" height="320" rx="56" fill="url(#plate_gradient)" stroke="#334155" stroke-width="8"/>
+
+  <!-- Circuit Lines (Traces on the board) -->
+  <path d="M256 96 V160" stroke="#334155" stroke-width="4"/>
+  <path d="M256 352 V416" stroke="#334155" stroke-width="4"/>
+  <path d="M96 256 H160" stroke="#334155" stroke-width="4"/>
+  <path d="M352 256 H416" stroke="#334155" stroke-width="4"/>
+
+  <!-- Inner Core Container (The Kernel) -->
+  <rect x="176" y="176" width="160" height="160" rx="24" fill="url(#core_gradient)" stroke="#60a5fa" stroke-width="4" filter="url(#glow)"/>
+
+  <!-- Core Detail: The "Processing Unit" -->
+  <path d="M256 176 V216" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M256 336 V296" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M176 256 H216" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M336 256 H296" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Center Status Light -->
+  <rect x="224" y="224" width="64" height="64" rx="12" fill="#eff6ff"/>
+  <circle cx="256" cy="256" r="16" fill="#2563eb"/>
 </svg>

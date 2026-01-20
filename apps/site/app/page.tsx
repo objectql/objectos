@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
+import { baseOptions } from './layout.config';
 import { Shield, Zap, Cog, Lock, Workflow, Database, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
   return (
+    <HomeLayout {...baseOptions}>
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background via-background to-muted/20 border-b border-border">
@@ -248,5 +251,6 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+    </HomeLayout>
   );
 }
