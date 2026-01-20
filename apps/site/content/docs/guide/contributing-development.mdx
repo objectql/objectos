@@ -8,9 +8,9 @@ Welcome to the ObjectOS development effort! This guide helps you understand how 
 
 ## Quick Links
 
-- **[Development Plan (Q1 2026)](./development-plan.md)** - Current quarter's detailed implementation roadmap
-- **[Architecture Guide](./architecture.md)** - System design and architectural principles
-- **[Security Guide](./security-guide.md)** - Security best practices and guidelines
+- **[Development Plan (Q1 2026)](./development-plan.mdx)** - Current quarter's detailed implementation roadmap
+- **[Architecture Guide](./architecture.mdx)** - System design and architectural principles
+- **[Security Guide](./security-guide.mdx)** - Security best practices and guidelines
 
 ## How to Get Involved
 
@@ -45,9 +45,9 @@ ObjectOS development is organized into several key areas:
 
 Before contributing code, please review:
 
-- **[Architecture Principles](./architecture.md)** - Understand the kernel/driver/server separation
-- **[SDK Reference](./sdk-reference.md)** - Learn the ObjectOS API
-- **[Contributing Guide](../../CONTRIBUTING.md)** - Code style and workflow
+- **[Architecture Principles](./architecture.mdx)** - Understand the kernel/driver/server separation
+- **[SDK Reference](./sdk-reference.mdx)** - Learn the ObjectOS API
+- **[Contributing Guide](../../../CONTRIBUTING.md)** - Code style and workflow
 
 ### 3. Set Up Your Environment
 
@@ -71,7 +71,7 @@ pnpm run dev
 
 ### 4. Pick a Task
 
-Tasks are organized in the [Development Plan](./development-plan.md) with:
+Tasks are organized in the [Development Plan](./development-plan.mdx) with:
 - **Task Lists** - Specific implementation steps
 - **Acceptance Criteria** - What "done" looks like
 - **Estimated Time** - How long it should take
@@ -146,7 +146,7 @@ All contributions must meet these standards:
 - ✅ TypeScript strict mode enabled
 - ✅ No `any` types (use `unknown` with guards)
 - ✅ All public APIs have JSDoc comments
-- ✅ Consistent naming conventions (see [Contributing Guide](../../CONTRIBUTING.md))
+- ✅ Consistent naming conventions (see [Contributing Guide](../../../CONTRIBUTING.md))
 
 ### Test Coverage
 - ✅ Kernel: ≥ 90% coverage
@@ -213,15 +213,15 @@ Implement full relationship support, the most complex feature set.
 **Not sure where to start?**
 - Look for issues labeled `good first issue`
 - Start with documentation improvements
-- Review the [Architecture Guide](./architecture.md) to understand the system
+- Review the [Architecture Guide](./architecture.mdx) to understand the system
 
 **Stuck on implementation?**
-- Check the [Development Plan](./development-plan.md) for code examples
-- Review the [SDK Reference](./sdk-reference.md)
+- Check the [Development Plan](./development-plan.mdx) for code examples
+- Review the [SDK Reference](./sdk-reference.mdx)
 - Ask in GitHub Discussions
 
 **Tests failing?**
-- Check the [Testing Guide](../../CONTRIBUTING.md#testing)
+- Check the [Testing Guide](../../../CONTRIBUTING.md#testing)
 - Look at existing tests for examples
 - Run tests in watch mode: `pnpm test --watch`
 
