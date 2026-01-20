@@ -1,0 +1,788 @@
+---
+title: Architecture Deep Dive
+---
+
+# Architecture Deep Dive
+
+This guide explains the internal architecture of ObjectOS, how the components interact, and the design principles behind the framework.
+
+## Overview
+
+ObjectOS implements a clean **three-layer architecture** following the principle:
+
+> **"Kernel handles logic, Drivers handle data, Server handles HTTP."**
+
+This separation provides:
+- **Testability**: Each layer can be tested independently
+- **Flexibility**: Swap databases without changing business logic
+- **Scalability**: Scale each layer independently
+- **Maintainability**: Clear boundaries reduce coupling
+
+## The Layers
+
+```
+┌─────────────────────────────────────────────────┐
+│  Layer 1: Metadata Protocol (ObjectQL)          │
+│  - YAML definitions                             │
+│  - Type system                                  │
+│  - Validation rules                             │
+└────────────────┬────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────┐
+│  Layer 2: Runtime Engine (@objectos/kernel)     │
+│  - Object registry                              │
+│  - Permission enforcement                       │
+│  - Hook execution                               │
+│  - Query dispatcher                             │
+└────────────────┬────────────────────────────────┘
+                 │
+    ┌────────────┴──────────────┐
+    ▼                           ▼
+┌─────────────────┐  ┌─────────────────────────┐
+│ Data Layer      │  │ Application Layer       │
+│ (Drivers)       │  │ (@objectos/server)      │
+│ - PostgreSQL    │  │ - REST API              │
+│ - MongoDB       │  │ - Authentication        │
+│ - SQLite        │  │ - Rate limiting         │
+└─────┬───────────┘  └───────────┬─────────────┘
+      │                          │
+      ▼                          ▼
+┌─────────────┐          ┌──────────────┐
+│  Database   │          │  React UI    │
+└─────────────┘          └──────────────┘
+```
+
+## Layer 1: Metadata Protocol
+
+### What is Metadata?
+
+Metadata is "data about data" - it describes the structure, relationships, and behavior of your business objects.
+
+### ObjectQL YAML Format
+
+```yaml
+# Object definition
+name: contacts              # API name (snake_case)
+label: Contact             # Display name
+icon: user                 # UI icon
+description: A person      # Documentation
+
+# Field definitions
+fields:
+  first_name:
+    type: text             # Data type
+    label: First Name      # Display label
+    required: true         # Validation rule
+    max_length: 100        # Constraint
+  
+  email:
+    type: email
+    unique: true           # Database constraint
+    index: true            # Performance optimization
+  
+  account:
+    type: lookup           # Relationship type
+    reference_to: accounts # Target object
+    on_delete: set_null    # Cascade behavior
+
+# Permissions
+permission_set:
+  allowRead: true                    # Public read
+  allowCreate: ['sales', 'admin']    # Role-based create
+  allowEdit: ['sales', 'admin']      
+  allowDelete: ['admin']             # Admin only
+
+# Triggers
+triggers:
+  - name: validate_email
+    when: before_insert
+    function: validateEmailDomain
+```
+
+### Type System
+
+ObjectOS supports rich data types:
+
+| Type | Storage | Validation |
+|------|---------|------------|
+| `text` | VARCHAR(255) | Max length |
+| `textarea` | TEXT | Max length |
+| `number` | NUMERIC | Min/max, precision |
+| `currency` | DECIMAL(18,2) | Min/max, scale |
+| `date` | DATE | Date range |
+| `datetime` | TIMESTAMP | Date range |
+| `boolean` | BOOLEAN | True/false only |
+| `select` | VARCHAR | Enum options |
+| `lookup` | Foreign Key | Reference exists |
+| `email` | VARCHAR | Email format |
+| `url` | VARCHAR | URL format |
+| `phone` | VARCHAR | Phone format |
+
+## Layer 2: Runtime Engine (Kernel)
+
+### Architecture
+
+```typescript
+┌─────────────────────────────────────┐
+│         ObjectOS (Main Class)       │
+├─────────────────────────────────────┤
+│  - registry: ObjectRegistry         │
+│  - driver: ObjectQLDriver           │
+│  - hooks: HookManager               │
+│  - permissions: PermissionChecker   │
+└─────────────────────────────────────┘
+           │
+           ├──> ObjectRegistry
+           │    └─ Map<name, ObjectConfig>
+           │
+           ├──> HookManager
+           │    └─ Map<hookType, Hook[]>
+           │
+           ├──> PermissionChecker
+           │    └─ checkPermission(user, object, action)
+           │
+           └──> ObjectQLDriver
+                └─ Database operations
+```
+
+### Key Responsibilities
+
+#### 1. Object Registry
+
+Maintains metadata in memory for fast access:
+
+```typescript
+class ObjectRegistry {
+  private objects = new Map<string, ObjectConfig>();
+  
+  register(config: ObjectConfig): void {
+    // Validate schema
+    this.validate(config);
+    
+    // Store in registry
+    this.objects.set(config.name, config);
+    
+    // Index fields for quick lookup
+    this.indexFields(config);
+  }
+  
+  get(name: string): ObjectConfig {
+    const config = this.objects.get(name);
+    if (!config) {
+      throw new ObjectNotFoundError(name);
+    }
+    return config;
+  }
+}
+```
+
+#### 2. Query Dispatcher
+
+Translates high-level queries to driver calls:
+
+```typescript
+async find(objectName: string, options: FindOptions): Promise<any[]> {
+  // 1. Get metadata
+  const config = this.registry.get(objectName);
+  
+  // 2. Check permissions
+  await this.permissions.check(options.user, config, 'read');
+  
+  // 3. Run beforeFind hooks
+  await this.hooks.run('beforeFind', { objectName, options });
+  
+  // 4. Apply field-level security
+  options.fields = this.filterFields(config, options.user);
+  
+  // 5. Dispatch to driver
+  const results = await this.driver.find(objectName, options);
+  
+  // 6. Run afterFind hooks
+  await this.hooks.run('afterFind', { results });
+  
+  return results;
+}
+```
+
+#### 3. Validation Engine
+
+Enforces constraints before database operations:
+
+```typescript
+async validate(objectName: string, data: any): Promise<void> {
+  const config = this.registry.get(objectName);
+  
+  for (const [fieldName, fieldConfig] of Object.entries(config.fields)) {
+    const value = data[fieldName];
+    
+    // Required check
+    if (fieldConfig.required && !value) {
+      throw new ValidationError(`${fieldName} is required`);
+    }
+    
+    // Type check
+    if (value && !this.isValidType(value, fieldConfig.type)) {
+      throw new ValidationError(`${fieldName} must be ${fieldConfig.type}`);
+    }
+    
+    // Custom validators
+    if (fieldConfig.validate) {
+      await fieldConfig.validate(value);
+    }
+  }
+}
+```
+
+#### 4. Hook System
+
+Extensibility through lifecycle hooks:
+
+```typescript
+type HookContext = {
+  objectName: string;
+  data?: any;
+  user?: User;
+  result?: any;
+};
+
+class HookManager {
+  private hooks = new Map<HookType, Hook[]>();
+  
+  register(type: HookType, hook: Hook): void {
+    const existing = this.hooks.get(type) || [];
+    this.hooks.set(type, [...existing, hook]);
+  }
+  
+  async run(type: HookType, context: HookContext): Promise<void> {
+    const hooks = this.hooks.get(type) || [];
+    
+    // Execute in order of registration
+    for (const hook of hooks) {
+      await hook(context);
+    }
+  }
+}
+
+// Usage
+kernel.on('beforeInsert', async (ctx) => {
+  ctx.data.created_at = new Date();
+  ctx.data.created_by = ctx.user.id;
+});
+```
+
+### Dependency Injection
+
+The Kernel never directly instantiates drivers:
+
+```typescript
+// ❌ BAD: Hard-coded dependency
+class ObjectOS {
+  constructor() {
+    this.driver = new PostgresDriver(); // Tight coupling!
+  }
+}
+
+// ✅ GOOD: Injected dependency
+const driver = new PostgresDriver({ connection: {...} });
+const kernel = new ObjectOS();
+kernel.useDriver(driver);
+```
+
+Benefits:
+- **Testing**: Use mock drivers in tests
+- **Flexibility**: Swap databases at runtime
+- **Multi-tenancy**: Different databases per tenant
+
+## Layer 3: Data Layer (Drivers)
+
+### Driver Interface
+
+All drivers implement this interface:
+
+```typescript
+interface ObjectQLDriver {
+  // Lifecycle
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  
+  // Schema management
+  syncSchema(config: ObjectConfig): Promise<void>;
+  
+  // CRUD
+  find(objectName: string, options: FindOptions): Promise<any[]>;
+  findOne(objectName: string, id: string): Promise<any>;
+  insert(objectName: string, data: any): Promise<any>;
+  update(objectName: string, id: string, data: any): Promise<any>;
+  delete(objectName: string, id: string): Promise<void>;
+  
+  // Transactions
+  beginTransaction(): Promise<Transaction>;
+  commit(tx: Transaction): Promise<void>;
+  rollback(tx: Transaction): Promise<void>;
+}
+```
+
+### PostgreSQL Driver (via Knex)
+
+```typescript
+class PostgresDriver implements ObjectQLDriver {
+  private knex: Knex;
+  
+  async syncSchema(config: ObjectConfig): Promise<void> {
+    const tableName = config.name;
+    
+    // Create table if not exists
+    await this.knex.schema.createTable(tableName, (table) => {
+      // Primary key
+      table.uuid('id').primary().defaultTo(this.knex.raw('uuid_generate_v4()'));
+      
+      // Fields
+      for (const [name, field] of Object.entries(config.fields)) {
+        this.addColumn(table, name, field);
+      }
+      
+      // Audit fields
+      table.timestamp('created_at').defaultTo(this.knex.fn.now());
+      table.timestamp('updated_at').defaultTo(this.knex.fn.now());
+    });
+    
+    // Add indexes
+    for (const [name, field] of Object.entries(config.fields)) {
+      if (field.unique) {
+        await this.knex.schema.alterTable(tableName, (table) => {
+          table.unique([name]);
+        });
+      }
+      if (field.index) {
+        await this.knex.schema.alterTable(tableName, (table) => {
+          table.index([name]);
+        });
+      }
+    }
+  }
+  
+  async find(objectName: string, options: FindOptions): Promise<any[]> {
+    let query = this.knex(objectName);
+    
+    // Apply filters
+    if (options.filters) {
+      query = this.applyFilters(query, options.filters);
+    }
+    
+    // Select fields
+    if (options.fields) {
+      query = query.select(options.fields);
+    }
+    
+    // Sort
+    if (options.sort) {
+      query = query.orderBy(options.sort);
+    }
+    
+    // Pagination
+    if (options.limit) {
+      query = query.limit(options.limit);
+    }
+    if (options.offset) {
+      query = query.offset(options.offset);
+    }
+    
+    return query;
+  }
+}
+```
+
+### MongoDB Driver
+
+```typescript
+class MongoDriver implements ObjectQLDriver {
+  private db: Db;
+  
+  async find(objectName: string, options: FindOptions): Promise<any[]> {
+    const collection = this.db.collection(objectName);
+    
+    // Build MongoDB query
+    const filter = this.buildFilter(options.filters);
+    
+    let cursor = collection.find(filter);
+    
+    // Projection
+    if (options.fields) {
+      const projection = {};
+      for (const field of options.fields) {
+        projection[field] = 1;
+      }
+      cursor = cursor.project(projection);
+    }
+    
+    // Sort
+    if (options.sort) {
+      cursor = cursor.sort(options.sort);
+    }
+    
+    // Pagination
+    if (options.limit) {
+      cursor = cursor.limit(options.limit);
+    }
+    if (options.skip) {
+      cursor = cursor.skip(options.skip);
+    }
+    
+    return cursor.toArray();
+  }
+}
+```
+
+## Layer 4: Application Layer (Server)
+
+### NestJS Architecture
+
+```typescript
+@Module({
+  imports: [
+    // Kernel module provides ObjectOS instance
+    KernelModule.forRoot({
+      driver: new PostgresDriver({...}),
+      objectsPath: './objects'
+    })
+  ],
+  controllers: [ObjectDataController],
+  providers: [AuthService]
+})
+export class AppModule {}
+```
+
+### Controller Pattern
+
+Controllers are thin wrappers around kernel:
+
+```typescript
+@Controller('api/data')
+export class ObjectDataController {
+  constructor(private kernel: ObjectOS) {}
+  
+  @Post(':objectName/query')
+  @UseGuards(AuthGuard)
+  async query(
+    @Param('objectName') name: string,
+    @Body() dto: QueryDTO,
+    @CurrentUser() user: User
+  ) {
+    // Validate input
+    if (!dto.filters) {
+      throw new BadRequestException('filters required');
+    }
+    
+    // Call kernel
+    const results = await this.kernel.find(name, {
+      filters: dto.filters,
+      fields: dto.fields,
+      sort: dto.sort,
+      limit: dto.limit,
+      user: user
+    });
+    
+    return {
+      data: results,
+      count: results.length
+    };
+  }
+  
+  @Post(':objectName')
+  @UseGuards(AuthGuard)
+  async create(
+    @Param('objectName') name: string,
+    @Body() data: any,
+    @CurrentUser() user: User
+  ) {
+    const result = await this.kernel.insert(name, {
+      ...data,
+      user: user
+    });
+    
+    return result;
+  }
+}
+```
+
+### Error Handling
+
+Map kernel exceptions to HTTP status codes:
+
+```typescript
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    
+    let status = 500;
+    let message = 'Internal server error';
+    
+    if (exception instanceof ObjectNotFoundError) {
+      status = 404;
+      message = exception.message;
+    } else if (exception instanceof ValidationError) {
+      status = 400;
+      message = exception.message;
+    } else if (exception instanceof PermissionDeniedError) {
+      status = 403;
+      message = exception.message;
+    }
+    
+    response.status(status).json({
+      statusCode: status,
+      message: message,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+```
+
+## Data Flow Example
+
+Let's trace a complete request:
+
+```
+User clicks "Create Contact" button in UI
+│
+├─> React component calls POST /api/data/contacts
+│   Body: { first_name: "John", last_name: "Doe", email: "john@example.com" }
+│
+├─> NestJS receives request
+│   ├─> AuthGuard extracts user from JWT
+│   └─> ObjectDataController.create() is called
+│
+├─> Controller calls kernel.insert('contacts', data)
+│
+├─> Kernel processes request
+│   ├─> 1. Load metadata: registry.get('contacts')
+│   ├─> 2. Check permissions: user can create contacts?
+│   ├─> 3. Run beforeInsert hooks
+│   │   └─> Hook adds: created_at, created_by
+│   ├─> 4. Validate data
+│   │   └─> Check: first_name required? ✓
+│   │   └─> Check: email format valid? ✓
+│   ├─> 5. Call driver.insert('contacts', data)
+│
+├─> Driver executes
+│   ├─> Build SQL: INSERT INTO contacts ...
+│   ├─> Execute query
+│   └─> Return inserted row with id
+│
+├─> Kernel post-processes
+│   ├─> Run afterInsert hooks
+│   │   └─> Hook sends welcome email
+│   └─> Return result to controller
+│
+├─> Controller returns JSON response
+│   Status: 201 Created
+│   Body: { id: "...", first_name: "John", ... }
+│
+└─> React component updates UI
+    └─> Shows success message
+    └─> Adds new contact to grid
+```
+
+## Security Flow
+
+### Authentication
+
+1. User logs in → Server generates JWT
+2. Client stores JWT in HTTP-only cookie
+3. Every request includes JWT in Authorization header
+4. AuthGuard validates JWT and extracts user
+
+### Authorization
+
+```typescript
+// 1. Object-level permission
+if (!config.permission_set.allowCreate.includes(user.role)) {
+  throw new PermissionDeniedError();
+}
+
+// 2. Field-level security
+const visibleFields = config.fields.filter(field => {
+  return field.visible_to?.includes(user.role) ?? true;
+});
+
+// 3. Record-level security (RLS)
+kernel.on('beforeFind', async (ctx) => {
+  // Only show records owned by user's team
+  if (!ctx.user.isAdmin) {
+    ctx.filters.push({ team_id: ctx.user.team_id });
+  }
+});
+```
+
+## Performance Optimizations
+
+### 1. Metadata Caching
+
+```typescript
+// Load once at startup
+await kernel.loadFromDirectory('./objects');
+
+// Access from memory (fast)
+const config = kernel.getObject('contacts');
+```
+
+### 2. Query Optimization
+
+```typescript
+// Driver automatically adds indexes
+fields:
+  email:
+    type: email
+    index: true  // CREATE INDEX idx_contacts_email
+```
+
+### 3. Connection Pooling
+
+```typescript
+const driver = new PostgresDriver({
+  connection: {...},
+  pool: {
+    min: 2,
+    max: 10
+  }
+});
+```
+
+### 4. Lazy Loading
+
+```typescript
+// Don't load related records unless requested
+const contact = await kernel.findOne('contacts', id);
+// contact.account is just the ID
+
+// Load related record on demand
+if (options.include?.includes('account')) {
+  contact.account = await kernel.findOne('accounts', contact.account);
+}
+```
+
+## Testing Strategy
+
+### Unit Tests (Kernel)
+
+```typescript
+describe('ObjectOS.insert', () => {
+  it('should validate required fields', async () => {
+    const kernel = new ObjectOS();
+    const mockDriver = {
+      insert: jest.fn()
+    };
+    kernel.useDriver(mockDriver);
+    
+    await kernel.load({
+      name: 'contacts',
+      fields: {
+        email: { type: 'email', required: true }
+      }
+    });
+    
+    await expect(
+      kernel.insert('contacts', {}) // Missing email
+    ).rejects.toThrow('email is required');
+    
+    expect(mockDriver.insert).not.toHaveBeenCalled();
+  });
+});
+```
+
+### Integration Tests (Server)
+
+```typescript
+describe('POST /api/data/contacts', () => {
+  it('should create contact', async () => {
+    const response = await request(app)
+      .post('/api/data/contacts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john@example.com'
+      })
+      .expect(201);
+    
+    expect(response.body).toHaveProperty('id');
+    expect(response.body.first_name).toBe('John');
+  });
+});
+```
+
+## Best Practices
+
+### 1. Keep Controllers Thin
+
+```typescript
+// ❌ BAD: Logic in controller
+@Post('contacts')
+async create(@Body() data: any) {
+  // Validation logic
+  if (!data.email) throw new Error('Email required');
+  
+  // Business logic
+  if (await this.isDuplicate(data.email)) {
+    throw new Error('Duplicate');
+  }
+  
+  return this.db.insert(data);
+}
+
+// ✅ GOOD: Logic in kernel/hooks
+@Post('contacts')
+async create(@Body() data: any, @CurrentUser() user: User) {
+  return this.kernel.insert('contacts', { ...data, user });
+}
+```
+
+### 2. Use Hooks for Side Effects
+
+```typescript
+// ❌ BAD: Side effects in controller
+@Post('contacts')
+async create(@Body() data: any) {
+  const contact = await this.kernel.insert('contacts', data);
+  await this.sendEmail(contact.email); // Side effect
+  return contact;
+}
+
+// ✅ GOOD: Side effects in hooks
+kernel.on('afterInsert', async (ctx) => {
+  if (ctx.objectName === 'contacts') {
+    await sendWelcomeEmail(ctx.result.email);
+  }
+});
+```
+
+### 3. Type Everything
+
+```typescript
+// ❌ BAD: Untyped
+async find(name: string, opts: any): Promise<any> {
+  // ...
+}
+
+// ✅ GOOD: Fully typed
+async find(
+  name: string,
+  options: FindOptions
+): Promise<Record\<string, any\>[]> {
+  // ...
+}
+```
+
+## Summary
+
+ObjectOS achieves its goal through:
+
+1. **Clear Separation**: Kernel, Driver, Server have distinct roles
+2. **Protocol-Driven**: Implements ObjectQL standard
+3. **Dependency Injection**: Flexible and testable
+4. **Hook System**: Extensible without modifying core
+5. **Type Safety**: Full TypeScript coverage
+
+This architecture allows ObjectOS to generate complete applications from YAML while remaining maintainable and scalable.

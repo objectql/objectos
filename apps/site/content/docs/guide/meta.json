@@ -1,0 +1,16 @@
+{
+  "title": "Guide",
+  "pages": [
+    "index",
+    "architecture",
+    "platform-components",
+    "data-modeling",
+    "security-guide",
+    "sdk-reference",
+    "logic-hooks",
+    "logic-actions",
+    "ui-framework",
+    "development-plan",
+    "contributing-development"
+  ]
+}
