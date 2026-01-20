@@ -1,5 +1,5 @@
 import { source } from '@/lib/source';
-import { DocsBody, DocsPage } from 'fumadocs-ui/page';
+import { DocsBody, DocsPage } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 

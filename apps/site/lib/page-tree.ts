@@ -1,7 +1,7 @@
-import type { PageTree } from 'fumadocs-core/server';
+import type { Root } from 'fumadocs-core/page-tree';
 
 // Build page tree from docs and meta for navigation
-export const pageTree: PageTree.Root = {
+export const pageTree: Root = {
   name: 'Documentation',
   children: [
     {
