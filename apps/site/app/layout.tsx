@@ -19,8 +19,23 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 export const metadata = {
   title: {
-    default: 'ObjectOS',
-    template: '%s | ObjectOS',
+    default: 'ObjectStack - The Universal Protocol for Enterprise Software',
+    template: '%s | ObjectStack',
   },
-  description: 'The Business Operating System - Orchestrate Identity, Workflows, and Local-First Sync',
+  description: 'Post-SaaS Operating System. Decouple data from storage. Separate logic from implementation. ObjectQL, ObjectUI, and ObjectOS—the core trinity for building systems that outlast frameworks.',
+  keywords: ['ObjectStack', 'ObjectQL', 'ObjectUI', 'ObjectOS', 'Low-Code', 'Metadata-Driven', 'Enterprise Software', 'Post-SaaS'],
+  authors: [{ name: 'ObjectStack Team' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://objectstack.ai',
+    title: 'ObjectStack - The Universal Protocol for Enterprise Software',
+    description: 'Post-SaaS Operating System. Build systems that outlast frameworks with ObjectQL, ObjectUI, and ObjectOS.',
+    siteName: 'ObjectStack',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ObjectStack - The Universal Protocol for Enterprise Software',
+    description: 'Post-SaaS Operating System. Build systems that outlast frameworks.',
+  },
 };
