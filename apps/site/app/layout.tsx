@@ -19,23 +19,23 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 export const metadata = {
   title: {
-    default: 'ObjectStack - The Universal Protocol for Enterprise Software',
-    template: '%s | ObjectStack',
+    default: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
+    template: '%s | ObjectOS',
   },
-  description: 'Post-SaaS Operating System. Decouple data from storage. Separate logic from implementation. ObjectQL, ObjectUI, and ObjectOS—the core trinity for building systems that outlast frameworks.',
-  keywords: ['ObjectStack', 'ObjectQL', 'ObjectUI', 'ObjectOS', 'Low-Code', 'Metadata-Driven', 'Enterprise Software', 'Post-SaaS'],
-  authors: [{ name: 'ObjectStack Team' }],
+  description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation. Turn YAML schemas into secure, scalable APIs built on ObjectQL & NestJS.',
+  keywords: ['ObjectOS', 'Low-Code', 'Enterprise', 'Runtime Engine', 'RBAC', 'Workflow', 'NestJS', 'ObjectQL', 'Metadata-Driven'],
+  authors: [{ name: 'ObjectOS Team' }],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://objectstack.ai',
-    title: 'ObjectStack - The Universal Protocol for Enterprise Software',
-    description: 'Post-SaaS Operating System. Build systems that outlast frameworks with ObjectQL, ObjectUI, and ObjectOS.',
-    siteName: 'ObjectStack',
+    url: 'https://objectos.dev',
+    title: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
+    description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
+    siteName: 'ObjectOS',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ObjectStack - The Universal Protocol for Enterprise Software',
-    description: 'Post-SaaS Operating System. Build systems that outlast frameworks.',
+    title: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
+    description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
   },
 };

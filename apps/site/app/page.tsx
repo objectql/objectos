@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Database, Layout, Cog, Shield, Zap, Globe } from 'lucide-react';
+import { Shield, Zap, Cog, Lock, Workflow, Database, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -11,17 +11,17 @@ export default function HomePage() {
           <div className="text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
               <Zap className="w-4 h-4" />
-              <span>Post-SaaS Operating System</span>
+              <span>Enterprise Low-Code Runtime Engine</span>
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
-              Object<span className="text-primary">Stack</span>
+              Object<span className="text-primary">OS</span>
             </h1>
             <p className="text-xl sm:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto">
-              The Universal Protocol for Enterprise Software
+              The Business Operating System
             </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Decouple data from storage. Separate logic from implementation. 
-              Build systems that outlast frameworks.
+              Instant Backend. Security Kernel. Workflow Automation. 
+              Built on <Link href="https://github.com/objectql/objectql" className="text-primary hover:underline">ObjectQL</Link> & NestJS.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link
@@ -42,262 +42,193 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Core Trinity Section */}
+      {/* Introduction */}
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold">The Core Trinity</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Three open-source pillars. One unified architecture. Infinite possibilities.
+          <div className="max-w-3xl mx-auto text-center space-y-6 mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold">
+              The Operating System for Enterprise Data
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              ObjectOS is a production-ready, metadata-driven runtime platform. 
+              While <strong>ObjectQL</strong> defines <em>how data looks</em>, <strong>ObjectOS</strong> defines <em>how business runs</em>.
+            </p>
+            <p className="text-lg text-muted-foreground">
+              Instantly turn static YAML schemas into secure, scalable, and compliant APIs.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
-            {/* ObjectQL - The Engine */}
-            <div className="group relative p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-all">
+            <div className="p-6 rounded-xl border border-border bg-card">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold">The Enforcer</h3>
+              </div>
+              <p className="text-muted-foreground">
+                Intercepts every request to enforce RBAC (Role-Based Access Control) and Record-Level Security (RLS).
+              </p>
+            </div>
+
+            <div className="p-6 rounded-xl border border-border bg-card">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <Database className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold">ObjectQL</h3>
+                <h3 className="text-xl font-bold">The Server</h3>
               </div>
-              <p className="text-sm text-primary font-semibold mb-2">The Engine</p>
-              <p className="text-muted-foreground mb-4">
-                The Metadata-Driven Data Engine. Abstract storage layers—SQL, NoSQL, or Excel—with a universal protocol.
+              <p className="text-muted-foreground">
+                Automatically serves REST, GraphQL, and JSON-RPC APIs for Object UI.
               </p>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Universal adapters for any database</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Metadata-driven schema evolution</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Zero vendor lock-in</span>
-                </div>
-              </div>
-              <Link 
-                href="/docs/objectql"
-                className="inline-flex items-center gap-1 text-primary hover:underline mt-4 text-sm font-medium"
-              >
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
             </div>
 
-            {/* ObjectUI - The Components */}
-            <div className="group relative p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-all">
+            <div className="p-6 rounded-xl border border-border bg-card">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                  <Layout className="w-6 h-6" />
+                  <Workflow className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold">ObjectUI</h3>
+                <h3 className="text-xl font-bold">The Automator</h3>
               </div>
-              <p className="text-sm text-primary font-semibold mb-2">The Components</p>
-              <p className="text-muted-foreground mb-4">
-                The Enterprise Interface Kit. Server-driven UI that adapts automatically to your data schema.
+              <p className="text-muted-foreground">
+                Runs server-side triggers, workflows, and scheduled jobs.
               </p>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Zero API glue code</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Backend changes reflect instantly</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Framework-agnostic components</span>
-                </div>
-              </div>
-              <Link 
-                href="/docs/objectui"
-                className="inline-flex items-center gap-1 text-primary hover:underline mt-4 text-sm font-medium"
-              >
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            {/* ObjectOS - The Platform */}
-            <div className="group relative p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-all">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                  <Cog className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold">ObjectOS</h3>
-              </div>
-              <p className="text-sm text-primary font-semibold mb-2">The Platform</p>
-              <p className="text-muted-foreground mb-4">
-                The Low-Code Kernel. Orchestrate identity, workflows, and local-first synchronization.
-              </p>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Enterprise RBAC & audit logging</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>State machine workflows</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Offline-first sync protocol</span>
-                </div>
-              </div>
-              <Link 
-                href="/docs/objectos"
-                className="inline-flex items-center gap-1 text-primary hover:underline mt-4 text-sm font-medium"
-              >
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Value Proposition Section */}
+      {/* Key Features */}
       <section className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold">Why ObjectStack?</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold">Key Features</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Protect your investment. Future-proof your architecture.
+              Everything you need to build enterprise applications.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
+            {/* Enterprise Security Kernel */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10 text-green-600 dark:text-green-400">
-                  <Shield className="w-5 h-5" />
+                  <Lock className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold">Asset Longevity</h3>
+                <h3 className="text-xl font-bold">Enterprise Security Kernel</h3>
               </div>
-              <p className="text-muted-foreground">
-                <strong>Metadata-Driven Design:</strong> Don't hardcode business logic. Define it in schemas. 
-                Your intellectual property survives the next tech cycle.
+              <p className="text-muted-foreground mb-4">
+                ObjectOS doesn't just read data; it protects it.
               </p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Authentication:</strong> Integrated OIDC, SAML, and LDAP support</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Fine-Grained Permission:</strong> Field-level and record-level sharing rules</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Audit Logging:</strong> Built-in tracking of who did what and when</span>
+                </li>
+              </ul>
             </div>
 
+            {/* Instant API Gateway */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  <Globe className="w-5 h-5" />
+                  <Database className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold">Data Sovereignty</h3>
+                <h3 className="text-xl font-bold">Instant API Gateway</h3>
               </div>
-              <p className="text-muted-foreground">
-                <strong>Universal Drivers:</strong> Connect to Oracle today, switch to Postgres tomorrow, 
-                mount an Excel sheet meanwhile. Zero migration scripts.
+              <p className="text-muted-foreground mb-4">
+                Stop writing boilerplate controllers.
               </p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Auto-generated REST API:</strong> Works out-of-the-box</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Auto-generated GraphQL:</strong> Instant schema stitching</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Metadata API:</strong> Serves UI configuration to frontend clients</span>
+                </li>
+              </ul>
             </div>
 
+            {/* Workflow & Automation */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                  <Zap className="w-5 h-5" />
+                  <Workflow className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold">Infinite Extensibility</h3>
+                <h3 className="text-xl font-bold">Workflow & Automation</h3>
               </div>
-              <p className="text-muted-foreground">
-                <strong>Server-Driven UI:</strong> Backend changes instantly reflect on the frontend. 
-                No "API glue code." Accelerate development velocity.
+              <p className="text-muted-foreground mb-4">
+                Business logic that adapts to your needs.
               </p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Triggers:</strong> Run code beforeInsert, afterUpdate, beforeDelete</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Flow Engine:</strong> Visual workflow execution (BPMN-style)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span><strong>Job Queue:</strong> Background task processing based on Redis</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Polyglot & Agnostic Section */}
-      <section className="py-24 bg-background border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold">Storage Agnostic. Framework Independent.</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              ObjectStack treats <strong>Excel</strong>, <strong>Redis</strong>, and <strong>Postgres</strong> as equal citizens. 
-              Connect to any data source through universal drivers.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {[
-              { id: 'postgresql', name: 'PostgreSQL' },
-              { id: 'mongodb', name: 'MongoDB' },
-              { id: 'redis', name: 'Redis' },
-              { id: 'mysql', name: 'MySQL' },
-              { id: 'oracle', name: 'Oracle' },
-              { id: 'excel', name: 'Excel' },
-              { id: 'sqlite', name: 'SQLite' },
-              { id: 'custom', name: 'Custom' }
-            ].map((db) => (
-              <div key={db.id} className="p-6 rounded-lg border border-border bg-card text-center">
-                <p className="font-semibold">{db.name}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center text-muted-foreground mt-8 max-w-2xl mx-auto">
-            React changes every 3 years. <strong>ObjectQL Protocols last for decades.</strong> 
-            Build anti-fragile systems that survive framework fatigue.
-          </p>
-        </div>
-      </section>
-
-      {/* Ecosystem Section */}
-      <section className="py-24 bg-muted/30">
+      {/* Architecture */}
+      <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold">The Ecosystem</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold">Built as a Modular Monorepo</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              From open source to enterprise. Build, deploy, and scale.
+              ObjectOS is built with NestJS and organized into focused packages.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-xl border border-border bg-card">
-              <h3 className="text-xl font-bold mb-2">Object Marketplace</h3>
-              <p className="text-muted-foreground mb-4">
-                Drivers, templates, and apps. Extend your stack with community and commercial plugins.
-              </p>
-              <span className="text-primary text-sm font-medium" aria-disabled="true">
-                Coming Soon
-              </span>
-            </div>
-
-            <div className="p-8 rounded-xl border border-border bg-card">
-              <h3 className="text-xl font-bold mb-2">Object Cloud</h3>
-              <p className="text-muted-foreground mb-4">
-                Serverless PaaS for hosting ObjectStack. Deploy in seconds.
-              </p>
-              <span className="text-primary text-sm font-medium" aria-disabled="true">
-                Coming Soon
-              </span>
-            </div>
-
-            <div className="p-8 rounded-xl border border-border bg-card">
-              <h3 className="text-xl font-bold mb-2">Enterprise Edition</h3>
-              <p className="text-muted-foreground mb-4">
-                Governance, SSO, and audit logs. Community gives you the engine; Enterprise gives you guardrails.
-              </p>
-              <Link href="https://github.com/objectstack-ai/objectos/issues" className="text-primary hover:underline text-sm font-medium">
-                Contact Sales
-              </Link>
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { name: '@objectos/kernel', role: 'The Brain', desc: 'Core logic engine. Wraps ObjectQL, manages plugins, and handles the event bus.' },
+              { name: '@objectos/server', role: 'The Gateway', desc: 'NestJS application layer. Handles HTTP/WS traffic, Middlewares, and Guards.' },
+              { name: '@objectos/plugin-auth', role: 'Auth', desc: 'Authentication strategies (Local, OAuth2, Enterprise SSO).' },
+              { name: '@objectos/plugin-workflow', role: 'Logic', desc: 'Workflow engine and trigger runner.' },
+              { name: '@objectos/presets', role: 'Config', desc: 'Standard system objects (_users, _roles, _audit_log).' }
+            ].map((pkg) => (
+              <div key={pkg.name} className="p-6 rounded-lg border border-border bg-card">
+                <code className="text-sm font-mono text-primary">{pkg.name}</code>
+                <h4 className="font-bold mt-2 mb-1">{pkg.role}</h4>
+                <p className="text-sm text-muted-foreground">{pkg.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-background border-t border-border">
+      <section className="py-24 bg-muted/30 border-t border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           <h2 className="text-3xl sm:text-4xl font-bold">
-            Start Building the Future
+            Start Building with ObjectOS
           </h2>
           <p className="text-lg text-muted-foreground">
-            Open source. MIT Licensed. Production ready.
+            Open source. AGPL v3 Licensed. Production ready.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
