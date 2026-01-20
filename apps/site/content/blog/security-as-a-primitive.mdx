@@ -1,76 +1,80 @@
 ---
-title: "Security as a Primitive: The Zero Trust Model"
-description: "How ObjectOS embeds Identity and RBAC into the core kernel, ensuring security is never an afterthought."
+title: "The Policy Engine: Compiling ABAC Rules into Abstract Syntax Trees"
+description: "How ObjectOS implements Zero Trust not by filtering arrays in memory, but by compiling Attribute-Based Access Control policies directly into SQL predicates."
 date: 2024-03-20
-author: "ObjectOS Team"
+author: "ObjectOS Engineering"
 ---
 
-# Security as a Primitive: The Zero Trust Model
+# The Policy Engine: Compiling ABAC Rules into ASTs
 
-In many frameworks, security is middleware that you "bolt on" at the end. You build your API, and then you add a `RequiresAuth` decorator.
+"Security as a Primitive" means security cannot be an afterthought. In ObjectOS, the access control system is an **Attribute-Based Access Control (ABAC)** engine that sits directly in front of the Data Access Layer.
 
-In **ObjectOS**, Security is a **Primitive**. It is baked into the kernel itself. We follow a **Zero Trust** philosophy: **"Never trust, always verify."**
+Instead of fetching data and *then* filtering it (which is slow and insecure pagination-wise), ObjectOS **compiles security rules into the database query**.
 
-## The Identity Subsystem (`@objectos/auth`)
+## 1. Defining Policies (The DSL)
 
-Identity is not just about logging in (Authentication); it's about what you can do (Authorization).
+We allow defining declarative permission rules (Sharing Rules).
 
-In ObjectOS, every interaction with the system—whether it's an API call, a background job, or a sync event—must have an **Actor**.
-- An Actor can be a User.
-- An Actor can be a System Service (e.g., the Cron Scheduler).
-- An Actor can be an API Key.
-
-### Context is King
-
-We pass a `Context` object through every layer of the stack. This object contains the verified Identity and Session of the Actor.
-
-```typescript
-// The Context travels everywhere
-interface Context {
-  userId: string;
-  sessionId: string;
-  roles: string[];
-  permissions: Set<string>;
-  
-  // Security methods
-  assertPermission(permission: string): void;
-}
+```yaml
+# policies/sales_rep.yaml
+target: sales_order
+rule:
+  - effect: allow
+    action: [read, update]
+    condition:
+      owner: "{user.id}"
+      amount: 
+        $lt: 10000
 ```
 
-## Granular RBAC (Role-Based Access Control)
+## 2. The Compiler: Predicate Push-Down
 
-ObjectOS implements a hierarchical RBAC system.
-- **Micro-Permissions:** We don't just check `isAdmin`. We check `sales_order.read`, `sales_order.create`, `sales_order.approve`.
-- **Profiles:** Permissions are grouped into Profiles (e.g., "Sales Rep", "Manager").
-- **Record-Level Security (Sharing Rules):** RBAC controls *what* you can do. Sharing Rules control *which records* you can do it to.
-  - *Example:* A Sales Rep can `view` Orders, but ONLY orders `where owner = me`.
+When a user executes `objectos.find('sales_order')`, the Kernel intercepts the call.
 
-## The Permission Layer
+1.  **Context Resolution:** It extracts the User ID (`u_123`) from the Context.
+2.  **Rule Eval:** It finds all matching rules for this user role.
+3.  **AST Injection:** It converts the YAML condition into an ObjectQL Abstract Syntax Tree (AST).
 
-Developers are forbidden from bypassing the Permission Layer.
-Instead of calling `db.find()`, ObjectOS plugins call the Kernel's Broker.
+**Conceptually:**
+From: `SELECT * FROM sales_order`
+To: `SELECT * FROM sales_order WHERE (owner = 'u_123' AND amount < 10000)`
 
-**Bad (Bypasses Checks):**
-```typescript
-const orders = await db.collection('orders').find({});
+### Dealing with Complexity (OR vs AND)
+
+If a user has multiple roles (e.g., "Sales Rep" AND "Regional Manager"), the Compiler combines the ASTs using `OR` logic.
+
+```sql
+-- Compiled Query
+SELECT * FROM sales_order 
+WHERE 
+  -- Role: Sales Rep
+  (owner = 'u_123' AND amount < 10000)
+  OR
+  -- Role: Regional Manager
+  (region = 'North-East')
 ```
 
-**Good (Enforces Checks):**
+## 3. Field-Level Security AST
+
+ObjectOS also supports Field-Level Security (FLS).
+If a user cannot see the `margin` field, we don't just "hide" it in the UI. We strip it from the `SELECT` clause.
+
+The Query Planner iterates through the requested fields:
+
 ```typescript
-const orders = await ctx.call('data.find', { object: 'orders' });
+const allowedFields = requestedFields.filter(field => 
+  policyEngine.can(user, 'read_field', 'sales_order', field)
+);
+// Generates: SELECT id, date, amount FROM ... (omits 'margin')
 ```
-The Kernel intercepts this call, checks verify the Actor has `orders.read` permission, applies Record-Level scoping filters, and *then* returns the data.
 
-## Audit Logging
+## 4. Performance Implications
 
-Because every action goes through the Kernel, we get **Audit Logging for free**.
-- Who changed the record?
-- When?
-- What was the old value?
-- What is the new value?
+This "compile-time" (query-construction time) approach has massive performance benefits over middleware filtering:
 
-This is critical for enterprise compliance (SOC2, HIPAA).
+1.  **Database Index Usage:** because the security rules become `WHERE` clauses, the database can use indices (`idx_owner`, `idx_region`) to speed up the query. Middleware filtering scans the whole table.
+2.  **Correct Pagination:** `LIMIT 10` returns exactly 10 accessible records, rather than fetching 1000 and filtering down to 3.
 
-## Conclusion
+## 5. Conclusion
 
-Security cannot be an afterthought. By making Identity and Permissions first-class citizens of the OS, ObjectOS ensures that your application is secure by default, not by configuration.
+Security in ObjectOS is a compiler problem. By transforming high-level ABAC policies into low-level SQL AST nodes, we ensure that **Performance and Security do not trade off against each other.** You get both.
