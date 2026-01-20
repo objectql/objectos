@@ -9,16 +9,16 @@ export default async function Page(props: {
 }) {
   const params = await props.params;
   const slug = params.slug || [];
-  const path = slug.length === 0 ? 'index.mdx' : `${slug.join('/')}.mdx`;
   
-  // Find the page in docs array
+  // Find the page in docs array by matching the path
   const page = (docs as any[]).find((doc: any) => {
     const docPath = doc.info?.path || '';
-    return docPath === path || docPath === slug.join('/') + '.mdx';
+    const slugPath = slug.join('/');
+    // Match either the direct slug path (with .mdx) or as a folder index
+    return docPath === `${slugPath}.mdx` || docPath === `${slugPath}/index.mdx`;
   });
   
   if (!page) {
-    console.error('Page not found for path:', path);
     notFound();
   }
   

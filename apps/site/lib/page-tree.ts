@@ -1,4 +1,3 @@
-import { docs, meta } from '../.source/server';
 import type { PageTree } from 'fumadocs-core/server';
 
 // Build page tree from docs and meta for navigation
