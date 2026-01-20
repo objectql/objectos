@@ -484,6 +484,7 @@ permission_set:
 - [Architecture Guide](./guide/architecture.md) - Deep dive into the kernel design
 - [Plugin Development](./guide/logic-hooks.md) - Extend ObjectOS with custom logic
 - [Sync Protocol](./spec/http-protocol.md) - Build offline-first clients
+- **[Deep Analysis Articles](./analysis/)** - 📚 In-depth technical analysis series covering Permission System, Metadata Architecture, Sync Engine, Plugin System, and Workflow Engine
 
 ---
 
