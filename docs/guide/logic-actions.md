@@ -1,7 +1,4 @@
----
-title: Custom Actions Guide
----
-
+# Custom Actions Guide
 
 Actions are custom business logic endpoints that extend ObjectOS beyond standard CRUD operations. Use actions to encapsulate complex business processes, integrate with external systems, or provide specialized functionality.
 

@@ -1,7 +1,4 @@
----
-title: ObjectOS Development Plan
----
-
+# ObjectOS Development Plan
 
 > **Current Version**: v0.2.0  
 > **Target Version**: v0.3.0 (Q1 2026)  

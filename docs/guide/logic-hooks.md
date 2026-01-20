@@ -1,7 +1,4 @@
----
-title: Writing Logic Hooks
----
-
+# Writing Logic Hooks
 
 Hooks allow you to intercept and modify standard CRUD operations in ObjectOS. They enable you to add custom business logic at specific points in the data lifecycle without modifying the core system.
 

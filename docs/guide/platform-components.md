@@ -1,7 +1,4 @@
----
-title: Platform Component Design & Implementation
----
-
+# Platform Component Design & Implementation
 
 This document provides a comprehensive architectural breakdown of the ObjectOS components, focusing on how they interact to realize the full platform functionality. It is intended for Solution Architects and Core Contributors.
 

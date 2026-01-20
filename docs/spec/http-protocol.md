@@ -1,7 +1,4 @@
----
-title: HTTP Protocol Specification
----
-
+# HTTP Protocol Specification
 
 The ObjectOS Server exposes a RESTful HTTP API that provides complete CRUD operations for all objects defined in metadata. This document specifies the complete HTTP protocol.
 

@@ -1,7 +1,4 @@
----
-title: Security Guide
----
-
+# Security Guide
 
 Security is a fundamental concern in ObjectOS. This guide covers authentication, authorization, permissions, and security best practices for building secure applications.
 

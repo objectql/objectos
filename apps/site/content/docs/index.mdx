@@ -1,18 +1,66 @@
 ---
-title: Documentation
-description: Welcome to ObjectOS documentation
+title: Welcome to ObjectOS
+description: The Business Operating System for the ObjectStack ecosystem
 ---
 
-# ObjectOS Documentation
+# Welcome to ObjectOS Documentation
 
-Welcome to the ObjectOS documentation. ObjectOS is the Business Operating System for the ObjectStack ecosystem.
+ObjectOS is the **Business Operating System** for the ObjectStack ecosystem, providing:
 
-## Quick Navigation
+- **State Management** - Centralized state orchestration and synchronization
+- **Identity & Security** - Authentication, RBAC, and audit logging
+- **Workflow Engine** - Business process automation with state machines
+- **Plugin System** - Extensible architecture with manifest-driven plugins
+- **Local-First Sync** - Offline-first data synchronization with conflict resolution
 
-- [Guide](/docs/guide) - Learn how to use ObjectOS
-- [Specifications](/docs/spec) - Technical specifications and protocols
-- [Architecture](/docs/guide/architecture) - System architecture overview
+## Quick Start
 
-## Getting Started
+```bash
+# Install dependencies
+pnpm install
 
-To get started with ObjectOS, check out the [Quick Start Guide](/docs/guide).
+# Start development server
+pnpm docs:dev
+
+# Build for production
+pnpm docs:build
+```
+
+## Documentation Structure
+
+This documentation site is built with [Fumadocs](https://fumadocs.vercel.app/), a modern documentation framework based on Next.js.
+
+### Adding Documentation
+
+Create MDX files in `apps/site/content/docs/`:
+
+```
+apps/site/content/docs/
+├── index.mdx           # Home page
+├── getting-started/    # Getting started guides
+│   ├── index.mdx
+│   └── installation.mdx
+└── guides/             # User guides
+    ├── index.mdx
+    └── authentication.mdx
+```
+
+### Navigation
+
+Navigation is configured in `meta.json` files within each directory:
+
+```json
+{
+  "title": "Section Title",
+  "pages": ["page-slug", "another-page"]
+}
+```
+
+## Next Steps
+
+- Add your documentation content in MDX format
+- Configure navigation with `meta.json` files
+- Customize the theme in `tailwind.config.ts`
+- Deploy to your preferred hosting platform
+
+For more information about Fumadocs, visit the [official documentation](https://fumadocs.vercel.app/).

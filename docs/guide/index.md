@@ -1,7 +1,4 @@
----
-title: Getting Started with ObjectOS
----
-
+# Getting Started with ObjectOS
 
 Welcome to ObjectOS! This guide will help you understand what ObjectOS is, how it works, and how to build your first metadata-driven application.
 

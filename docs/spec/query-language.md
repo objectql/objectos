@@ -1,7 +1,4 @@
----
-title: Query Language Specification
----
-
+# Query Language Specification
 
 The ObjectOS Query Language provides a powerful and flexible syntax for filtering, sorting, and querying records. This document specifies the complete query syntax.
 

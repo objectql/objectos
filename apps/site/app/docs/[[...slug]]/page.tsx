@@ -1,6 +1,6 @@
+import { source } from '@/lib/source';
+import { DocsBody, DocsPage } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
-import { docs } from '../../../.source/server';
-import { DocsPage, DocsBody } from 'fumadocs-ui/page';
 
 export const dynamicParams = false;
 
@@ -8,28 +8,16 @@ export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
   const params = await props.params;
-  const slug = params.slug || [];
-  
-  // Find the page in docs array by matching the path
-  const page = (docs as any[]).find((doc: any) => {
-    const docPath = doc.info?.path || '';
-    const slugPath = slug.join('/');
-    // Match either the direct slug path (with .mdx) or as a folder index
-    return docPath === `${slugPath}.mdx` || docPath === `${slugPath}/index.mdx`;
-  });
-  
-  if (!page) {
-    notFound();
-  }
-  
-  const MDX = page._exports?.default;
-  const title = page.title || 'Untitled';
-  const toc = page.toc || [];
+  const page = source.getPage(params.slug);
+
+  if (!page) notFound();
+
+  const MDX = (page.data as any)._exports?.default || (page.data as any).exports?.default;
 
   return (
-    <DocsPage toc={toc} full={false}>
+    <DocsPage toc={(page.data as any).toc}>
       <DocsBody>
-        <h1>{title}</h1>
+        <h1>{page.data.title}</h1>
         {MDX && <MDX />}
       </DocsBody>
     </DocsPage>
@@ -37,25 +25,28 @@ export default async function Page(props: {
 }
 
 export function generateStaticParams() {
-  // Manually list all documentation pages
-  const pages = [
-    { slug: [] }, // index
-    { slug: ['guide'] },
-    { slug: ['guide', 'architecture'] },
-    { slug: ['guide', 'contributing-development'] },
-    { slug: ['guide', 'data-modeling'] },
-    { slug: ['guide', 'development-plan'] },
-    { slug: ['guide', 'logic-actions'] },
-    { slug: ['guide', 'logic-hooks'] },
-    { slug: ['guide', 'platform-components'] },
-    { slug: ['guide', 'sdk-reference'] },
-    { slug: ['guide', 'security-guide'] },
-    { slug: ['guide', 'ui-framework'] },
-    { slug: ['spec'] },
-    { slug: ['spec', 'http-protocol'] },
-    { slug: ['spec', 'metadata-format'] },
-    { slug: ['spec', 'query-language'] },
-  ];
+  const pages = source.getPages();
   
-  return pages;
+  // Fallback if no pages found
+  if (!pages || pages.length === 0) {
+    return [{ slug: [] }];
+  }
+  
+  return pages.map((page) => ({
+    slug: page.slugs,
+  }));
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+  const params = await props.params;
+  const page = source.getPage(params.slug);
+
+  if (!page) notFound();
+
+  return {
+    title: page.data.title,
+    description: page.data.description,
+  };
 }

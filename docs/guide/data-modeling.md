@@ -1,7 +1,4 @@
----
-title: Data Modeling Guide
----
-
+# Data Modeling Guide
 
 ObjectOS uses declarative YAML files to define data models. This guide covers how to model your business data using the ObjectQL metadata format.
 

@@ -1,7 +1,4 @@
----
-title: SDK Reference
----
-
+# SDK Reference
 
 This document provides a complete reference for the ObjectOS Kernel SDK. Use the Kernel to programmatically interact with your data and business logic.
 

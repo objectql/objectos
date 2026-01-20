@@ -1,7 +1,4 @@
----
-title: Metadata Format Specification
----
-
+# Metadata Format Specification
 
 ObjectOS uses strict YAML schemas for defining application metadata. This document specifies the complete format for object definitions.
 

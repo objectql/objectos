@@ -1,7 +1,4 @@
----
-title: Architecture Deep Dive
----
-
+# Architecture Deep Dive
 
 This guide explains the internal architecture of ObjectOS, how the components interact, and the design principles behind the framework.
 

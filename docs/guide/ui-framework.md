@@ -1,7 +1,4 @@
----
-title: Standard UI Components Reference
----
-
+# Standard UI Components Reference
 
 This document defines the standard component library for `@objectos/ui`. These components are the reference implementations for the **View & Layout Specifications**.
 
@@ -16,7 +13,7 @@ The master controller for any URL-addressable page in the application.
 
 - **Props**:
   - `pageId`: string (e.g., "dashboard-sales") - *The ID of the page definition to load.*
-  - `context`: Record&lt;string, any&gt; - *Optional global variable to pass to widgets (e.g., `{ recordId: "123" }`)*.
+  - `context`: Record<string, any> - *Optional global variable to pass to widgets (e.g., `{ recordId: "123" }`)*.
 - **Behavior**:
   1.  Loads `*.page.yml` from the Metadata Kernel.
   2.  Resolves permissions (can the user see this page?).
@@ -60,7 +57,7 @@ Renders a visualization.
 **Type:** `view`
  Embeds a full `ObjectView` inside a dashboard tile.
 - **Props**: `view_id` OR (`object`, `view`).
-- **Behavior**: Renders the `&lt;ObjectView /&gt;` component (see Section 3) within a constrained container. Key difference: The toolbar might be simplified (e.g., no global search) to fit into a widget.
+- **Behavior**: Renders the `<ObjectView />` component (see Section 3) within a constrained container. Key difference: The toolbar might be simplified (e.g., no global search) to fit into a widget.
 
 ### `WidgetHtml`
 **Type:** `html` / `markdown`
@@ -83,7 +80,7 @@ The "Switchboard" component. It connects to the Metadata Registry, fetches the r
 - **Behavior**:
   1.  Loads `*.view.yml`.
   2.  Resolves `type` (e.g., `kanban`).
-  3.  Renders `&lt;ObjectKanbanView config={...} /&gt;`.
+  3.  Renders `<ObjectKanbanView config={...} />`.
 
 ---
 
