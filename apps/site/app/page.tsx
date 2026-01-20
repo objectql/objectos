@@ -223,9 +223,18 @@ export default function HomePage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {['PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'Oracle', 'Excel', 'SQLite', 'Custom'].map((db) => (
-              <div key={db} className="p-6 rounded-lg border border-border bg-card text-center">
-                <p className="font-semibold">{db}</p>
+            {[
+              { id: 'postgresql', name: 'PostgreSQL' },
+              { id: 'mongodb', name: 'MongoDB' },
+              { id: 'redis', name: 'Redis' },
+              { id: 'mysql', name: 'MySQL' },
+              { id: 'oracle', name: 'Oracle' },
+              { id: 'excel', name: 'Excel' },
+              { id: 'sqlite', name: 'SQLite' },
+              { id: 'custom', name: 'Custom' }
+            ].map((db) => (
+              <div key={db.id} className="p-6 rounded-lg border border-border bg-card text-center">
+                <p className="font-semibold">{db.name}</p>
               </div>
             ))}
           </div>
@@ -253,9 +262,9 @@ export default function HomePage() {
               <p className="text-muted-foreground mb-4">
                 Drivers, templates, and apps. Extend your stack with community and commercial plugins.
               </p>
-              <Link href="#" className="text-primary hover:underline text-sm font-medium">
+              <span className="text-primary text-sm font-medium" aria-disabled="true">
                 Coming Soon
-              </Link>
+              </span>
             </div>
 
             <div className="p-8 rounded-xl border border-border bg-card">
@@ -263,9 +272,9 @@ export default function HomePage() {
               <p className="text-muted-foreground mb-4">
                 Serverless PaaS for hosting ObjectStack. Deploy in seconds.
               </p>
-              <Link href="#" className="text-primary hover:underline text-sm font-medium">
+              <span className="text-primary text-sm font-medium" aria-disabled="true">
                 Coming Soon
-              </Link>
+              </span>
             </div>
 
             <div className="p-8 rounded-xl border border-border bg-card">
@@ -273,7 +282,7 @@ export default function HomePage() {
               <p className="text-muted-foreground mb-4">
                 Governance, SSO, and audit logs. Community gives you the engine; Enterprise gives you guardrails.
               </p>
-              <Link href="#" className="text-primary hover:underline text-sm font-medium">
+              <Link href="https://github.com/objectstack-ai/objectos/issues" className="text-primary hover:underline text-sm font-medium">
                 Contact Sales
               </Link>
             </div>
