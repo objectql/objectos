@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { docs } from '../../../.source/server';
+import { DocsPage, DocsBody } from 'fumadocs-ui/page';
 
 export const dynamicParams = false;
 
@@ -12,25 +13,26 @@ export default async function Page(props: {
   
   // Find the page in docs array
   const page = (docs as any[]).find((doc: any) => {
-    const docPath = doc.path || doc.url || '';
-    return docPath === path || docPath.endsWith(`/${path}`) || docPath === slug.join('/');
+    const docPath = doc.info?.path || '';
+    return docPath === path || docPath === slug.join('/') + '.mdx';
   });
   
   if (!page) {
-    console.error('Page not found for path:', path, 'Available docs:', docs);
+    console.error('Page not found for path:', path);
     notFound();
   }
   
-  const MDX = page.data?.exports?.default;
-  const title = page.data?.title || 'Untitled';
+  const MDX = page._exports?.default;
+  const title = page.title || 'Untitled';
+  const toc = page.toc || [];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-4">{title}</h1>
-      <div className="prose prose-gray max-w-none dark:prose-invert">
+    <DocsPage toc={toc} full={false}>
+      <DocsBody>
+        <h1>{title}</h1>
         {MDX && <MDX />}
-      </div>
-    </div>
+      </DocsBody>
+    </DocsPage>
   );
 }
 
