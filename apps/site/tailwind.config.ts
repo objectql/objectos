@@ -9,6 +9,10 @@ const config: Config = {
     './lib/**/*.{ts,tsx}',
     './mdx-components.{ts,tsx}',
     './node_modules/fumadocs-ui/dist/**/*.js',
+    './node_modules/fumadocs-twoslash/dist/**/*.js',
+  ],
+  plugins: [
+    require('@tailwindcss/typography'),
   ],
 };
 

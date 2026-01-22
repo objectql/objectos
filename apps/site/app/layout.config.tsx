@@ -14,6 +14,7 @@ export const baseOptions: BaseLayoutProps = {
         <span className="font-bold">ObjectOS</span>
       </div>
     ),
+    transparentMode: 'top',
   },
   links: [
     {
@@ -29,6 +30,8 @@ export const baseOptions: BaseLayoutProps = {
     {
       text: 'GitHub',
       url: 'https://github.com/objectstack-ai/objectos',
+      external: true,
     },
   ],
+  githubUrl: 'https://github.com/objectstack-ai/objectos',
 };
