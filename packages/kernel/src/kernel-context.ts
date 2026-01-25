@@ -18,10 +18,14 @@ export function createKernelContext(options: Partial<KernelContext> = {}): Kerne
     // Read version from package.json safely
     let version = options.version || '0.0.0';
     try {
+        // Using require for package.json is acceptable in Node.js context
+        // as package.json is not a TypeScript module
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const pkg = require('../../package.json');
         version = options.version || pkg.version || '0.0.0';
     } catch (e) {
         // Fallback if package.json cannot be loaded (e.g., in tests)
+        // Version will use the provided option or default to '0.0.0'
     }
 
     return {

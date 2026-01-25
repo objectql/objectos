@@ -156,11 +156,12 @@ class EventBus {
     async emit(event: string, data: any): Promise<void> {
         const eventListeners = this.listeners.get(event);
         if (eventListeners) {
+            const logger = createLogger('EventBus');
             for (const handler of eventListeners) {
                 try {
                     await handler(data);
                 } catch (error) {
-                    console.error(`Error in event handler for '${event}':`, error);
+                    logger.error(`Error in event handler for '${event}'`, error as Error);
                 }
             }
         }

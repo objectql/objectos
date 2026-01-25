@@ -6,11 +6,44 @@
  */
 
 /**
- * ScopedStorage interface for plugin-specific data storage.
+ * ScopedStorage Interface
+ * 
+ * Provides plugin-scoped key-value storage that isolates data between plugins.
+ * Each plugin receives its own storage instance that cannot access other plugins' data.
+ * 
+ * @example
+ * ```typescript
+ * // Store plugin-specific data
+ * await context.storage.set('last_sync', Date.now());
+ * 
+ * // Retrieve data
+ * const lastSync = await context.storage.get('last_sync');
+ * 
+ * // Delete data
+ * await context.storage.delete('last_sync');
+ * ```
  */
 export interface ScopedStorage {
+    /**
+     * Retrieve a value from storage.
+     * @param key - The storage key
+     * @returns The stored value, or undefined if not found
+     */
     get(key: string): Promise<any>;
+    
+    /**
+     * Store a value in storage.
+     * @param key - The storage key
+     * @param value - The value to store (must be JSON-serializable)
+     * @returns Promise that resolves when the value is stored
+     */
     set(key: string, value: any): Promise<void>;
+    
+    /**
+     * Delete a value from storage.
+     * @param key - The storage key
+     * @returns Promise that resolves when the value is deleted
+     */
     delete(key: string): Promise<void>;
 }
 

@@ -145,9 +145,10 @@ export class PluginManager {
         try {
             const context = this.contextBuilder(pluginId);
             
-            // onLoad is optional, only call if defined
-            if (entry.definition && typeof (entry.definition as any).onLoad === 'function') {
-                await (entry.definition as any).onLoad(context);
+            // onLoad is optional, check if it exists before calling
+            const onLoadHook = (entry.definition as any).onLoad;
+            if (onLoadHook && typeof onLoadHook === 'function') {
+                await onLoadHook(context);
             }
         } catch (error) {
             this.logger.error(`Failed to load plugin '${pluginId}'`, error as Error);

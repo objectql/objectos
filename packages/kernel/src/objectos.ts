@@ -137,7 +137,22 @@ export class ObjectOS extends ObjectQL {
     /**
      * Set a database driver for the default datasource.
      * 
-     * @deprecated Use datasources configuration in constructor instead
+     * @deprecated since v0.2.0. Use datasources configuration in constructor instead.
+     * Will be removed in v1.0.0.
+     * 
+     * @example
+     * ```typescript
+     * // Instead of:
+     * const os = new ObjectOS();
+     * os.useDriver(driver);
+     * 
+     * // Use:
+     * const os = new ObjectOS({
+     *   datasources: {
+     *     default: driver
+     *   }
+     * });
+     * ```
      */
     useDriver(driver: any): void {
         (this as any).datasources['default'] = driver;
