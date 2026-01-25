@@ -31,3 +31,29 @@ export {
     ServiceUnavailableError,
     toApiError,
 } from './errors';
+
+// Router
+export {
+    Router,
+    createRouter,
+    type HttpMethod,
+    type RouteCategory,
+    type MiddlewareFunction,
+    type RouteHandler,
+    type RouteMetadata,
+    type RouteParams,
+} from './router';
+
+// Rate limiting
+export {
+    RateLimiter,
+    createRateLimiter,
+    MemoryRateLimitStore,
+    RateLimitPresets,
+    type RateLimitConfig,
+    type RateLimitInfo,
+    type RateLimitStore,
+} from './rate-limit';
+
+// Middleware
+export * from './middleware';
