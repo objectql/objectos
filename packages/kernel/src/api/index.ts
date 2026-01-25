@@ -57,3 +57,25 @@ export {
 
 // Middleware
 export * from './middleware';
+
+// Data mapping and transformation
+export {
+    DataMapper,
+    Transformers,
+    createTransformConfig,
+    transform,
+    type TransformRule,
+    type TransformConfig,
+} from './mapping';
+
+// Endpoint registry
+export {
+    EndpointRegistry,
+    createEndpointRegistry,
+    EndpointType,
+    type EndpointConfig,
+    type EndpointHandler,
+} from './endpoint-registry';
+
+// Endpoint types
+export * from './endpoint-types';
