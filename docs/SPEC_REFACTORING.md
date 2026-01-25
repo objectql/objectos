@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the refactoring of ObjectOS to align with the [@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec) protocol version 0.3.3.
+This document describes the refactoring of ObjectOS to align with the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol version 0.3.3.
 
 ## What is @objectstack/spec?
 
@@ -253,7 +253,7 @@ See `packages/kernel/src/plugins/example-spec-plugin.ts` for a complete, product
 
 ## Resources
 
-- [@objectstack/spec on npm](https://www.npmjs.com/package/@objectstack/spec)
+- [@objectstack/spec on GitHub](https://github.com/objectstack-ai/spec)
 - [Example Plugin](../packages/kernel/src/plugins/example-spec-plugin.ts)
 - [Kernel README](../packages/kernel/README.md)
 - [Architecture Documentation](../ARCHITECTURE.md)

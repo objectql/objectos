@@ -6,7 +6,7 @@ ObjectOS is a **metadata-driven runtime engine** that transforms declarative YAM
 
 ## Protocol Foundation: @objectstack/spec
 
-ObjectOS is built on the **[@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec)** protocol, which defines the "DNA" of the ObjectStack ecosystem. The spec provides:
+ObjectOS is built on the **[@objectstack/spec](https://github.com/objectstack-ai/spec)** protocol, which defines the "DNA" of the ObjectStack ecosystem. The spec provides:
 
 ### 1. **Strict Type Definitions**
 - **Zod Schemas**: Runtime validation for configuration and data
@@ -36,7 +36,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 ## The Three-Repository Model
 
 ### @objectstack/spec (Protocol Definition)
-- **Location**: https://www.npmjs.com/package/@objectstack/spec
+- **Location**: https://github.com/objectstack-ai/spec
 - **Purpose**: Defines the protocol and type contracts
 - **Key Exports**:
   - `Data.*` - Object schemas, field types, queries
