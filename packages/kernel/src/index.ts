@@ -1,7 +1,21 @@
+// Main exports
 export * from './objectos';
 export { ObjectOSPlugin } from './plugins/objectql';
 
-// Re-export specific types if needed to avoid conflicts
+// Kernel components
+export { KernelContextManager, createKernelContext } from './kernel-context';
+export { StorageManager, InMemoryScopedStorage } from './scoped-storage';
+export type { ScopedStorage } from './scoped-storage';
+export { PluginManager } from './plugin-manager';
+export type { PluginEntry, PluginLifecycleHook } from './plugin-manager';
+export { PluginContextBuilder } from './plugin-context';
+export { ConsoleLogger, createLogger } from './logger';
+export type { Logger, LogLevel, LogEntry } from './logger';
+
+// API Protocol components
+export * from './api';
+
+// Re-export specific types to avoid conflicts
 export { 
     AppConfig, 
     AppMenuSection, 
@@ -11,4 +25,5 @@ export {
     PageConfig,
     PageComponent
 } from './types';
+
 
