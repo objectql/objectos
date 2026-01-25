@@ -51,18 +51,9 @@ The `@objectos/server` package is the Gateway. It translates HTTP/WebSockets int
 
 ## 🖥️ 3. Interaction Support (UI Layer)
 
-The `@objectos/ui` (Components) and `@objectos/web` (App) packages provide the human interface.
+> **Note**: The UI components have been moved to a separate project and are no longer part of this monorepo.
 
-### Component Breakdown
-
-| Component | Responsibility | Implementation Notes |
-| :--- | :--- | :--- |
-| **ObjectGrid** | Data Table with "Excel-like" features. | Uses **TanStack Table**. Implements Virtual Scroll for 100k+ rows. |
-| **ObjectForm** | Dynamic Record Editor. | Uses **React-Hook-Form**. Generates Zod schema from Metadata at runtime. |
-| **LayoutShell** | Application chrome (Sidebar, Header). | Responsive. Adapts menu based on user permissions. |
-| **DataQueryHook** | React Query wrapper for API. | Cache management. `useQuery(['data', 'contacts'], ...)` |
-
-### Functional Realization: "Dynamic Types"
+The UI layer provides the human interface, integrating with ObjectOS through the HTTP API exposed by `@objectos/server`.
 *   **Design**: The UI downloads metadata initially.
 *   **Flow**: `schema.json` received -> `FieldFactory` maps `type: 'date'` to `<DatePicker />` -> Renders Cell.
 

@@ -60,7 +60,6 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 - **Key Packages**:
   - `@objectos/kernel` - Core execution engine
   - `@objectos/server` - HTTP API layer
-  - `@objectos/ui` - React UI components
 
 ## Core Architectural Principle
 
@@ -302,41 +301,9 @@ export class ObjectDataController {
 | DELETE | `/api/data/:object/:id` | Delete record |
 | GET | `/api/metadata/:object` | Get object metadata |
 
-## Layer 5: UI Layer (@objectos/ui)
+## Layer 5: UI Layer
 
-### Component Architecture
-
-The UI layer provides **metadata-driven React components**:
-
-```typescript
-// Automatically generates a data grid from metadata
-<ObjectGrid 
-  objectName="contacts" 
-  kernel={kernel}
-/>
-
-// Automatically generates a form from metadata
-<ObjectForm 
-  objectName="contacts"
-  recordId={id}
-  kernel={kernel}
-/>
-```
-
-### Key Components
-
-1. **ObjectGrid**: Airtable-like data grid with inline editing
-2. **ObjectForm**: Salesforce-like detail form with sections
-3. **ObjectChart**: Chart component for analytics
-4. **FilterBuilder**: Visual query builder
-
-### Design System
-
-- **Framework**: React 18+ with TypeScript
-- **Styling**: Tailwind CSS
-- **Components**: Shadcn/ui
-- **State**: React Query for server state
-- **Grid**: TanStack Table
+**Note**: The UI layer has been moved to a separate project and is no longer part of this monorepo. The UI components are developed independently and can be integrated with ObjectOS through the API layer.
 
 ## Extension Points
 

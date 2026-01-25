@@ -106,7 +106,6 @@ This document describes all GitHub Actions workflows and automation configured f
 **Labels Applied:**
 - `kernel` - Changes in `packages/kernel/**`
 - `server` - Changes in `packages/server/**`
-- `ui` - Changes in `packages/ui/**`
 - `presets` - Changes in `packages/presets/**`
 - `documentation` - Changes in docs or markdown files
 - `workflows` - Changes in `.github/**`

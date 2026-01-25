@@ -113,19 +113,9 @@ NestJS HTTP server.
 - `DELETE /api/data/:object/:id` - Delete record
 - `GET /api/metadata/:object` - Get metadata
 
-### @objectos/ui
+### UI Components
 
-React UI components.
-
-```tsx
-import { ObjectGrid, ObjectForm } from '@objectos/ui';
-
-// Auto-generated data grid
-<ObjectGrid objectName="contacts" />
-
-// Auto-generated form
-<ObjectForm objectName="contacts" recordId={id} />
-```
+**Note**: The UI components have been moved to a separate project and are no longer part of this monorepo. They are developed independently and can be integrated with ObjectOS through the API layer.
 
 ## Field Types
 
