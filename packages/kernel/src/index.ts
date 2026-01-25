@@ -12,6 +12,9 @@ export { PluginContextBuilder } from './plugin-context';
 export { ConsoleLogger, createLogger } from './logger';
 export type { Logger, LogLevel, LogEntry } from './logger';
 
+// API Protocol components
+export * from './api';
+
 // Re-export specific types to avoid conflicts
 export { 
     AppConfig, 
