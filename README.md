@@ -48,7 +48,17 @@ Stop writing boilerplate controllers.
 
 ## 📦 Architecture
 
-ObjectOS is built as a modular Monorepo using **NestJS**.
+ObjectOS is built as a modular Monorepo using **NestJS** and follows the **@objectstack/spec** protocol.
+
+### Protocol Compliance
+
+ObjectOS adheres to the [@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec) protocol, which defines:
+- **Kernel Protocol**: Plugin lifecycle, manifest structure, and context interfaces
+- **Data Protocol**: Object schemas, field types, queries, and hooks
+- **System Protocol**: Audit logging, events, and job scheduling
+- **UI Protocol**: App configurations, views, and dashboards
+
+This ensures interoperability across the ObjectStack ecosystem (ObjectQL, ObjectOS, ObjectUI).
 
 | Package | Role | Description |
 | :--- | :--- | :--- |

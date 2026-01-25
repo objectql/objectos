@@ -4,9 +4,48 @@
 
 ObjectOS is a **metadata-driven runtime engine** that transforms declarative YAML definitions into fully functional enterprise applications. This document explains the architectural decisions, component interactions, and design principles behind ObjectOS.
 
-## The Two-Repository Model
+## Protocol Foundation: @objectstack/spec
 
-### ObjectQL Repository (Protocol Definition)
+ObjectOS is built on the **[@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec)** protocol, which defines the "DNA" of the ObjectStack ecosystem. The spec provides:
+
+### 1. **Strict Type Definitions**
+- **Zod Schemas**: Runtime validation for configuration and data
+- **TypeScript Interfaces**: Compile-time type safety via `z.infer<>`
+- **JSON Schemas**: VS Code IntelliSense and tooling support
+
+### 2. **Five Protocol Namespaces**
+
+| Namespace | Scope | Key Types |
+|-----------|-------|-----------|
+| **Data** | Business objects, fields, queries | `ServiceObject`, `Field`, `QueryAST`, `Hook` |
+| **Kernel** | Plugin lifecycle, manifests, context | `PluginDefinition`, `ObjectStackManifest`, `PluginContextData` |
+| **System** | Runtime infrastructure, security | `AuditEvent`, `Job`, `Event` |
+| **UI** | Presentation layer | `App`, `View`, `Dashboard` |
+| **API** | Connectivity contracts | `Endpoint`, `Contract` |
+
+### 3. **Plugin Lifecycle Hooks**
+The spec defines a standardized plugin lifecycle:
+- `onInstall`: First-time setup
+- `onEnable`: Plugin activation
+- `onLoad`: Metadata registration
+- `onDisable`: Graceful shutdown
+- `onUninstall`: Cleanup
+
+All ObjectOS plugins must conform to this lifecycle for consistency and predictability.
+
+## The Three-Repository Model
+
+### @objectstack/spec (Protocol Definition)
+- **Location**: https://www.npmjs.com/package/@objectstack/spec
+- **Purpose**: Defines the protocol and type contracts
+- **Key Exports**:
+  - `Data.*` - Object schemas, field types, queries
+  - `Kernel.*` - Plugin system, manifests, context
+  - `System.*` - Audit, events, jobs
+  - `UI.*` - App configurations, views
+  - `API.*` - Endpoint contracts
+
+### ObjectQL Repository (Data Layer Implementation)
 - **Location**: https://github.com/objectql/objectql
 - **Purpose**: Defines the metadata standard and provides core implementations
 - **Key Packages**:
