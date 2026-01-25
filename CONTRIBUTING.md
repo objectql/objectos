@@ -18,12 +18,14 @@ objectos/
 ├── packages/
 │   ├── kernel/          # @objectos/kernel - Core runtime engine
 │   ├── server/          # @objectos/server - NestJS HTTP server
-│   ├── ui/              # @objectos/ui - React components
 │   └── presets/         # @objectos/preset-* - Standard metadata
+├── apps/
+│   └── site/            # @objectos/site - Documentation site
 ├── examples/            # Example applications
-├── docs/                # VitePress documentation
-└── apps/                # Full-stack applications (if any)
+└── docs/                # VitePress documentation
 ```
+
+**Note**: The UI package (`@objectos/ui`) has been moved to a separate repository and is developed independently.
 
 ### Package Responsibilities
 
@@ -31,7 +33,6 @@ objectos/
 |---------|------|------------|---------------|
 | `@objectos/kernel` | Core logic, object registry, hooks | `@objectql/types`, `@objectql/core` | `pg`, `express`, `nest` |
 | `@objectos/server` | HTTP layer, REST API | `@objectos/kernel`, `@nestjs/*` | `knex`, direct SQL |
-| `@objectos/ui` | React components | `@objectos/kernel` types | Server-specific code |
 | `@objectos/preset-*` | Metadata YAML files | None | No .ts files allowed |
 
 ## Development Standards

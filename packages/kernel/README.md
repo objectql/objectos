@@ -1,6 +1,6 @@
 # @objectos/kernel
 
-The core runtime engine for ObjectOS - a metadata-driven platform built on the [@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec) protocol.
+The core runtime engine for ObjectOS - a metadata-driven platform built on the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol.
 
 ## Overview
 

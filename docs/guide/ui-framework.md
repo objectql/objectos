@@ -1,6 +1,8 @@
 # Standard UI Components Reference
 
-This document defines the standard component library for `@objectos/ui`. These components are the reference implementations for the **View & Layout Specifications**.
+> **Note**: The UI components (`@objectos/ui`) have been moved to a separate project and are no longer part of this monorepo. This document is kept for reference and describes the design principles for UI components that integrate with ObjectOS.
+
+This document defines the standard component library for UI components. These components are the reference implementations for the **View & Layout Specifications**.
 
 ---
 

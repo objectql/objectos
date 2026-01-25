@@ -11,10 +11,6 @@ labels:
     color: '0366d6'
     description: 'Changes in @objectos/server package'
 
-  - name: ui
-    color: '0366d6'
-    description: 'Changes in @objectos/ui package'
-
   - name: presets
     color: '0366d6'
     description: 'Changes in preset packages'

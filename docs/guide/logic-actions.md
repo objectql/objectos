@@ -464,20 +464,24 @@ const result = await kernel.executeAction('contacts.sendEmail', {
 
 ### From UI
 
-```typescript
-import { useAction } from '@objectos/ui';
+> **Note**: The UI components have been moved to a separate project. The example below shows the conceptual pattern for invoking actions from a UI application.
 
+```typescript
+// Example pattern for UI integration
 function ContactDetail({ contactId }) {
-  const sendEmail = useAction('contacts.sendEmail');
-  
   const handleSendEmail = async () => {
-    const result = await sendEmail({
-      id: contactId,
-      subject: 'Follow up',
-      body: 'Thank you for your interest'
+    const result = await fetch('/api/actions/contacts.sendEmail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: contactId,
+        subject: 'Follow up',
+        body: 'Thank you for your interest'
+      })
     });
     
-    alert(result.message);
+    const data = await result.json();
+    alert(data.message);
   };
   
   return (

@@ -21,7 +21,6 @@
     "@nestjs/serve-static": "^4.0.2",
     "@objectos/kernel": "workspace:*",
     "@objectos/preset-base": "workspace:*",
-    "@objectos/web": "workspace:*",
     "@objectql/core": "^3.0.1",
     "@objectql/driver-sql": "^3.0.1",
     "@objectql/driver-mongo": "^3.0.1",

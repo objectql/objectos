@@ -23,7 +23,6 @@ ObjectOS is a **metadata-driven runtime engine** that interprets and executes bu
 │  ObjectOS (Runtime Repository - This One)       │
 │  - @objectos/kernel: Execution engine           │
 │  - @objectos/server: HTTP API layer             │
-│  - @objectos/ui: React components               │
 └─────────────────────┬───────────────────────────┘
                       │
                       ▼
@@ -304,22 +303,9 @@ curl -X POST http://localhost:3000/api/data/contacts \
   }'
 ```
 
-## Using the UI Components
+## Using UI Components
 
-ObjectOS provides React components that automatically render based on metadata:
-
-```tsx
-import { ObjectGrid, ObjectForm } from '@objectos/ui';
-
-function ContactsPage() {
-  return (
-    <div>
-      <h1>Contacts</h1>
-      {/* Automatically generates a data grid */}
-      <ObjectGrid objectName="contacts" />
-    </div>
-  );
-}
+> **Note**: The UI components have been moved to a separate project and are no longer part of this monorepo. They can be integrated with ObjectOS through the HTTP API layer (`@objectos/server`) which provides REST endpoints for metadata and data access.
 
 function ContactDetail({ contactId }) {
   return (

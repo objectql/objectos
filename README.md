@@ -52,7 +52,7 @@ ObjectOS is built as a modular Monorepo using **NestJS** and follows the **@obje
 
 ### Protocol Compliance
 
-ObjectOS adheres to the [@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec) protocol, which defines:
+ObjectOS adheres to the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol, which defines:
 - **Kernel Protocol**: Plugin lifecycle, manifest structure, and context interfaces
 - **Data Protocol**: Object schemas, field types, queries, and hooks
 - **System Protocol**: Audit logging, events, and job scheduling
