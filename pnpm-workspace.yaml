@@ -2,6 +2,7 @@ packages:
   - packages/*
   - packages/presets/*
   - packages/plugins/*
+  - apps/site
   - examples/*
 
 onlyBuiltDependencies:
