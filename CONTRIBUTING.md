@@ -20,11 +20,10 @@ objectos/
 │   ├── server/          # @objectos/server - NestJS HTTP server
 │   └── presets/         # @objectos/preset-* - Standard metadata
 ├── examples/            # Example applications
-├── docs/                # VitePress documentation
-└── apps/                # Full-stack applications (if any)
+└── docs/                # VitePress documentation
 ```
 
-**Note**: The UI package (`@objectos/ui`) has been moved to a separate repository and is developed independently.
+**Note**: The UI package (`@objectos/ui`) and applications (`apps/web`, `apps/site`) have been moved to separate repositories and are developed independently.
 
 ### Package Responsibilities
 

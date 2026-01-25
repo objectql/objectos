@@ -40,7 +40,7 @@ The `@objectos/server` package is the Gateway. It translates HTTP/WebSockets int
 | :--- | :--- | :--- |
 | **ObjectQLController** | Generic REST endpoint for all objects. | `GET /:objectName/*`. No need to write manual controllers for new objects. |
 | **AuthProvider** | Authentication strategy manager. | Wraps `better-auth`. Supports pluggable strategies (GitHub, Google, SSO). |
-| **StaticServeModule** | Hosting the compiled frontend. | Resolves `@objectos/web` dist path dynamically for production deployments. |
+| **StaticServeModule** | Hosting the compiled frontend. | Serves static assets for frontend applications. |
 | **ExceptionFilter** | Standardized error formatting. | Converts `ObjectOSError` into JSON: `{ error: { code: 404, message: "..." } }`. |
 
 ### Functional Realization: "Context-Aware Request"

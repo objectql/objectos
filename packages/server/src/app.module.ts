@@ -3,22 +3,14 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ObjectQLModule } from './objectql/objectql.module.js';
 import { AuthModule } from './auth/auth.module.js';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join, resolve, dirname } from 'path';
 import { AuthMiddleware } from './auth/auth.middleware.js';
 import { ObjectOS } from '@objectos/kernel';
 import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@objectql/server';
-
-const clientDistPath = resolve(dirname(require.resolve('@objectos/web/package.json')), 'dist');
 
 @Module({
   imports: [
     ObjectQLModule, 
     AuthModule,
-    ServeStaticModule.forRoot({
-      rootPath: clientDistPath,
-      exclude: ['/api/(.*)'],
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],

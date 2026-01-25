@@ -11,19 +11,14 @@
     ]
   },
   "scripts": {
-    "dev": "concurrently \"pnpm run server\" \"pnpm run web:watch\" --kill-others --names \"SERVER,WEB\" -c \"magenta,blue\"",
+    "dev": "pnpm --filter @objectos/server dev",
     "server": "pnpm --filter @objectos/server dev",
-    "web": "pnpm --filter @objectos/web dev",
-    "web:watch": "pnpm --filter @objectos/web build:watch",
     "build": "tsc -b && pnpm -r build",
     "start": "pnpm --filter @objectos/server start:prod",
     "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm run build && changeset publish",
-    "site:dev": "pnpm --filter @objectos/site dev",
-    "site:build": "pnpm --filter @objectos/site build",
-    "site:preview": "pnpm --filter @objectos/site start"
+    "release": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
