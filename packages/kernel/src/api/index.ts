@@ -31,3 +31,83 @@ export {
     ServiceUnavailableError,
     toApiError,
 } from './errors';
+
+// Router
+export {
+    Router,
+    createRouter,
+    type HttpMethod,
+    type RouteCategory,
+    type MiddlewareFunction,
+    type RouteHandler,
+    type RouteMetadata,
+    type RouteParams,
+} from './router';
+
+// Rate limiting
+export {
+    RateLimiter,
+    createRateLimiter,
+    MemoryRateLimitStore,
+    RateLimitPresets,
+    type RateLimitConfig,
+    type RateLimitInfo,
+    type RateLimitStore,
+} from './rate-limit';
+
+// Middleware
+export * from './middleware';
+
+// Data mapping and transformation
+export {
+    DataMapper,
+    Transformers,
+    createTransformConfig,
+    transform,
+    type TransformRule,
+    type TransformConfig,
+} from './mapping';
+
+// Endpoint registry
+export {
+    EndpointRegistry,
+    createEndpointRegistry,
+    EndpointType,
+    type EndpointConfig,
+    type EndpointHandler,
+} from './endpoint-registry';
+
+// Endpoint types
+export * from './endpoint-types';
+
+// Discovery service
+export {
+    DiscoveryService,
+    createDiscoveryService,
+    registerDiscoveryEndpoint,
+    type DiscoveryConfig,
+    type DiscoveryResponse,
+    type SystemCapabilities,
+} from './discovery';
+
+// OpenAPI generator
+export {
+    OpenAPIGenerator,
+    createOpenAPIGenerator,
+    registerOpenAPIEndpoint,
+    type OpenAPIConfig,
+    type OpenAPISpec,
+} from './openapi';
+
+// Metadata service
+export {
+    MetadataService,
+    createMetadataService,
+    registerMetadataEndpoints,
+    FieldType,
+    type FieldMetadata,
+    type ObjectMetadata,
+    type MetadataProvider,
+    type RelationshipMetadata,
+    type ObjectPermissions,
+} from './metadata';
