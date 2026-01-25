@@ -13,6 +13,6 @@
     "@objectql/core": "^3.0.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }
