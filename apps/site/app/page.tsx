@@ -16,6 +16,13 @@ export default function HomePage() {
               <Zap className="w-4 h-4" />
               <span>Enterprise Low-Code Runtime Engine</span>
             </div>
+            
+            {/* Preview Release Notice */}
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400 text-base font-semibold border border-green-500/30 shadow-lg">
+              <span className="animate-pulse">🚀</span>
+              <span>Preview Version Coming March 2026</span>
+            </div>
+            
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
               Object<span className="text-primary">OS</span>
             </h1>
