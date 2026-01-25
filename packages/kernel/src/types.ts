@@ -1,3 +1,45 @@
+/**
+ * ObjectOS Type Definitions
+ * 
+ * This file provides TypeScript type definitions for ObjectOS,
+ * based on the @objectstack/spec protocol.
+ */
+
+// Re-export core protocol types from @objectstack/spec
+export type { 
+    // Kernel Protocol
+    ObjectStackManifest,
+    PluginDefinition,
+    PluginLifecycleHooks,
+    PluginContextData,
+    KernelContext,
+    LoggerConfig,
+    LogEntry,
+    LogLevel,
+    LogFormat,
+} from '@objectstack/spec/kernel';
+
+export type {
+    // Data Protocol
+    ServiceObject,
+    Field,
+    FieldType,
+    QueryAST,
+    QueryFilter,
+    Hook,
+    HookEventType,
+    Dataset,
+} from '@objectstack/spec/data';
+
+export type {
+    // System Protocol
+    AuditEvent,
+    AuditEventType,
+    Event,
+    Job,
+} from '@objectstack/spec/system';
+
+// Legacy compatibility: Re-export ObjectQL types for existing code
 export * from '@objectql/types';
 
 /**
