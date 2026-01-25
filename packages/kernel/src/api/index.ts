@@ -79,3 +79,35 @@ export {
 
 // Endpoint types
 export * from './endpoint-types';
+
+// Discovery service
+export {
+    DiscoveryService,
+    createDiscoveryService,
+    registerDiscoveryEndpoint,
+    type DiscoveryConfig,
+    type DiscoveryResponse,
+    type SystemCapabilities,
+} from './discovery';
+
+// OpenAPI generator
+export {
+    OpenAPIGenerator,
+    createOpenAPIGenerator,
+    registerOpenAPIEndpoint,
+    type OpenAPIConfig,
+    type OpenAPISpec,
+} from './openapi';
+
+// Metadata service
+export {
+    MetadataService,
+    createMetadataService,
+    registerMetadataEndpoints,
+    FieldType,
+    type FieldMetadata,
+    type ObjectMetadata,
+    type MetadataProvider,
+    type RelationshipMetadata,
+    type ObjectPermissions,
+} from './metadata';
