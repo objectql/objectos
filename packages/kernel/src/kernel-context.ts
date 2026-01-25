@@ -15,10 +15,19 @@ import { randomUUID } from 'crypto';
  * @returns Complete KernelContext instance
  */
 export function createKernelContext(options: Partial<KernelContext> = {}): KernelContext {
+    // Read version from package.json safely
+    let version = options.version || '0.0.0';
+    try {
+        const pkg = require('../../package.json');
+        version = options.version || pkg.version || '0.0.0';
+    } catch (e) {
+        // Fallback if package.json cannot be loaded (e.g., in tests)
+    }
+
     return {
         instanceId: options.instanceId || randomUUID(),
         mode: options.mode || (process.env.NODE_ENV === 'production' ? 'production' : 'development'),
-        version: options.version || require('../../package.json').version,
+        version,
         appName: options.appName,
         cwd: options.cwd || process.cwd(),
         workspaceRoot: options.workspaceRoot,
