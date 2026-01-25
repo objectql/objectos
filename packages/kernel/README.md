@@ -1,16 +1,43 @@
 # @objectos/kernel
 
-The core runtime engine for ObjectOS - a metadata-driven platform that transforms declarative YAML definitions into fully functional enterprise applications.
+The core runtime engine for ObjectOS - a metadata-driven platform built on the [@objectstack/spec](https://www.npmjs.com/package/@objectstack/spec) protocol.
 
 ## Overview
 
 `@objectos/kernel` is the execution engine that powers ObjectOS. It extends ObjectQL with application-specific capabilities, providing:
 
+- **Spec-Compliant Types**: Built on `@objectstack/spec` for protocol consistency
 - **Metadata Processing**: Parse and validate object definitions, apps, and data files
-- **Lifecycle Hooks**: Execute custom logic at key points in data operations
+- **Plugin Lifecycle**: Standardized hooks (onInstall, onEnable, onDisable, onUninstall)
 - **Permission Enforcement**: Apply role-based access control and field-level security
 - **Plugin System**: Extend functionality through a modular plugin architecture
 - **Event Bus**: Coordinate actions across different parts of your application
+
+## Protocol Compliance
+
+This package implements the **@objectstack/spec** protocol:
+
+- **Kernel Protocol** (`@objectstack/spec/kernel`): Plugin lifecycle, manifests, context
+- **Data Protocol** (`@objectstack/spec/data`): Object schemas, fields, queries
+- **System Protocol** (`@objectstack/spec/system`): Audit, events, jobs
+
+All TypeScript types are imported from the spec to ensure consistency across the ecosystem.
+
+```typescript
+import type { 
+  PluginDefinition,
+  PluginContextData,
+  ObjectStackManifest 
+} from '@objectstack/spec/kernel';
+
+import type { 
+  ServiceObject,
+  Field,
+  QueryAST 
+} from '@objectstack/spec/data';
+```
+
+For a complete example of a spec-compliant plugin, see [example-spec-plugin.ts](./src/plugins/example-spec-plugin.ts).
 
 ## Features
 
