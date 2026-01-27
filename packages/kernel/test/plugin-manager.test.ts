@@ -3,7 +3,7 @@
  */
 
 import { PluginManager } from '../src/plugin-manager';
-import type { ObjectStackManifest, PluginDefinition, PluginContextData } from '@objectstack/spec/kernel';
+import type { ObjectStackManifest, PluginDefinition, PluginContextData } from '@objectstack/spec/system';
 
 describe('PluginManager', () => {
     let pluginManager: PluginManager;

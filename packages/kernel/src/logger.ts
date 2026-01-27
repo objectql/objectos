@@ -1,7 +1,7 @@
 /**
  * Logger Implementation
  * 
- * Provides structured logging that conforms to the @objectstack/spec/kernel Logger interface.
+ * Provides structured logging that conforms to the @objectstack/spec/system Logger interface.
  */
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';

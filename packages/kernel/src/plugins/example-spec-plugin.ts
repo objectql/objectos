@@ -5,11 +5,11 @@
  * ObjectStack specification for plugin lifecycle and context.
  */
 
-import type { PluginDefinition, PluginContextData, ObjectStackManifest } from '@objectstack/spec/kernel';
+import type { PluginDefinition, PluginContextData, ObjectStackManifest } from '@objectstack/spec/system';
 
 /**
  * Plugin Manifest
- * Conforms to @objectstack/spec/kernel/ManifestSchema
+ * Conforms to @objectstack/spec/system/ManifestSchema
  * 
  * This is typically stored in a package.json or manifest.json file
  * and loaded by the kernel. For this example, we define it inline.
@@ -24,74 +24,31 @@ export const ExampleCRMManifest: ObjectStackManifest = {
         'system.user.read',
         'system.data.write',
     ],
-    // Object files can be specified as glob patterns
+    // In v0.4.1, objects are defined via glob patterns pointing to object definition files
+    // Object files should be YAML or TypeScript files following the object schema
     objects: ['./objects/*.object.yml'],
-    // Or provided inline as compiled definitions
-    definitions: {
-        objects: {
-            'crm_lead': {
-                name: 'crm_lead',
-                label: 'Lead',
-                pluralLabel: 'Leads',
-                description: 'Sales lead tracking',
-                icon: 'user-plus',
-                active: true,
-                isSystem: false,
-                abstract: false,
-                datasource: 'default',
-                fields: {
-                    name: {
-                        type: 'text',
-                        label: 'Lead Name',
-                        required: true,
-                        searchable: true,
-                        multiple: false,
-                        unique: false,
-                        deleteBehavior: 'set_null',
-                        hidden: false,
-                        readonly: false,
-                        encryption: false,
-                        index: false,
-                        externalId: false,
-                    },
-                    email: {
-                        type: 'email',
-                        label: 'Email',
-                        required: true,
-                        searchable: true,
-                        unique: true,
-                        multiple: false,
-                        deleteBehavior: 'set_null',
-                        hidden: false,
-                        readonly: false,
-                        encryption: false,
-                        index: true,
-                        externalId: false,
-                    },
-                    status: {
-                        type: 'select',
-                        label: 'Status',
-                        required: true,
-                        searchable: true,
-                        multiple: false,
-                        unique: false,
-                        deleteBehavior: 'set_null',
-                        hidden: false,
-                        readonly: false,
-                        encryption: false,
-                        index: false,
-                        externalId: false,
-                        options: [
-                            { label: 'New', value: 'new', default: true },
-                            { label: 'Contacted', value: 'contacted' },
-                            { label: 'Qualified', value: 'qualified' },
-                            { label: 'Converted', value: 'converted' },
-                            { label: 'Lost', value: 'lost' },
-                        ],
-                    },
-                },
-            },
-        },
+    
+    // Contribution points for extending the platform
+    contributes: {
+        // Register custom actions that can be invoked by flows or API
+        actions: [
+            {
+                name: 'convertLead',
+                label: 'Convert Lead to Account',
+                description: 'Converts a lead to an account and contact',
+            }
+        ],
+        // Register custom events that this plugin listens to
+        events: ['crm_lead.created', 'crm_lead.converted'],
+        
+        // Register custom field types
+        fieldTypes: [
+            {
+                name: 'lead_status',
+                label: 'Lead Status',
+                description: 'Special field type for lead status with workflow integration',
+            }
+        ],
     },
 };
 
@@ -103,7 +60,7 @@ export const ExampleCRMManifest: ObjectStackManifest = {
  * - Using the plugin context (ql, os, logger, storage, etc.)
  * - Registering routes and scheduled jobs
  * 
- * Conforms to @objectstack/spec/kernel/PluginLifecycleSchema
+ * Conforms to @objectstack/spec/system/PluginLifecycleSchema
  */
 export const ExampleCRMPlugin: PluginDefinition = {
 
@@ -125,7 +82,7 @@ export const ExampleCRMPlugin: PluginDefinition = {
     async onEnable(context: PluginContextData) {
         context.logger.info('CRM Plugin: Enabling...');
         
-        // The metadata from ExampleCRMManifest.definitions is loaded by the kernel
+        // The metadata from object files (specified in manifest.objects) is loaded by the kernel
         // before this hook is called
         
         // Register custom routes
@@ -226,20 +183,22 @@ export const ExampleCRMPlugin: PluginDefinition = {
  * await os.init();
  * ```
  * 
- * ## Plugin Architecture Notes
+ * ## Plugin Architecture Notes (v0.4.1)
  * 
- * In the ObjectStack spec, plugins are separated into two parts:
+ * In the ObjectStack spec v0.4.1, plugins are separated into two parts:
  * 
- * 1. **Manifest** (@objectstack/spec/kernel/ManifestSchema)
+ * 1. **Manifest** (@objectstack/spec/system/ManifestSchema)
  *    - Static configuration (id, version, name, permissions)
- *    - Object definitions and metadata
+ *    - Object file glob patterns (objects are defined in separate files)
+ *    - Contribution points (actions, events, field types, etc.)
  *    - Typically stored in package.json or manifest.json
  * 
- * 2. **Lifecycle Hooks** (@objectstack/spec/kernel/PluginLifecycleSchema)
+ * 2. **Lifecycle Hooks** (@objectstack/spec/system/PluginLifecycleSchema)
  *    - Runtime behavior (onInstall, onEnable, onLoad, etc.)
  *    - Executable code
  *    - Typically exported from index.ts or main.js
  * 
  * The kernel loads manifests first to understand what plugins are available,
- * then executes lifecycle hooks at appropriate times.
+ * then loads object definitions from the files specified in manifest.objects,
+ * and finally executes lifecycle hooks at appropriate times.
  */

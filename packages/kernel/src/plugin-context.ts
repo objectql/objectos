@@ -2,10 +2,10 @@
  * Plugin Context Builder
  * 
  * Creates PluginContext instances that provide plugins with access to
- * ObjectStack APIs according to @objectstack/spec/kernel.
+ * ObjectStack APIs according to @objectstack/spec/system.
  */
 
-import type { PluginContextData } from '@objectstack/spec/kernel';
+import type { PluginContextData } from '@objectstack/spec/system';
 import type { IObjectQL } from '@objectql/types';
 import { Logger, createLogger } from './logger';
 import { ScopedStorage } from './scoped-storage';
