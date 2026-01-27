@@ -27,8 +27,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76))(@objectql/types@3.0.1)(sqlite3@5.1.7)
       '@objectstack/spec':
-        specifier: 0.3.3
-        version: 0.3.3
+        specifier: 0.4.1
+        version: 0.4.1
       build:
         specifier: ^0.1.4
         version: 0.1.4
@@ -137,8 +137,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@objectstack/spec':
-        specifier: 0.3.3
-        version: 0.3.3
+        specifier: 0.4.1
+        version: 0.4.1
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
@@ -1579,6 +1579,10 @@ packages:
 
   '@objectstack/spec@0.3.3':
     resolution: {integrity: sha512-GGSrRLECgYY1epLocdCkCsicerFKAKlRpluGmCqK1iVNgTgiC04zniLogYQXu5kf6UIB6mHQNBHcbr1x5DOmVQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@objectstack/spec@0.4.1':
+    resolution: {integrity: sha512-UEGjeZBgK0eAcShKOVYgDQ8+vekaRcgYSmJ09Avf3iyTzjl3sKqYC0WVQdyVWbqptMhU5kNlKEIIVxcdJnUc0Q==}
     engines: {node: '>=18.0.0'}
 
   '@orama/orama@3.1.18':
@@ -8388,6 +8392,10 @@ snapshots:
   '@objectql/types@3.0.1': {}
 
   '@objectstack/spec@0.3.3':
+    dependencies:
+      zod: 3.25.76
+
+  '@objectstack/spec@0.4.1':
     dependencies:
       zod: 3.25.76
 
