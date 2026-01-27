@@ -2,7 +2,7 @@
  * Scoped Storage Implementation
  * 
  * Provides plugin-scoped key-value storage that conforms to the
- * @objectstack/spec/kernel ScopedStorage interface.
+ * @objectstack/spec/system ScopedStorage interface.
  */
 
 /**

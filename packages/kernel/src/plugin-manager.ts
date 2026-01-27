@@ -1,7 +1,7 @@
 /**
  * Plugin Manager
  * 
- * Manages the plugin lifecycle according to @objectstack/spec/kernel.
+ * Manages the plugin lifecycle according to @objectstack/spec/system.
  * Handles plugin registration, initialization, and lifecycle hooks.
  */
 
@@ -9,7 +9,7 @@ import type {
     PluginDefinition, 
     PluginContextData, 
     ObjectStackManifest 
-} from '@objectstack/spec/kernel';
+} from '@objectstack/spec/system';
 import { Logger, createLogger } from './logger';
 import { ScopedStorage } from './scoped-storage';
 

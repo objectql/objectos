@@ -3,7 +3,7 @@
  */
 
 import { ObjectOS } from '../objectos';
-import type { ObjectStackManifest, PluginDefinition } from '@objectstack/spec/kernel';
+import type { ObjectStackManifest, PluginDefinition } from '@objectstack/spec/system';
 
 export const CRMManifest: ObjectStackManifest = {
     id: 'com.example.crm',
@@ -12,37 +12,21 @@ export const CRMManifest: ObjectStackManifest = {
     name: 'Example CRM Plugin',
     description: 'A complete CRM plugin demonstrating spec compliance',
     permissions: ['system.user.read', 'system.data.write'],
-    definitions: {
-        objects: {
-            crm_lead: {
-                name: 'crm_lead',
-                label: 'Lead',
-                pluralLabel: 'Leads',
-                description: 'Sales lead tracking',
-                icon: 'user-plus',
-                active: true,
-                isSystem: false,
-                abstract: false,
-                datasource: 'default',
-                fields: {
-                    name: {
-                        type: 'text',
-                        label: 'Lead Name',
-                        required: true,
-                        searchable: true,
-                        multiple: false,
-                        unique: false,
-                        deleteBehavior: 'set_null',
-                        hidden: false,
-                        readonly: false,
-                        encryption: false,
-                        index: false,
-                        externalId: false,
-                    },
-                },
-            },
-        },
-    },
+    // In v0.4.1, objects are defined via glob patterns pointing to object definition files
+    objects: ['./objects/*.object.yml'],
+    // Contribution points for extending the platform
+    contributes: {
+        // Register custom actions that can be invoked by flows or API
+        actions: [
+            {
+                name: 'convertLead',
+                label: 'Convert Lead to Account',
+                description: 'Converts a lead to an account and contact',
+            }
+        ],
+        // Register custom events that this plugin listens to
+        events: ['lead.created', 'lead.converted'],
+    }
 };
 
 export const CRMPlugin: PluginDefinition = {

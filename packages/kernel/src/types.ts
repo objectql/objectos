@@ -7,7 +7,7 @@
 
 // Re-export core protocol types from @objectstack/spec
 export type { 
-    // Kernel Protocol
+    // System Protocol (formerly kernel protocol)
     ObjectStackManifest,
     PluginDefinition,
     PluginLifecycleHooks,
@@ -17,7 +17,7 @@ export type {
     LogEntry,
     LogLevel,
     LogFormat,
-} from '@objectstack/spec/kernel';
+} from '@objectstack/spec/system';
 
 export type {
     // Data Protocol

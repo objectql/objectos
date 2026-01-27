@@ -1,6 +1,6 @@
 import { ObjectQL } from '@objectql/core';
 import { ObjectQLConfig, ObjectQLPlugin } from '@objectql/types';
-import type { PluginDefinition, ObjectStackManifest, KernelContext } from '@objectstack/spec/kernel';
+import type { PluginDefinition, ObjectStackManifest, KernelContext } from '@objectstack/spec/system';
 import { ObjectOSPlugin } from './plugins/objectql';
 import { KernelContextManager } from './kernel-context';
 import { StorageManager } from './scoped-storage';

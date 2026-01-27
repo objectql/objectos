@@ -1,11 +1,11 @@
 /**
  * Kernel Context Implementation
  * 
- * Implements the KernelContext interface from @objectstack/spec/kernel.
+ * Implements the KernelContext interface from @objectstack/spec/system.
  * Provides static environment information available at boot time.
  */
 
-import type { KernelContext } from '@objectstack/spec/kernel';
+import type { KernelContext } from '@objectstack/spec/system';
 import { randomUUID } from 'crypto';
 
 /**
