@@ -6,7 +6,7 @@ The core runtime engine for ObjectOS - a metadata-driven platform built on the [
 
 `@objectos/kernel` is the execution engine that powers ObjectOS. It extends ObjectQL with application-specific capabilities, providing:
 
-- **Spec-Compliant Types**: Built on `@objectstack/spec` for protocol consistency
+- **Spec-Compliant Types**: Built on `@objectstack/spec` v0.4.1 for protocol consistency
 - **Metadata Processing**: Parse and validate object definitions, apps, and data files
 - **Plugin Lifecycle**: Standardized hooks (onInstall, onEnable, onDisable, onUninstall)
 - **Permission Enforcement**: Apply role-based access control and field-level security
@@ -15,11 +15,11 @@ The core runtime engine for ObjectOS - a metadata-driven platform built on the [
 
 ## Protocol Compliance
 
-This package implements the **@objectstack/spec** protocol:
+This package implements the **@objectstack/spec v0.4.1** protocol:
 
-- **Kernel Protocol** (`@objectstack/spec/kernel`): Plugin lifecycle, manifests, context
+- **System Protocol** (`@objectstack/spec/system`): Plugin lifecycle, manifests, context, kernel infrastructure
 - **Data Protocol** (`@objectstack/spec/data`): Object schemas, fields, queries
-- **System Protocol** (`@objectstack/spec/system`): Audit, events, jobs
+- **API Protocol** (`@objectstack/spec/api`): REST/GraphQL contracts, endpoints, discovery
 
 All TypeScript types are imported from the spec to ensure consistency across the ecosystem.
 
@@ -28,7 +28,7 @@ import type {
   PluginDefinition,
   PluginContextData,
   ObjectStackManifest 
-} from '@objectstack/spec/kernel';
+} from '@objectstack/spec/system';
 
 import type { 
   ServiceObject,

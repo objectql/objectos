@@ -2,7 +2,10 @@
 
 ## Overview
 
-This document describes the refactoring of ObjectOS to align with the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol version 0.3.3.
+This document describes the alignment of ObjectOS with the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol.
+
+**Current Version:** v0.4.1 (Updated: 2026-01-27)  
+**Previous Version:** v0.3.3
 
 ## What is @objectstack/spec?
 
@@ -24,30 +27,33 @@ The specification is organized into five namespaces:
 - `Query` (AST), `Driver` (Interface), `Datasource`
 - `Permission`, `Sharing`, `Flow`
 
-### 2. Kernel Protocol (`@objectstack/spec/kernel`)
-*Plugin System & Runtime*
-- `Manifest` - Plugin configuration
+### 2. System Protocol (`@objectstack/spec/system`) 
+*Plugin System, Runtime Infrastructure & Security*
+- `Manifest` - Plugin configuration with contribution points
 - `Plugin` - Lifecycle hooks (onInstall, onEnable, onDisable, onUninstall)
-- `Context` - Runtime context available to plugins
+- `Context` - Runtime context available to plugins (KernelContext, PluginContextData)
 - `Logger` - Structured logging
-
-### 3. System Protocol (`@objectstack/spec/system`)
-*Runtime Infrastructure & Security*
 - `Audit` - Audit logging and event tracking
 - `Events` - Event bus and handlers
 - `Job` - Scheduled jobs and background tasks
-- `Translation` - I18n support
 
-### 4. UI Protocol (`@objectstack/spec/ui`)
+**Note:** In v0.4.1, the Kernel Protocol was merged into the System Protocol for better organization.
+
+### 3. UI Protocol (`@objectstack/spec/ui`)
 *Presentation & Interaction*
 - `App`, `Page`, `View` (Grid/Kanban)
 - `Dashboard` (Widgets), `Report`
 - `Action` (Triggers)
 
-### 5. API Protocol (`@objectstack/spec/api`)
+### 4. API Protocol (`@objectstack/spec/api`)
 *Connectivity & Contracts*
 - `Contract` (DTOs), `Endpoint` (Gateway)
 - `Discovery` (Metadata), `Realtime` (Socket)
+
+### 5. Auth Protocol (`@objectstack/spec/auth`)
+*Authentication & Authorization*
+- `User`, `Session`, `Role`
+- `Permission`, `Token`
 
 ## Changes Made
 
