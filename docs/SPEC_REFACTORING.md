@@ -80,7 +80,7 @@ export type {
     PluginDefinition,
     PluginContextData,
     ObjectStackManifest,
-} from '@objectstack/spec/kernel';
+} from '@objectstack/spec/system';
 
 export type {
     ServiceObject,
@@ -165,7 +165,7 @@ export const MyPlugin: ObjectQLPlugin = {
 
 **New Style (ObjectStack Spec Plugin):**
 ```typescript
-import type { PluginDefinition, PluginContextData } from '@objectstack/spec/kernel';
+import type { PluginDefinition, PluginContextData } from '@objectstack/spec/system';
 
 export const MyPlugin: PluginDefinition = {
     async onEnable(context: PluginContextData) {
@@ -187,7 +187,7 @@ The API remains mostly unchanged. The main difference is better type safety:
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import type { ObjectStackManifest } from '@objectstack/spec/kernel';
+import type { ObjectStackManifest } from '@objectstack/spec/system';
 
 const os = new ObjectOS({
     plugins: [MyPlugin],
