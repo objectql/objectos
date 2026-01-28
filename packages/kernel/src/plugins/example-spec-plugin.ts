@@ -24,7 +24,7 @@ export const ExampleCRMManifest: ObjectStackManifest = {
         'system.user.read',
         'system.data.write',
     ],
-    // In v0.4.1, objects are defined via glob patterns pointing to object definition files
+    // In v0.6.0, objects are defined via glob patterns pointing to object definition files
     // Object files should be YAML or TypeScript files following the object schema
     objects: ['./objects/*.object.yml'],
     
@@ -185,9 +185,9 @@ export const ExampleCRMPlugin: PluginDefinition = {
  * await os.init();
  * ```
  * 
- * ## Plugin Architecture Notes (v0.4.1)
+ * ## Plugin Architecture Notes (v0.6.0)
  * 
- * In the ObjectStack spec v0.4.1, plugins are separated into two parts:
+ * In the ObjectStack spec v0.6.0, plugins are separated into two parts:
  * 
  * 1. **Manifest** (@objectstack/spec/system/ManifestSchema)
  *    - Static configuration (id, version, name, permissions)
