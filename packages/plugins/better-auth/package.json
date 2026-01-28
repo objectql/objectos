@@ -1,0 +1,28 @@
+{
+  "name": "@objectos/plugin-better-auth",
+  "version": "0.1.0",
+  "license": "AGPL-3.0",
+  "description": "Better-Auth authentication plugin for ObjectOS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "@objectstack/spec": "0.6.0",
+    "better-auth": "^1.4.10",
+    "better-sqlite3": "^12.6.0",
+    "mongodb": "^7.0.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/pg": "^8.11.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@objectql/core": "^3.0.1"
+  }
+}
