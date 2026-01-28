@@ -33,7 +33,10 @@ export class DriverPlugin implements Plugin {
     // Get ObjectQL from service registry
     const ql = ctx.getService<ObjectQL>('objectql');
     
-    // Register the driver
+    // Register the driver with ObjectQL
+    // NOTE: This directly accesses the datasources property since ObjectQL
+    // doesn't currently expose a public API method for registering datasources.
+    // This is acceptable as we're working within the same ecosystem.
     (ql as any).datasources = (ql as any).datasources || {};
     (ql as any).datasources[this.driverName] = this.driver;
     

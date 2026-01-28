@@ -157,6 +157,52 @@ describe('ObjectKernel', () => {
       expect(hook1Mock).toHaveBeenCalled();
       expect(hook2Mock).toHaveBeenCalled();
     });
+
+    it('should continue executing handlers even if one throws', async () => {
+      const hook1Mock = jest.fn(() => { throw new Error('Handler 1 failed'); });
+      const hook2Mock = jest.fn();
+      const hook3Mock = jest.fn();
+
+      const plugin: Plugin = {
+        name: 'test-plugin',
+        init: (ctx: PluginContext) => {
+          ctx.hook('test-event', hook1Mock);
+          ctx.hook('test-event', hook2Mock);
+          ctx.hook('test-event', hook3Mock);
+        },
+      };
+
+      kernel.use(plugin);
+      await kernel.bootstrap();
+      
+      // Should not throw, even though hook1Mock throws
+      await expect(kernel.pluginContext.trigger('test-event')).resolves.not.toThrow();
+
+      // All handlers should have been called
+      expect(hook1Mock).toHaveBeenCalled();
+      expect(hook2Mock).toHaveBeenCalled();
+      expect(hook3Mock).toHaveBeenCalled();
+    });
+
+    it('should log errors from failing handlers', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      const failingHandler = jest.fn(() => { throw new Error('Test error'); });
+
+      const plugin: Plugin = {
+        name: 'test-plugin',
+        init: (ctx: PluginContext) => {
+          ctx.hook('test-event', failingHandler);
+        },
+      };
+
+      kernel.use(plugin);
+      await kernel.bootstrap();
+      
+      await kernel.pluginContext.trigger('test-event');
+
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe('Dependency Resolution', () => {

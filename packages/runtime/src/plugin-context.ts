@@ -59,13 +59,23 @@ export class PluginContextImpl implements PluginContext {
 
     this.logger.debug(`Triggering hook: ${name} (${handlers.length} handlers)`);
     
+    // Execute all handlers, collecting any errors
+    const errors: Error[] = [];
+    
     for (const handler of handlers) {
       try {
         await handler(...args);
       } catch (error) {
         this.logger.error(`Error in hook '${name}':`, error);
+        // Collect error but continue with other handlers
+        // This allows the system to be resilient to individual plugin failures
+        errors.push(error instanceof Error ? error : new Error(String(error)));
       }
     }
+    
+    // If any handlers failed, we still executed all of them
+    // Plugins should handle their own critical errors within their handlers
+    // The kernel continues to operate even if some plugins fail
   }
 
   /**
