@@ -6,6 +6,7 @@
  */
 
 let authInstance: any;
+let dbConnection: any; // Store database connection for cleanup
 
 export interface BetterAuthConfig {
     databaseUrl?: string;
@@ -29,21 +30,24 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
         // Initialize database connection based on database type
         if (isPostgres) {
             const { Pool } = await import("pg");
-            database = new Pool({
+            dbConnection = new Pool({
                 connectionString: dbUrl!
             });
+            database = dbConnection;
         } else if (isMongo) {
             const { MongoClient } = await import("mongodb");
             const client = new MongoClient(dbUrl!);
             await client.connect();
+            dbConnection = client;
             database = client.db();
         } else {
             const sqlite3Import = await import("better-sqlite3");
             // Handle both ESM/Interop (default export) and CJS (direct export)
             const Database = (sqlite3Import.default || sqlite3Import) as any;
-            const filename = (dbUrl && dbUrl.replace('sqlite:', '')) ? (dbUrl && dbUrl.replace('sqlite:', '')) : 'objectos.db';
+            const filename = (dbUrl?.replace('sqlite:', '')) || 'objectos.db';
             console.log(`[Better-Auth Plugin] Initializing with SQLite database: ${filename}`);
-            database = new Database(filename);
+            dbConnection = new Database(filename);
+            database = dbConnection;
         }
 
         // Configure Better-Auth with organization and role plugins
@@ -105,7 +109,13 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                                 };
                             } catch (e) {
                                 console.error("[Better-Auth Plugin] Error in user create hook:", e);
-                                return { data: user };
+                                // Ensure a default role is set even in error cases
+                                return { 
+                                    data: {
+                                        ...user,
+                                        role: 'user'
+                                    }
+                                };
                             }
                         }
                     }
@@ -151,8 +161,29 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
     }
 };
 
-export const resetAuthInstance = () => {
+export const resetAuthInstance = async () => {
+    // Close database connections before resetting
+    if (dbConnection) {
+        try {
+            // Check connection type and close appropriately
+            if (dbConnection.end) {
+                // PostgreSQL Pool
+                await dbConnection.end();
+            } else if (dbConnection.close) {
+                // MongoDB client or SQLite
+                if (dbConnection.close.constructor.name === 'AsyncFunction') {
+                    await dbConnection.close();
+                } else {
+                    dbConnection.close();
+                }
+            }
+            console.log('[Better-Auth Plugin] Database connection closed');
+        } catch (e) {
+            console.error('[Better-Auth Plugin] Error closing database connection:', e);
+        }
+    }
     authInstance = undefined;
+    dbConnection = undefined;
 };
 
-export default { getBetterAuth, resetAuthInstance };
+export { getBetterAuth as default };

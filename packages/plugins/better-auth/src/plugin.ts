@@ -12,7 +12,19 @@
  */
 
 import type { PluginDefinition, PluginContextData, ObjectStackManifest } from '@objectstack/spec/system';
-import { getBetterAuth, BetterAuthConfig } from './auth-client';
+import { getBetterAuth, resetAuthInstance, BetterAuthConfig } from './auth-client';
+
+/**
+ * Extended app context with router and eventBus
+ */
+interface ExtendedAppContext {
+    router?: {
+        all?: (path: string, handler: (req: any, res: any) => any) => void;
+    };
+    eventBus?: {
+        emit?: (event: string, data: any) => void;
+    };
+}
 
 /**
  * Plugin Manifest
@@ -83,9 +95,9 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 const handler = toNodeHandler(auth);
                 
                 // Mount the auth handler on all /api/auth/* routes
-                const router = (context.app as any).router;
-                if (router && typeof router.all === 'function') {
-                    router.all('/api/auth/*', async (req: any, res: any) => {
+                const app = context.app as ExtendedAppContext;
+                if (app.router && typeof app.router.all === 'function') {
+                    app.router.all('/api/auth/*', async (req: any, res: any) => {
                         // Pass the request to Better-Auth handler
                         return handler(req, res);
                     });
@@ -95,9 +107,8 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 }
                 
                 // Emit plugin enabled event
-                const eventBus = (context.app as any).eventBus;
-                if (eventBus && typeof eventBus.emit === 'function') {
-                    eventBus.emit('plugin.enabled', {
+                if (app.eventBus && typeof app.eventBus.emit === 'function') {
+                    app.eventBus.emit('plugin.enabled', {
                         pluginId: BetterAuthManifest.id,
                         timestamp: new Date().toISOString()
                     });
@@ -105,8 +116,9 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 
                 context.logger.info('[Better-Auth Plugin] Enabled successfully');
             } catch (error) {
-                context.logger.error('[Better-Auth Plugin] Failed to enable:', error);
-                throw error;
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                context.logger.error(`[Better-Auth Plugin] Failed to enable: ${errorMessage}`, error);
+                throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
             }
         },
 
@@ -116,19 +128,27 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
         async onDisable(context: PluginContextData) {
             context.logger.info('[Better-Auth Plugin] Disabling...');
             
-            // Store last disabled timestamp
-            await context.storage.set('last_disabled', new Date().toISOString());
-            
-            // Emit plugin disabled event
-            const eventBus = (context.app as any).eventBus;
-            if (eventBus && typeof eventBus.emit === 'function') {
-                eventBus.emit('plugin.disabled', {
-                    pluginId: BetterAuthManifest.id,
-                    timestamp: new Date().toISOString()
-                });
+            try {
+                // Close database connections and reset auth instance
+                await resetAuthInstance();
+                
+                // Store last disabled timestamp
+                await context.storage.set('last_disabled', new Date().toISOString());
+                
+                // Emit plugin disabled event
+                const app = context.app as ExtendedAppContext;
+                if (app.eventBus && typeof app.eventBus.emit === 'function') {
+                    app.eventBus.emit('plugin.disabled', {
+                        pluginId: BetterAuthManifest.id,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                
+                context.logger.info('[Better-Auth Plugin] Disabled successfully');
+            } catch (error) {
+                context.logger.error('[Better-Auth Plugin] Error during disable:', error);
+                throw error;
             }
-            
-            context.logger.info('[Better-Auth Plugin] Disabled');
         },
 
         /**
@@ -137,15 +157,23 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
         async onUninstall(context: PluginContextData) {
             context.logger.info('[Better-Auth Plugin] Uninstalling...');
             
-            // Cleanup plugin storage
-            await context.storage.delete('install_date');
-            await context.storage.delete('last_disabled');
-            await context.storage.delete('config');
-            
-            // Note: User data in the database is NOT automatically deleted
-            // This should be handled by the administrator
-            
-            context.logger.warn('[Better-Auth Plugin] Uninstalled - User authentication data preserved in database');
+            try {
+                // Close database connections and reset auth instance
+                await resetAuthInstance();
+                
+                // Cleanup plugin storage
+                await context.storage.delete('install_date');
+                await context.storage.delete('last_disabled');
+                await context.storage.delete('config');
+                
+                // Note: User data in the database is NOT automatically deleted
+                // This should be handled by the administrator
+                
+                context.logger.warn('[Better-Auth Plugin] Uninstalled - User authentication data preserved in database');
+            } catch (error) {
+                context.logger.error('[Better-Auth Plugin] Error during uninstall:', error);
+                throw error;
+            }
         },
     };
 };
