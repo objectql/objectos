@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/kernel" },
+    { "path": "./packages/runtime" },
     { "path": "./packages/server" }
   ]
 }
