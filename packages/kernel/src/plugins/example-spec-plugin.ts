@@ -115,8 +115,10 @@ export const ExampleCRMPlugin: PluginDefinition = {
         });
         
         // Register scheduled jobs (if scheduler is available)
-        if (context.app.scheduler) {
-            context.app.scheduler.schedule(
+        // Note: Scheduler is not part of the @objectstack/spec yet, but can be added by implementations
+        const appWithScheduler = context.app as any;
+        if (appWithScheduler.scheduler) {
+            appWithScheduler.scheduler.schedule(
                 'clean-old-leads',
                 '0 0 * * 0', // Every Sunday at midnight
                 async () => {
