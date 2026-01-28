@@ -1,4 +1,5 @@
 import { Provider } from '@nestjs/common';
+import { ObjectKernel, ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
 import { ObjectOS } from '@objectos/kernel';
 import { KnexDriver } from '@objectql/driver-sql';
 import * as path from 'path';
@@ -39,19 +40,29 @@ export const objectQLProvider: Provider = {
             }
         }
 
-        // Map config to ObjectQL options
-        const datasources: Record<string, any> = {};
+        // Create the ObjectKernel
+        const kernel = new ObjectKernel();
         
+        // Create ObjectOS with presets
+        const presets = config.presets || ['@objectos/preset-base'];
+        const objectos = new ObjectOS({ presets });
+        
+        // Register ObjectOS as ObjectQL plugin
+        kernel.use(new ObjectQLPlugin(objectos));
+
+        // Map config to drivers and register them
         if (config.datasource) {
             for (const [key, ds] of Object.entries(config.datasource)) {
                 const datasourceConfig = ds as any;
+                let driver: any;
+                
                 if (datasourceConfig.type === 'postgres') {
-                    datasources[key] = new KnexDriver({
+                    driver = new KnexDriver({
                         client: 'pg',
                         connection: datasourceConfig.url
                     });
                 } else if (datasourceConfig.type === 'sqlite') {
-                    datasources[key] = new KnexDriver({
+                    driver = new KnexDriver({
                         client: 'sqlite3',
                         connection: {
                             filename: datasourceConfig.filename
@@ -59,39 +70,41 @@ export const objectQLProvider: Provider = {
                         useNullAsDefault: true
                     });
                 }
+                
+                if (driver) {
+                    kernel.use(new DriverPlugin(driver, key));
+                }
             }
         }
 
         // Default if no datasource configured
-        if (Object.keys(datasources).length === 0) {
+        if (!config.datasource || Object.keys(config.datasource).length === 0) {
             console.warn('No datasource found in config, using default SQLite connection.');
-            datasources.default = new KnexDriver({ 
+            const defaultDriver = new KnexDriver({ 
                 client: 'sqlite3',
                 connection: {
                     filename: ':memory:'
                 },
                 useNullAsDefault: true
             });
+            kernel.use(new DriverPlugin(defaultDriver, 'default'));
         }
 
-        const presets = config.presets || ['@objectos/preset-base'];
-        
-        const objectos = new ObjectOS({
-            datasources,
-            presets
-        });
-        
         try {
-            await objectos.init();
+            // Bootstrap the kernel (this will init ObjectQL and connect drivers)
+            await kernel.bootstrap();
+            
+            // Get the ObjectQL instance from the service registry
+            const ql = kernel.getService('objectql');
+            
+            return ql;
         } catch (error) {
-            console.error('Failed to initialize ObjectOS:', error);
+            console.error('Failed to bootstrap ObjectKernel:', error);
             if (error instanceof Error && error.message.includes('preset')) {
                 console.error(`Hint: Ensure preset packages are installed: ${presets.join(', ')}`);
             }
             throw error;
         }
-        
-        return objectos;
     }
 };
 
