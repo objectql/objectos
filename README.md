@@ -50,6 +50,29 @@ Stop writing boilerplate controllers.
 
 ObjectOS is built as a modular Monorepo using **NestJS** and follows the **@objectstack/spec** protocol.
 
+### Micro-Kernel Architecture
+
+ObjectOS implements a **micro-kernel plugin architecture** where core functionality is minimal and all features are loaded as plugins:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│               @objectstack/runtime (Core)                │
+│  • Plugin Lifecycle Manager (init/start/destroy)        │
+│  • Service Registry (DI Container)                      │
+│  • Event Bus (Hook System)                              │
+│  • Dependency Resolver (Topological Sort)               │
+└──────────────┬──────────────────────────────────────────┘
+               │
+       ┌───────┴────────┬────────────┬──────────┐
+       │                │            │          │
+  ┌────▼─────┐   ┌─────▼─────┐  ┌──▼───┐  ┌───▼────┐
+  │ ObjectQL │   │  Driver   │  │Server│  │ Custom │
+  │  Plugin  │   │  Plugin   │  │Plugin│  │ Plugin │
+  └──────────┘   └───────────┘  └──────┘  └────────┘
+```
+
+See [@objectstack/runtime](packages/runtime) for details on the plugin system.
+
 ### Protocol Compliance
 
 ObjectOS adheres to the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol, which defines:
@@ -62,6 +85,7 @@ This ensures interoperability across the ObjectStack ecosystem (ObjectQL, Object
 
 | Package | Role | Description |
 | :--- | :--- | :--- |
+| **`@objectstack/runtime`** | **The Kernel** | Micro-kernel with plugin lifecycle and service registry. |
 | **`@objectos/kernel`** | **The Brain** | The core logic engine. Wraps ObjectQL, manages plugins, and handles the event bus. |
 | **`@objectos/server`** | **The Gateway** | NestJS application layer. Handles HTTP/WS traffic, Middlewares, and Guards. |
 | **`@objectos/plugin-auth`** | **Auth** | Authentication strategies (Local, OAuth2, Enterprise SSO). |
