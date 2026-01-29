@@ -95,6 +95,18 @@ export class FieldPermissionChecker {
         // Build field key (objectName.fieldName)
         const fieldKey = `${objectName}.${fieldName}`;
 
+        // First pass: Check for explicit denials
+        // If any permission set explicitly denies field access, deny it
+        for (const permissionSet of permissionSets) {
+            if (permissionSet.fields && permissionSet.fields[fieldKey]) {
+                const fieldPerm = permissionSet.fields[fieldKey];
+                if (fieldPerm.readable === false) {
+                    return false; // Explicit denial takes precedence
+                }
+            }
+        }
+
+        // Second pass: Check for explicit grants
         for (const permissionSet of permissionSets) {
             // Check if there's a specific field permission
             if (permissionSet.fields && permissionSet.fields[fieldKey]) {
@@ -136,6 +148,18 @@ export class FieldPermissionChecker {
         // Build field key (objectName.fieldName)
         const fieldKey = `${objectName}.${fieldName}`;
 
+        // First pass: Check for explicit denials
+        // If any permission set explicitly denies field access, deny it
+        for (const permissionSet of permissionSets) {
+            if (permissionSet.fields && permissionSet.fields[fieldKey]) {
+                const fieldPerm = permissionSet.fields[fieldKey];
+                if (fieldPerm.editable === false) {
+                    return false; // Explicit denial takes precedence
+                }
+            }
+        }
+
+        // Second pass: Check for explicit grants
         for (const permissionSet of permissionSets) {
             // Check if there's a specific field permission
             if (permissionSet.fields && permissionSet.fields[fieldKey]) {

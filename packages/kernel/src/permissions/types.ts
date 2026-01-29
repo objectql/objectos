@@ -31,6 +31,10 @@ export interface User {
 
 /**
  * Permission check context
+ * 
+ * @remarks
+ * This interface is reserved for future use in structured permission checking APIs.
+ * Currently, permission methods use direct parameters.
  */
 export interface PermissionContext {
     /** Current user */
@@ -45,6 +49,10 @@ export interface PermissionContext {
 
 /**
  * Permission check result
+ * 
+ * @remarks
+ * This interface is reserved for future use in structured permission checking APIs.
+ * Currently, permission methods return boolean values directly.
  */
 export interface PermissionCheckResult {
     /** Whether permission is granted */
