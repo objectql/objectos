@@ -8,8 +8,11 @@ pnpmfileChecksum: sha256-3iWcSIjqaxNfwGjjxOSlwdV5sanyVGInE6lfpshGARI=
 
 patchedDependencies:
   '@objectstack/objectql@0.6.1':
-    hash: e84909ea3af1229f5f57fde76c8922f0e44a10cef79373ab9849cbab9f2c24a2
+    hash: ee45cfa5b5be581fbe98b32ba5615b9369fb8be0c8a20d35f5c4988453a5720a
     path: patches/@objectstack__objectql@0.6.1.patch
+  '@objectstack/runtime@0.6.1':
+    hash: c4fe630c91ee1996db5d0144f826699c69e468c047a48f72ccbd7e2392c7f60d
+    path: patches/@objectstack__runtime@0.6.1.patch
 
 importers:
 
@@ -259,10 +262,10 @@ importers:
         version: 3.0.1(encoding@0.1.13)(zod@3.25.76)
       '@objectstack/objectql':
         specifier: 0.6.1
-        version: 0.6.1(patch_hash=e84909ea3af1229f5f57fde76c8922f0e44a10cef79373ab9849cbab9f2c24a2)
+        version: 0.6.1(patch_hash=ee45cfa5b5be581fbe98b32ba5615b9369fb8be0c8a20d35f5c4988453a5720a)
       '@objectstack/runtime':
         specifier: 0.6.1
-        version: 0.6.1
+        version: 0.6.1(patch_hash=c4fe630c91ee1996db5d0144f826699c69e468c047a48f72ccbd7e2392c7f60d)
       '@objectstack/spec':
         specifier: 0.6.1
         version: 0.6.1
@@ -7989,13 +7992,13 @@ snapshots:
     dependencies:
       '@objectstack/spec': 0.6.1
 
-  '@objectstack/objectql@0.6.1(patch_hash=e84909ea3af1229f5f57fde76c8922f0e44a10cef79373ab9849cbab9f2c24a2)':
+  '@objectstack/objectql@0.6.1(patch_hash=ee45cfa5b5be581fbe98b32ba5615b9369fb8be0c8a20d35f5c4988453a5720a)':
     dependencies:
       '@objectstack/core': 0.6.1
       '@objectstack/spec': 0.6.1
       '@objectstack/types': 0.6.1
 
-  '@objectstack/runtime@0.6.1':
+  '@objectstack/runtime@0.6.1(patch_hash=c4fe630c91ee1996db5d0144f826699c69e468c047a48f72ccbd7e2392c7f60d)':
     dependencies:
       '@objectstack/core': 0.6.1
       '@objectstack/spec': 0.6.1
