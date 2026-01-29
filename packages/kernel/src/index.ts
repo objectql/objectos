@@ -15,6 +15,20 @@ export type { Logger, LogLevel, LogEntry } from './logger';
 // API Protocol components
 export * from './api';
 
+// Permission System
+export { PermissionManager, PermissionManagerConfig } from './permissions';
+export { PermissionSetLoader, PermissionSetLoaderConfig } from './permissions/permission-set-loader';
+export { ObjectPermissionChecker } from './permissions/object-permissions';
+export { FieldPermissionChecker } from './permissions/field-permissions';
+export type { 
+    User, 
+    PermissionContext, 
+    PermissionCheckResult,
+    PermissionSet,
+    ObjectPermission,
+    FieldPermission 
+} from './permissions/types';
+
 // Re-export specific types to avoid conflicts
 export { 
     AppConfig, 
