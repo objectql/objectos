@@ -1,0 +1,66 @@
+diff --git a/dist/engine.js b/dist/engine.js
+index 4299ac8abcdbb8509b886b6b82f797d918ba58a2..78892252d84828d4181615648d414285c31015aa 100644
+--- a/dist/engine.js
++++ b/dist/engine.js
+@@ -1,4 +1,4 @@
+-import { SchemaRegistry } from './registry';
++import { SchemaRegistry } from './registry.js';
+ /**
+  * ObjectQL Engine
+  *
+diff --git a/dist/index.js b/dist/index.js
+index d73fffe7e74fa7cd88064863063d47ba8a2c9791..756efa2a2bca303cbb031e49ed4cd36fbd471dde 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,9 +1,9 @@
+ // Export Registry
+-export { SchemaRegistry } from './registry';
++export { SchemaRegistry } from './registry.js';
+ // Export Protocol Implementation
+-export { ObjectStackProtocolImplementation } from './protocol';
++export { ObjectStackProtocolImplementation } from './protocol.js';
+ // Export Engine
+-export { ObjectQL } from './engine';
++export { ObjectQL } from './engine.js';
+ // Export Plugin Shim
+-export { ObjectQLPlugin } from './plugin';
++export { ObjectQLPlugin } from './plugin.js';
+ // Moved logic to engine.ts
+diff --git a/dist/plugin.js b/dist/plugin.js
+index d64ba1e8d60cb58ce26cee76555e975bb02cc04c..aa58449a4f6cbe3183a2c7db8603eb685d95f615 100644
+--- a/dist/plugin.js
++++ b/dist/plugin.js
+@@ -1,5 +1,5 @@
+-import { ObjectQL } from './engine';
+-import { ObjectStackProtocolImplementation } from './protocol';
++import { ObjectQL } from './engine.js';
++import { ObjectStackProtocolImplementation } from './protocol.js';
+ export class ObjectQLPlugin {
+     constructor(ql, hostContext) {
+         this.name = 'com.objectstack.engine.objectql';
+diff --git a/dist/protocol.js b/dist/protocol.js
+index baf99313260c07734ebcaae8d61a2054feb74d4b..d7967c8e066f1b07c4cc800c1bd11909cf70e69b 100644
+--- a/dist/protocol.js
++++ b/dist/protocol.js
+@@ -1,5 +1,5 @@
+ // We import SchemaRegistry directly since this class lives in the same package
+-import { SchemaRegistry } from './registry';
++import { SchemaRegistry } from './registry.js';
+ export class ObjectStackProtocolImplementation {
+     constructor(engine) {
+         this.engine = engine;
+diff --git a/package.json b/package.json
+index ac3f9a0bc646f9e6e9f6e37577a49832a4a2b4a2..9badd29dfbfdbf1c2708416dde69a065e9607585 100644
+--- a/package.json
++++ b/package.json
+@@ -2,8 +2,8 @@
+   "name": "@objectstack/objectql",
+   "version": "0.6.1",
+   "description": "Isomorphic ObjectQL Engine for ObjectStack",
+-  "main": "src/index.ts",
+-  "types": "src/index.ts",
++  "main": "dist/index.js",
++  "types": "dist/index.d.ts",
+   "dependencies": {
+     "@objectstack/core": "0.6.1",
+     "@objectstack/spec": "0.6.1",

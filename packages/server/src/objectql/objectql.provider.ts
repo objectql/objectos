@@ -1,12 +1,12 @@
 import { Provider } from '@nestjs/common';
-import { ObjectKernel, ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
-import { ObjectOS } from '@objectos/kernel';
+import { ObjectKernel, DriverPlugin } from '@objectstack/runtime';
+import { ObjectQLPlugin } from '@objectstack/objectql';
 import { KnexDriver } from '@objectql/driver-sql';
 import * as path from 'path';
 import * as fs from 'fs';
 
 export const objectQLProvider: Provider = {
-    provide: ObjectOS,
+    provide: 'OBJECTQL',
     useFactory: async () => {
         let config: any = {};
         
@@ -43,12 +43,8 @@ export const objectQLProvider: Provider = {
         // Create the ObjectKernel
         const kernel = new ObjectKernel();
         
-        // Create ObjectOS with presets
-        const presets = config.presets || ['@objectos/preset-base'];
-        const objectos = new ObjectOS({ presets });
-        
-        // Register ObjectOS as ObjectQL plugin
-        kernel.use(new ObjectQLPlugin(objectos));
+        // Register ObjectQL plugin - it will create its own ObjectQL instance
+        kernel.use(new ObjectQLPlugin());
 
         // Map config to drivers and register them
         if (config.datasource) {
@@ -100,9 +96,6 @@ export const objectQLProvider: Provider = {
             return ql;
         } catch (error) {
             console.error('Failed to bootstrap ObjectKernel:', error);
-            if (error instanceof Error && error.message.includes('preset')) {
-                console.error(`Hint: Ensure preset packages are installed: ${presets.join(', ')}`);
-            }
             throw error;
         }
     }

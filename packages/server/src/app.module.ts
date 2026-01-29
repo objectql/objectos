@@ -4,7 +4,6 @@ import { AppService } from './app.service.js';
 import { ObjectQLModule } from './objectql/objectql.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthMiddleware } from './auth/auth.middleware.js';
-import { ObjectOS } from '@objectos/kernel';
 import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@objectql/server';
 
 @Module({
@@ -16,12 +15,12 @@ import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@ob
   providers: [AppService],
 })
 export class AppModule implements NestModule {
-  constructor(@Inject(ObjectOS) private objectos: ObjectOS) {}
+  constructor(@Inject('OBJECTQL') private objectql: any) {}
 
   configure(consumer: MiddlewareConsumer) {
-    const restHandler = createRESTHandler(this.objectos);
-    const metadataHandler = createMetadataHandler(this.objectos);
-    const objectQLHandler = createNodeHandler(this.objectos);
+    const restHandler = createRESTHandler(this.objectql);
+    const metadataHandler = createMetadataHandler(this.objectql);
+    const objectQLHandler = createNodeHandler(this.objectql);
 
     const stripPrefix = (prefix: string, handler: any) => {
       return (req: any, res: any, next: any) => {

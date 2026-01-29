@@ -8,7 +8,11 @@
       "sqlite3",
       "@nestjs/core",
       "esbuild"
-    ]
+    ],
+    "patchedDependencies": {
+      "@objectstack/objectql@0.6.1": "patches/@objectstack__objectql@0.6.1.patch",
+      "@objectstack/runtime@0.6.1": "patches/@objectstack__runtime@0.6.1.patch"
+    }
   },
   "scripts": {
     "dev": "pnpm --filter @objectos/server dev",
@@ -45,7 +49,7 @@
     "@objectql/platform-node": "^3.0.1",
     "@objectql/starter-basic": "^1.8.4",
     "@objectql/starter-enterprise": "^1.8.4",
-    "@objectstack/spec": "0.6.0",
+    "@objectstack/spec": "0.6.1",
     "build": "^0.1.4"
   }
 }
