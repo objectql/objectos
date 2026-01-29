@@ -10,22 +10,22 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "fumadocs-core": "^16.4.7",
+    "fumadocs-core": "^16.4.9",
     "fumadocs-docgen": "^3.0.5",
     "fumadocs-mdx": "^14.2.6",
     "fumadocs-twoslash": "^3.1.12",
-    "fumadocs-ui": "^16.4.7",
+    "fumadocs-ui": "^16.4.9",
     "lucide-react": "^0.562.0",
-    "next": "^16.1.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.10.6",
-    "@types/react": "^19.0.11",
+    "@types/react": "^19.2.10",
     "@types/react-dom": "^19.0.5",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.1.0",
