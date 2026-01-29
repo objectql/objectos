@@ -1,0 +1,73 @@
+# Sales User Permission Set
+# 
+# This permission set grants sales users access to manage contacts and accounts
+# while restricting sensitive financial information.
+
+name: sales_user
+label: Sales User
+isProfile: true
+
+# Object-level permissions
+objects:
+  # Contacts object
+  contacts:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    allowTransfer: false
+    allowRestore: false
+    allowPurge: false
+    viewAllRecords: false
+    modifyAllRecords: false
+  
+  # Accounts object
+  accounts:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    allowTransfer: false
+    allowRestore: false
+    allowPurge: false
+    viewAllRecords: false
+    modifyAllRecords: false
+  
+  # Opportunities object
+  opportunities:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    allowTransfer: false
+    allowRestore: false
+    allowPurge: false
+    viewAllRecords: false
+    modifyAllRecords: false
+
+# Field-level permissions
+# Restrict access to sensitive salary and financial fields
+fields:
+  # Hide salary field from sales users
+  contacts.salary:
+    readable: false
+    editable: false
+  
+  # Hide revenue fields
+  accounts.annual_revenue:
+    readable: false
+    editable: false
+  
+  # Make created/modified fields read-only
+  contacts.created_date:
+    readable: true
+    editable: false
+  
+  contacts.modified_date:
+    readable: true
+    editable: false
+
+# System permissions
+systemPermissions:
+  - export_reports
+  - view_dashboards
