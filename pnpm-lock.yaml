@@ -162,6 +162,40 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/plugins/better-auth:
+    dependencies:
+      '@objectql/core':
+        specifier: ^3.0.1
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@4.3.5)
+      '@objectstack/spec':
+        specifier: 0.6.0
+        version: 0.6.0
+      better-auth:
+        specifier: ^1.4.10
+        version: 1.4.11(better-sqlite3@12.6.0)(mongodb@7.0.0(socks@2.8.7))(next@16.1.4(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vitest@4.0.17(@types/node@20.19.28)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))(vue@3.5.26(typescript@5.9.3))
+      better-sqlite3:
+        specifier: ^12.6.0
+        version: 12.6.0
+      mongodb:
+        specifier: ^7.0.0
+        version: 7.0.0(socks@2.8.7)
+      pg:
+        specifier: ^8.11.3
+        version: 8.16.3
+    devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.0
+        version: 7.6.13
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.28
+      '@types/pg':
+        specifier: ^8.11.0
+        version: 8.16.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/presets/base:
     dependencies:
       '@objectql/core':
@@ -225,7 +259,7 @@ importers:
         version: link:../presets/base
       '@objectql/core':
         specifier: ^3.0.1
-        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@4.3.5)
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76)
       '@objectql/driver-mongo':
         specifier: ^3.0.1
         version: 3.0.1
@@ -234,7 +268,7 @@ importers:
         version: 3.0.1(better-sqlite3@12.6.0)(pg@8.16.3)(sqlite3@5.1.7)
       '@objectql/server':
         specifier: ^3.0.1
-        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@4.3.5)
+        version: 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76)
       '@objectstack/runtime':
         specifier: workspace:*
         version: link:../runtime
@@ -2589,6 +2623,9 @@ packages:
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
+  '@types/better-sqlite3@7.6.13':
+    resolution: {integrity: sha512-NMv9ASNARoKksWtsq/SHakpYAYnhBrQgGD8zkLYk/jaK8jUGn08CfEdTRgYhMypUQAfzSP8W6gNLe0q19/t4VA==}
+
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
@@ -2684,6 +2721,9 @@ packages:
 
   '@types/node@22.19.7':
     resolution: {integrity: sha512-MciR4AKGHWl7xwxkBa6xUGxQJ4VBOmPTF7sL+iGzuahOFaO0jHCsuEfS80pan1ef4gWId1oWOweIhrDEYLuaOw==}
+
+  '@types/pg@8.16.0':
+    resolution: {integrity: sha512-RmhMd/wD+CF8Dfo+cVIy3RR5cl8CyfXQ0tGgW6XBL8L4LM/UTEbNXYRbLwU6w+CgrKBNbrQWt4FUtTfaU5jSYQ==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -8456,10 +8496,10 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/server@3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@4.3.5)':
+  '@objectql/server@3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76)':
     dependencies:
       '@graphql-tools/schema': 10.0.31(graphql@16.12.0)
-      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@4.3.5)
+      '@objectql/core': 3.0.1(encoding@0.1.13)(ws@8.19.0)(zod@3.25.76)
       '@objectql/types': 3.0.1
       graphql: 16.12.0
       js-yaml: 4.1.1
@@ -9290,6 +9330,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.6
 
+  '@types/better-sqlite3@7.6.13':
+    dependencies:
+      '@types/node': 20.19.28
+
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
@@ -9405,6 +9449,12 @@ snapshots:
   '@types/node@22.19.7':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/pg@8.16.0':
+    dependencies:
+      '@types/node': 20.19.28
+      pg-protocol: 1.10.3
+      pg-types: 2.2.0
 
   '@types/prop-types@15.7.15':
     optional: true
