@@ -20,6 +20,7 @@ export { PermissionManager, PermissionManagerConfig } from './permissions';
 export { PermissionSetLoader, PermissionSetLoaderConfig } from './permissions/permission-set-loader';
 export { ObjectPermissionChecker } from './permissions/object-permissions';
 export { FieldPermissionChecker } from './permissions/field-permissions';
+export { PermissionAwareCRUD, ForbiddenError, createPermissionAwareCRUD } from './permissions/permission-aware-crud';
 export type { 
     User, 
     PermissionContext, 
