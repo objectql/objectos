@@ -6,7 +6,7 @@
 
 import { PermissionSetLoader, PermissionSetLoaderConfig } from './permission-set-loader';
 import { ObjectPermissionChecker } from './object-permissions';
-import { FieldPermissionChecker } from './field-permissions';
+import { FieldPermissionChecker, FieldFilter } from './field-permissions';
 import { User } from './types';
 
 /**
