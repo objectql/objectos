@@ -226,7 +226,7 @@ class AuditLogPluginInstance {
      * Generate unique ID for audit entries
      */
     private generateId(): string {
-        return `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        return `audit_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     }
 
     /**
