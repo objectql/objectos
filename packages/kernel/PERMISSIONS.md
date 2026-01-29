@@ -252,6 +252,52 @@ class PermissionManager {
 }
 ```
 
+### FieldFilter
+
+Utility class for filtering data fields:
+
+```typescript
+class FieldFilter {
+    // Filter a single object's fields
+    filterFields(data: any, visibleFields: string[]): any;
+    
+    // Filter an array of objects' fields
+    filterFieldsArray(dataArray: any[], visibleFields: string[]): any[];
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { FieldFilter } from '@objectos/kernel';
+
+const filter = new FieldFilter();
+
+// Filter a single record
+const record = {
+    id: '123',
+    name: 'John Doe',
+    email: 'john@example.com',
+    salary: 100000,
+};
+
+const visibleFields = ['id', 'name', 'email'];
+const filtered = filter.filterFields(record, visibleFields);
+// Returns: { id: '123', name: 'John Doe', email: 'john@example.com' }
+
+// Filter multiple records
+const records = [
+    { id: '1', name: 'John', salary: 100000 },
+    { id: '2', name: 'Jane', salary: 120000 },
+];
+
+const filteredRecords = filter.filterFieldsArray(records, ['id', 'name']);
+// Returns: [
+//   { id: '1', name: 'John' },
+//   { id: '2', name: 'Jane' }
+// ]
+```
+
 ### PermissionSetLoader
 
 Loads and caches permission sets:
@@ -318,9 +364,13 @@ Add comments to YAML files explaining:
 
 ## Integration with CRUD Operations
 
-The permission system can be integrated with ObjectQL CRUD operations:
+The permission system can be integrated with ObjectQL CRUD operations using the `FieldFilter` class:
 
 ```typescript
+import { FieldFilter } from '@objectos/kernel';
+
+const fieldFilter = new FieldFilter();
+
 // Example: Check permissions before find operation
 async function findWithPermissions(user: User, objectName: string, options: any) {
     // Check read permission
@@ -331,14 +381,33 @@ async function findWithPermissions(user: User, objectName: string, options: any)
     // Execute query
     const records = await objectql.find(objectName, options);
 
-    // Filter fields based on permissions
-    const filteredRecords = await Promise.all(
-        records.map(record => 
-            permissionManager.filterRecordFields(user, objectName, record)
-        )
-    );
+    // Get visible fields for this user
+    const allFields = records.length > 0 ? Object.keys(records[0]) : [];
+    const visibleFields = await permissionManager.getVisibleFields(user, objectName, allFields);
 
-    return filteredRecords;
+    // Filter fields using FieldFilter
+    return fieldFilter.filterFieldsArray(records, visibleFields);
+}
+
+// Example: Check permissions before insert operation
+async function insertWithPermissions(user: User, objectName: string, data: any) {
+    // Check create permission
+    if (!await permissionManager.canCreate(user, objectName)) {
+        throw new ForbiddenError('No create permission');
+    }
+
+    // Get editable fields for this user
+    const allFields = Object.keys(data);
+    const editableFields = await permissionManager.getEditableFields(user, objectName, allFields);
+
+    // Filter data to only editable fields using FieldFilter
+    const filteredData = fieldFilter.filterFields(data, editableFields);
+
+    // Execute insert
+    const record = await objectql.insert(objectName, filteredData);
+
+    // Filter result fields
+    return await permissionManager.filterRecordFields(user, objectName, record);
 }
 ```
 
@@ -348,12 +417,14 @@ The permission system includes comprehensive tests:
 
 ```bash
 # Run all permission tests
-pnpm test -- permission
+npm test -- permission
 
 # Run specific test file
-pnpm test -- permission-set-loader
-pnpm test -- object-permissions
-pnpm test -- field-permissions
+npm test -- permission-set-loader
+npm test -- object-permissions
+npm test -- field-permissions
+npm test -- field-filter
+npm test -- permission-manager
 ```
 
 ## Security Considerations

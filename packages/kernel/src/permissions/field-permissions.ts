@@ -8,15 +8,61 @@ import { PermissionSet, User } from './types';
 import { PermissionSetLoader } from './permission-set-loader';
 
 /**
+ * Field Filter
+ * 
+ * Filters data fields based on a list of visible fields.
+ */
+export class FieldFilter {
+    /**
+     * Filter fields from data object
+     * 
+     * @param data - Data object to filter
+     * @param visibleFields - Array of field names that should be visible
+     * @returns Filtered data object containing only visible fields
+     */
+    filterFields(data: any, visibleFields: string[]): any {
+        // Handle null, undefined, non-objects, and arrays
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            return data;
+        }
+
+        const filtered: any = {};
+        for (const field of visibleFields) {
+            if (field in data) {
+                filtered[field] = data[field];
+            }
+        }
+        return filtered;
+    }
+
+    /**
+     * Filter fields from an array of data objects
+     * 
+     * @param dataArray - Array of data objects to filter
+     * @param visibleFields - Array of field names that should be visible
+     * @returns Array of filtered data objects
+     */
+    filterFieldsArray(dataArray: any[], visibleFields: string[]): any[] {
+        if (!Array.isArray(dataArray)) {
+            return dataArray;
+        }
+
+        return dataArray.map(data => this.filterFields(data, visibleFields));
+    }
+}
+
+/**
  * Field Permission Checker
  * 
  * Checks field-level permissions (read/write) for users.
  */
 export class FieldPermissionChecker {
     private loader: PermissionSetLoader;
+    private fieldFilter: FieldFilter;
 
     constructor(loader: PermissionSetLoader) {
         this.loader = loader;
+        this.fieldFilter = new FieldFilter();
     }
 
     /**
@@ -195,12 +241,16 @@ export class FieldPermissionChecker {
         const fieldNames = Object.keys(record);
         const visibleFields = await this.getVisibleFields(user, objectName, fieldNames);
 
-        const filteredRecord: any = {};
-        for (const field of visibleFields) {
-            filteredRecord[field] = record[field];
-        }
+        return this.fieldFilter.filterFields(record, visibleFields);
+    }
 
-        return filteredRecord;
+    /**
+     * Get the field filter instance
+     * 
+     * @returns FieldFilter instance
+     */
+    getFieldFilter(): FieldFilter {
+        return this.fieldFilter;
     }
 
     /**

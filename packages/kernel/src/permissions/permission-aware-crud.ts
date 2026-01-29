@@ -6,6 +6,7 @@
 
 import { ObjectOS } from '../objectos';
 import { User } from './types';
+import { FieldFilter } from './field-permissions';
 
 /**
  * Error thrown when user lacks required permissions
@@ -23,7 +24,11 @@ export class ForbiddenError extends Error {
  * Wraps ObjectQL operations with permission checks
  */
 export class PermissionAwareCRUD {
-    constructor(private objectos: ObjectOS) {}
+    private fieldFilter: FieldFilter;
+
+    constructor(private objectos: ObjectOS) {
+        this.fieldFilter = new FieldFilter();
+    }
 
     /**
      * Find records with permission checking
@@ -52,16 +57,8 @@ export class PermissionAwareCRUD {
             const allFields = Object.keys(records[0]);
             const visibleFields = await permissionManager.getVisibleFields(user, objectName, allFields);
             
-            // 4. Filter each record to only include visible fields
-            return records.map(record => {
-                const filtered: any = {};
-                for (const field of visibleFields) {
-                    if (field in record) {
-                        filtered[field] = record[field];
-                    }
-                }
-                return filtered;
-            });
+            // 4. Filter each record to only include visible fields using FieldFilter
+            return this.fieldFilter.filterFieldsArray(records, visibleFields);
         }
 
         return records;
@@ -88,13 +85,8 @@ export class PermissionAwareCRUD {
         const allFields = Object.keys(data);
         const editableFields = await permissionManager.getEditableFields(user, objectName, allFields);
 
-        // 3. Filter data to only include editable fields
-        const filteredData: any = {};
-        for (const field of editableFields) {
-            if (field in data) {
-                filteredData[field] = data[field];
-            }
-        }
+        // 3. Filter data to only include editable fields using FieldFilter
+        const filteredData = this.fieldFilter.filterFields(data, editableFields);
 
         // 4. Add audit fields
         filteredData.created_by = user.id;
@@ -130,13 +122,8 @@ export class PermissionAwareCRUD {
         const allFields = Object.keys(data);
         const editableFields = await permissionManager.getEditableFields(user, objectName, allFields);
 
-        // 3. Filter data to only include editable fields
-        const filteredData: any = {};
-        for (const field of editableFields) {
-            if (field in data) {
-                filteredData[field] = data[field];
-            }
-        }
+        // 3. Filter data to only include editable fields using FieldFilter
+        const filteredData = this.fieldFilter.filterFields(data, editableFields);
 
         // 4. Add audit fields
         filteredData.modified_by = user.id;
