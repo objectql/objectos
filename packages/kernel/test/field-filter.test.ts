@@ -94,6 +94,20 @@ describe('FieldFilter', () => {
             expect(filtered.active).toBe(false);
             expect(filtered.value).toBeNull();
         });
+
+        it('should handle array input gracefully by returning it unchanged', () => {
+            const data = [
+                { id: '1', name: 'Test1' },
+                { id: '2', name: 'Test2' },
+            ];
+
+            const visibleFields = ['id', 'name'];
+            const filtered = filter.filterFields(data, visibleFields);
+
+            // Should return the array unchanged, not convert it to an object
+            expect(Array.isArray(filtered)).toBe(true);
+            expect(filtered).toBe(data);
+        });
     });
 
     describe('filterFieldsArray', () => {

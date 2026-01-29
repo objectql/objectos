@@ -21,7 +21,8 @@ export class FieldFilter {
      * @returns Filtered data object containing only visible fields
      */
     filterFields(data: any, visibleFields: string[]): any {
-        if (!data || typeof data !== 'object') {
+        // Handle null, undefined, non-objects, and arrays
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
             return data;
         }
 
