@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index ac3f9a0bc646f9e6e9f6e37577a49832a4a2b4a2..9badd29dfbfdbf1c2708416dde69a065e9607585 100644
+--- a/package.json
++++ b/package.json
+@@ -2,8 +2,8 @@
+   "name": "@objectstack/objectql",
+   "version": "0.6.1",
+   "description": "Isomorphic ObjectQL Engine for ObjectStack",
+-  "main": "src/index.ts",
+-  "types": "src/index.ts",
++  "main": "dist/index.js",
++  "types": "dist/index.d.ts",
+   "dependencies": {
+     "@objectstack/core": "0.6.1",
+     "@objectstack/spec": "0.6.1",
