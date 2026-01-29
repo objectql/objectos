@@ -7,6 +7,7 @@ import { StorageManager } from './scoped-storage';
 import { PluginManager } from './plugin-manager';
 import { PluginContextBuilder } from './plugin-context';
 import { createLogger, Logger } from './logger';
+import { PermissionManager, PermissionManagerConfig } from './permissions';
 
 export interface ObjectOSConfig extends ObjectQLConfig {
     /**
@@ -21,6 +22,11 @@ export interface ObjectOSConfig extends ObjectQLConfig {
         manifest: ObjectStackManifest;
         definition: PluginDefinition;
     }>;
+    
+    /**
+     * Permission system configuration
+     */
+    permissions?: PermissionManagerConfig;
 }
 
 /**
@@ -35,6 +41,7 @@ export class ObjectOS extends ObjectQL {
     private pluginManager: PluginManager;
     private contextBuilder: PluginContextBuilder;
     private logger: Logger;
+    private permissionManager: PermissionManager;
 
     constructor(config: ObjectOSConfig = {}) {
         // Initialize ObjectQL base with ObjectOS plugin
@@ -52,6 +59,9 @@ export class ObjectOS extends ObjectQL {
         this.kernelContext = new KernelContextManager(config.kernelContext);
         this.storageManager = new StorageManager();
         this.logger = createLogger('ObjectOS');
+        
+        // Initialize permission manager
+        this.permissionManager = new PermissionManager(config.permissions);
         
         // Create plugin context builder
         this.contextBuilder = new PluginContextBuilder(
@@ -81,6 +91,9 @@ export class ObjectOS extends ObjectQL {
         
         // Initialize ObjectQL base
         await super.init();
+        
+        // Initialize permission manager
+        await this.permissionManager.init();
         
         // Enable all registered plugins
         const plugins = this.pluginManager.getAllPlugins();
@@ -132,6 +145,13 @@ export class ObjectOS extends ObjectQL {
      */
     getStorageManager(): StorageManager {
         return this.storageManager;
+    }
+
+    /**
+     * Get the permission manager.
+     */
+    getPermissionManager(): PermissionManager {
+        return this.permissionManager;
     }
 
     /**

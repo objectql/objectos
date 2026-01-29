@@ -1,0 +1,67 @@
+# System Administrator Permission Set
+# 
+# This permission set grants full access to all objects and fields.
+# Administrators can view and modify all records regardless of ownership.
+
+name: system_admin
+label: System Administrator
+isProfile: true
+
+# Object-level permissions - Full access to all objects
+objects:
+  contacts:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+    allowTransfer: true
+    allowRestore: true
+    allowPurge: true
+    viewAllRecords: true
+    modifyAllRecords: true
+  
+  accounts:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+    allowTransfer: true
+    allowRestore: true
+    allowPurge: true
+    viewAllRecords: true
+    modifyAllRecords: true
+  
+  opportunities:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+    allowTransfer: true
+    allowRestore: true
+    allowPurge: true
+    viewAllRecords: true
+    modifyAllRecords: true
+  
+  users:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+    allowTransfer: true
+    allowRestore: true
+    allowPurge: true
+    viewAllRecords: true
+    modifyAllRecords: true
+
+# No field-level restrictions for admins
+# All fields are readable and editable by default
+
+# System permissions - Full system access
+systemPermissions:
+  - manage_users
+  - manage_permissions
+  - manage_objects
+  - export_reports
+  - view_dashboards
+  - view_audit_logs
+  - manage_integrations
