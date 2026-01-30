@@ -12,6 +12,12 @@ export { PluginContextBuilder } from './plugin-context';
 export { ConsoleLogger, createLogger } from './logger';
 export type { Logger, LogLevel, LogEntry } from './logger';
 
+// Dependency & Validation
+export { DependencyResolver, DependencyError } from './dependency-resolver';
+export type { DependencyResolutionResult } from './dependency-resolver';
+export { ManifestValidator, validateManifest } from './manifest-validator';
+export type { ValidationResult, ValidationError } from './manifest-validator';
+
 // API Protocol components
 export * from './api';
 
