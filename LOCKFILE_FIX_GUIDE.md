@@ -63,7 +63,7 @@ pnpm test
 - Updated `pnpm-lock.yaml` with base32-encoded hashes for patched dependencies
 - Changed hash for `@objectstack/objectql@0.6.1` from SHA-256 to base32 format
 - Changed hash for `@objectstack/runtime@0.6.1` from SHA-256 to base32 format
-- Removed unnecessary metadata from sharp package entries (67 lines reduced)
+- Removed unnecessary libc metadata from multiple package entries including sharp, Next.js, oxc-transform, rollup, tailwindcss, unrs, and lightningcss (67 lines reduced)
 
 ## Test Results
 
