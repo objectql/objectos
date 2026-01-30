@@ -26,6 +26,12 @@ export type { VersionInfo, VersionConstraint, VersionComparison, MigrationFuncti
 export { ErrorHandler, StructuredError, ErrorSeverity, ErrorCategory, RecoveryStrategy } from './error-handler';
 export type { ErrorInfo, ErrorHandlerOptions } from './error-handler';
 
+// Performance & Observability
+export { MetricsManager, PerformanceTimer, MetricType } from './metrics';
+export type { MetricDataPoint, MetricSummary, PluginMetrics } from './metrics';
+export { OptimizedRegistry } from './optimized-registry';
+export type { ServiceMetadata, ServiceQueryOptions } from './optimized-registry';
+
 // API Protocol components
 export * from './api';
 
