@@ -314,7 +314,7 @@ async validateDependencies(manifest: ObjectStackManifest): Promise<void> {
     const plugin = this.getPlugin(name);
     
     if (!plugin) {
-      throw new Error(`Missing dependency: ${name}. Install it using 'objectos plugin install ${name}' or add it to your dependencies.`);
+      throw new Error(`Missing dependency: ${name}. Install it using 'npm install @objectos/plugin-${name}' or add it to your dependencies.`);
     }
     
     if (!semverSatisfies(plugin.version, version)) {
@@ -429,8 +429,11 @@ class DriverRegistry {
   get(name: string): ObjectQLDriver {
     const driver = this.drivers.get(name);
     if (!driver) {
-      const available = this.list().join(', ') || 'none';
-      throw new Error(`Driver not found: ${name}. Available drivers: ${available}. Register a driver using drivers.register().`);
+      const driverList = this.list().join(', ');
+      const message = driverList 
+        ? `Driver not found: ${name}. Available drivers: ${driverList}. Register a driver using drivers.register().`
+        : `Driver not found: ${name}. No drivers registered. Register a driver using drivers.register().`;
+      throw new Error(message);
     }
     return driver;
   }
@@ -824,7 +827,7 @@ class PluginContext {
     // Check permission before returning service
     const requiredPermission = SERVICE_PERMISSIONS[name];
     if (requiredPermission && !this.checker.checkPermission(this.pluginId, requiredPermission)) {
-      throw new Error(`Permission denied: Plugin '${this.pluginId}' attempted to access service '${name}' which requires permission '${requiredPermission}'. Add this permission to your plugin manifest.`);
+      throw new Error(`Permission denied: Plugin '${this.pluginId}' attempted to access service '${name}' which requires permission '${requiredPermission}'. Add this permission to the 'permissions' array in your plugin's manifest file.`);
     }
     
     return this.registry.getService(name);
@@ -1944,9 +1947,10 @@ export class CRMPlugin implements Plugin {
   
   private async getDashboardStats(context: PluginContext) {
     const [contacts, opportunities, revenue] = await Promise.all([
+      // Note: In production, validate and sanitize date inputs to prevent injection attacks
       context.ql.query('contacts', { filters: { created_at: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } }),
       context.ql.query('opportunities', { filters: { stage: 'closed_won' } }),
-      // Note: Aggregation syntax follows ObjectQL specification
+      // Note: Aggregation syntax follows ObjectQL v3.0.1 specification (see aggregation operators documentation)
       context.ql.query('opportunities', { 
         filters: { stage: 'closed_won' },
         aggregations: { total: { $sum: 'amount' } }
