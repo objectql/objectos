@@ -18,6 +18,14 @@ export type { DependencyResolutionResult } from './dependency-resolver';
 export { ManifestValidator, validateManifest } from './manifest-validator';
 export type { ValidationResult, ValidationError } from './manifest-validator';
 
+// Hot Reload & Versioning
+export { HotReloadManager } from './hot-reload';
+export type { HotReloadOptions, HotReloadResult } from './hot-reload';
+export { VersionManager, compareVersions, satisfiesVersion, areVersionsCompatible } from './version-manager';
+export type { VersionInfo, VersionConstraint, VersionComparison, MigrationFunction } from './version-manager';
+export { ErrorHandler, StructuredError, ErrorSeverity, ErrorCategory, RecoveryStrategy } from './error-handler';
+export type { ErrorInfo, ErrorHandlerOptions } from './error-handler';
+
 // API Protocol components
 export * from './api';
 
