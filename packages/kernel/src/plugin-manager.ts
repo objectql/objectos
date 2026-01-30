@@ -12,6 +12,8 @@ import type {
 } from '@objectstack/spec/system';
 import { Logger, createLogger } from './logger';
 import { ScopedStorage } from './scoped-storage';
+import { DependencyResolver, DependencyResolutionResult } from './dependency-resolver';
+import { ManifestValidator, ValidationResult } from './manifest-validator';
 
 export interface PluginEntry {
     manifest: ObjectStackManifest;
@@ -31,10 +33,20 @@ export class PluginManager {
     private plugins: Map<string, PluginEntry> = new Map();
     private logger: Logger;
     private contextBuilder: (pluginId: string) => PluginContextData;
+    private dependencyResolver: DependencyResolver;
+    private manifestValidator: ManifestValidator;
+    private validationResults: Map<string, ValidationResult> = new Map();
 
-    constructor(contextBuilder: (pluginId: string) => PluginContextData) {
+    constructor(contextBuilder: (pluginId: string) => PluginContextData, options?: {
+        validateManifests?: boolean;
+        strictValidation?: boolean;
+    }) {
         this.logger = createLogger('PluginManager');
         this.contextBuilder = contextBuilder;
+        this.dependencyResolver = new DependencyResolver();
+        this.manifestValidator = new ManifestValidator({ 
+            strictMode: options?.strictValidation ?? true 
+        });
     }
 
     /**
@@ -42,14 +54,39 @@ export class PluginManager {
      * 
      * @param manifest - Plugin manifest (static configuration)
      * @param definition - Plugin definition (lifecycle hooks)
+     * @param options - Registration options
      */
-    register(manifest: ObjectStackManifest, definition: PluginDefinition): void {
+    register(manifest: ObjectStackManifest, definition: PluginDefinition, options?: {
+        skipValidation?: boolean;
+    }): void {
         const { id } = manifest;
 
         if (this.plugins.has(id)) {
             this.logger.warn(`Plugin '${id}' is already registered. Skipping.`);
             return;
         }
+
+        // Validate manifest
+        if (!options?.skipValidation) {
+            const validationResult = this.manifestValidator.validate(manifest);
+            this.validationResults.set(id, validationResult);
+
+            if (!validationResult.valid) {
+                const errorMessages = validationResult.errors.map(
+                    err => `  - ${err.field}: ${err.message}`
+                ).join('\n');
+                this.logger.error(`Manifest validation failed for '${id}':\n${errorMessages}`);
+                throw new Error(`Invalid manifest for plugin '${id}'`);
+            }
+
+            // Log warnings
+            if (validationResult.warnings.length > 0) {
+                this.logger.warn(`Manifest warnings for '${id}':\n${validationResult.warnings.map(w => `  - ${w}`).join('\n')}`);
+            }
+        }
+
+        // Add to dependency graph
+        this.dependencyResolver.addPlugin(manifest);
 
         this.plugins.set(id, {
             manifest,
@@ -226,6 +263,40 @@ export class PluginManager {
      */
     getPlugin(pluginId: string): PluginEntry | undefined {
         return this.plugins.get(pluginId);
+    }
+
+    /**
+     * Validate all plugin dependencies
+     * Throws error if validation fails
+     */
+    validateDependencies(): DependencyResolutionResult {
+        this.logger.info('Validating plugin dependencies...');
+        
+        try {
+            this.dependencyResolver.validate();
+            const result = this.dependencyResolver.resolve();
+            
+            this.logger.info(`Dependency validation passed. Load order: ${result.loadOrder.join(', ')}`);
+            
+            return result;
+        } catch (error) {
+            this.logger.error('Dependency validation failed', error as Error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the dependency resolution result without throwing
+     */
+    getDependencyGraph(): DependencyResolutionResult {
+        return this.dependencyResolver.resolve();
+    }
+
+    /**
+     * Get validation result for a specific plugin
+     */
+    getValidationResult(pluginId: string): ValidationResult | undefined {
+        return this.validationResults.get(pluginId);
     }
 
     /**
