@@ -314,7 +314,7 @@ async validateDependencies(manifest: ObjectStackManifest): Promise<void> {
     const plugin = this.getPlugin(name);
     
     if (!plugin) {
-      throw new Error(`Missing dependency: ${name}`);
+      throw new Error(`Missing dependency: ${name}. Install it using 'objectos plugin install ${name}' or add it to your dependencies.`);
     }
     
     if (!semverSatisfies(plugin.version, version)) {
@@ -429,7 +429,8 @@ class DriverRegistry {
   get(name: string): ObjectQLDriver {
     const driver = this.drivers.get(name);
     if (!driver) {
-      throw new Error(`Driver not found: ${name}`);
+      const available = this.list().join(', ') || 'none';
+      throw new Error(`Driver not found: ${name}. Available drivers: ${available}. Register a driver using drivers.register().`);
     }
     return driver;
   }
@@ -720,7 +721,7 @@ class ServiceRegistry {
     
     const service = this.services.get(name);
     if (!service) {
-      throw new Error(`Service not found: ${name}`);
+      throw new Error(`Service not found: ${name}. Ensure the service is registered before use or check if the required plugin providing this service is enabled.`);
     }
     
     contextCache.set(name, service);
@@ -756,7 +757,7 @@ class EventBus {
       const { event, payload } = await this.queue.shift();
       
       const listeners = this.listeners.get(event) || [];
-      await Promise.all(listeners.map(l => l(payload)));
+      await Promise.all(listeners.map(listener => listener(payload)));
     }
   }
 }
@@ -823,7 +824,7 @@ class PluginContext {
     // Check permission before returning service
     const requiredPermission = SERVICE_PERMISSIONS[name];
     if (requiredPermission && !this.checker.checkPermission(this.pluginId, requiredPermission)) {
-      throw new Error(`Permission denied: ${requiredPermission}`);
+      throw new Error(`Permission denied: Plugin '${this.pluginId}' attempted to access service '${name}' which requires permission '${requiredPermission}'. Add this permission to your plugin manifest.`);
     }
     
     return this.registry.getService(name);
@@ -1874,7 +1875,7 @@ export class CustomFieldPlugin implements Plugin {
       fieldTypes: [{
         name: 'phone_number',
         label: 'Phone Number',
-        validate: (value) => /^\+?[1-9]\d{1,14}$/.test(value)
+        validate: (value: string) => /^\+?[1-9]\d{1,14}$/.test(value)
       }]
     }
   };
@@ -1945,6 +1946,7 @@ export class CRMPlugin implements Plugin {
     const [contacts, opportunities, revenue] = await Promise.all([
       context.ql.query('contacts', { filters: { created_at: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } }),
       context.ql.query('opportunities', { filters: { stage: 'closed_won' } }),
+      // Note: Aggregation syntax follows ObjectQL specification
       context.ql.query('opportunities', { 
         filters: { stage: 'closed_won' },
         aggregations: { total: { $sum: 'amount' } }
