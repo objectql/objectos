@@ -6,8 +6,11 @@ settings:
 
 patchedDependencies:
   '@objectstack/objectql@0.7.2':
-    hash: 12f2b2e6a34875d3567ee47ae084ef9463a48e304ece4df8c39ca04bd23212fb
+    hash: 0f77f1349b47520c7ebed55fb04ceabcea5838616a497b9f56dc968f177aab79
     path: patches/@objectstack__objectql@0.7.2.patch
+  '@objectstack/runtime@0.7.2':
+    hash: 09bdd6f69abed0d206e92c45bf218a0a637bb6f9640fc55a6eb02299adbc0819
+    path: patches/@objectstack__runtime@0.7.2.patch
 
 importers:
 
@@ -282,10 +285,10 @@ importers:
         version: 3.0.1(encoding@0.1.13)(zod@3.25.76)
       '@objectstack/objectql':
         specifier: 0.7.2
-        version: 0.7.2(patch_hash=12f2b2e6a34875d3567ee47ae084ef9463a48e304ece4df8c39ca04bd23212fb)
+        version: 0.7.2(patch_hash=0f77f1349b47520c7ebed55fb04ceabcea5838616a497b9f56dc968f177aab79)
       '@objectstack/runtime':
         specifier: 0.7.2
-        version: 0.7.2
+        version: 0.7.2(patch_hash=09bdd6f69abed0d206e92c45bf218a0a637bb6f9640fc55a6eb02299adbc0819)
       '@objectstack/spec':
         specifier: 0.7.2
         version: 0.7.2
@@ -8128,7 +8131,7 @@ snapshots:
       pino-pretty: 10.3.1
       zod: 3.25.76
 
-  '@objectstack/objectql@0.7.2(patch_hash=12f2b2e6a34875d3567ee47ae084ef9463a48e304ece4df8c39ca04bd23212fb)':
+  '@objectstack/objectql@0.7.2(patch_hash=0f77f1349b47520c7ebed55fb04ceabcea5838616a497b9f56dc968f177aab79)':
     dependencies:
       '@objectstack/core': 0.7.2
       '@objectstack/spec': 0.7.2
@@ -8146,7 +8149,7 @@ snapshots:
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/runtime@0.7.2':
+  '@objectstack/runtime@0.7.2(patch_hash=09bdd6f69abed0d206e92c45bf218a0a637bb6f9640fc55a6eb02299adbc0819)':
     dependencies:
       '@objectstack/core': 0.7.2
       '@objectstack/spec': 0.7.2

@@ -1,5 +1,57 @@
+diff --git a/dist/engine.js b/dist/engine.js
+index a9622d42ab0218467436c15da85e9f1fd83df02b..8e40d70d56992fc9ad7b98846f39cdec2074952b 100644
+--- a/dist/engine.js
++++ b/dist/engine.js
+@@ -1,5 +1,5 @@
+ import { createLogger } from '@objectstack/core';
+-import { SchemaRegistry } from './registry';
++import { SchemaRegistry } from './registry.js';
+ /**
+  * ObjectQL Engine
+  *
+diff --git a/dist/index.js b/dist/index.js
+index d73fffe7e74fa7cd88064863063d47ba8a2c9791..756efa2a2bca303cbb031e49ed4cd36fbd471dde 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,9 +1,9 @@
+ // Export Registry
+-export { SchemaRegistry } from './registry';
++export { SchemaRegistry } from './registry.js';
+ // Export Protocol Implementation
+-export { ObjectStackProtocolImplementation } from './protocol';
++export { ObjectStackProtocolImplementation } from './protocol.js';
+ // Export Engine
+-export { ObjectQL } from './engine';
++export { ObjectQL } from './engine.js';
+ // Export Plugin Shim
+-export { ObjectQLPlugin } from './plugin';
++export { ObjectQLPlugin } from './plugin.js';
+ // Moved logic to engine.ts
+diff --git a/dist/plugin.js b/dist/plugin.js
+index 2a7b8b716732165451fbef71a12a0ccd277488bc..a71b2776b1917a38fe4bf3bdc7f9176367b11731 100644
+--- a/dist/plugin.js
++++ b/dist/plugin.js
+@@ -1,5 +1,5 @@
+-import { ObjectQL } from './engine';
+-import { ObjectStackProtocolImplementation } from './protocol';
++import { ObjectQL } from './engine.js';
++import { ObjectStackProtocolImplementation } from './protocol.js';
+ export class ObjectQLPlugin {
+     constructor(ql, hostContext) {
+         this.name = 'com.objectstack.engine.objectql';
+diff --git a/dist/protocol.js b/dist/protocol.js
+index 96898b191d43fff52d48ad78209ef5182cd8337d..2589daa9356742bab51d6e824611858211ce1e2b 100644
+--- a/dist/protocol.js
++++ b/dist/protocol.js
+@@ -1,5 +1,5 @@
+ // We import SchemaRegistry directly since this class lives in the same package
+-import { SchemaRegistry } from './registry';
++import { SchemaRegistry } from './registry.js';
+ /**
+  * Simple hash function for ETag generation (browser-compatible)
+  * Uses a basic hash algorithm instead of crypto.createHash
 diff --git a/package.json b/package.json
-index 9487c1e3b3c78a75c7d38b1d81fc0e3f06de289f..d630b9a50447fdfcde944c750ee3659829d85383 100644
+index 6a4bc22e663ae863dfc8903c94c7c5aa0fff56c1..af1c4a0b6e0784cb46f5f6d334591abacceaa6df 100644
 --- a/package.json
 +++ b/package.json
 @@ -2,8 +2,8 @@

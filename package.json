@@ -10,21 +10,23 @@
       "esbuild"
     ],
     "patchedDependencies": {
+      "@objectstack/runtime@0.7.2": "patches/@objectstack__runtime@0.7.2.patch",
       "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch"
     }
   },
   "scripts": {
-    "dev": "objectstack serve",
-    "server": "objectstack serve",
+    "dev": "pnpm --filter @objectos/server dev",
+    "server": "pnpm --filter @objectos/server dev",
     "build": "tsc -b && pnpm -r build",
-    "start": "objectstack serve",
+    "start": "pnpm --filter @objectos/server start:prod",
     "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && changeset publish",
     "site:dev": "pnpm --filter @objectos/site dev",
     "site:build": "pnpm --filter @objectos/site build",
-    "site:preview": "pnpm --filter @objectos/site start"
+    "site:preview": "pnpm --filter @objectos/site start",
+    "objectstack:serve": "objectstack serve"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
