@@ -10,7 +10,7 @@
       "esbuild"
     ],
     "patchedDependencies": {
-      "@objectstack/objectql@0.7.1": "patches/@objectstack__objectql@0.7.1.patch"
+      "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch"
     }
   },
   "scripts": {
@@ -48,7 +48,7 @@
     "@objectql/platform-node": "^3.0.1",
     "@objectql/starter-basic": "^1.8.4",
     "@objectql/starter-enterprise": "^1.8.4",
-    "@objectstack/spec": "0.7.1",
+    "@objectstack/spec": "0.7.2",
     "build": "^0.1.4"
   }
 }
