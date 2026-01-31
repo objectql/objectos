@@ -44,7 +44,7 @@
   "dependencies": {
     "@objectql/core": "^3.0.1",
     "@objectql/driver-mongo": "^3.0.1",
-    "@objectql/driver-sql": "^3.0.1",
+    "@objectql/driver-sql": "^4.0.2",
     "@objectql/platform-node": "^3.0.1",
     "@objectql/starter-basic": "^1.8.4",
     "@objectql/starter-enterprise": "^1.8.4",

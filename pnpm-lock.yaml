@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@objectstack/objectql@0.7.1':
-    hash: i55z7fr6u3f4jx32ulku7jkiye
+    hash: 5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef
     path: patches/@objectstack__objectql@0.7.1.patch
 
 importers:
@@ -20,17 +20,17 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@objectql/driver-sql':
-        specifier: ^3.0.1
-        version: 3.0.1(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
+        specifier: ^4.0.2
+        version: 4.0.2(@objectql/runtime@0.2.0)(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
       '@objectql/platform-node':
         specifier: ^3.0.1
         version: 3.0.1(encoding@0.1.13)(zod@3.25.76)
       '@objectql/starter-basic':
         specifier: ^1.8.4
-        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@3.0.1)(sqlite3@5.1.7)
+        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@4.0.2(@objectql/runtime@0.2.0)(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1))(sqlite3@5.1.7)
       '@objectql/starter-enterprise':
         specifier: ^1.8.4
-        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@3.0.1)(sqlite3@5.1.7)
+        version: 1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@4.0.2(@objectql/runtime@0.2.0)(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1))(sqlite3@5.1.7)
       '@objectstack/spec':
         specifier: 0.7.1
         version: 0.7.1
@@ -272,14 +272,14 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@objectql/driver-sql':
-        specifier: ^3.0.1
-        version: 3.0.1(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
+        specifier: ^4.0.2
+        version: 4.0.2(@objectql/runtime@0.2.0)(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
       '@objectql/server':
         specifier: ^3.0.1
         version: 3.0.1(encoding@0.1.13)(zod@3.25.76)
       '@objectstack/objectql':
         specifier: 0.7.1
-        version: 0.7.1(patch_hash=i55z7fr6u3f4jx32ulku7jkiye)
+        version: 0.7.1(patch_hash=5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef)
       '@objectstack/runtime':
         specifier: 0.7.1
         version: 0.7.1
@@ -1570,11 +1570,14 @@ packages:
   '@objectql/driver-mongo@3.0.1':
     resolution: {integrity: sha512-GpQfPGYHYgDYLuyXVlhWzgIZscN/iS6E7J6n7tvtdEfWv2vPV3W+VieSpqkj6CIgORNc0hyLsXoavnt34guzIw==}
 
-  '@objectql/driver-sql@3.0.1':
-    resolution: {integrity: sha512-uHQXIHdvHTmImd3yIYFpZyoJsd7aczbEQcD7MDUO9qX0ntEj9aNz7q6fL4wdEh/DIuWsGLLjiROTV7voh4IXQQ==}
+  '@objectql/driver-sql@4.0.2':
+    resolution: {integrity: sha512-XyWUzxLn3z5UmATjUWwz7X452cR0CYVL78U12HBTxJfr8uTe9F8JGMRDQbejOYuQdcDdnRqrh2oCjXLbpHotxQ==}
 
   '@objectql/platform-node@3.0.1':
     resolution: {integrity: sha512-iiWAwtV+W7WodR1Devhy9xHtl1f3gpKdNB6UmiGoBw7XHA3F/D88igCFf5BcaIVhmAkkrUqbtkuo1WmULFmLsg==}
+
+  '@objectql/runtime@0.2.0':
+    resolution: {integrity: sha512-ePUWBHHPCe8MYdsf6kWeNoWgRxswTc/vsi2oe/q3lJ39fN0f8OjkOJjtqq5yz/xOs5MqM9esGSOKbY1P18XXfw==}
 
   '@objectql/server@3.0.1':
     resolution: {integrity: sha512-vMgleon9TUckj+9WHfdAnRBL8OS/IQaO71OmCEQfSELbxuHjbTnn6dn1DZWw+c7oGOiFWNnoMEUz64kqGQE1AA==}
@@ -1600,6 +1603,12 @@ packages:
   '@objectql/types@3.0.1':
     resolution: {integrity: sha512-L1G8WyZ8TEFatTaPMsSU6zDjCcaFQ5IN1vv3P0j5qwJhIBFUgoO6kl1HpB+CffKQH0F3z9iSpAlGjqExwhHTmw==}
 
+  '@objectql/types@4.0.2':
+    resolution: {integrity: sha512-5WEybuWelHhsDTGj8j3NbiuJ2qJ/RrVoSlPrInZyumNcGgo2OeTZtblroBCiEcMgAuz8Es/kwx3t+TOHAs7cWg==}
+    peerDependencies:
+      '@objectql/runtime': ^0.2.0
+      '@objectstack/spec': ^0.3.3
+
   '@objectstack/core@0.7.1':
     resolution: {integrity: sha512-kcqPtqNaLjf0H65CegNwSjF3PX0RXDVv5aagwVLiqKCjIpSPWFtj8cRElszyrSNGmQe1mp0vJwJjlsG1AQXrAA==}
     peerDependencies:
@@ -1613,6 +1622,10 @@ packages:
 
   '@objectstack/runtime@0.7.1':
     resolution: {integrity: sha512-3idPkih8xGv1Vn+9ZIDnU8G7uwRhV9N+yTNDXiTXgVz4fD0D6PyKK+nvFZzPvmgyzMGUb6KuCDoHryVRAALDKw==}
+
+  '@objectstack/spec@0.3.3':
+    resolution: {integrity: sha512-GGSrRLECgYY1epLocdCkCsicerFKAKlRpluGmCqK1iVNgTgiC04zniLogYQXu5kf6UIB6mHQNBHcbr1x5DOmVQ==}
+    engines: {node: '>=18.0.0'}
 
   '@objectstack/spec@0.6.0':
     resolution: {integrity: sha512-aqlXNnHRebtpbCN6obM+OfUDe2xFhOvl36B/xJ/tMONb5fov7De4TXQY5REoCqA55hinaETtS2J8WsDzTjup5w==}
@@ -3340,6 +3353,9 @@ packages:
 
   colorette@2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
+
+  colorette@2.0.20:
+    resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
 
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -7949,11 +7965,14 @@ snapshots:
       - mongodb-client-encryption
       - snappy
 
-  '@objectql/driver-sql@3.0.1(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)':
+  '@objectql/driver-sql@4.0.2(@objectql/runtime@0.2.0)(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)':
     dependencies:
-      '@objectql/types': 3.0.1
+      '@objectql/types': 4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.3.3)
+      '@objectstack/spec': 0.3.3
       knex: 3.1.0(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
+      nanoid: 3.3.11
     transitivePeerDependencies:
+      - '@objectql/runtime'
       - better-sqlite3
       - mysql
       - mysql2
@@ -7974,6 +7993,8 @@ snapshots:
       - ws
       - zod
 
+  '@objectql/runtime@0.2.0': {}
+
   '@objectql/server@3.0.1(encoding@0.1.13)(zod@3.25.76)':
     dependencies:
       '@graphql-tools/schema': 10.0.31(graphql@16.12.0)
@@ -7986,23 +8007,33 @@ snapshots:
       - ws
       - zod
 
-  '@objectql/starter-basic@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@3.0.1)(sqlite3@5.1.7)':
+  '@objectql/starter-basic@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@4.0.2(@objectql/runtime@0.2.0)(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1))(sqlite3@5.1.7)':
     dependencies:
       '@objectql/core': 3.0.1(encoding@0.1.13)(zod@3.25.76)
-      '@objectql/driver-sql': 3.0.1(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
+      '@objectql/driver-sql': 4.0.2(@objectql/runtime@0.2.0)(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
       '@objectql/platform-node': 3.0.1(encoding@0.1.13)(zod@3.25.76)
-      '@objectql/types': 3.0.1
+      '@objectql/types': 4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1)
       sqlite3: 5.1.7
 
-  '@objectql/starter-enterprise@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@3.0.1(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@3.0.1)(sqlite3@5.1.7)':
+  '@objectql/starter-enterprise@1.8.4(@objectql/core@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/driver-sql@4.0.2(@objectql/runtime@0.2.0)(sqlite3@5.1.7))(@objectql/platform-node@3.0.1(encoding@0.1.13)(zod@3.25.76))(@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1))(sqlite3@5.1.7)':
     dependencies:
       '@objectql/core': 3.0.1(encoding@0.1.13)(zod@3.25.76)
-      '@objectql/driver-sql': 3.0.1(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
+      '@objectql/driver-sql': 4.0.2(@objectql/runtime@0.2.0)(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
       '@objectql/platform-node': 3.0.1(encoding@0.1.13)(zod@3.25.76)
-      '@objectql/types': 3.0.1
+      '@objectql/types': 4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1)
       sqlite3: 5.1.7
 
   '@objectql/types@3.0.1': {}
+
+  '@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.3.3)':
+    dependencies:
+      '@objectql/runtime': 0.2.0
+      '@objectstack/spec': 0.3.3
+
+  '@objectql/types@4.0.2(@objectql/runtime@0.2.0)(@objectstack/spec@0.7.1)':
+    dependencies:
+      '@objectql/runtime': 0.2.0
+      '@objectstack/spec': 0.7.1
 
   '@objectstack/core@0.7.1':
     dependencies:
@@ -8010,7 +8041,7 @@ snapshots:
       pino-pretty: 10.3.1
       zod: 3.25.76
 
-  '@objectstack/objectql@0.7.1(patch_hash=i55z7fr6u3f4jx32ulku7jkiye)':
+  '@objectstack/objectql@0.7.1(patch_hash=5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef)':
     dependencies:
       '@objectstack/core': 0.7.1
       '@objectstack/spec': 0.7.1
@@ -8025,6 +8056,10 @@ snapshots:
       '@objectstack/types': 0.7.1
     transitivePeerDependencies:
       - pino
+
+  '@objectstack/spec@0.3.3':
+    dependencies:
+      zod: 3.25.76
 
   '@objectstack/spec@0.6.0':
     dependencies:
@@ -9718,6 +9753,8 @@ snapshots:
       color-string: 2.1.4
 
   colorette@2.0.19: {}
+
+  colorette@2.0.20: {}
 
   combined-stream@1.0.8:
     dependencies:
@@ -12329,7 +12366,7 @@ snapshots:
 
   pino-pretty@10.3.1:
     dependencies:
-      colorette: 2.0.19
+      colorette: 2.0.20
       dateformat: 4.6.3
       fast-copy: 3.0.2
       fast-safe-stringify: 2.1.1
