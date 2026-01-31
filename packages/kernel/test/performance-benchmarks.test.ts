@@ -352,7 +352,7 @@ describe('Performance Benchmarks', () => {
 
             const duration = performance.now() - start;
 
-            expect(duration).toBeLessThan(5); // Should be very fast (CI-friendly threshold)
+            expect(duration).toBeLessThan(5); // Should be very fast (5ms threshold accounts for CI environment overhead)
             expect(resolved).toHaveLength(5);
         });
 
