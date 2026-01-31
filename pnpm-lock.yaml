@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@objectstack/objectql@0.7.1':
-    hash: 8513b62c6eff454ece701a61a3296adb4d372aa99ebf9ced26d25af6f9d239e3
+    hash: 5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef
     path: patches/@objectstack__objectql@0.7.1.patch
 
 importers:
@@ -279,7 +279,7 @@ importers:
         version: 3.0.1(encoding@0.1.13)(zod@3.25.76)
       '@objectstack/objectql':
         specifier: 0.7.1
-        version: 0.7.1(patch_hash=8513b62c6eff454ece701a61a3296adb4d372aa99ebf9ced26d25af6f9d239e3)
+        version: 0.7.1(patch_hash=5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef)
       '@objectstack/runtime':
         specifier: 0.7.1
         version: 0.7.1
@@ -8065,7 +8065,7 @@ snapshots:
       pino-pretty: 10.3.1
       zod: 3.25.76
 
-  '@objectstack/objectql@0.7.1(patch_hash=8513b62c6eff454ece701a61a3296adb4d372aa99ebf9ced26d25af6f9d239e3)':
+  '@objectstack/objectql@0.7.1(patch_hash=5abf4024276eb2b69e6ffbcbff3e8447ff1cc63e49ba6a7f9df1aebe7f54f9ef)':
     dependencies:
       '@objectstack/core': 0.7.1
       '@objectstack/spec': 0.7.1
