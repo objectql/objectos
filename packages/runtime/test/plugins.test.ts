@@ -3,15 +3,13 @@
  */
 
 // Mock @objectql/core to avoid ES module issues
-jest.mock('@objectql/core', () => {
-  return {
-    ObjectQL: jest.fn().mockImplementation((config: any) => ({
-      init: jest.fn().mockResolvedValue(undefined),
-      config,
-      initialized: false,
-    })),
-  };
-});
+jest.mock('@objectql/core', () => ({
+  ObjectQL: jest.fn().mockImplementation((config: any) => ({
+    init: jest.fn().mockResolvedValue(undefined),
+    config,
+    initialized: false,
+  })),
+}));
 
 import { ObjectKernel, ObjectQLPlugin, DriverPlugin } from '../src';
 
