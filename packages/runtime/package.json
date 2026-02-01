@@ -9,8 +9,8 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectql/core": "^3.0.1",
-    "@objectql/types": "^3.0.1",
+    "@objectql/core": "^4.0.3",
+    "@objectql/types": "^4.0.3",
     "@objectstack/spec": "0.8.0"
   },
   "devDependencies": {
