@@ -183,7 +183,7 @@ describe('ObjectKernel', () => {
       expect(hook1Mock).toHaveBeenCalled();
       expect(hook2Mock).toHaveBeenCalled();
       expect(hook3Mock).toHaveBeenCalled();
-      
+
       consoleErrorSpy.mockRestore();
     });
 
