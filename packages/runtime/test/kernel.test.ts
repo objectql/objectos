@@ -159,6 +159,7 @@ describe('ObjectKernel', () => {
     });
 
     it('should continue executing handlers even if one throws', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       const hook1Mock = jest.fn(() => { throw new Error('Handler 1 failed'); });
       const hook2Mock = jest.fn();
       const hook3Mock = jest.fn();
@@ -182,6 +183,8 @@ describe('ObjectKernel', () => {
       expect(hook1Mock).toHaveBeenCalled();
       expect(hook2Mock).toHaveBeenCalled();
       expect(hook3Mock).toHaveBeenCalled();
+      
+      consoleErrorSpy.mockRestore();
     });
 
     it('should log errors from failing handlers', async () => {
