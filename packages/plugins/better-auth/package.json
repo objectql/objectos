@@ -10,7 +10,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/spec": "0.6.0",
+    "@objectstack/spec": "0.8.0",
     "better-auth": "^1.4.10",
     "better-sqlite3": "^12.6.0",
     "mongodb": "^7.0.0",

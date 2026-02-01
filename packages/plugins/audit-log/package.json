@@ -10,7 +10,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/spec": "0.6.1"
+    "@objectstack/spec": "0.8.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
