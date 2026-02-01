@@ -10,7 +10,9 @@
       "esbuild"
     ],
     "patchedDependencies": {
-      "@objectstack/objectql@0.7.1": "patches/@objectstack__objectql@0.7.1.patch"
+      "@objectstack/runtime@0.7.2": "patches/@objectstack__runtime@0.7.2.patch",
+      "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch",
+      "@objectstack/cli@0.7.2": "patches/@objectstack__cli@0.7.2.patch"
     }
   },
   "scripts": {
@@ -24,10 +26,12 @@
     "release": "pnpm run build && changeset publish",
     "site:dev": "pnpm --filter @objectos/site dev",
     "site:build": "pnpm --filter @objectos/site build",
-    "site:preview": "pnpm --filter @objectos/site start"
+    "site:preview": "pnpm --filter @objectos/site start",
+    "objectstack:serve": "objectstack serve"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
+    "@objectstack/cli": "^0.7.2",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.10.0",
@@ -48,7 +52,7 @@
     "@objectql/platform-node": "^3.0.1",
     "@objectql/starter-basic": "^1.8.4",
     "@objectql/starter-enterprise": "^1.8.4",
-    "@objectstack/spec": "0.7.1",
+    "@objectstack/spec": "0.7.2",
     "build": "^0.1.4"
   }
 }

@@ -1,0 +1,10 @@
+diff --git a/dist/rest-server.js b/dist/rest-server.js
+index 4bcd1c735a7ad90439d908eabaddcaacc94115f6..ca0b456d78e242e2ec165b99c565622773209cde 100644
+--- a/dist/rest-server.js
++++ b/dist/rest-server.js
+@@ -1,4 +1,4 @@
+-import { RouteManager } from './route-manager';
++import { RouteManager } from './route-manager.js';
+ /**
+  * RestServer
+  *
