@@ -86,11 +86,12 @@ This ensures interoperability across the ObjectStack ecosystem (ObjectQL, Object
 | Package | Role | Description |
 | :--- | :--- | :--- |
 | **`@objectstack/runtime`** | **The Kernel** | Micro-kernel with plugin lifecycle and service registry. |
-| **`@objectos/kernel`** | **The Brain** | The core logic engine. Wraps ObjectQL, manages plugins, and handles the event bus. |
-| **`@objectos/server`** | **The Gateway** | NestJS application layer. Handles HTTP/WS traffic, Middlewares, and Guards. |
-| **`@objectos/plugin-auth`** | **Auth** | Authentication strategies (Local, OAuth2, Enterprise SSO). |
-| **`@objectos/plugin-workflow`** | **Logic** | Workflow engine and trigger runner. |
+| **`@objectos/plugin-server`** | **The Gateway** | NestJS HTTP server as a runtime plugin. |
+| **`@objectos/plugin-better-auth`** | **Auth** | Authentication strategies (Local, OAuth2, Enterprise SSO). |
+| **`@objectos/plugin-audit-log`** | **Audit** | Comprehensive audit logging and field history tracking. |
 | **`@objectos/presets`** | **Config** | Standard system objects (`_users`, `_roles`, `_audit_log`). |
+| **`@objectos/kernel`** | **DEPRECATED** | ⚠️ Use `@objectstack/runtime` instead |
+| **`@objectos/server`** | **DEPRECATED** | ⚠️ Use `@objectos/plugin-server` instead |
 
 ---
 

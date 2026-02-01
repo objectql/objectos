@@ -4,22 +4,21 @@
   "license": "AGPL-3.0",
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "sqlite3",
       "@nestjs/core",
-      "esbuild"
+      "esbuild",
+      "sqlite3",
+      "unrs-resolver"
     ],
     "patchedDependencies": {
-      "@objectstack/runtime@0.7.2": "patches/@objectstack__runtime@0.7.2.patch",
       "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch",
       "@objectstack/cli@0.7.2": "patches/@objectstack__cli@0.7.2.patch"
     }
   },
   "scripts": {
-    "dev": "pnpm --filter @objectos/server dev",
-    "server": "pnpm --filter @objectos/server dev",
+    "dev": "pnpm --filter @objectos/plugin-server dev",
+    "server": "pnpm --filter @objectos/plugin-server dev",
     "build": "tsc -b && pnpm -r build",
-    "start": "pnpm --filter @objectos/server start:prod",
+    "start": "pnpm --filter @objectos/plugin-server start:prod",
     "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",

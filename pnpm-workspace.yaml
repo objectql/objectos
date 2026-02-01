@@ -1,6 +1,7 @@
 packages:
-  - packages/*
-  - '!packages/runtime'
+  - packages/runtime
+  - '!packages/kernel'
+  - '!packages/server'
   - packages/presets/*
   - packages/plugins/*
   - apps/site

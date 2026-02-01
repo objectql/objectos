@@ -2,6 +2,7 @@
   "name": "@objectos/kernel",
   "version": "0.2.0",
   "license": "AGPL-3.0",
+  "deprecated": "This package is deprecated. Use @objectstack/runtime instead.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
