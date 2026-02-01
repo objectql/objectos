@@ -5,6 +5,7 @@ packages:
   - packages/presets/*
   - packages/plugins/*
   - apps/site
+  - apps/web
   - examples/*
 
 onlyBuiltDependencies:
