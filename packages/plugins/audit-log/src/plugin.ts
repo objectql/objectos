@@ -249,7 +249,7 @@ export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinit
         /**
          * Called when the plugin is first installed
          */
-        async onInstall(context: PluginContextData) {
+        onInstall: (async (context: PluginContextData): Promise<void> => {
             context.logger.info('[Audit Log Plugin] Installing...');
             
             // Store installation configuration
@@ -257,12 +257,12 @@ export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinit
             await context.storage.set('config', JSON.stringify(config));
             
             context.logger.info('[Audit Log Plugin] Installation complete');
-        },
+        }) as any,
 
         /**
          * Called when the plugin is enabled
          */
-        async onEnable(context: PluginContextData) {
+        onEnable: (async (context: PluginContextData): Promise<void> => {
             context.logger.info('[Audit Log Plugin] Enabling...');
             
             try {
@@ -278,12 +278,12 @@ export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinit
                 context.logger.error(`[Audit Log Plugin] Failed to enable: ${errorMessage}`, error);
                 throw new Error(`Audit Log Plugin initialization failed: ${errorMessage}`);
             }
-        },
+        }) as any,
 
         /**
          * Called when the plugin is disabled
          */
-        async onDisable(context: PluginContextData) {
+        onDisable: (async (context: PluginContextData): Promise<void> => {
             context.logger.info('[Audit Log Plugin] Disabling...');
             
             try {
@@ -301,12 +301,12 @@ export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinit
                 context.logger.error('[Audit Log Plugin] Error during disable:', error);
                 throw error;
             }
-        },
+        }) as any,
 
         /**
          * Called when the plugin is uninstalled
          */
-        async onUninstall(context: PluginContextData) {
+        onUninstall: (async (context: PluginContextData): Promise<void> => {
             context.logger.info('[Audit Log Plugin] Uninstalling...');
             
             try {
@@ -323,14 +323,14 @@ export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinit
                 context.logger.error('[Audit Log Plugin] Error during uninstall:', error);
                 throw error;
             }
-        },
+        }) as any,
     };
 };
 
 /**
  * Default plugin instance with default configuration
  */
-export const AuditLogPlugin = createAuditLogPlugin();
+export const AuditLogPlugin: PluginDefinition = createAuditLogPlugin();
 
 /**
  * Helper function to access the audit log API
