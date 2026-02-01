@@ -11,3 +11,6 @@ dist
 docs/.vitepress/cache
 docs/.vitepress/dist
 package-lock.json
+*.db
+*.db-shm
+*.db-wal
