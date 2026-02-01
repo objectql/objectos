@@ -12,10 +12,10 @@
   "dependencies": {
     "@objectql/core": "^3.0.1",
     "@objectql/types": "^3.0.1",
-    "@objectstack/spec": "0.7.2",
+    "@objectstack/spec": "0.8.0",
     "fast-glob": "^3.3.2",
     "js-yaml": "^4.1.0",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

@@ -1,21 +1,17 @@
 diff --git a/dist/bin.js b/dist/bin.js
-index c4a45b868ac60731bb85ea014c0943a025432ad3..115d7d22f35520f14c62c00146a652206d130524 100644
+index 0000000000000000000000000000000000000000..1111111111111111111111111111111111111111 100644
 --- a/dist/bin.js
 +++ b/dist/bin.js
-@@ -441,18 +441,15 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
+@@ -441,7 +441,7 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
        throw new Error(`Default export not found in ${configPath}`);
      }
      console.log(chalk4.green(`\u2713 Configuration loaded`));
--    const { ObjectStackKernel } = await import("@objectstack/core");
+-    const { ObjectKernel } = await import("@objectstack/core");
 +    const { ObjectKernel } = await import("@objectstack/runtime");
      console.log(chalk4.yellow(`\u{1F527} Initializing ObjectStack kernel...`));
--    const kernel = new ObjectStackKernel({
--      metadata: config.metadata || {},
--      objects: config.objects || {}
--    });
-+    const kernel = new ObjectKernel();
-     const plugins = config.plugins || [];
-     if (plugins.length > 0) {
+     const kernel = new ObjectKernel({
+       metadata: config.metadata || {},
+@@ -452,7 +452,7 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
        console.log(chalk4.yellow(`\u{1F4E6} Loading ${plugins.length} plugin(s)...`));
        for (const plugin of plugins) {
          try {
@@ -24,7 +20,7 @@ index c4a45b868ac60731bb85ea014c0943a025432ad3..115d7d22f35520f14c62c00146a65220
            const pluginName = plugin.name || plugin.constructor?.name || "unnamed";
            console.log(chalk4.green(`  \u2713 Registered plugin: ${pluginName}`));
          } catch (e) {
-@@ -464,7 +461,7 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
+@@ -464,7 +464,7 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
        try {
          const { HonoServerPlugin } = await import("@objectstack/plugin-hono-server");
          const serverPlugin = new HonoServerPlugin({ port: parseInt(options.port) });
@@ -33,12 +29,3 @@ index c4a45b868ac60731bb85ea014c0943a025432ad3..115d7d22f35520f14c62c00146a65220
          console.log(chalk4.green(`  \u2713 Registered HTTP server plugin (port: ${options.port})`));
        } catch (e) {
          console.warn(chalk4.yellow(`  \u26A0 HTTP server plugin not available: ${e.message}`));
-@@ -472,7 +469,7 @@ var serveCommand = new Command4("serve").description("Start ObjectStack server w
-     }
-     console.log(chalk4.yellow(`
- \u{1F680} Starting ObjectStack...`));
--    await kernel.boot();
-+    await kernel.bootstrap();
-     console.log(chalk4.green(`
- \u2705 ObjectStack server is running!`));
-     console.log(chalk4.dim(`   Press Ctrl+C to stop

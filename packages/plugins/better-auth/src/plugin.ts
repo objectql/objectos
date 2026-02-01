@@ -69,7 +69,7 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
         /**
          * Called when the plugin is first installed
          */
-        async onInstall(context: PluginContextData) {
+        onInstall: (async (context: PluginContextData) => {
             context.logger.info('[Better-Auth Plugin] Installing...');
             
             // Store installation timestamp
@@ -77,12 +77,12 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
             await context.storage.set('config', JSON.stringify(options));
             
             context.logger.info('[Better-Auth Plugin] Installation complete');
-        },
+        }) as any,
 
         /**
          * Called when the plugin is enabled
          */
-        async onEnable(context: PluginContextData) {
+        onEnable: (async (context: PluginContextData) => {
             context.logger.info('[Better-Auth Plugin] Enabling...');
             
             try {
@@ -120,12 +120,12 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 context.logger.error(`[Better-Auth Plugin] Failed to enable: ${errorMessage}`, error);
                 throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
             }
-        },
+        }) as any,
 
         /**
          * Called when the plugin is disabled
          */
-        async onDisable(context: PluginContextData) {
+        onDisable: (async (context: PluginContextData) => {
             context.logger.info('[Better-Auth Plugin] Disabling...');
             
             try {
@@ -149,12 +149,12 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 context.logger.error('[Better-Auth Plugin] Error during disable:', error);
                 throw error;
             }
-        },
+        }) as any,
 
         /**
          * Called when the plugin is uninstalled
          */
-        async onUninstall(context: PluginContextData) {
+        onUninstall: (async (context: PluginContextData) => {
             context.logger.info('[Better-Auth Plugin] Uninstalling...');
             
             try {
@@ -174,14 +174,14 @@ export const createBetterAuthPlugin = (options: BetterAuthPluginOptions = {}): P
                 context.logger.error('[Better-Auth Plugin] Error during uninstall:', error);
                 throw error;
             }
-        },
+        }) as any,
     };
 };
 
 /**
  * Default plugin instance with default configuration
  */
-export const BetterAuthPlugin = createBetterAuthPlugin();
+export const BetterAuthPlugin: PluginDefinition = createBetterAuthPlugin();
 
 /**
  * Export helper function to get auth instance

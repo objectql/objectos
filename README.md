@@ -178,6 +178,14 @@ Want to contribute or see what's coming next?
 - **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
 
+### 📚 Upgrade Guides
+
+Detailed migration guides for upgrading ObjectStack dependencies:
+
+- **[ObjectStack 0.8.0 Upgrade Guide](./OBJECTSTACK_0.8.0_UPGRADE.md)** - Latest upgrade (Zod v4, TypeScript fixes)
+- **[ObjectStack 0.7.2 Upgrade Guide](./OBJECTSTACK_0.7.2_UPGRADE.md)** - CLI integration and ES module fixes
+- **[ObjectStack 0.7.1 Upgrade Guide](./UPGRADE_SUMMARY_0.7.1.md)** - Initial runtime migration
+
 **Key Q1 2026 Goals:**
 - 🔐 Production-grade permission system (Object/Field/Record-level)
 - 🪝 Complete lifecycle hooks system
