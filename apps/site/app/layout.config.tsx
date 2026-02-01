@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
+import UserMenu from '@/components/auth/user-menu';
 
 export const baseOptions: BaseLayoutProps = {
   nav: {
@@ -15,6 +16,7 @@ export const baseOptions: BaseLayoutProps = {
       </div>
     ),
     transparentMode: 'top',
+    children: <UserMenu />,
   },
   links: [
     {
