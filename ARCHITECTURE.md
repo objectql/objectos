@@ -56,19 +56,23 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 
 ### ObjectOS Repository (Runtime Implementation)
 - **Location**: This repository
-- **Purpose**: Implements the runtime engine that executes ObjectQL metadata
+- **Purpose**: Implements the runtime engine and plugin ecosystem
 - **Key Packages**:
-  - `@objectos/kernel` - Core execution engine
-  - `@objectos/server` - HTTP API layer
+  - `@objectstack/runtime` - Microkernel with plugin lifecycle management
+  - `@objectos/plugin-server` - NestJS HTTP server plugin
+  - `@objectos/plugin-better-auth` - Authentication plugin
+  - `@objectos/plugin-audit-log` - Audit logging plugin
+  - `@objectos/kernel` - **DEPRECATED** (use @objectstack/runtime)
+  - `@objectos/server` - **DEPRECATED** (use @objectos/plugin-server)
 
 ## Core Architectural Principle
 
-> **"Kernel handles logic, Drivers handle data, Server handles HTTP."**
+> **"Runtime manages plugins, Plugins implement features, Drivers handle data."**
 
 This separation ensures:
 1. **Testability**: Each layer can be tested independently
-2. **Flexibility**: Swap databases without changing business logic
-3. **Scalability**: Scale HTTP layer independently from data layer
+2. **Flexibility**: Add/remove features via plugins without touching core
+3. **Scalability**: Plugins can be distributed and loaded dynamically
 4. **Maintainability**: Clear boundaries reduce coupling
 
 ## Layer 1: Metadata Protocol (ObjectQL)

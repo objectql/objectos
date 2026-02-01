@@ -16,10 +16,10 @@
     }
   },
   "scripts": {
-    "dev": "pnpm --filter @objectos/server dev",
-    "server": "pnpm --filter @objectos/server dev",
+    "dev": "pnpm --filter @objectos/plugin-server dev",
+    "server": "pnpm --filter @objectos/plugin-server dev",
     "build": "tsc -b && pnpm -r build",
-    "start": "pnpm --filter @objectos/server start:prod",
+    "start": "pnpm --filter @objectos/plugin-server start:prod",
     "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",

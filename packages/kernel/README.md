@@ -1,3 +1,83 @@
+# @objectos/kernel (DEPRECATED)
+
+> ⚠️ **DEPRECATED**: This package is deprecated and will be removed in future versions.
+> 
+> **Use `@objectstack/runtime` instead.**
+
+## Migration Guide
+
+The `@objectos/kernel` package has been deprecated in favor of the microkernel architecture using `@objectstack/runtime`.
+
+### What Changed?
+
+- **Old Architecture**: Monolithic kernel with built-in features
+- **New Architecture**: Microkernel with plugin-based features
+
+### Migration Steps
+
+1. **Replace package dependency:**
+   ```json
+   // Before
+   "@objectos/kernel": "^0.2.0"
+   
+   // After
+   "@objectstack/runtime": "workspace:*"
+   ```
+
+2. **Update imports:**
+   ```typescript
+   // Before
+   import { ObjectOS } from '@objectos/kernel';
+   
+   // After
+   import { ObjectKernel } from '@objectstack/runtime';
+   ```
+
+3. **Refactor to plugin architecture:**
+   ```typescript
+   // Before
+   const os = new ObjectOS({
+     datasources: { /* ... */ },
+     plugins: [ /* ... */ ]
+   });
+   await os.init();
+   
+   // After
+   const kernel = new ObjectKernel();
+   kernel.use(ObjectQLPlugin({ /* ... */ }));
+   kernel.use(DriverPlugin({ /* ... */ }));
+   kernel.use(ServerPlugin({ /* ... */ }));
+   await kernel.bootstrap();
+   ```
+
+### Key Features Now Available as Plugins
+
+| Old Kernel Feature | New Plugin |
+|-------------------|------------|
+| Permission System | `@objectos/plugin-permissions` (coming soon) |
+| Workflow Engine | `@objectos/plugin-workflow` (coming soon) |
+| Metrics & Monitoring | `@objectos/plugin-metrics` (coming soon) |
+| Hot Reload | Part of runtime core |
+| Plugin Management | Part of runtime core |
+
+### Why the Change?
+
+The microkernel architecture provides:
+
+1. **Better Modularity**: Features are isolated in plugins
+2. **Easier Testing**: Test plugins independently
+3. **Reduced Complexity**: Core runtime is simpler
+4. **Plugin Ecosystem**: Third-party plugins are easier to develop
+5. **Spec Compliance**: Follows @objectstack/spec protocol
+
+### Need Help?
+
+- See the [Migration Guide](../../docs/guide/migration-from-kernel.md)
+- Check the [Runtime Documentation](../runtime/README.md)
+- Open an issue on [GitHub](https://github.com/objectstack-ai/objectos/issues)
+
+---
+
 # @objectos/kernel
 
 The core runtime engine for ObjectOS - a metadata-driven platform built on the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol.

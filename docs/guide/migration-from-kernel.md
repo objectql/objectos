@@ -1,0 +1,357 @@
+# Migration Guide: From Kernel/Server to Runtime
+
+This guide helps you migrate from the deprecated `@objectos/kernel` and `@objectos/server` packages to the new microkernel architecture using `@objectstack/runtime`.
+
+## Overview
+
+ObjectOS has evolved from a monolithic kernel architecture to a **microkernel plugin-based architecture**. This change provides:
+
+- ✅ Better modularity and separation of concerns
+- ✅ Easier testing and plugin development
+- ✅ Clearer plugin lifecycle management
+- ✅ Compliance with @objectstack/spec protocol
+- ✅ Reduced core complexity
+
+## What's Changing?
+
+### Old Architecture (v0.1.x - v0.2.x)
+
+```
+┌──────────────────────────────────────┐
+│         @objectos/server             │  ← NestJS HTTP Server
+│   (Standalone package)               │
+├──────────────────────────────────────┤
+│         @objectos/kernel             │  ← Monolithic Kernel
+│   • Permission System                │
+│   • Plugin Management                │
+│   • Metrics & Monitoring             │
+│   • Hot Reload                       │
+│   • Workflow Engine                  │
+├──────────────────────────────────────┤
+│        @objectql/core                │
+└──────────────────────────────────────┘
+```
+
+### New Architecture (v0.3.x+)
+
+```
+┌──────────────────────────────────────┐
+│      Plugins (Modular Features)      │
+│                                      │
+│  @objectos/plugin-server             │  ← HTTP Server Plugin
+│  @objectos/plugin-permissions        │  ← Permissions Plugin
+│  @objectos/plugin-workflow           │  ← Workflow Plugin
+│  @objectos/plugin-metrics            │  ← Metrics Plugin
+│  @objectos/plugin-better-auth        │  ← Auth Plugin
+│  @objectos/plugin-audit-log          │  ← Audit Plugin
+│                                      │
+├──────────────────────────────────────┤
+│     @objectstack/runtime             │  ← Microkernel
+│   • Plugin Lifecycle Manager         │
+│   • Service Registry (DI)            │
+│   • Event Bus (Hooks)                │
+│   • Dependency Resolver              │
+├──────────────────────────────────────┤
+│        @objectql/core                │
+└──────────────────────────────────────┘
+```
+
+## Step-by-Step Migration
+
+### Step 1: Update Dependencies
+
+**package.json:**
+
+```diff
+{
+  "dependencies": {
+-   "@objectos/kernel": "^0.2.0",
+-   "@objectos/server": "^0.2.0",
++   "@objectstack/runtime": "workspace:*",
++   "@objectos/plugin-server": "workspace:*",
++   "@objectos/plugin-better-auth": "workspace:*",
++   "@objectos/plugin-audit-log": "workspace:*"
+  }
+}
+```
+
+### Step 2: Refactor Initialization Code
+
+#### Old Approach (Kernel + Server)
+
+```typescript
+// packages/server/src/main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({ /* ... */ });
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+```typescript
+// Using ObjectOS kernel
+import { ObjectOS } from '@objectos/kernel';
+
+const os = new ObjectOS({
+  datasources: { /* ... */ },
+  plugins: [ /* ... */ ]
+});
+await os.init();
+```
+
+#### New Approach (Runtime + Plugins)
+
+```typescript
+// main.ts or bootstrap.ts
+import { ObjectKernel } from '@objectstack/runtime';
+import { ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
+import { ServerPlugin } from '@objectos/plugin-server';
+import { BetterAuthPlugin } from '@objectos/plugin-better-auth';
+import { AuditLogPlugin } from '@objectos/plugin-audit-log';
+
+async function bootstrap() {
+  // Create kernel
+  const kernel = new ObjectKernel();
+
+  // Register core plugins
+  kernel.use(DriverPlugin({
+    driver: 'postgres',
+    connection: process.env.DATABASE_URL
+  }));
+
+  kernel.use(ObjectQLPlugin({
+    metadata: './metadata',
+  }));
+
+  // Register feature plugins
+  kernel.use(BetterAuthPlugin);
+  kernel.use(AuditLogPlugin);
+
+  // Register server plugin
+  kernel.use(ServerPlugin);
+
+  // Bootstrap the kernel
+  await kernel.bootstrap();
+}
+
+bootstrap().catch(console.error);
+```
+
+### Step 3: Update Imports
+
+#### Kernel Imports
+
+```diff
+- import { ObjectOS, PluginManager } from '@objectos/kernel';
++ import { ObjectKernel } from '@objectstack/runtime';
+```
+
+#### Server Imports
+
+```diff
+- import { AppModule } from '@objectos/server';
++ import { ServerPlugin } from '@objectos/plugin-server';
+```
+
+### Step 4: Migrate Plugin Definitions
+
+#### Old Plugin Style (ObjectOS-specific)
+
+```typescript
+// Old plugin for @objectos/kernel
+export function MyPlugin(kernel: ObjectOS) {
+  kernel.on('afterInsert', async (ctx) => {
+    // Plugin logic
+  });
+}
+```
+
+#### New Plugin Style (@objectstack/spec compliant)
+
+```typescript
+// New plugin for @objectstack/runtime
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+export const MyPlugin: Plugin = {
+  name: 'com.mycompany.myplugin',
+  version: '1.0.0',
+  dependencies: ['com.objectstack.engine.objectql'],
+
+  async init(ctx: PluginContext) {
+    ctx.logger.info('Initializing MyPlugin');
+    
+    // Register services
+    ctx.registerService('myservice', new MyService());
+    
+    // Subscribe to events
+    ctx.hook('data.created', async (data) => {
+      // Handle event
+    });
+  },
+
+  async start(ctx: PluginContext) {
+    ctx.logger.info('Starting MyPlugin');
+    // Start services
+  },
+
+  async destroy() {
+    // Cleanup
+  }
+};
+```
+
+### Step 5: Update Scripts
+
+**package.json:**
+
+```diff
+{
+  "scripts": {
+-   "dev": "pnpm --filter @objectos/server dev",
+-   "start": "pnpm --filter @objectos/server start:prod",
++   "dev": "pnpm --filter @objectos/plugin-server dev",
++   "start": "node dist/bootstrap.js"
+  }
+}
+```
+
+## Feature Migration Map
+
+| Old Kernel Feature | New Solution |
+|-------------------|--------------|
+| `ObjectOS.load()` | `ObjectQLPlugin` handles metadata loading |
+| `ObjectOS.init()` | `kernel.bootstrap()` |
+| Permission System | `@objectos/plugin-permissions` (coming soon) |
+| Plugin Management | Part of `@objectstack/runtime` core |
+| Metrics & Monitoring | `@objectos/plugin-metrics` (coming soon) |
+| Hot Reload | Built into `@objectstack/runtime` |
+| Workflow Engine | `@objectos/plugin-workflow` (coming soon) |
+| Audit Logging | `@objectos/plugin-audit-log` |
+| Authentication | `@objectos/plugin-better-auth` |
+
+## Common Patterns
+
+### Pattern 1: Service Registration
+
+**Old:**
+```typescript
+// Services were managed manually or via kernel context
+kernel.services.register('myService', service);
+```
+
+**New:**
+```typescript
+// Use plugin context
+async init(ctx: PluginContext) {
+  ctx.registerService('myService', service);
+}
+```
+
+### Pattern 2: Event Handling
+
+**Old:**
+```typescript
+kernel.on('afterInsert', handler);
+```
+
+**New:**
+```typescript
+async init(ctx: PluginContext) {
+  ctx.hook('data.created', handler);
+}
+```
+
+### Pattern 3: Accessing Other Services
+
+**Old:**
+```typescript
+const driver = kernel.getDriver();
+```
+
+**New:**
+```typescript
+async start(ctx: PluginContext) {
+  const driver = ctx.getService('driver');
+}
+```
+
+## Testing Migration
+
+### Old Test Setup
+
+```typescript
+import { ObjectOS } from '@objectos/kernel';
+
+describe('MyTest', () => {
+  let kernel: ObjectOS;
+  
+  beforeEach(async () => {
+    kernel = new ObjectOS();
+    await kernel.init();
+  });
+});
+```
+
+### New Test Setup
+
+```typescript
+import { ObjectKernel } from '@objectstack/runtime';
+import { ObjectQLPlugin } from '@objectstack/runtime';
+
+describe('MyTest', () => {
+  let kernel: ObjectKernel;
+  
+  beforeEach(async () => {
+    kernel = new ObjectKernel();
+    kernel.use(ObjectQLPlugin());
+    await kernel.bootstrap();
+  });
+  
+  afterEach(async () => {
+    await kernel.shutdown();
+  });
+});
+```
+
+## Migration Timeline
+
+- **v0.2.x (Current)**: Kernel and Server are deprecated but functional
+- **v0.3.x (Next)**: Deprecation warnings will be shown
+- **v0.4.x (Future)**: Kernel and Server will be removed
+
+## FAQ
+
+### Q: Can I use both old and new architectures together?
+
+**A:** Not recommended. Choose one architecture and migrate completely. Mixing them may cause conflicts.
+
+### Q: Will my existing plugins work?
+
+**A:** Plugins need to be updated to the new `@objectstack/spec` format. See the plugin migration section above.
+
+### Q: What happens to my data?
+
+**A:** Data is not affected. This is purely an architectural change to the runtime layer.
+
+### Q: How do I migrate custom features from kernel?
+
+**A:** Extract them into separate plugins. See the [Plugin Development Guide](./plugin-development.md).
+
+### Q: Is there a performance impact?
+
+**A:** The plugin-based architecture is slightly more modular but should have similar or better performance due to reduced core complexity.
+
+## Need Help?
+
+- 📖 [Plugin Development Guide](./plugin-development.md)
+- 📖 [Runtime Documentation](../packages/runtime/README.md)
+- 💬 [GitHub Discussions](https://github.com/objectstack-ai/objectos/discussions)
+- 🐛 [Report Issues](https://github.com/objectstack-ai/objectos/issues)
+
+## Example Migration
+
+See the complete migration example in [`examples/migration-demo`](../../examples/migration-demo).

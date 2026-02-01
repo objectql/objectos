@@ -1,0 +1,518 @@
+# Plugin Development Guide
+
+This guide explains how to develop plugins for ObjectOS using the `@objectstack/runtime` microkernel.
+
+## Overview
+
+ObjectOS follows a **microkernel architecture** where all functionality is implemented as plugins. The runtime provides:
+
+- 🔌 **Plugin Lifecycle Management**: `init()`, `start()`, `destroy()`
+- 📦 **Service Registry**: Dependency injection container
+- 🎯 **Event Bus**: Hook system for inter-plugin communication
+- 🔗 **Dependency Resolution**: Automatic topological sorting
+
+## Plugin Structure
+
+A plugin is a JavaScript object that implements the `Plugin` interface:
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+export const MyPlugin: Plugin = {
+  name: 'com.mycompany.myplugin',
+  version: '1.0.0',
+  dependencies: [],  // Optional: other plugins this depends on
+  
+  async init(ctx: PluginContext): Promise<void> {
+    // Initialize plugin, register services
+  },
+  
+  async start(ctx: PluginContext): Promise<void> {
+    // Start services, connect to databases
+  },
+  
+  async destroy(): Promise<void> {
+    // Cleanup resources
+  }
+};
+```
+
+## Plugin Lifecycle
+
+### 1. Registration
+
+Plugins are registered with the kernel using `.use()`:
+
+```typescript
+import { ObjectKernel } from '@objectstack/runtime';
+import { MyPlugin } from './plugins/my-plugin';
+
+const kernel = new ObjectKernel();
+kernel.use(MyPlugin);
+```
+
+### 2. Initialization (`init`)
+
+Called when the kernel bootstraps. Use this to:
+- Register services in the service registry
+- Subscribe to events
+- Set up configuration
+
+```typescript
+async init(ctx: PluginContext) {
+  ctx.logger.info('Initializing plugin...');
+  
+  // Register a service
+  ctx.registerService('myService', new MyService());
+  
+  // Subscribe to events
+  ctx.hook('data.created', async (data) => {
+    ctx.logger.info('Data created:', data);
+  });
+}
+```
+
+### 3. Start (`start`)
+
+Called after all plugins are initialized. Use this to:
+- Start servers or background workers
+- Connect to external services
+- Begin processing
+
+```typescript
+async start(ctx: PluginContext) {
+  ctx.logger.info('Starting plugin...');
+  
+  // Get a service registered by another plugin
+  const driver = ctx.getService('driver');
+  
+  // Start a background worker
+  this.worker = new BackgroundWorker();
+  await this.worker.start();
+}
+```
+
+### 4. Shutdown (`destroy`)
+
+Called when the kernel shuts down. Use this to:
+- Close connections
+- Save state
+- Clean up resources
+
+```typescript
+async destroy() {
+  await this.worker?.stop();
+  console.log('Plugin shut down');
+}
+```
+
+## Plugin Context
+
+The `PluginContext` provides access to kernel services:
+
+### Service Registry
+
+```typescript
+// Register a service
+ctx.registerService('myService', myServiceInstance);
+
+// Get a service
+const myService = ctx.getService('myService');
+
+// Check if service exists
+if (ctx.hasService('myService')) {
+  // ...
+}
+```
+
+### Event System
+
+```typescript
+// Subscribe to an event
+ctx.hook('data.created', async (data) => {
+  // Handle event
+});
+
+// Trigger an event
+await ctx.trigger('my.custom.event', { foo: 'bar' });
+```
+
+### Logger
+
+```typescript
+ctx.logger.debug('Debug message');
+ctx.logger.info('Info message');
+ctx.logger.warn('Warning message');
+ctx.logger.error('Error message', error);
+```
+
+## Dependency Management
+
+Plugins can declare dependencies on other plugins:
+
+```typescript
+export const MyPlugin: Plugin = {
+  name: 'com.mycompany.myplugin',
+  dependencies: [
+    'com.objectstack.engine.objectql',
+    'com.objectos.auth'
+  ],
+  
+  async init(ctx: PluginContext) {
+    // ObjectQL and Auth plugins are guaranteed to be initialized
+    const objectql = ctx.getService('objectql');
+    const auth = ctx.getService('auth');
+  }
+};
+```
+
+The kernel automatically:
+- Resolves dependencies using topological sort
+- Initializes plugins in the correct order
+- Detects circular dependencies
+- Throws errors for missing dependencies
+
+## Example Plugins
+
+### Example 1: Simple Logger Plugin
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+export const LoggerPlugin: Plugin = {
+  name: 'com.mycompany.logger',
+  version: '1.0.0',
+  
+  async init(ctx: PluginContext) {
+    // Subscribe to all data events
+    const events = ['data.created', 'data.updated', 'data.deleted'];
+    
+    for (const event of events) {
+      ctx.hook(event, async (data) => {
+        ctx.logger.info(`[${event}]`, data);
+      });
+    }
+  }
+};
+```
+
+### Example 2: Cache Plugin
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+class CacheService {
+  private cache = new Map<string, any>();
+  
+  get(key: string) {
+    return this.cache.get(key);
+  }
+  
+  set(key: string, value: any) {
+    this.cache.set(key, value);
+  }
+  
+  clear() {
+    this.cache.clear();
+  }
+}
+
+export const CachePlugin: Plugin = {
+  name: 'com.mycompany.cache',
+  version: '1.0.0',
+  
+  async init(ctx: PluginContext) {
+    const cache = new CacheService();
+    ctx.registerService('cache', cache);
+    
+    // Clear cache when data changes
+    ctx.hook('data.updated', () => cache.clear());
+    ctx.hook('data.deleted', () => cache.clear());
+  }
+};
+```
+
+### Example 3: Database Migration Plugin
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+export const MigrationPlugin: Plugin = {
+  name: 'com.mycompany.migrations',
+  version: '1.0.0',
+  dependencies: ['com.objectstack.engine.driver'],
+  
+  async start(ctx: PluginContext) {
+    ctx.logger.info('Running migrations...');
+    
+    const driver = ctx.getService('driver');
+    
+    // Run migrations
+    await driver.query(`
+      CREATE TABLE IF NOT EXISTS _migrations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        applied_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    
+    ctx.logger.info('Migrations complete');
+  }
+};
+```
+
+### Example 4: Configurable Plugin
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+export interface EmailPluginOptions {
+  smtp: {
+    host: string;
+    port: number;
+    user: string;
+    password: string;
+  };
+}
+
+export const createEmailPlugin = (options: EmailPluginOptions): Plugin => {
+  return {
+    name: 'com.mycompany.email',
+    version: '1.0.0',
+    
+    async init(ctx: PluginContext) {
+      const emailService = new EmailService(options.smtp);
+      ctx.registerService('email', emailService);
+      
+      // React to user creation
+      ctx.hook('user.created', async (user) => {
+        await emailService.sendWelcomeEmail(user.email);
+      });
+    }
+  };
+};
+
+// Usage
+kernel.use(createEmailPlugin({
+  smtp: {
+    host: 'smtp.example.com',
+    port: 587,
+    user: 'noreply@example.com',
+    password: process.env.SMTP_PASSWORD
+  }
+}));
+```
+
+## Best Practices
+
+### 1. Use Semantic Plugin Names
+
+Follow reverse domain notation:
+
+```typescript
+// Good
+name: 'com.mycompany.myplugin'
+name: 'io.github.username.plugin-name'
+
+// Bad
+name: 'my-plugin'
+name: 'MyPlugin'
+```
+
+### 2. Handle Errors Gracefully
+
+```typescript
+async init(ctx: PluginContext) {
+  try {
+    // Plugin logic
+  } catch (error) {
+    ctx.logger.error('Plugin initialization failed:', error);
+    throw new Error(`Failed to initialize plugin: ${error.message}`);
+  }
+}
+```
+
+### 3. Clean Up Resources
+
+```typescript
+class MyPlugin implements Plugin {
+  private connection?: DatabaseConnection;
+  
+  async start(ctx: PluginContext) {
+    this.connection = await connectToDatabase();
+  }
+  
+  async destroy() {
+    if (this.connection) {
+      await this.connection.close();
+    }
+  }
+}
+```
+
+### 4. Use TypeScript for Type Safety
+
+```typescript
+import type { Plugin, PluginContext } from '@objectstack/runtime';
+
+// Define your service interface
+interface MyService {
+  doSomething(): Promise<void>;
+}
+
+export const MyPlugin: Plugin = {
+  name: 'com.mycompany.myplugin',
+  
+  async init(ctx: PluginContext) {
+    const service: MyService = {
+      async doSomething() {
+        // ...
+      }
+    };
+    
+    ctx.registerService('myService', service);
+  }
+};
+```
+
+### 5. Document Your Plugin
+
+```typescript
+/**
+ * Email Plugin
+ * 
+ * Provides email sending capabilities to the ObjectOS runtime.
+ * 
+ * Features:
+ * - SMTP email sending
+ * - Email templates
+ * - Queue management
+ * 
+ * Configuration:
+ * ```typescript
+ * createEmailPlugin({
+ *   smtp: { host: 'smtp.example.com', ... }
+ * })
+ * ```
+ */
+export const createEmailPlugin = (options: EmailPluginOptions): Plugin => {
+  // ...
+};
+```
+
+## Testing Plugins
+
+### Unit Testing
+
+```typescript
+import { ObjectKernel } from '@objectstack/runtime';
+import { MyPlugin } from './my-plugin';
+
+describe('MyPlugin', () => {
+  let kernel: ObjectKernel;
+  
+  beforeEach(async () => {
+    kernel = new ObjectKernel();
+    kernel.use(MyPlugin);
+    await kernel.bootstrap();
+  });
+  
+  afterEach(async () => {
+    await kernel.shutdown();
+  });
+  
+  it('should register service', () => {
+    expect(kernel.hasService('myService')).toBe(true);
+  });
+  
+  it('should handle events', async () => {
+    const spy = jest.fn();
+    kernel.pluginContext.hook('my.event', spy);
+    
+    await kernel.pluginContext.trigger('my.event', { data: 'test' });
+    
+    expect(spy).toHaveBeenCalledWith({ data: 'test' });
+  });
+});
+```
+
+### Integration Testing
+
+```typescript
+import { ObjectKernel } from '@objectstack/runtime';
+import { ObjectQLPlugin } from '@objectstack/runtime';
+import { MyPlugin } from './my-plugin';
+
+describe('MyPlugin Integration', () => {
+  it('should work with ObjectQL', async () => {
+    const kernel = new ObjectKernel();
+    kernel.use(ObjectQLPlugin());
+    kernel.use(MyPlugin);
+    
+    await kernel.bootstrap();
+    
+    const objectql = kernel.getService('objectql');
+    const myService = kernel.getService('myService');
+    
+    // Test integration
+    await objectql.insert('contacts', { name: 'John' });
+    // Verify myService reacted to the event
+    
+    await kernel.shutdown();
+  });
+});
+```
+
+## Publishing Plugins
+
+### 1. Create Package Structure
+
+```
+my-plugin/
+├── src/
+│   ├── index.ts
+│   └── plugin.ts
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+### 2. Export Plugin
+
+```typescript
+// src/index.ts
+export { MyPlugin, createMyPlugin } from './plugin';
+export type { MyPluginOptions } from './plugin';
+```
+
+### 3. Add Package Metadata
+
+```json
+{
+  "name": "@mycompany/objectos-plugin-myplugin",
+  "version": "1.0.0",
+  "description": "My plugin for ObjectOS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@objectstack/runtime": "^0.1.0"
+  },
+  "keywords": ["objectos", "plugin", "myplugin"]
+}
+```
+
+## Plugin Registry (Coming Soon)
+
+We're building a plugin registry where you can:
+- Discover community plugins
+- Publish your own plugins
+- Get plugin ratings and reviews
+
+Stay tuned!
+
+## Resources
+
+- [Migration Guide](./migration-from-kernel.md)
+- [Runtime API Reference](../packages/runtime/README.md)
+- [Example Plugins](../../packages/plugins/)
+- [GitHub Discussions](https://github.com/objectstack-ai/objectos/discussions)
