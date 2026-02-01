@@ -3,11 +3,12 @@
  * 
  * Configuration file for @objectstack/cli serve command.
  * This defines the kernel configuration, plugins, and metadata sources.
+ * 
+ * NOTE: This is a template configuration for future use with @objectstack/cli.
+ * The ObjectKernel from @objectstack/runtime expects plugins to be passed directly.
+ * Since we don't have the @objectstack packages installed as dependencies,
+ * this config currently serves as documentation for the expected structure.
  */
-
-import { KnexDriver } from '@objectql/driver-sql';
-import { ObjectQLPlugin } from '@objectstack/objectql';
-import { DriverPlugin } from '@objectstack/runtime';
 
 export default {
   /**
@@ -25,23 +26,26 @@ export default {
   /**
    * Plugins to load
    * These are initialized in order during kernel bootstrap
+   * 
+   * Example (when @objectstack packages are installed):
+   * 
+   * import { KnexDriver } from '@objectql/driver-sql';
+   * import { ObjectQLPlugin } from '@objectstack/objectql';
+   * import { DriverPlugin } from '@objectstack/runtime';
+   * 
+   * plugins: [
+   *   new ObjectQLPlugin(),
+   *   new DriverPlugin(
+   *     new KnexDriver({
+   *       client: 'sqlite3',
+   *       connection: { filename: 'objectos.db' },
+   *       useNullAsDefault: true
+   *     }),
+   *     'default'
+   *   ),
+   * ]
    */
-  plugins: [
-    // ObjectQL Data Engine Plugin
-    new ObjectQLPlugin(),
-    
-    // Database Driver Plugin
-    new DriverPlugin(
-      new KnexDriver({
-        client: 'sqlite3',
-        connection: {
-          filename: process.env.DATABASE_FILE || 'objectos.db'
-        },
-        useNullAsDefault: true
-      }),
-      'default' // datasource name
-    ),
-  ],
+  plugins: [],
 
   /**
    * Server configuration (for HTTP server plugin)

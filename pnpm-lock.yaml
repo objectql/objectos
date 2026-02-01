@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
+  '@objectstack/cli@0.7.2':
+    hash: f2e9a76ffabf6f0742d42be5c1e74be31864e2cd851eaa9d7d2622e2ed81a835
+    path: patches/@objectstack__cli@0.7.2.patch
   '@objectstack/objectql@0.7.2':
     hash: 0f77f1349b47520c7ebed55fb04ceabcea5838616a497b9f56dc968f177aab79
     path: patches/@objectstack__objectql@0.7.2.patch
@@ -46,7 +49,7 @@ importers:
         version: 2.29.8(@types/node@20.19.30)
       '@objectstack/cli':
         specifier: ^0.7.2
-        version: 0.7.2(esbuild@0.27.2)
+        version: 0.7.2(patch_hash=f2e9a76ffabf6f0742d42be5c1e74be31864e2cd851eaa9d7d2622e2ed81a835)(esbuild@0.27.2)
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -8111,7 +8114,7 @@ snapshots:
 
   '@objectql/types@3.0.1': {}
 
-  '@objectstack/cli@0.7.2(esbuild@0.27.2)':
+  '@objectstack/cli@0.7.2(patch_hash=f2e9a76ffabf6f0742d42be5c1e74be31864e2cd851eaa9d7d2622e2ed81a835)(esbuild@0.27.2)':
     dependencies:
       '@objectstack/core': 0.7.2
       '@objectstack/plugin-hono-server': 0.7.2
