@@ -44,6 +44,7 @@ export interface PluginContext {
   /**
    * Get the kernel instance (for advanced use cases)
    * @returns Kernel instance
+   * @note Returns 'any' to avoid circular dependency with ObjectKernel
    */
   getKernel(): any;
 }
