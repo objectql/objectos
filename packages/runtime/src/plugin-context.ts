@@ -8,6 +8,7 @@ export class PluginContextImpl implements PluginContext {
   private services: Map<string, any> = new Map();
   private hooks: Map<string, Function[]> = new Map();
   public logger: Logger;
+  private kernel?: any;
 
   constructor(
     logger: Logger,
@@ -90,5 +91,19 @@ export class PluginContextImpl implements PluginContext {
    */
   getHooks(): Map<string, Function[]> {
     return this.hooks;
+  }
+
+  /**
+   * Get the kernel instance (for advanced use cases)
+   */
+  getKernel(): any {
+    return this.kernel;
+  }
+
+  /**
+   * Set the kernel instance (for internal use)
+   */
+  setKernel(kernel: any): void {
+    this.kernel = kernel;
   }
 }

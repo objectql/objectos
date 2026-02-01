@@ -26,6 +26,11 @@ export interface PluginContext {
   hasService(name: string): boolean;
 
   /**
+   * Get all registered services
+   */
+  getServices(): Map<string, any>;
+
+  /**
    * Event System (Hook System)
    */
   hook(name: string, handler: Function): void;
@@ -35,6 +40,13 @@ export interface PluginContext {
    * Logger
    */
   logger: Logger;
+
+  /**
+   * Get the kernel instance (for advanced use cases)
+   * @returns Kernel instance
+   * @note Returns 'any' to avoid circular dependency with ObjectKernel
+   */
+  getKernel(): any;
 }
 
 /**
