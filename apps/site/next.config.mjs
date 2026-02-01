@@ -5,7 +5,7 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  output: 'export',
+  // Note: Removed 'output: export' to support API routes for authentication
   images: {
     unoptimized: true,
   },

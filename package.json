@@ -5,13 +5,17 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@nestjs/core",
+      "better-sqlite3",
       "esbuild",
       "sqlite3",
       "unrs-resolver"
     ],
     "patchedDependencies": {
       "@objectstack/cli@0.8.0": "patches/@objectstack__cli@0.8.0.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "sharp"
+    ]
   },
   "scripts": {
     "dev": "pnpm --filter @objectos/plugin-server dev",
