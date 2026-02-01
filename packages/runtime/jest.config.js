@@ -7,7 +7,4 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
-  transformIgnorePatterns: [
-    'node_modules/(?!(@objectql|@objectstack)/)',
-  ],
 };
