@@ -47,7 +47,8 @@ This creates the `objectos.db` file with all necessary tables.
 You can configure the authentication system with these environment variables:
 
 ```env
-# Optional: Database URL (defaults to sqlite:objectos.db)
+# Optional: Database URL (defaults to sqlite:objectos.db in apps/site/)
+# For Better-Auth, we reuse the ObjectQL database URL environment variable
 OBJECTQL_DATABASE_URL=sqlite:objectos.db
 
 # Optional: Auth base URL (defaults to http://localhost:3000/api/auth)
@@ -57,6 +58,8 @@ NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000/api/auth
 # Optional: Secret for JWT signing (auto-generated if not set)
 BETTER_AUTH_SECRET=your-secret-key
 ```
+
+**Note:** The database file `objectos.db` is created in the `apps/site/` directory by default.
 
 ## First User
 
