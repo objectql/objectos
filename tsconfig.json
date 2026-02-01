@@ -1,7 +1,7 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/kernel" },
-    { "path": "./packages/server" }
+    { "path": "./packages/runtime" },
+    { "path": "./packages/plugins/server" }
   ]
 }
