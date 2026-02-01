@@ -11,7 +11,8 @@
     ],
     "patchedDependencies": {
       "@objectstack/runtime@0.7.2": "patches/@objectstack__runtime@0.7.2.patch",
-      "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch"
+      "@objectstack/objectql@0.7.2": "patches/@objectstack__objectql@0.7.2.patch",
+      "@objectstack/cli@0.7.2": "patches/@objectstack__cli@0.7.2.patch"
     }
   },
   "scripts": {

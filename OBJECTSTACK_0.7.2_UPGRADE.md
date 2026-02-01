@@ -16,30 +16,41 @@ This document describes the upgrade to @objectstack packages version 0.7.2 and t
 - `objectstack.config.ts`: Configuration file for @objectstack/cli compatibility
 - `patches/@objectstack__runtime@0.7.2.patch`: Fixes missing .js extensions in ES module imports
 - `patches/@objectstack__objectql@0.7.2.patch`: Fixes missing .js extensions and package.json entry points
+- `patches/@objectstack__cli@0.7.2.patch`: Fixes incorrect kernel imports and API calls in serve command
 
 ### Scripts
-- `dev`, `server`, `start`: Continue to use the existing NestJS-based server
-- `objectstack:serve`: New script for future use with @objectstack/cli (currently blocked by CLI bug)
+- `dev`, `server`, `start`: Use the existing NestJS-based server (recommended for development)
+- `objectstack:serve`: Use @objectstack/cli serve command (now working with patched version)
 
 ## Known Issues
 
-### 1. @objectstack/cli Bug
+### 1. @objectstack/cli Bug (FIXED)
 
-The official @objectstack/cli@0.7.2 has a bug where it tries to import `ObjectStackKernel` from `@objectstack/core`, but this export doesn't exist.
+The official @objectstack/cli@0.7.2 has multiple bugs in the `serve` command:
 
-**Details:**
-```javascript
-// In @objectstack/cli/dist/bin.js
-const { ObjectStackKernel } = await import('@objectstack/core');
+**Issues Fixed:**
+1. Incorrect import: `ObjectStackKernel` should be `ObjectKernel`
+2. Wrong package: `@objectstack/core` should be `@objectstack/runtime`
+3. API mismatch: `registerPlugin()` should be `use()` and `boot()` should be `bootstrap()`
+
+**Solution:** Applied pnpm patch (`patches/@objectstack__cli@0.7.2.patch`) to fix these issues.
+
+**Status:** ✅ The `pnpm run objectstack:serve` command now works correctly with the patched version.
+
+**Patch Details** (`patches/@objectstack__cli@0.7.2.patch`):
+```diff
+- const { ObjectStackKernel } = await import('@objectstack/core');
++ const { ObjectKernel } = await import('@objectstack/runtime');
+
+- const kernel = new ObjectStackKernel({ metadata, objects });
++ const kernel = new ObjectKernel();
+
+- kernel.registerPlugin(plugin);
++ kernel.use(plugin);
+
+- await kernel.boot();
++ await kernel.bootstrap();
 ```
-
-**Available exports from @objectstack/core:**
-- `ObjectKernel` 
-- `EnhancedObjectKernel`
-
-**Impact:** Cannot use `pnpm run objectstack:serve` until this is fixed upstream.
-
-**Workaround:** Continue using `pnpm run dev` which uses the NestJS-based server.
 
 ### 2. @objectstack 0.7.2 Packages Missing .js Extensions
 
@@ -64,8 +75,9 @@ The package.json in @objectstack/objectql@0.7.2 incorrectly points to TypeScript
 
 ### Starting the Server
 
-Use the existing NestJS-based server:
+You can now use either server option:
 
+**Option 1: NestJS-based server (recommended for development)**
 ```bash
 # Development mode with watch
 pnpm run dev
@@ -74,9 +86,21 @@ pnpm run dev
 pnpm run start
 ```
 
+**Option 2: @objectstack/cli server (minimal setup)**
+```bash
+# Start with default config
+pnpm run objectstack:serve
+
+# Or use the CLI directly
+objectstack serve
+```
+
 ### Configuration
 
-The server reads configuration from `objectql.config.ts` (existing file). The new `objectstack.config.ts` is prepared for future use with @objectstack/cli once the CLI bug is fixed.
+The server can use two different configuration files depending on which option you choose:
+
+- **`objectql.config.ts`**: Used by the NestJS-based server (Option 1)
+- **`objectstack.config.ts`**: Used by @objectstack/cli serve command (Option 2)
 
 #### objectql.config.ts (current)
 ```typescript
@@ -95,35 +119,59 @@ export default {
 };
 ```
 
-#### objectstack.config.ts (for future CLI use)
-```typescript
-import { KnexDriver } from '@objectql/driver-sql';
-import { ObjectQLPlugin } from '@objectstack/objectql';
-import { DriverPlugin } from '@objectstack/runtime';
+#### objectstack.config.ts (template for CLI use)
 
+This is a template configuration showing the expected structure. Currently uses empty plugins array since the @objectstack packages are not installed as direct dependencies.
+
+```typescript
 export default {
   metadata: {},
   objects: {},
-  plugins: [
-    new ObjectQLPlugin(),
-    new DriverPlugin(
-      new KnexDriver({
-        client: 'sqlite3',
-        connection: {
-          filename: process.env.DATABASE_FILE || 'objectos.db'
-        },
-        useNullAsDefault: true
-      }),
-      'default'
-    ),
-  ],
+  plugins: [],  // Empty for now - see comments in file for example usage
   server: {
     port: process.env.PORT || 3000,
+    cors: {
+      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
+      credentials: true,
+    }
   }
 };
 ```
 
+For actual plugin configuration, you would need to install and import the packages:
+```typescript
+// Example (when packages are installed):
+// import { KnexDriver } from '@objectql/driver-sql';
+// import { ObjectQLPlugin } from '@objectstack/objectql';
+// import { DriverPlugin } from '@objectstack/runtime';
+```
+
 ## Testing
+
+### Testing @objectstack/cli serve command
+
+With the patches applied, the CLI serve command now works:
+
+```bash
+$ pnpm run objectstack:serve
+
+🚀 ObjectStack Server
+------------------------
+📂 Config: objectstack.config.ts
+🌐 Port: 3000
+
+📦 Loading configuration...
+✓ Configuration loaded
+🔧 Initializing ObjectStack kernel...
+  ✓ Registered HTTP server plugin (port: 3000)
+
+🚀 Starting ObjectStack...
+{"timestamp":"2026-02-01T02:17:06.767Z","level":"info","message":"Bootstrap started"}
+...
+✅ ObjectStack server is running!
+```
+
+### Testing NestJS server
 
 The server starts successfully with all upgraded packages:
 
@@ -142,11 +190,14 @@ Application is running on: http://[::1]:3000
 
 ## Future Work
 
-Once the @objectstack/cli bug is fixed:
+With the CLI patch in place, both server options are now available:
 
-1. Update to the fixed version of @objectstack/cli
-2. Switch to using `pnpm run objectstack:serve` for starting the server
-3. Migrate fully to the @objectstack/cli-based workflow
+1. **Current Recommendation**: Continue using `pnpm run dev` for NestJS-based development server
+2. **Alternative**: Use `pnpm run objectstack:serve` for @objectstack/cli-based server (minimal setup)
+3. **When upstream fixes are released**: 
+   - Update to fixed versions of @objectstack packages
+   - Remove patches from `package.json` and `patches/` directory
+   - Consider migrating fully to @objectstack/cli-based workflow
 
 ## Patches Maintenance
 
