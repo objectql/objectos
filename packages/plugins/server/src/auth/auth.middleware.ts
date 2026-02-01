@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { getAuth } from './auth.client.js';
+import './express.d.js';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -26,7 +27,7 @@ export class AuthMiddleware implements NestMiddleware {
           // Ensure we have an array of roles. better-auth usually provides a single role string on user object.
           const roles = [role];
 
-          req['user'] = {
+          req.user = {
               userId: session.user.id,
               id: session.user.id,
               ...session.user,
@@ -40,7 +41,7 @@ export class AuthMiddleware implements NestMiddleware {
           // Fallback for dev/test: trust x-user-id header
           const userId = req.headers['x-user-id'] as string;
           const isAdmin = userId === 'admin';
-          req['user'] = {
+          req.user = {
               userId: userId,
               id: userId,
               roles: isAdmin ? ['admin'] : ['user'],
@@ -49,7 +50,7 @@ export class AuthMiddleware implements NestMiddleware {
           };
       } else {
           // Anonymous user
-          req['user'] = {
+          req.user = {
               roles: ['guest'],
               isSystem: false
           };
@@ -57,7 +58,7 @@ export class AuthMiddleware implements NestMiddleware {
     } catch (e) {
       // ignore auth error
       console.error("Auth Middleware Error:", e);
-      req['user'] = {
+      req.user = {
         roles: ['guest'],
         isSystem: false
       }

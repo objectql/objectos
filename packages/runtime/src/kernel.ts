@@ -32,6 +32,8 @@ export class ObjectKernel {
   constructor() {
     this.logger = createLogger('ObjectKernel');
     this.context = new PluginContextImpl(this.logger);
+    // Set the kernel reference in the context
+    this.context.setKernel(this);
   }
 
   /**
