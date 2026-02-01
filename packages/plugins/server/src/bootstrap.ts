@@ -8,9 +8,9 @@
  */
 
 import 'reflect-metadata';
-import { ObjectKernel } from '@objectstack/runtime';
-import { ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
+import { ObjectKernel, ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
 import { createServerPlugin } from './plugin';
+import { KnexDriver } from '@objectql/driver-sql';
 
 /**
  * Bootstrap the ObjectOS application
@@ -19,15 +19,18 @@ async function bootstrap() {
   // Create kernel instance
   const kernel = new ObjectKernel();
 
-  // Register core plugins
-  kernel.use(DriverPlugin({
-    driver: process.env.OBJECTQL_DRIVER || 'sqlite',
-    connection: process.env.OBJECTQL_CONNECTION || 'objectos.db',
-  }));
+  // Create database driver
+  const driver = new KnexDriver({
+    client: process.env.OBJECTQL_DRIVER || 'sqlite3',
+    connection: process.env.OBJECTQL_CONNECTION || {
+      filename: 'objectos.db'
+    },
+    useNullAsDefault: true
+  });
 
-  kernel.use(ObjectQLPlugin({
-    metadata: process.env.OBJECTQL_METADATA_PATH || './metadata',
-  }));
+  // Register core plugins
+  kernel.use(new DriverPlugin(driver, 'default'));
+  kernel.use(new ObjectQLPlugin());
 
   // Register server plugin
   kernel.use(createServerPlugin({
