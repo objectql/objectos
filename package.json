@@ -5,13 +5,17 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@nestjs/core",
+      "better-sqlite3",
       "esbuild",
       "sqlite3",
       "unrs-resolver"
     ],
     "patchedDependencies": {
       "@objectstack/cli@0.8.0": "patches/@objectstack__cli@0.8.0.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "sharp"
+    ]
   },
   "scripts": {
     "dev": "pnpm --filter @objectos/plugin-server dev",
@@ -25,6 +29,9 @@
     "site:dev": "pnpm --filter @objectos/site dev",
     "site:build": "pnpm --filter @objectos/site build",
     "site:preview": "pnpm --filter @objectos/site start",
+    "web:dev": "pnpm --filter @objectos/web dev",
+    "web:build": "pnpm --filter @objectos/web build",
+    "web:start": "pnpm --filter @objectos/web start",
     "objectstack:serve": "objectstack serve"
   },
   "devDependencies": {
