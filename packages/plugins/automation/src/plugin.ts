@@ -200,7 +200,7 @@ export class AutomationPlugin implements Plugin {
 
                     this.context?.logger.error(
                         `Error executing action ${action.type} in rule ${rule.id}:`,
-                        errorMessage
+                        error instanceof Error ? error : new Error(errorMessage)
                     );
 
                     // Continue with next action
