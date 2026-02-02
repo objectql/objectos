@@ -189,7 +189,7 @@ export interface WorkflowTask {
   /** Assigned to user */
   assignedTo?: string;
   /** Task status */
-  status: 'pending' | 'completed' | 'rejected';
+  status: 'pending' | 'completed' | 'rejected' | 'delegated' | 'escalated';
   /** Created timestamp */
   createdAt: Date;
   /** Completed timestamp */
@@ -198,6 +198,26 @@ export interface WorkflowTask {
   data?: Record<string, any>;
   /** Task result */
   result?: Record<string, any>;
+  /** Original assignee (for delegation) */
+  originalAssignee?: string;
+  /** Delegated to user */
+  delegatedTo?: string;
+  /** Delegation timestamp */
+  delegatedAt?: Date;
+  /** Delegation reason */
+  delegationReason?: string;
+  /** Escalated to user */
+  escalatedTo?: string;
+  /** Escalation timestamp */
+  escalatedAt?: Date;
+  /** Escalation reason */
+  escalationReason?: string;
+  /** Due date for the task */
+  dueDate?: Date;
+  /** Auto-escalate if not completed by due date */
+  autoEscalate?: boolean;
+  /** Escalation target user */
+  escalationTarget?: string;
 }
 
 /**
@@ -320,4 +340,97 @@ export interface YAMLTransitionConfig {
   actions?: string[];
   /** Metadata */
   metadata?: Record<string, any>;
+}
+
+/**
+ * Notification channel type
+ */
+export type NotificationChannel = 'email' | 'slack' | 'webhook' | 'sms';
+
+/**
+ * Notification configuration
+ */
+export interface NotificationConfig {
+  /** Notification channel */
+  channel: NotificationChannel;
+  /** Recipients (email addresses, Slack channels, phone numbers, etc.) */
+  recipients: string[];
+  /** Template ID or name */
+  template?: string;
+  /** Subject (for email) */
+  subject?: string;
+  /** Message body */
+  message?: string;
+  /** Additional data for template rendering */
+  data?: Record<string, any>;
+}
+
+/**
+ * Notification handler interface
+ */
+export interface NotificationHandler {
+  /** Send a notification */
+  send(config: NotificationConfig, context: WorkflowContext): Promise<void>;
+  /** Check if handler supports this channel */
+  supports(channel: NotificationChannel): boolean;
+}
+
+/**
+ * Approval chain configuration
+ */
+export interface ApprovalChain {
+  /** Approval levels */
+  levels: ApprovalLevel[];
+  /** Auto-approve if no action within timeout */
+  autoApproveTimeout?: number;
+  /** Auto-escalate if no action within timeout */
+  autoEscalateTimeout?: number;
+}
+
+/**
+ * Approval level configuration
+ */
+export interface ApprovalLevel {
+  /** Level number (1, 2, 3, etc.) */
+  level: number;
+  /** Approver user or role */
+  approver: string;
+  /** Optional description */
+  description?: string;
+  /** Required for approval */
+  required?: boolean;
+  /** Escalation target if not approved in time */
+  escalationTarget?: string;
+  /** Escalation timeout in milliseconds */
+  escalationTimeout?: number;
+}
+
+/**
+ * Delegation request
+ */
+export interface DelegationRequest {
+  /** Task ID to delegate */
+  taskId: string;
+  /** User to delegate to */
+  delegateTo: string;
+  /** Delegation reason */
+  reason?: string;
+  /** Delegated by user */
+  delegatedBy: string;
+}
+
+/**
+ * Escalation request
+ */
+export interface EscalationRequest {
+  /** Task ID to escalate */
+  taskId: string;
+  /** User to escalate to */
+  escalateTo: string;
+  /** Escalation reason */
+  reason?: string;
+  /** Escalated by user */
+  escalatedBy?: string;
+  /** Is this an automatic escalation */
+  automatic?: boolean;
 }

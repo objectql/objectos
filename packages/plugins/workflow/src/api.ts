@@ -253,6 +253,70 @@ export class WorkflowAPI {
     }
 
     /**
+     * Delegate a task to another user
+     */
+    async delegateTask(
+        taskId: string,
+        delegateTo: string,
+        delegatedBy: string,
+        reason?: string
+    ): Promise<WorkflowTask> {
+        const task = await this.storage.getTask(taskId);
+        if (!task) {
+            throw new Error(`Task not found: ${taskId}`);
+        }
+
+        if (task.status !== 'pending') {
+            throw new Error(`Cannot delegate task in status: ${task.status}`);
+        }
+
+        // Store original assignee if not already delegated
+        const originalAssignee = task.originalAssignee || task.assignedTo;
+
+        await this.storage.updateTask(taskId, {
+            status: 'delegated',
+            originalAssignee,
+            delegatedTo: delegateTo,
+            delegatedAt: new Date(),
+            delegationReason: reason,
+            assignedTo: delegateTo,
+        });
+
+        const updatedTask = await this.storage.getTask(taskId);
+        return updatedTask!;
+    }
+
+    /**
+     * Escalate a task to a higher authority
+     */
+    async escalateTask(
+        taskId: string,
+        escalateTo: string,
+        reason?: string,
+        escalatedBy?: string
+    ): Promise<WorkflowTask> {
+        const task = await this.storage.getTask(taskId);
+        if (!task) {
+            throw new Error(`Task not found: ${taskId}`);
+        }
+
+        if (task.status === 'completed' || task.status === 'rejected') {
+            throw new Error(`Cannot escalate task in status: ${task.status}`);
+        }
+
+        await this.storage.updateTask(taskId, {
+            status: 'escalated',
+            escalatedTo: escalateTo,
+            escalatedAt: new Date(),
+            escalationReason: reason,
+            assignedTo: escalateTo,
+        });
+
+        const updatedTask = await this.storage.getTask(taskId);
+        return updatedTask!;
+    }
+
+    /**
      * Get the workflow engine (for registering guards/actions)
      */
     getEngine(): WorkflowEngine {
