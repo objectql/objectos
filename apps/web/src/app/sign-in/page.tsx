@@ -48,7 +48,7 @@ export default function SignInPage() {
       image="/images/auth-bg.jpg"
     >
       <div className="space-y-6">
-        <SocialButtons type="signin" />
+        <SocialButtons />
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
