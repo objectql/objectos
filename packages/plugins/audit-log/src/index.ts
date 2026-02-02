@@ -66,9 +66,11 @@ export type {
     AuditLogConfig,
     AuditLogEntry,
     AuditTrailEntry,
+    JobAuditEntry,
     FieldChange,
     AuditQueryOptions,
     AuditStorage,
     AuditEvent,
     AuditEventType,
+    ExtendedAuditEventType,
 } from './types';

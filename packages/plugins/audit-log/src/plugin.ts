@@ -111,6 +111,25 @@ class AuditLogPluginInstance {
             }
         }
 
+        // Subscribe to job events
+        const jobEvents = [
+            'job.enqueued',
+            'job.started',
+            'job.completed',
+            'job.failed',
+            'job.retried',
+            'job.cancelled',
+            'job.scheduled',
+        ];
+
+        for (const event of jobEvents) {
+            if (typeof app.eventBus.on === 'function') {
+                app.eventBus.on(event, async (data: any) => {
+                    await this.handleJobEvent(event, data);
+                });
+            }
+        }
+
         context.logger.info('[Audit Log] Event listeners registered');
     }
 
@@ -199,6 +218,51 @@ class AuditLogPluginInstance {
         }
 
         return fieldChanges;
+    }
+
+    /**
+     * Handle job events and create audit logs
+     */
+    private async handleJobEvent(event: string, data: any): Promise<void> {
+        if (!this.config.enabled) return;
+
+        const { jobId, id, name, attempt, error, result, status } = data;
+
+        // Map event to audit event type
+        const eventType = event as any; // Job events are extended audit event types
+
+        // Create audit log entry
+        const auditEntry: any = {
+            id: this.generateId(),
+            timestamp: new Date().toISOString(),
+            eventType,
+            resource: `jobs/${jobId || id}`,
+            action: event,
+            success: event !== 'job.failed',
+            metadata: {
+                jobId: jobId || id,
+                jobName: name,
+                attempt,
+                error,
+                result,
+                status,
+                event,
+                ...data,
+            },
+        };
+
+        // Store the audit event
+        await this.storage.logEvent(auditEntry);
+
+        // Emit audit event
+        if (this.context) {
+            const app = this.context.app as ExtendedAppContext;
+            if (app.eventBus && typeof app.eventBus.emit === 'function') {
+                app.eventBus.emit('audit.event.recorded', auditEntry);
+            }
+        }
+
+        this.context?.logger.debug(`[Audit Log] Recorded ${event} for job ${jobId || id}`);
     }
 
     /**

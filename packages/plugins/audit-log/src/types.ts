@@ -7,6 +7,18 @@
 import type { AuditEvent, AuditEventType } from '@objectstack/spec/system';
 
 /**
+ * Extended audit event types for job tracking
+ */
+export type ExtendedAuditEventType = AuditEventType | 
+    'job.enqueued' | 
+    'job.started' | 
+    'job.completed' | 
+    'job.failed' | 
+    'job.retried' |
+    'job.cancelled' |
+    'job.scheduled';
+
+/**
  * Audit Event entry for storage
  */
 export interface AuditLogEntry {
@@ -15,7 +27,7 @@ export interface AuditLogEntry {
     /** ISO 8601 timestamp */
     timestamp: string;
     /** Event type */
-    eventType: AuditEventType;
+    eventType: ExtendedAuditEventType;
     /** User ID who performed the action */
     userId?: string;
     /** User name for display */
@@ -62,6 +74,22 @@ export interface AuditTrailEntry extends AuditLogEntry {
     recordId: string;
     /** List of field changes */
     changes?: FieldChange[];
+}
+
+/**
+ * Job audit entry with job-specific data
+ */
+export interface JobAuditEntry extends AuditLogEntry {
+    /** Job ID */
+    jobId: string;
+    /** Job name/type */
+    jobName: string;
+    /** Job attempt number */
+    attempt?: number;
+    /** Job error if failed */
+    error?: string;
+    /** Job result if completed */
+    result?: any;
 }
 
 /**
