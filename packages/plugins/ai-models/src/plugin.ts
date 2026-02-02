@@ -148,27 +148,20 @@ export class AIModelsPlugin implements Plugin {
    * Initialize LLM providers
    */
   private async initializeProviders(): Promise<void> {
-    // Initialize OpenAI provider
-    if (this.config.providers?.openai) {
-      const provider = ProviderFactory.createProvider('openai', this.config.providers.openai);
-      this.providers.set('openai', provider);
-    }
-
-    // Initialize Anthropic provider
-    if (this.config.providers?.anthropic) {
-      const provider = ProviderFactory.createProvider('anthropic', this.config.providers.anthropic);
-      this.providers.set('anthropic', provider);
-    }
-
-    // Initialize Ollama provider
-    if (this.config.providers?.ollama) {
-      const provider = ProviderFactory.createProvider('ollama', this.config.providers.ollama);
-      this.providers.set('ollama', provider);
-    }
-
-    // Always have a stub provider
+    // Always initialize stub provider first
     const stubProvider = ProviderFactory.createProvider('custom');
     this.providers.set('custom', stubProvider);
+    
+    // Use stub provider for all configured providers in development
+    // This allows the plugin to work without API keys
+    const openaiProvider = ProviderFactory.createProvider('openai', this.config.providers?.openai);
+    this.providers.set('openai', openaiProvider);
+    
+    const anthropicProvider = ProviderFactory.createProvider('anthropic', this.config.providers?.anthropic);
+    this.providers.set('anthropic', anthropicProvider);
+    
+    const ollamaProvider = ProviderFactory.createProvider('ollama', this.config.providers?.ollama);
+    this.providers.set('ollama', ollamaProvider);
 
     this.context?.logger.info(
       `[AI Models Plugin] Initialized ${this.providers.size} providers`
@@ -328,8 +321,8 @@ export class AIModelsPlugin implements Plugin {
 
     const summary = {
       totalRequests: entries.length,
-      totalTokens: entries.reduce((sum, e) => sum + e.totalTokens, 0),
-      totalCost: entries.reduce((sum, e) => sum + (e.cost || 0), 0),
+      totalTokens: entries.reduce((sum: number, e: UsageEntry) => sum + e.totalTokens, 0),
+      totalCost: entries.reduce((sum: number, e: UsageEntry) => sum + (e.cost || 0), 0),
       byModel: {} as Record<string, { requests: number; tokens: number; cost: number }>,
     };
 
