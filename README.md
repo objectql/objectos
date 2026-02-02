@@ -173,6 +173,18 @@ bootstrap();
 
 Want to contribute or see what's coming next?
 
+### 🆕 Spec System Development (2026)
+
+**Complete implementation plan based on @objectstack/spec protocol:**
+
+- **[📑 Documentation Index](./SPEC_SYSTEM_INDEX.md)** - Central hub for all spec system docs
+- **[📘 Development Plan](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)** - Complete 16-week technical plan
+- **[⚡ Quick Reference](./SPEC_SYSTEM_QUICK_REFERENCE.md)** - Quick start guide and cheat sheet
+- **[🏗️ Architecture Comparison](./ARCHITECTURE_COMPARISON.md)** - Kernel vs Runtime visual guide
+- **[🗺️ Implementation Roadmap](./IMPLEMENTATION_ROADMAP.md)** - Bilingual roadmap (中文/English)
+
+### 📚 General Documentation
+
 - **[Development Plan (Q1 2026)](./docs/guide/development-plan.md)** - Detailed implementation plan for upcoming features
 - **[Long-term Roadmap](./ROADMAP.md)** - Strategic vision through 2026 and beyond
 - **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
@@ -191,6 +203,7 @@ Detailed migration guides for upgrading ObjectStack dependencies:
 - 🪝 Complete lifecycle hooks system
 - 🔗 Full relationship support (Lookup, Master-Detail, Many-to-Many)
 - 🧪 Test coverage (90% Kernel, 80% Server, 70% UI)
+- 🎯 100% @objectstack/spec protocol compliance
 
 ---
 
