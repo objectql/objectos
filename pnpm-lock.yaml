@@ -250,6 +250,65 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/plugins/jobs:
+    dependencies:
+      '@objectql/core':
+        specifier: ^4.0.3
+        version: 4.0.4
+      '@objectstack/spec':
+        specifier: 0.8.0
+        version: 0.8.0
+      cron-parser:
+        specifier: ^4.9.0
+        version: 4.9.0
+    devDependencies:
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.30
+      jest:
+        specifier: ^30.2.0
+        version: 30.2.0(@types/node@20.19.30)(ts-node@10.9.2(@types/node@20.19.30)(typescript@5.9.3))
+      ts-jest:
+        specifier: ^29.4.6
+        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(esbuild@0.27.2)(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.30)(ts-node@10.9.2(@types/node@20.19.30)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/plugins/permissions:
+    dependencies:
+      '@objectql/core':
+        specifier: ^4.0.3
+        version: 4.0.4
+      '@objectstack/spec':
+        specifier: 0.8.0
+        version: 0.8.0
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.1.1
+    devDependencies:
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.30
+      jest:
+        specifier: ^30.2.0
+        version: 30.2.0(@types/node@20.19.30)(ts-node@10.9.2(@types/node@20.19.30)(typescript@5.9.3))
+      ts-jest:
+        specifier: ^29.4.6
+        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(esbuild@0.27.2)(jest-util@30.2.0)(jest@30.2.0(@types/node@20.19.30)(ts-node@10.9.2(@types/node@20.19.30)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/plugins/server:
     dependencies:
       '@nestjs/common':
@@ -3664,6 +3723,10 @@ packages:
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
+  cron-parser@4.9.0:
+    resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
+    engines: {node: '>=12.0.0'}
+
   cross-inspect@1.0.1:
     resolution: {integrity: sha512-Pcw1JTvZLSJH83iiGWt6fRcT+BjZlCDRVwYLbUcHzv/CRpB7r0MlSrGbIyQvVSNyGnbt7G4AXuyCiDR3POvZ1A==}
     engines: {node: '>=16.0.0'}
@@ -4964,6 +5027,10 @@ packages:
     resolution: {integrity: sha512-8dXPB2GI4dI8jV4MgUDGBeLdGk8ekfqVZ0BdLcrRzocGgG75ltNEmWS+gE7uokKF/0oSUuczNDT+g9hFJ23FkA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -8293,7 +8360,7 @@ snapshots:
       '@objectql/plugin-formula': 4.0.3
       '@objectql/plugin-validator': 4.0.3
       '@objectql/types': 4.0.3
-      '@objectstack/core': 0.8.0
+      '@objectstack/core': 0.8.1
       '@objectstack/objectql': 0.8.0
       '@objectstack/runtime': 0.8.1
       '@objectstack/spec': 0.8.0
@@ -8306,7 +8373,7 @@ snapshots:
       '@objectql/plugin-formula': 4.0.3
       '@objectql/plugin-validator': 4.0.3
       '@objectql/types': 4.0.3
-      '@objectstack/core': 0.8.0
+      '@objectstack/core': 0.8.1
       '@objectstack/objectql': 0.8.0
       '@objectstack/runtime': 0.8.1
       '@objectstack/spec': 0.8.0
@@ -10297,6 +10364,10 @@ snapshots:
 
   create-require@1.1.1: {}
 
+  cron-parser@4.9.0:
+    dependencies:
+      luxon: 3.7.2
+
   cross-inspect@1.0.1:
     dependencies:
       tslib: 2.8.1
@@ -11904,6 +11975,8 @@ snapshots:
   lucide-react@0.563.0(react@19.2.4):
     dependencies:
       react: 19.2.4
+
+  luxon@3.7.2: {}
 
   magic-string@0.30.21:
     dependencies:
