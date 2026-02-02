@@ -5,7 +5,7 @@
  * 
  * @example
  * ```typescript
- * import { BetterAuthPlugin, getBetterAuth } from '@objectos/plugin-better-auth';
+ * import { BetterAuthPlugin, getBetterAuthAPI } from '@objectos/plugin-better-auth';
  * 
  * // Create plugin instance
  * const authPlugin = new BetterAuthPlugin({
@@ -16,6 +16,9 @@
  * 
  * // Register with kernel
  * await kernel.registerPlugin(authPlugin);
+ * 
+ * // Later, access the plugin from kernel
+ * const betterAuth = getBetterAuthAPI(kernel);
  * ```
  */
 
