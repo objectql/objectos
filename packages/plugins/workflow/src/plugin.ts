@@ -32,6 +32,7 @@ export class WorkflowPlugin implements Plugin {
     private engine: WorkflowEngine;
     private api: WorkflowAPI;
     private context?: PluginContext;
+    private logger: any = console; // Fallback logger before initialization
 
     constructor(config: WorkflowPluginConfig = {}) {
         this.config = {
@@ -51,8 +52,9 @@ export class WorkflowPlugin implements Plugin {
      */
     async init(context: PluginContext): Promise<void> {
         this.context = context;
+        this.logger = context.logger;
 
-        // Update logger
+        // Update engine logger
         (this.engine as any).logger = context.logger;
 
         // Register workflow service
@@ -69,6 +71,11 @@ export class WorkflowPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Workflow Plugin] Starting...');
+        
+        // Note: Unlike the Automation Plugin, the Workflow Plugin does not have scheduled
+        // triggers that need to be registered at startup. Workflows are started on-demand
+        // via API calls or event triggers that are already registered in init().
+        
         context.logger.info('[Workflow Plugin] Started successfully');
     }
 
@@ -93,7 +100,7 @@ export class WorkflowPlugin implements Plugin {
      */
     private async emitEvent(event: string, data: any): Promise<void> {
         if (!this.context) {
-            console.warn('[Workflow Plugin] Cannot emit event before initialization:', event);
+            this.logger.warn(`[Workflow Plugin] Cannot emit event before initialization: ${event}`);
             return;
         }
         await this.context.trigger(event, data);
