@@ -7,8 +7,6 @@
 // Main plugin
 export {
     WorkflowPlugin,
-    WorkflowManifest,
-    createWorkflowPlugin,
     getWorkflowAPI,
 } from './plugin';
 

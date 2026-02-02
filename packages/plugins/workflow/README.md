@@ -29,17 +29,17 @@ npm install @objectos/plugin-workflow
 ### 1. Install and Enable the Plugin
 
 ```typescript
-import { createWorkflowPlugin } from '@objectos/plugin-workflow';
+import { WorkflowPlugin } from '@objectos/plugin-workflow';
 
-const workflowPlugin = createWorkflowPlugin({
+const workflowPlugin = new WorkflowPlugin({
     enabled: true,
     defaultTimeout: 3600000, // 1 hour
     maxTransitions: 1000,
 });
 
-// Install and enable
-await workflowPlugin.onInstall(context);
-await workflowPlugin.onEnable(context);
+// Initialize and start
+await workflowPlugin.init(context);
+await workflowPlugin.start(context);
 ```
 
 ### 2. Define a Workflow in YAML

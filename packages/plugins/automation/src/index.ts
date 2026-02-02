@@ -7,8 +7,6 @@
 // Main plugin
 export {
     AutomationPlugin,
-    AutomationManifest,
-    createAutomationPlugin,
     getAutomationAPI,
 } from './plugin';
 
