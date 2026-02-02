@@ -418,6 +418,174 @@ describe('WorkflowAPI', () => {
         });
     });
 
+    describe('delegateTask', () => {
+        let instanceId: string;
+
+        beforeEach(async () => {
+            await api.registerWorkflow(definition);
+            const instance = await api.startWorkflow('test-workflow', {});
+            instanceId = instance.id;
+        });
+
+        it('should delegate a pending task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                assignedTo: 'manager@example.com',
+                status: 'pending',
+            });
+
+            const delegated = await api.delegateTask(
+                task.id,
+                'assistant@example.com',
+                'manager@example.com',
+                'Out of office this week'
+            );
+
+            expect(delegated.status).toBe('delegated');
+            expect(delegated.assignedTo).toBe('assistant@example.com');
+            expect(delegated.delegatedTo).toBe('assistant@example.com');
+            expect(delegated.originalAssignee).toBe('manager@example.com');
+            expect(delegated.delegationReason).toBe('Out of office this week');
+            expect(delegated.delegatedAt).toBeInstanceOf(Date);
+        });
+
+        it('should preserve original assignee on re-delegation', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                assignedTo: 'manager@example.com',
+                status: 'pending',
+            });
+
+            // First delegation
+            await api.delegateTask(
+                task.id,
+                'assistant1@example.com',
+                'manager@example.com',
+                'First delegation'
+            );
+
+            // Update to pending to allow second delegation
+            await storage.updateTask(task.id, { status: 'pending' });
+
+            // Second delegation
+            const delegated = await api.delegateTask(
+                task.id,
+                'assistant2@example.com',
+                'assistant1@example.com',
+                'Second delegation'
+            );
+
+            expect(delegated.originalAssignee).toBe('manager@example.com');
+            expect(delegated.assignedTo).toBe('assistant2@example.com');
+        });
+
+        it('should throw error for non-existent task', async () => {
+            await expect(
+                api.delegateTask('non-existent', 'user@example.com', 'delegator@example.com')
+            ).rejects.toThrow('Task not found');
+        });
+
+        it('should throw error when delegating non-pending task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                status: 'pending',
+            });
+
+            await api.completeTask(task.id);
+
+            await expect(
+                api.delegateTask(task.id, 'user@example.com', 'delegator@example.com')
+            ).rejects.toThrow('Cannot delegate task in status: completed');
+        });
+    });
+
+    describe('escalateTask', () => {
+        let instanceId: string;
+
+        beforeEach(async () => {
+            await api.registerWorkflow(definition);
+            const instance = await api.startWorkflow('test-workflow', {});
+            instanceId = instance.id;
+        });
+
+        it('should escalate a pending task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                assignedTo: 'manager@example.com',
+                status: 'pending',
+            });
+
+            const escalated = await api.escalateTask(
+                task.id,
+                'director@example.com',
+                'Requires higher-level approval',
+                'system'
+            );
+
+            expect(escalated.status).toBe('escalated');
+            expect(escalated.assignedTo).toBe('director@example.com');
+            expect(escalated.escalatedTo).toBe('director@example.com');
+            expect(escalated.escalationReason).toBe('Requires higher-level approval');
+            expect(escalated.escalatedAt).toBeInstanceOf(Date);
+        });
+
+        it('should escalate a delegated task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                assignedTo: 'manager@example.com',
+                status: 'delegated',
+            });
+
+            const escalated = await api.escalateTask(
+                task.id,
+                'director@example.com',
+                'Escalation needed'
+            );
+
+            expect(escalated.status).toBe('escalated');
+            expect(escalated.assignedTo).toBe('director@example.com');
+        });
+
+        it('should throw error for non-existent task', async () => {
+            await expect(
+                api.escalateTask('non-existent', 'director@example.com')
+            ).rejects.toThrow('Task not found');
+        });
+
+        it('should throw error when escalating completed task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                status: 'pending',
+            });
+
+            await api.completeTask(task.id);
+
+            await expect(
+                api.escalateTask(task.id, 'director@example.com')
+            ).rejects.toThrow('Cannot escalate task in status: completed');
+        });
+
+        it('should throw error when escalating rejected task', async () => {
+            const task = await api.createTask({
+                instanceId,
+                name: 'Approval Task',
+                status: 'pending',
+            });
+
+            await api.rejectTask(task.id);
+
+            await expect(
+                api.escalateTask(task.id, 'director@example.com')
+            ).rejects.toThrow('Cannot escalate task in status: rejected');
+        });
+    });
+
     describe('getEngine', () => {
         it('should return the workflow engine', () => {
             const engine = api.getEngine();
