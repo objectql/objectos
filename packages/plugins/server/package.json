@@ -24,7 +24,7 @@
     "@objectql/driver-sql": "^4.0.3",
     "@objectql/driver-mongo": "^4.0.3",
     "@objectql/server": "^4.0.3",
-    "@objectstack/spec": "0.8.0",
+    "@objectstack/spec": "0.8.2",
     "better-auth": "^1.4.18",
     "better-sqlite3": "^12.6.0",
     "mongodb": "^7.0.0",

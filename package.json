@@ -57,7 +57,7 @@
     "@objectql/platform-node": "^4.0.3",
     "@objectql/starter-basic": "^1.8.4",
     "@objectql/starter-enterprise": "^1.8.4",
-    "@objectstack/spec": "0.8.0",
+    "@objectstack/spec": "0.8.2",
     "build": "^0.1.4"
   }
 }

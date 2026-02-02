@@ -32,8 +32,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.4(@objectql/core@4.0.4)(@objectql/driver-sql@4.0.3(sqlite3@5.1.7))(@objectql/platform-node@4.0.3)(@objectql/types@4.0.3)(sqlite3@5.1.7)
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
       build:
         specifier: ^0.1.4
         version: 0.1.4
@@ -188,8 +188,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.4
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -213,8 +213,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.4
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
       better-auth:
         specifier: ^1.4.18
         version: 1.4.18(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.27(typescript@5.9.3))
@@ -256,8 +256,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.4
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
       cron-parser:
         specifier: ^4.9.0
         version: 4.9.0
@@ -284,8 +284,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.4
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -345,8 +345,8 @@ importers:
         specifier: workspace:*
         version: link:../../runtime
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
       better-auth:
         specifier: ^1.4.18
         version: 1.4.18(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.27(typescript@5.9.3))
@@ -428,8 +428,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3
       '@objectstack/spec':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.8.2
+        version: 0.8.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -1815,6 +1815,10 @@ packages:
 
   '@objectstack/spec@0.8.1':
     resolution: {integrity: sha512-GsNWprjYGtO7TM7fLlqp8xtFHLT/6q0Jh3ILPEijxPsIli7aV42qZBgHIjWKsMxH6sGQRqUijfOdgDraZ9IHBA==}
+    engines: {node: '>=18.0.0'}
+
+  '@objectstack/spec@0.8.2':
+    resolution: {integrity: sha512-PLEREF3dGIPRooKbAJPv8weC8cuAPFXoQcFXntGxeLdoCb4iOyDjujSRpCIpyG3dNXtDvr+SL8O1bX7QolsUFw==}
     engines: {node: '>=18.0.0'}
 
   '@objectstack/types@0.8.0':
@@ -8301,7 +8305,7 @@ snapshots:
       '@objectstack/core': 0.8.1
       '@objectstack/objectql': 0.8.0
       '@objectstack/runtime': 0.8.1
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
       js-yaml: 4.1.1
     transitivePeerDependencies:
       - pino
@@ -8314,7 +8318,7 @@ snapshots:
       '@objectstack/core': 0.8.1
       '@objectstack/objectql': 0.8.0
       '@objectstack/runtime': 0.8.1
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
       js-yaml: 4.1.1
     transitivePeerDependencies:
       - pino
@@ -8322,7 +8326,7 @@ snapshots:
   '@objectql/driver-mongo@4.0.3':
     dependencies:
       '@objectql/types': 4.0.3
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
       mongodb: 5.9.2
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
@@ -8335,7 +8339,7 @@ snapshots:
   '@objectql/driver-sql@4.0.3(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)':
     dependencies:
       '@objectql/types': 4.0.3
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
       knex: 3.1.0(better-sqlite3@12.6.2)(pg@8.17.2)(sqlite3@5.1.7)
       nanoid: 3.3.11
     transitivePeerDependencies:
@@ -8353,7 +8357,7 @@ snapshots:
     dependencies:
       '@objectql/core': 4.0.3
       '@objectql/types': 4.0.3
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
       fast-glob: 3.3.3
       js-yaml: 4.1.1
     transitivePeerDependencies:
@@ -8400,7 +8404,7 @@ snapshots:
   '@objectql/types@4.0.3':
     dependencies:
       '@objectstack/objectql': 0.8.0
-      '@objectstack/spec': 0.8.0
+      '@objectstack/spec': 0.8.2
     transitivePeerDependencies:
       - pino
 
@@ -8461,6 +8465,10 @@ snapshots:
       zod: 4.3.6
 
   '@objectstack/spec@0.8.1':
+    dependencies:
+      zod: 4.3.6
+
+  '@objectstack/spec@0.8.2':
     dependencies:
       zod: 4.3.6
 

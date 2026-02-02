@@ -11,7 +11,7 @@
   "dependencies": {
     "@objectql/core": "^4.0.3",
     "@objectql/types": "^4.0.3",
-    "@objectstack/spec": "0.8.0"
+    "@objectstack/spec": "0.8.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
