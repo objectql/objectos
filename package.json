@@ -10,9 +10,6 @@
       "sqlite3",
       "unrs-resolver"
     ],
-    "patchedDependencies": {
-      "@objectstack/cli@0.8.0": "patches/@objectstack__cli@0.8.0.patch"
-    },
     "ignoredBuiltDependencies": [
       "sharp"
     ]
@@ -36,7 +33,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
-    "@objectstack/cli": "^0.8.0",
+    "@objectstack/cli": "^0.9.0",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.2.0",
@@ -55,9 +52,7 @@
     "@objectql/driver-mongo": "^4.0.3",
     "@objectql/driver-sql": "^4.0.3",
     "@objectql/platform-node": "^4.0.3",
-    "@objectql/starter-basic": "^1.8.4",
-    "@objectql/starter-enterprise": "^1.8.4",
-    "@objectstack/spec": "0.8.2",
+    "@objectstack/spec": "0.9.0",
     "build": "^0.1.4"
   }
 }
