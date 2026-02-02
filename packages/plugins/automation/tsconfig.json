@@ -5,10 +5,7 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "lib": ["ES2020"],
-    "moduleResolution": "node16",
-    "module": "Node16"
+    "sourceMap": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]
