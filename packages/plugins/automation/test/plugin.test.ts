@@ -57,14 +57,6 @@ const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<
     return { context, kernel, hooks };
 };
 
-// Helper to trigger a hook
-const triggerHook = async (hooks: Map<string, Function[]>, name: string, data: any) => {
-    const handlers = hooks.get(name) || [];
-    for (const handler of handlers) {
-        await handler(data);
-    }
-};
-
 describe('Automation Plugin', () => {
     let plugin: AutomationPlugin;
     let mockContext: PluginContext;
@@ -172,7 +164,7 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            await triggerHook(hooks, 'data.create', {
+            await mockContext.trigger('data.create', {
                 objectName: 'Contact',
                 record: { id: '123', name: 'John Doe' },
             });
@@ -281,7 +273,7 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            await triggerHook(hooks, 'data.create', {
+            await mockContext.trigger('data.create', {
                 objectName: 'Contact',
                 record: { id: '123', name: 'John Doe' },
             });
