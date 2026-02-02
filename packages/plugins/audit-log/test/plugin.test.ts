@@ -4,150 +4,155 @@
 
 import {
     AuditLogPlugin,
-    AuditLogManifest,
-    createAuditLogPlugin,
     getAuditLogAPI,
 } from '../src';
-import type { PluginContextData } from '@objectstack/spec/system';
+import type { PluginContext } from '@objectstack/runtime';
 
 // Mock context for testing
-const createMockContext = (): PluginContextData => {
-    const eventHandlers: Map<string, Function[]> = new Map();
-    
-    const mockEventBus = {
-        on: jest.fn((event: string, handler: Function) => {
-            if (!eventHandlers.has(event)) {
-                eventHandlers.set(event, []);
-            }
-            eventHandlers.get(event)!.push(handler);
-        }),
-        emit: jest.fn(async (event: string, data: any) => {
-            const handlers = eventHandlers.get(event) || [];
-            for (const handler of handlers) {
-                await handler(data);
-            }
-        }),
+const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {
+    const hooks: Map<string, Function[]> = new Map();
+    const kernel = {
+        getService: jest.fn(),
+        services: new Map(),
     };
     
-    return {
+    const context: PluginContext = {
         logger: {
             info: jest.fn(),
             warn: jest.fn(),
             error: jest.fn(),
             debug: jest.fn(),
         },
-        storage: {
-            get: jest.fn(),
-            set: jest.fn(),
-            delete: jest.fn(),
-            has: jest.fn(),
-        },
-        app: {
-            eventBus: mockEventBus,
-        },
+        registerService: jest.fn((name: string, service: any) => {
+            kernel.services.set(name, service);
+            kernel.getService.mockImplementation((n: string) => {
+                if (kernel.services.has(n)) return kernel.services.get(n);
+                throw new Error(`Service ${n} not found`);
+            });
+        }),
+        getService: jest.fn((name: string) => {
+            if (kernel.services.has(name)) return kernel.services.get(name);
+            throw new Error(`Service ${name} not found`);
+        }),
+        hasService: jest.fn((name: string) => kernel.services.has(name)),
+        getServices: jest.fn(() => kernel.services),
+        hook: jest.fn((name: string, handler: Function) => {
+            if (!hooks.has(name)) {
+                hooks.set(name, []);
+            }
+            hooks.get(name)!.push(handler);
+        }),
+        trigger: jest.fn(async (name: string, ...args: any[]) => {
+            const handlers = hooks.get(name) || [];
+            for (const handler of handlers) {
+                await handler(...args);
+            }
+        }),
+        getKernel: jest.fn(() => kernel),
     } as any;
+    
+    return { context, kernel, hooks };
+};
+
+// Helper to trigger a hook
+const triggerHook = async (hooks: Map<string, Function[]>, name: string, data: any) => {
+    const handlers = hooks.get(name) || [];
+    for (const handler of handlers) {
+        await handler(data);
+    }
 };
 
 describe('Audit Log Plugin', () => {
-    describe('Plugin Manifest', () => {
-        it('should have correct manifest structure', () => {
-            expect(AuditLogManifest).toBeDefined();
-            expect(AuditLogManifest.id).toBe('com.objectos.audit-log');
-            expect(AuditLogManifest.version).toBe('0.1.0');
-            expect(AuditLogManifest.type).toBe('plugin');
-            expect(AuditLogManifest.name).toBe('Audit Log Plugin');
-        });
+    let plugin: AuditLogPlugin;
+    let mockContext: PluginContext;
+    let mockKernel: any;
+    let hooks: Map<string, Function[]>;
 
-        it('should define required permissions', () => {
-            expect(AuditLogManifest.permissions).toContain('system.audit.read');
-            expect(AuditLogManifest.permissions).toContain('system.audit.write');
-        });
+    beforeEach(() => {
+        const mock = createMockContext();
+        mockContext = mock.context;
+        mockKernel = mock.kernel;
+        hooks = mock.hooks;
 
-        it('should define audit events', () => {
-            const events = AuditLogManifest.contributes?.events || [];
-            expect(events).toContain('audit.event.recorded');
-            expect(events).toContain('audit.trail.created');
-            expect(events).toContain('audit.field.changed');
+        plugin = new AuditLogPlugin({
+            enabled: true,
+            trackFieldChanges: true,
+        });
+    });
+
+    describe('Plugin Metadata', () => {
+        it('should have correct plugin metadata', () => {
+            expect(plugin.name).toBe('com.objectos.audit-log');
+            expect(plugin.version).toBe('0.1.0');
+            expect(plugin.dependencies).toEqual([]);
         });
     });
 
     describe('Plugin Lifecycle', () => {
-        it('should export default plugin instance', () => {
-            expect(AuditLogPlugin).toBeDefined();
-            expect(typeof AuditLogPlugin).toBe('object');
+        it('should initialize successfully', async () => {
+            await plugin.init(mockContext);
+
+            expect(mockContext.registerService).toHaveBeenCalledWith('audit-log', plugin);
+            expect(mockContext.logger.info).toHaveBeenCalledWith(
+                expect.stringContaining('Initialized successfully')
+            );
         });
 
-        it('should have all lifecycle hooks', () => {
-            expect(typeof AuditLogPlugin.onInstall).toBe('function');
-            expect(typeof AuditLogPlugin.onEnable).toBe('function');
-            expect(typeof AuditLogPlugin.onDisable).toBe('function');
-            expect(typeof AuditLogPlugin.onUninstall).toBe('function');
+        it('should start successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.start(mockContext);
+
+            expect(mockContext.logger.info).toHaveBeenCalledWith(
+                expect.stringContaining('Starting')
+            );
+            expect(mockContext.logger.info).toHaveBeenCalledWith(
+                expect.stringContaining('Started successfully')
+            );
+        });
+
+        it('should destroy successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.destroy();
+
+            expect(mockContext.logger.info).toHaveBeenCalledWith(
+                expect.stringContaining('Destroyed')
+            );
+        });
+
+        it('should register event hooks during init', async () => {
+            await plugin.init(mockContext);
+
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.find', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('job.enqueued', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('job.started', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('job.completed', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('job.failed', expect.any(Function));
         });
 
         it('should create plugin with custom configuration', () => {
-            const customPlugin = createAuditLogPlugin({
+            const customPlugin = new AuditLogPlugin({
                 enabled: true,
                 trackFieldChanges: true,
                 auditedObjects: ['users', 'orders'],
             });
             
             expect(customPlugin).toBeDefined();
-            expect(customPlugin.onInstall).toBeDefined();
-            expect(customPlugin.onEnable).toBeDefined();
-        });
-
-        it('should handle onInstall lifecycle', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onInstall!(context);
-            
-            expect(context.storage.set).toHaveBeenCalledWith('install_date', expect.any(String));
-            expect(context.storage.set).toHaveBeenCalledWith('config', expect.any(String));
-            expect(context.logger.info).toHaveBeenCalled();
-        });
-
-        it('should handle onEnable lifecycle', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onEnable!(context);
-            
-            expect(context.logger.info).toHaveBeenCalled();
-            const eventBus = (context.app as any).eventBus;
-            expect(eventBus.on).toHaveBeenCalled();
-        });
-
-        it('should handle onDisable lifecycle', async () => {
-            const context = createMockContext();
-            
-            // Enable first
-            await AuditLogPlugin.onEnable!(context);
-            
-            // Then disable
-            await AuditLogPlugin.onDisable!(context);
-            
-            expect(context.storage.set).toHaveBeenCalledWith('last_disabled', expect.any(String));
-            expect(context.logger.info).toHaveBeenCalled();
-        });
-
-        it('should handle onUninstall lifecycle', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onUninstall!(context);
-            
-            expect(context.storage.delete).toHaveBeenCalledWith('install_date');
-            expect(context.storage.delete).toHaveBeenCalledWith('last_disabled');
-            expect(context.storage.delete).toHaveBeenCalledWith('config');
+            expect(customPlugin.name).toBe('com.objectos.audit-log');
         });
     });
 
     describe('Audit Event Recording (审计事件记录)', () => {
         it('should record create events', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onEnable!(context);
+            await plugin.init(mockContext);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mockKernel);
             expect(api).toBeDefined();
             
             // Simulate a create event
-            const eventBus = (context.app as any).eventBus;
-            await eventBus.emit('data.create', {
+            await triggerHook(hooks, 'data.create', {
                 objectName: 'orders',
                 recordId: '12345',
                 userId: 'user123',
@@ -163,14 +168,14 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should record update events with field changes', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({ trackFieldChanges: true });
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({ trackFieldChanges: true });
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
             // Simulate an update event
-            await (context.app as any).eventBus.emit('data.update', {
+            await triggerHook(mock.hooks, 'data.update', {
                 objectName: 'orders',
                 recordId: '12345',
                 userId: 'user123',
@@ -190,12 +195,11 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should record delete events', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onEnable!(context);
+            await plugin.init(mockContext);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mockKernel);
             
-            await (context.app as any).eventBus.emit('data.delete', {
+            await triggerHook(hooks, 'data.delete', {
                 objectName: 'orders',
                 recordId: '12345',
                 userId: 'user123',
@@ -211,15 +215,15 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should exclude sensitive fields from audit', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({
+            const customPlugin = new AuditLogPlugin({
                 excludedFields: ['password', 'token'],
             });
-            await customPlugin.onEnable!(context);
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
-            await (context.app as any).eventBus.emit('data.update', {
+            await triggerHook(mock.hooks, 'data.update', {
                 objectName: 'users',
                 recordId: 'user123',
                 userId: 'admin',
@@ -240,20 +244,20 @@ describe('Audit Log Plugin', () => {
 
     describe('Audit Tracking (审计跟踪)', () => {
         it('should query events by user', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({}); // Fresh instance with fresh storage
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({}); // Fresh instance with fresh storage
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
             // Create events from different users
-            await (context.app as any).eventBus.emit('data.create', {
+            await triggerHook(mock.hooks, 'data.create', {
                 objectName: 'orders',
                 recordId: '1',
                 userId: 'user123',
             });
             
-            await (context.app as any).eventBus.emit('data.create', {
+            await triggerHook(mock.hooks, 'data.create', {
                 objectName: 'orders',
                 recordId: '2',
                 userId: 'user456',
@@ -265,13 +269,13 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should query events by date range', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({}); // Fresh instance
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({}); // Fresh instance
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
-            await (context.app as any).eventBus.emit('data.create', {
+            await triggerHook(mock.hooks, 'data.create', {
                 objectName: 'orders',
                 recordId: '1',
                 userId: 'user123',
@@ -286,15 +290,15 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should support pagination', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({}); // Fresh instance
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({}); // Fresh instance
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
             // Create multiple events
             for (let i = 0; i < 10; i++) {
-                await (context.app as any).eventBus.emit('data.create', {
+                await triggerHook(mock.hooks, 'data.create', {
                     objectName: 'orders',
                     recordId: `${i}`,
                     userId: 'user123',
@@ -312,14 +316,14 @@ describe('Audit Log Plugin', () => {
 
     describe('Field History (字段历史)', () => {
         it('should track field history', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({}); // Fresh instance
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({}); // Fresh instance
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
             // Update the same field multiple times
-            await (context.app as any).eventBus.emit('data.update', {
+            await triggerHook(mock.hooks, 'data.update', {
                 objectName: 'orders',
                 recordId: '12345',
                 userId: 'user123',
@@ -328,7 +332,7 @@ describe('Audit Log Plugin', () => {
                 },
             });
             
-            await (context.app as any).eventBus.emit('data.update', {
+            await triggerHook(mock.hooks, 'data.update', {
                 objectName: 'orders',
                 recordId: '12345',
                 userId: 'user123',
@@ -344,20 +348,20 @@ describe('Audit Log Plugin', () => {
         });
 
         it('should get complete audit trail for a record', async () => {
-            const context = createMockContext();
-            const customPlugin = createAuditLogPlugin({}); // Fresh instance
-            await customPlugin.onEnable!(context);
+            const customPlugin = new AuditLogPlugin({}); // Fresh instance
+            const mock = createMockContext();
+            await customPlugin.init(mock.context);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mock.kernel);
             
             // Create, update, and track a record
-            await (context.app as any).eventBus.emit('data.create', {
+            await triggerHook(mock.hooks, 'data.create', {
                 objectName: 'orders',
                 recordId: '99999',
                 userId: 'user123',
             });
             
-            await (context.app as any).eventBus.emit('data.update', {
+            await triggerHook(mock.hooks, 'data.update', {
                 objectName: 'orders',
                 recordId: '99999',
                 userId: 'user456',
@@ -375,19 +379,23 @@ describe('Audit Log Plugin', () => {
 
     describe('API Access', () => {
         it('should provide API access helper', async () => {
-            const context = createMockContext();
-            await AuditLogPlugin.onEnable!(context);
+            await plugin.init(mockContext);
             
-            const api = getAuditLogAPI(context.app);
+            const api = getAuditLogAPI(mockKernel);
             expect(api).toBeDefined();
             expect(typeof api!.queryEvents).toBe('function');
             expect(typeof api!.getAuditTrail).toBe('function');
             expect(typeof api!.getFieldHistory).toBe('function');
         });
 
-        it('should return null when plugin not enabled', () => {
-            const context = createMockContext();
-            const api = getAuditLogAPI(context.app);
+        it('should return null when plugin not registered', () => {
+            const mock = createMockContext();
+            // Mock getService to throw error
+            mock.kernel.getService.mockImplementation(() => {
+                throw new Error('Service not found');
+            });
+            
+            const api = getAuditLogAPI(mock.kernel);
             expect(api).toBeNull();
         });
     });

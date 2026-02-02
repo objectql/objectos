@@ -9,12 +9,7 @@
  * - Built-in jobs for common tasks (cleanup, reports, backups)
  */
 
-import type {
-    PluginDefinition,
-    PluginContextData,
-    ObjectStackManifest,
-} from '@objectstack/spec/system';
-
+import type { Plugin, PluginContext } from '@objectstack/runtime';
 import type {
     JobPluginConfig,
     JobDefinition,
@@ -33,52 +28,19 @@ import {
 } from './built-in-jobs';
 
 /**
- * Extended app context with event bus
+ * Jobs Plugin
+ * Implements the Plugin interface for @objectstack/runtime
  */
-interface ExtendedAppContext {
-    eventBus?: {
-        on?: (event: string, handler: (data: any) => void) => void;
-        emit?: (event: string, data: any) => void;
-    };
-}
+export class JobsPlugin implements Plugin {
+    name = 'com.objectos.jobs';
+    version = '0.1.0';
+    dependencies: string[] = [];
 
-/**
- * Plugin Manifest
- * Conforms to @objectstack/spec/system/ManifestSchema
- */
-export const JobsManifest: ObjectStackManifest = {
-    id: 'com.objectos.jobs',
-    version: '0.1.0',
-    type: 'plugin',
-    name: 'Jobs Plugin',
-    description: 'Background job processing and scheduling with cron support, retry logic, and job monitoring',
-    permissions: [
-        'system.jobs.read',
-        'system.jobs.write',
-        'system.jobs.execute',
-    ],
-    contributes: {
-        // Register job-related events
-        events: [
-            'job.enqueued',
-            'job.started',
-            'job.completed',
-            'job.failed',
-            'job.scheduled',
-            'job.cancelled',
-        ],
-    },
-};
-
-/**
- * Jobs Plugin Instance
- */
-class JobsPluginInstance {
     private config: JobPluginConfig;
     private storage: any;
     private queue: JobQueue;
     private scheduler: JobScheduler;
-    private context?: PluginContextData;
+    private context?: PluginContext;
 
     constructor(config: JobPluginConfig = {}) {
         this.config = {
@@ -111,25 +73,25 @@ class JobsPluginInstance {
     }
 
     /**
-     * Initialize plugin and register built-in jobs
+     * Initialize plugin - Register services and subscribe to events
      */
-    async initialize(context: PluginContextData): Promise<void> {
+    async init(context: PluginContext): Promise<void> {
         this.context = context;
 
         // Update loggers
         (this.queue as any).logger = context.logger;
         (this.scheduler as any).logger = context.logger;
 
+        // Register jobs service
+        context.registerService('jobs', this);
+
         // Register built-in jobs if enabled
         if (this.config.enableBuiltInJobs) {
             this.registerBuiltInJobs();
         }
 
-        // Set up event listeners
-        const app = context.app as ExtendedAppContext;
-        if (app.eventBus) {
-            this.setupEventListeners(app.eventBus);
-        }
+        // Set up event listeners using kernel hooks
+        await this.setupEventListeners(context);
 
         context.logger.info('[Jobs Plugin] Initialized successfully');
     }
@@ -161,24 +123,23 @@ class JobsPluginInstance {
     }
 
     /**
-     * Set up event listeners for job lifecycle
+     * Set up event listeners for job lifecycle using kernel hooks
      */
-    private setupEventListeners(eventBus: any): void {
+    private async setupEventListeners(context: PluginContext): Promise<void> {
         // Listen for data events that might trigger jobs
-        if (typeof eventBus.on === 'function') {
-            eventBus.on('data.create', (data: any) => {
-                this.emitEvent('job.trigger', { type: 'data.create', data });
-            });
-        }
+        context.hook('data.create', async (data: any) => {
+            await this.emitEvent('job.trigger', { type: 'data.create', data });
+        });
+
+        this.context?.logger.info('[Jobs Plugin] Event listeners registered');
     }
 
     /**
-     * Emit job events
+     * Emit job events using kernel trigger system
      */
-    private emitEvent(event: string, data: any): void {
-        const app = this.context?.app as ExtendedAppContext;
-        if (app?.eventBus && typeof app.eventBus.emit === 'function') {
-            app.eventBus.emit(event, data);
+    private async emitEvent(event: string, data: any): Promise<void> {
+        if (this.context) {
+            await this.context.trigger(event, data);
         }
     }
 
@@ -194,7 +155,7 @@ class JobsPluginInstance {
      */
     async enqueue(config: JobConfig): Promise<Job> {
         const job = await this.queue.enqueue(config);
-        this.emitEvent('job.enqueued', job);
+        await this.emitEvent('job.enqueued', job);
         return job;
     }
 
@@ -203,7 +164,7 @@ class JobsPluginInstance {
      */
     async schedule(config: JobConfig): Promise<Job> {
         const job = await this.scheduler.scheduleJob(config);
-        this.emitEvent('job.scheduled', job);
+        await this.emitEvent('job.scheduled', job);
         return job;
     }
 
@@ -212,7 +173,7 @@ class JobsPluginInstance {
      */
     async cancel(jobId: string): Promise<void> {
         await this.queue.cancel(jobId);
-        this.emitEvent('job.cancelled', { jobId });
+        await this.emitEvent('job.cancelled', { jobId });
     }
 
     /**
@@ -245,106 +206,22 @@ class JobsPluginInstance {
     }
 
     /**
-     * Stop job processing
+     * Cleanup and shutdown
      */
-    async stop(): Promise<void> {
+    async destroy(): Promise<void> {
         await this.queue.stopProcessing();
         this.scheduler.stop();
-        this.context?.logger.info('[Jobs Plugin] Stopped');
+        this.context?.logger.info('[Jobs Plugin] Destroyed');
     }
 }
 
 /**
- * Create Jobs Plugin
- * Factory function to create the plugin with custom configuration
+ * Helper function to access the jobs API from kernel
  */
-export const createJobsPlugin = (config: JobPluginConfig = {}): PluginDefinition => {
-    const instance = new JobsPluginInstance(config);
-
-    return {
-        /**
-         * Called when the plugin is first installed
-         */
-        onInstall: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Jobs Plugin] Installing...');
-            
-            await context.storage.set('install_date', new Date().toISOString());
-            await context.storage.set('config', JSON.stringify(config));
-            
-            context.logger.info('[Jobs Plugin] Installation complete');
-        }) as any,
-
-        /**
-         * Called when the plugin is enabled
-         */
-        onEnable: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Jobs Plugin] Enabling...');
-            
-            try {
-                await instance.initialize(context);
-                await instance.start();
-                
-                // Store plugin instance reference for API access
-                (context.app as any).__jobsPlugin = instance;
-                
-                context.logger.info('[Jobs Plugin] Enabled successfully');
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                context.logger.error(`[Jobs Plugin] Failed to enable: ${errorMessage}`, error);
-                throw new Error(`Jobs Plugin initialization failed: ${errorMessage}`);
-            }
-        }) as any,
-
-        /**
-         * Called when the plugin is disabled
-         */
-        onDisable: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Jobs Plugin] Disabling...');
-            
-            try {
-                await instance.stop();
-                
-                delete (context.app as any).__jobsPlugin;
-                
-                await context.storage.set('last_disabled', new Date().toISOString());
-                
-                context.logger.info('[Jobs Plugin] Disabled successfully');
-            } catch (error) {
-                context.logger.error('[Jobs Plugin] Error during disable:', error);
-                throw error;
-            }
-        }) as any,
-
-        /**
-         * Called when the plugin is uninstalled
-         */
-        onUninstall: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Jobs Plugin] Uninstalling...');
-            
-            try {
-                await instance.stop();
-                
-                await context.storage.delete('install_date');
-                await context.storage.delete('last_disabled');
-                await context.storage.delete('config');
-                
-                context.logger.warn('[Jobs Plugin] Uninstalled - Job data preserved');
-            } catch (error) {
-                context.logger.error('[Jobs Plugin] Error during uninstall:', error);
-                throw error;
-            }
-        }) as any,
-    };
-};
-
-/**
- * Default plugin instance with default configuration
- */
-export const JobsPlugin: PluginDefinition = createJobsPlugin();
-
-/**
- * Helper function to access the jobs API
- */
-export function getJobsAPI(app: any): JobsPluginInstance | null {
-    return app.__jobsPlugin || null;
+export function getJobsAPI(kernel: any): JobsPlugin | null {
+    try {
+        return kernel.getService('jobs');
+    } catch {
+        return null;
+    }
 }

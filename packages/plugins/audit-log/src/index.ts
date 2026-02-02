@@ -53,8 +53,6 @@
 
 export {
     AuditLogPlugin,
-    AuditLogManifest,
-    createAuditLogPlugin,
     getAuditLogAPI,
 } from './plugin';
 

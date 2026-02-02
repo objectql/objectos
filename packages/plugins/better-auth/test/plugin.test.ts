@@ -2,57 +2,48 @@
  * Basic test for Better-Auth Plugin
  */
 
-import { BetterAuthPlugin, BetterAuthManifest, createBetterAuthPlugin } from '../src';
+import { BetterAuthPlugin } from '../src';
 
 describe('Better-Auth Plugin', () => {
-    it('should export BetterAuthPlugin', () => {
+    it('should export BetterAuthPlugin class', () => {
         expect(BetterAuthPlugin).toBeDefined();
-        expect(typeof BetterAuthPlugin).toBe('object');
+        expect(typeof BetterAuthPlugin).toBe('function');
     });
 
-    it('should export BetterAuthManifest', () => {
-        expect(BetterAuthManifest).toBeDefined();
-        expect(BetterAuthManifest.id).toBe('com.objectos.auth.better-auth');
-        expect(BetterAuthManifest.version).toBe('0.1.0');
-        expect(BetterAuthManifest.type).toBe('plugin');
-    });
-
-    it('should export createBetterAuthPlugin factory', () => {
-        expect(createBetterAuthPlugin).toBeDefined();
-        expect(typeof createBetterAuthPlugin).toBe('function');
+    it('should create plugin instance with default config', () => {
+        const plugin = new BetterAuthPlugin();
+        expect(plugin).toBeDefined();
+        expect(plugin.name).toBe('com.objectos.auth.better-auth');
+        expect(plugin.version).toBe('0.1.0');
+        expect(plugin.dependencies).toEqual([]);
     });
 
     it('should create plugin with custom options', () => {
-        const customPlugin = createBetterAuthPlugin({
+        const customPlugin = new BetterAuthPlugin({
             baseURL: 'https://example.com/auth',
             trustedOrigins: ['https://example.com']
         });
         expect(customPlugin).toBeDefined();
-        expect(customPlugin.onInstall).toBeDefined();
-        expect(customPlugin.onEnable).toBeDefined();
-        expect(customPlugin.onDisable).toBeDefined();
-        expect(customPlugin.onUninstall).toBeDefined();
+        expect(customPlugin.name).toBe('com.objectos.auth.better-auth');
     });
 
-    it('should have all lifecycle hooks', () => {
-        expect(typeof BetterAuthPlugin.onInstall).toBe('function');
-        expect(typeof BetterAuthPlugin.onEnable).toBe('function');
-        expect(typeof BetterAuthPlugin.onDisable).toBe('function');
-        expect(typeof BetterAuthPlugin.onUninstall).toBe('function');
+    it('should have all lifecycle methods', () => {
+        const plugin = new BetterAuthPlugin();
+        expect(typeof plugin.init).toBe('function');
+        expect(typeof plugin.start).toBe('function');
+        expect(typeof plugin.destroy).toBe('function');
     });
 
-    it('manifest should have correct contributes', () => {
-        expect(BetterAuthManifest.contributes).toBeDefined();
-        expect(BetterAuthManifest.contributes?.events).toBeDefined();
-        expect(BetterAuthManifest.contributes?.events?.length).toBeGreaterThan(0);
+    it('should have helper methods', () => {
+        const plugin = new BetterAuthPlugin();
+        expect(typeof plugin.getAuthInstance).toBe('function');
+        expect(typeof plugin.getHandler).toBe('function');
     });
 
-    it('manifest should define authentication events', () => {
-        const events = BetterAuthManifest.contributes?.events || [];
-        expect(events).toContain('auth.user.created');
-        expect(events).toContain('auth.user.login');
-        expect(events).toContain('auth.user.logout');
-        expect(events).toContain('auth.session.created');
-        expect(events).toContain('auth.session.expired');
+    it('should have correct plugin metadata', () => {
+        const plugin = new BetterAuthPlugin();
+        expect(plugin.name).toBe('com.objectos.auth.better-auth');
+        expect(plugin.version).toBe('0.1.0');
+        expect(Array.isArray(plugin.dependencies)).toBe(true);
     });
 });

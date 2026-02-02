@@ -12,19 +12,11 @@
  * 
  * @example
  * ```typescript
- * import { JobsPlugin, createJobsPlugin } from '@objectos/plugin-jobs';
+ * import { JobsPlugin } from '@objectos/plugin-jobs';
  * 
- * // Use default plugin
+ * // Use plugin
  * const os = new ObjectOS({
- *   plugins: [JobsPlugin]
- * });
- * 
- * // Or create with custom configuration
- * const customJobsPlugin = createJobsPlugin({
- *   enabled: true,
- *   concurrency: 10,
- *   defaultMaxRetries: 3,
- *   enableBuiltInJobs: true
+ *   plugins: [new JobsPlugin()]
  * });
  * ```
  * 
@@ -33,7 +25,7 @@
  * // Register a custom job handler
  * import { getJobsAPI } from '@objectos/plugin-jobs';
  * 
- * const jobsAPI = getJobsAPI(app);
+ * const jobsAPI = getJobsAPI(kernel);
  * 
  * jobsAPI.registerHandler({
  *   name: 'send-email',
@@ -71,8 +63,6 @@
 
 export {
     JobsPlugin,
-    JobsManifest,
-    createJobsPlugin,
     getJobsAPI,
 } from './plugin';
 

@@ -10,7 +10,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/spec": "0.9.0",
+    "@objectstack/runtime": "workspace:*",
     "cron-parser": "^4.9.0"
   },
   "devDependencies": {

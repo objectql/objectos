@@ -10,7 +10,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/spec": "0.9.0",
+    "@objectstack/runtime": "workspace:*",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {

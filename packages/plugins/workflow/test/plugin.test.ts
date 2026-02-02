@@ -5,184 +5,121 @@
  */
 
 import {
-    createWorkflowPlugin,
+    WorkflowPlugin,
     getWorkflowAPI,
-    WorkflowManifest,
 } from '../src/plugin';
-import type { PluginContextData } from '@objectstack/spec/system';
+import type { PluginContext } from '@objectstack/runtime';
 import type { WorkflowDefinition } from '../src/types';
 
 describe('Workflow Plugin', () => {
-    let plugin: any;
-    let mockContext: PluginContextData;
-    let mockApp: any;
+    let plugin: WorkflowPlugin;
+    let mockContext: PluginContext;
+    let mockKernel: any;
 
     beforeEach(() => {
-        mockApp = {
-            eventBus: {
-                on: jest.fn(),
-                emit: jest.fn(),
-            },
+        mockKernel = {
+            getService: jest.fn(),
+            services: new Map(),
         };
 
         mockContext = {
-            app: mockApp,
             logger: {
                 info: jest.fn(),
                 warn: jest.fn(),
                 error: jest.fn(),
                 debug: jest.fn(),
             },
-            storage: {
-                get: jest.fn(),
-                set: jest.fn(),
-                delete: jest.fn(),
-            },
+            registerService: jest.fn((name: string, service: any) => {
+                mockKernel.services.set(name, service);
+                mockKernel.getService.mockImplementation((n: string) => {
+                    if (n === name) return service;
+                    throw new Error(`Service ${n} not found`);
+                });
+            }),
+            hook: jest.fn(),
+            trigger: jest.fn(),
         } as any;
 
-        plugin = createWorkflowPlugin({
+        plugin = new WorkflowPlugin({
             enabled: true,
         });
     });
 
     describe('plugin lifecycle', () => {
-        it('should install successfully', async () => {
-            await plugin.onInstall(mockContext);
+        it('should initialize successfully', async () => {
+            await plugin.init(mockContext);
 
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'install_date',
-                expect.any(String)
-            );
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'config',
-                expect.any(String)
-            );
+            expect(mockContext.registerService).toHaveBeenCalledWith('workflow', plugin);
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                expect.stringContaining('Installation complete')
+                expect.stringContaining('Initialized successfully')
             );
         });
 
-        it('should enable successfully', async () => {
-            await plugin.onEnable(mockContext);
+        it('should start successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.start(mockContext);
 
-            expect(mockApp.__workflowPlugin).toBeDefined();
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                expect.stringContaining('Enabled successfully')
+                expect.stringContaining('Started successfully')
             );
         });
 
-        it('should disable successfully', async () => {
-            await plugin.onEnable(mockContext);
-            await plugin.onDisable(mockContext);
+        it('should destroy successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.destroy();
 
-            expect(mockApp.__workflowPlugin).toBeUndefined();
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'last_disabled',
-                expect.any(String)
-            );
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                expect.stringContaining('Disabled successfully')
+                expect.stringContaining('Destroyed')
             );
-        });
-
-        it('should uninstall successfully', async () => {
-            await plugin.onInstall(mockContext);
-            await plugin.onEnable(mockContext);
-            await plugin.onUninstall(mockContext);
-
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('install_date');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('last_disabled');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('config');
-            expect(mockContext.logger.warn).toHaveBeenCalledWith(
-                expect.stringContaining('Workflow data preserved')
-            );
-        });
-
-        it('should handle enable errors gracefully', async () => {
-            const errorContext = {
-                ...mockContext,
-                app: null, // This will cause an error
-            };
-
-            await expect(plugin.onEnable(errorContext as any))
-                .rejects.toThrow();
-
-            expect(errorContext.logger.error).toHaveBeenCalled();
-        });
-
-        it('should handle disable errors gracefully', async () => {
-            // Setup by enabling first
-            await plugin.onEnable(mockContext);
-            
-            // Force an error by making storage.set throw
-            mockContext.storage.set = jest.fn().mockRejectedValue(new Error('Storage error'));
-
-            await expect(plugin.onDisable(mockContext))
-                .rejects.toThrow();
-
-            expect(mockContext.logger.error).toHaveBeenCalled();
-        });
-
-        it('should handle uninstall errors gracefully', async () => {
-            await plugin.onEnable(mockContext);
-            
-            // Force an error
-            mockContext.storage.delete = jest.fn().mockRejectedValue(new Error('Delete error'));
-
-            await expect(plugin.onUninstall(mockContext))
-                .rejects.toThrow();
-
-            expect(mockContext.logger.error).toHaveBeenCalled();
         });
     });
 
     describe('event integration', () => {
-        it('should set up event listeners when event bus is available', async () => {
-            await plugin.onEnable(mockContext);
+        it('should set up event listeners using kernel hooks', async () => {
+            await plugin.init(mockContext);
 
-            expect(mockApp.eventBus.on).toHaveBeenCalled();
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
         });
 
-        it('should handle missing event bus gracefully', async () => {
-            const contextWithoutEventBus = {
-                ...mockContext,
-                app: {},
-            };
+        it('should trigger workflow events', async () => {
+            await plugin.init(mockContext);
 
-            await expect(plugin.onEnable(contextWithoutEventBus))
-                .resolves.not.toThrow();
-        });
+            // Simulate data.create event
+            const hookCallback = (mockContext.hook as jest.Mock).mock.calls[0][1];
+            await hookCallback({ objectName: 'test', record: {} });
 
-        it('should emit events when event bus is available', async () => {
-            await plugin.onEnable(mockContext);
-
-            // Get the plugin instance and register a workflow
-            const workflowPlugin = getWorkflowAPI(mockApp);
-            expect(workflowPlugin).toBeDefined();
+            expect(mockContext.trigger).toHaveBeenCalledWith(
+                'workflow.trigger',
+                expect.objectContaining({ type: 'data.create' })
+            );
         });
     });
 
     describe('getWorkflowAPI', () => {
-        it('should return workflow API after enable', async () => {
-            await plugin.onEnable(mockContext);
+        it('should return workflow plugin after init', async () => {
+            await plugin.init(mockContext);
 
-            const api = getWorkflowAPI(mockApp);
+            const api = getWorkflowAPI(mockKernel);
 
             expect(api).toBeDefined();
             expect(api?.getAPI).toBeDefined();
             expect(api?.getEngine).toBeDefined();
         });
 
-        it('should return null when plugin not enabled', () => {
-            const api = getWorkflowAPI(mockApp);
+        it('should return null when service not registered', () => {
+            mockKernel.getService.mockImplementation(() => {
+                throw new Error('Service not found');
+            });
+
+            const api = getWorkflowAPI(mockKernel);
 
             expect(api).toBeNull();
         });
 
         it('should provide workflow API methods', async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             const api = workflowPlugin?.getAPI();
 
             expect(api).toBeDefined();
@@ -220,9 +157,9 @@ describe('Workflow Plugin', () => {
         });
 
         it('should register and execute a workflow', async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             const api = workflowPlugin!.getAPI();
 
             await api.registerWorkflow(definition);
@@ -234,9 +171,9 @@ describe('Workflow Plugin', () => {
         });
 
         it('should execute transitions on workflow', async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             const api = workflowPlugin!.getAPI();
 
             await api.registerWorkflow(definition);
@@ -249,9 +186,9 @@ describe('Workflow Plugin', () => {
         });
 
         it('should provide access to workflow engine', async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             const engine = workflowPlugin!.getEngine();
 
             expect(engine).toBeDefined();
@@ -260,51 +197,26 @@ describe('Workflow Plugin', () => {
         });
     });
 
-    describe('WorkflowManifest', () => {
-        it('should have correct manifest structure', () => {
-            expect(WorkflowManifest.id).toBe('com.objectos.workflow');
-            expect(WorkflowManifest.version).toBe('0.1.0');
-            expect(WorkflowManifest.type).toBe('plugin');
-            expect(WorkflowManifest.name).toBe('Workflow Plugin');
-        });
-
-        it('should declare necessary permissions', () => {
-            expect(WorkflowManifest.permissions).toContain('system.workflow.read');
-            expect(WorkflowManifest.permissions).toContain('system.workflow.write');
-            expect(WorkflowManifest.permissions).toContain('system.workflow.execute');
-        });
-
-        it('should declare workflow events', () => {
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.started');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.completed');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.failed');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.aborted');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.transition');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.task.created');
-            expect(WorkflowManifest.contributes?.events).toContain('workflow.task.completed');
-        });
-    });
-
     describe('plugin configuration', () => {
         it('should accept custom configuration', async () => {
-            const customPlugin = createWorkflowPlugin({
+            const customPlugin = new WorkflowPlugin({
                 enabled: true,
                 defaultTimeout: 5000,
                 maxTransitions: 500,
             });
 
-            await customPlugin.onEnable!(mockContext);
+            await customPlugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             expect(workflowPlugin).toBeDefined();
         });
 
         it('should use default configuration when not provided', async () => {
-            const defaultPlugin = createWorkflowPlugin();
+            const defaultPlugin = new WorkflowPlugin();
 
-            await defaultPlugin.onEnable!(mockContext);
+            await defaultPlugin.init(mockContext);
 
-            const workflowPlugin = getWorkflowAPI(mockApp);
+            const workflowPlugin = getWorkflowAPI(mockKernel);
             expect(workflowPlugin).toBeDefined();
         });
     });

@@ -5,27 +5,27 @@
  * 
  * @example
  * ```typescript
- * import { BetterAuthPlugin, createBetterAuthPlugin } from '@objectos/plugin-better-auth';
+ * import { BetterAuthPlugin, getBetterAuthAPI } from '@objectos/plugin-better-auth';
  * 
- * // Use default plugin
- * const os = new ObjectOS({
- *   plugins: [BetterAuthPlugin]
- * });
- * 
- * // Or create with custom configuration
- * const customAuthPlugin = createBetterAuthPlugin({
+ * // Create plugin instance
+ * const authPlugin = new BetterAuthPlugin({
  *   databaseUrl: 'postgres://localhost:5432/mydb',
  *   baseURL: 'https://myapp.com/api/auth',
  *   trustedOrigins: ['https://myapp.com']
  * });
+ * 
+ * // Register with kernel
+ * await kernel.registerPlugin(authPlugin);
+ * 
+ * // Later, access the plugin from kernel
+ * const betterAuth = getBetterAuthAPI(kernel);
  * ```
  */
 
 export {
     BetterAuthPlugin,
-    BetterAuthManifest,
-    createBetterAuthPlugin,
     getBetterAuth,
+    getBetterAuthAPI,
     type BetterAuthPluginOptions,
     type BetterAuthConfig,
 } from './plugin';

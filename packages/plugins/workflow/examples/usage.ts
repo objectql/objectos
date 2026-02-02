@@ -5,7 +5,7 @@
  */
 
 import { 
-    createWorkflowPlugin, 
+    WorkflowPlugin, 
     parseWorkflowYAML,
     WorkflowEngine,
     type WorkflowContext
@@ -15,7 +15,7 @@ import * as path from 'path';
 
 // Example 1: Create and configure the plugin
 async function example1_setupPlugin() {
-    const plugin = createWorkflowPlugin({
+    const plugin = new WorkflowPlugin({
         enabled: true,
         defaultTimeout: 3600000, // 1 hour
         maxTransitions: 1000,
@@ -23,25 +23,23 @@ async function example1_setupPlugin() {
 
     // Mock context for demonstration
     const mockContext = {
-        app: {
-            eventBus: {
-                on: (event: string, handler: Function) => {},
-                emit: (event: string, data: any) => {},
-            }
-        },
         logger: console,
-        storage: {
-            get: async (key: string) => null,
-            set: async (key: string, value: any) => {},
-            delete: async (key: string) => {},
+        registerService: (name: string, service: any) => {
+            console.log(`Registered service: ${name}`);
+        },
+        hook: (event: string, handler: Function) => {
+            console.log(`Registered hook: ${event}`);
+        },
+        trigger: async (event: string, data: any) => {
+            console.log(`Triggered event: ${event}`, data);
         },
     };
 
-    // Install and enable the plugin
-    await plugin.onInstall(mockContext as any);
-    await plugin.onEnable(mockContext as any);
+    // Initialize and start the plugin
+    await plugin.init(mockContext as any);
+    await plugin.start(mockContext as any);
 
-    console.log('✓ Workflow plugin installed and enabled');
+    console.log('✓ Workflow plugin initialized and started');
 }
 
 // Example 2: Load and register a workflow from YAML
