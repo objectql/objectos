@@ -6,8 +6,6 @@ export default {
         }
     },
     presets: [
-        '@objectos/preset-base',
-        '@objectql/starter-basic',
-        '@objectql/starter-enterprise'
+        '@objectos/preset-base'
     ]
 };
