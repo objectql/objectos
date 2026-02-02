@@ -78,7 +78,11 @@ export class WorkflowPlugin implements Plugin {
     private async setupEventListeners(context: PluginContext): Promise<void> {
         // Listen for data create events to trigger workflows
         context.hook('data.create', async (data: any) => {
-            await this.emitEvent('workflow.trigger', { type: 'data.create', data });
+            try {
+                await this.emitEvent('workflow.trigger', { type: 'data.create', data });
+            } catch (error) {
+                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', error);
+            }
         });
 
         this.context?.logger.info('[Workflow Plugin] Event listeners registered');
@@ -88,9 +92,11 @@ export class WorkflowPlugin implements Plugin {
      * Emit workflow events using kernel trigger system
      */
     private async emitEvent(event: string, data: any): Promise<void> {
-        if (this.context) {
-            await this.context.trigger(event, data);
+        if (!this.context) {
+            console.warn('[Workflow Plugin] Cannot emit event before initialization:', event);
+            return;
         }
+        await this.context.trigger(event, data);
     }
 
     /**
