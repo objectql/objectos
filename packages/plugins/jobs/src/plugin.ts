@@ -200,9 +200,9 @@ export class JobsPlugin implements Plugin {
     /**
      * Start job processing
      */
-    async start(): Promise<void> {
+    async start(context: PluginContext): Promise<void> {
         this.scheduler.start();
-        this.context?.logger.info('[Jobs Plugin] Started');
+        context.logger.info('[Jobs Plugin] Started');
     }
 
     /**

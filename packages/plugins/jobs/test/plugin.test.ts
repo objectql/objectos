@@ -57,14 +57,6 @@ const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<
     return { context, kernel, hooks };
 };
 
-// Helper to trigger a hook
-const triggerHook = async (hooks: Map<string, Function[]>, name: string, data: any) => {
-    const handlers = hooks.get(name) || [];
-    for (const handler of handlers) {
-        await handler(data);
-    }
-};
-
 describe('Jobs Plugin', () => {
     let plugin: JobsPlugin;
     let mockContext: PluginContext;
@@ -113,7 +105,7 @@ describe('Jobs Plugin', () => {
 
         it('should start successfully', async () => {
             await plugin.init(mockContext);
-            await plugin.start();
+            await plugin.start(mockContext);
 
             expect(mockContext.logger.info).toHaveBeenCalledWith(
                 expect.stringContaining('Started')
