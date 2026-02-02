@@ -76,8 +76,7 @@ export class BetterAuthPlugin implements Plugin {
             context.logger.info('[Better-Auth Plugin] Initialized successfully');
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            const errorObj = error instanceof Error ? error : undefined;
-            context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, errorObj);
+            context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, error);
             throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
         }
     }
@@ -137,8 +136,7 @@ export class BetterAuthPlugin implements Plugin {
 
             this.context?.logger.info('[Better-Auth Plugin] Destroyed successfully');
         } catch (error) {
-            const errorObj = error instanceof Error ? error : undefined;
-            this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', errorObj);
+            this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', error);
             throw error;
         }
     }
