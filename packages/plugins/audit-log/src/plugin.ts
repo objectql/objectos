@@ -289,7 +289,7 @@ export class AuditLogPlugin implements Plugin {
      */
     async destroy(): Promise<void> {
         // Could implement retention policy cleanup here
-        this.context?.logger.info('[Audit Log] Plugin destroyed');
+        this.context?.logger.info('[Audit Log] Destroyed');
     }
 }
 

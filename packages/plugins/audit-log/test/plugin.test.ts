@@ -115,7 +115,7 @@ describe('Audit Log Plugin', () => {
             await plugin.destroy();
 
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                expect.stringContaining('destroyed')
+                expect.stringContaining('Destroyed')
             );
         });
 
