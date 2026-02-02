@@ -5,142 +5,136 @@
  */
 
 import {
-    createJobsPlugin,
+    JobsPlugin,
     getJobsAPI,
-    JobsManifest,
 } from '../src/plugin';
-import type { PluginContextData } from '@objectstack/spec/system';
+import type { PluginContext } from '@objectstack/runtime';
 import type { JobContext } from '../src/types';
 
+// Mock context for testing
+const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {
+    const hooks: Map<string, Function[]> = new Map();
+    const kernel = {
+        getService: jest.fn(),
+        services: new Map(),
+    };
+    
+    const context: PluginContext = {
+        logger: {
+            info: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+            debug: jest.fn(),
+        },
+        registerService: jest.fn((name: string, service: any) => {
+            kernel.services.set(name, service);
+            kernel.getService.mockImplementation((n: string) => {
+                if (kernel.services.has(n)) return kernel.services.get(n);
+                throw new Error(`Service ${n} not found`);
+            });
+        }),
+        getService: jest.fn((name: string) => {
+            if (kernel.services.has(name)) return kernel.services.get(name);
+            throw new Error(`Service ${name} not found`);
+        }),
+        hasService: jest.fn((name: string) => kernel.services.has(name)),
+        getServices: jest.fn(() => kernel.services),
+        hook: jest.fn((name: string, handler: Function) => {
+            if (!hooks.has(name)) {
+                hooks.set(name, []);
+            }
+            hooks.get(name)!.push(handler);
+        }),
+        trigger: jest.fn(async (name: string, ...args: any[]) => {
+            const handlers = hooks.get(name) || [];
+            for (const handler of handlers) {
+                await handler(...args);
+            }
+        }),
+        getKernel: jest.fn(() => kernel),
+    } as any;
+    
+    return { context, kernel, hooks };
+};
+
 describe('Jobs Plugin', () => {
-    let plugin: any;
-    let mockContext: PluginContextData;
-    let mockApp: any;
+    let plugin: JobsPlugin;
+    let mockContext: PluginContext;
+    let mockKernel: any;
+    let hooks: Map<string, Function[]>;
 
     beforeEach(() => {
-        mockApp = {
-            eventBus: {
-                on: jest.fn(),
-                emit: jest.fn(),
-            },
-        };
+        const mock = createMockContext();
+        mockContext = mock.context;
+        mockKernel = mock.kernel;
+        hooks = mock.hooks;
 
-        mockContext = {
-            app: mockApp,
-            logger: {
-                info: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
-                debug: jest.fn(),
-            },
-            storage: {
-                get: jest.fn(),
-                set: jest.fn(),
-                delete: jest.fn(),
-            },
-        } as any;
-
-        plugin = createJobsPlugin({
+        plugin = new JobsPlugin({
             enabled: true,
             concurrency: 2,
         });
     });
 
     afterEach(async () => {
-        const api = getJobsAPI(mockApp);
-        if (api) {
+        if (plugin) {
             try {
-                await api.stop();
+                await plugin.destroy();
             } catch (error) {
                 // Ignore errors during cleanup
             }
         }
     }, 10000); // Increase timeout to 10 seconds
 
-    describe('Plugin Manifest', () => {
-        it('should have correct manifest structure', () => {
-            expect(JobsManifest.id).toBe('com.objectos.jobs');
-            expect(JobsManifest.version).toBe('0.1.0');
-            expect(JobsManifest.type).toBe('plugin');
-            expect(JobsManifest.name).toBe('Jobs Plugin');
-            expect(JobsManifest.permissions).toContain('system.jobs.read');
-            expect(JobsManifest.permissions).toContain('system.jobs.write');
-            expect(JobsManifest.permissions).toContain('system.jobs.execute');
-        });
-
-        it('should contribute job events', () => {
-            expect(JobsManifest.contributes?.events).toContain('job.enqueued');
-            expect(JobsManifest.contributes?.events).toContain('job.started');
-            expect(JobsManifest.contributes?.events).toContain('job.completed');
-            expect(JobsManifest.contributes?.events).toContain('job.failed');
-            expect(JobsManifest.contributes?.events).toContain('job.scheduled');
-            expect(JobsManifest.contributes?.events).toContain('job.cancelled');
+    describe('Plugin Metadata', () => {
+        it('should have correct plugin metadata', () => {
+            expect(plugin.name).toBe('com.objectos.jobs');
+            expect(plugin.version).toBe('0.1.0');
+            expect(plugin.dependencies).toEqual([]);
         });
     });
 
     describe('Plugin Lifecycle', () => {
-        it('should install successfully', async () => {
-            await plugin.onInstall(mockContext);
+        it('should initialize successfully', async () => {
+            await plugin.init(mockContext);
 
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'install_date',
-                expect.any(String)
-            );
+            expect(mockContext.registerService).toHaveBeenCalledWith('jobs', plugin);
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Jobs Plugin] Installation complete'
+                expect.stringContaining('Initialized successfully')
             );
         });
 
-        it('should enable successfully', async () => {
-            await plugin.onEnable(mockContext);
+        it('should start successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.start(mockContext);
 
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Jobs Plugin] Enabled successfully'
+                expect.stringContaining('Started')
             );
-            expect(mockApp.__jobsPlugin).toBeDefined();
         });
 
-        it('should disable successfully', async () => {
-            await plugin.onEnable(mockContext);
-            await plugin.onDisable(mockContext);
+        it('should destroy successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.destroy();
 
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'last_disabled',
-                expect.any(String)
-            );
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Jobs Plugin] Disabled successfully'
+                expect.stringContaining('Destroyed')
             );
-            expect(mockApp.__jobsPlugin).toBeUndefined();
         });
 
-        it('should uninstall successfully', async () => {
-            await plugin.onInstall(mockContext);
-            await plugin.onEnable(mockContext);
-            await plugin.onUninstall(mockContext);
+        it('should register event hooks during init', async () => {
+            await plugin.init(mockContext);
 
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('install_date');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('last_disabled');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('config');
-        });
-
-        it('should handle enable errors', async () => {
-            const errorContext = {
-                ...mockContext,
-                app: null, // This will cause an error
-            } as any;
-
-            await expect(plugin.onEnable(errorContext)).rejects.toThrow();
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
         });
     });
 
     describe('Jobs API', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should provide API access', () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             expect(api).toBeDefined();
             expect(api).toHaveProperty('enqueue');
             expect(api).toHaveProperty('schedule');
@@ -151,7 +145,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should register custom job handler', () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             const handler = jest.fn(async (ctx: JobContext) => {});
 
             expect(() => api!.registerHandler({
@@ -161,7 +155,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should enqueue a job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             const handler = jest.fn(async (ctx: JobContext) => {});
 
             api!.registerHandler({
@@ -177,14 +171,14 @@ describe('Jobs Plugin', () => {
 
             expect(job.id).toBe('job-1');
             expect(job.status).toBe('pending');
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'job.enqueued',
                 expect.objectContaining({ id: 'job-1' })
             );
         });
 
         it('should schedule a job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             const handler = jest.fn(async (ctx: JobContext) => {});
 
             api!.registerHandler({
@@ -201,14 +195,14 @@ describe('Jobs Plugin', () => {
 
             expect(job.id).toBe('scheduled-job');
             expect(job.status).toBe('scheduled');
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'job.scheduled',
                 expect.objectContaining({ id: 'scheduled-job' })
             );
         });
 
         it('should cancel a pending job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             
             const handler = jest.fn(async (ctx: JobContext) => {
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -240,7 +234,7 @@ describe('Jobs Plugin', () => {
             await api!.cancel('job-to-cancel');
 
             // Verify event was emitted
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'job.cancelled',
                 expect.objectContaining({ jobId: 'job-to-cancel' })
             );
@@ -251,7 +245,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should get job by ID', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             const handler = jest.fn(async (ctx: JobContext) => {});
 
             api!.registerHandler({
@@ -271,10 +265,10 @@ describe('Jobs Plugin', () => {
         });
 
         it('should query jobs', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             
             // Stop processing first
-            await api!.stop();
+            await api!.destroy();
             
             const handler = jest.fn(async (ctx: JobContext) => {
                 await new Promise(resolve => setTimeout(resolve, 5000));
@@ -293,10 +287,10 @@ describe('Jobs Plugin', () => {
         });
 
         it('should get queue statistics', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             
             // Stop processing first
-            await api!.stop();
+            await api!.destroy();
             
             const handler = jest.fn(async (ctx: JobContext) => {
                 await new Promise(resolve => setTimeout(resolve, 5000));
@@ -316,11 +310,11 @@ describe('Jobs Plugin', () => {
 
     describe('Built-in Jobs', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should register built-in jobs when enabled', () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             
             // Test that built-in jobs are registered
             expect(() => api!.enqueue({
@@ -331,7 +325,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should execute data cleanup job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
 
             const job = await api!.enqueue({
                 id: 'cleanup-1',
@@ -343,7 +337,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should execute report generation job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
 
             const job = await api!.enqueue({
                 id: 'report-1',
@@ -355,7 +349,7 @@ describe('Jobs Plugin', () => {
         });
 
         it('should execute backup job', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
 
             const job = await api!.enqueue({
                 id: 'backup-1',
@@ -369,18 +363,15 @@ describe('Jobs Plugin', () => {
 
     describe('Event Integration', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should set up event listeners', () => {
-            expect(mockApp.eventBus.on).toHaveBeenCalledWith(
-                'data.create',
-                expect.any(Function)
-            );
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
         });
 
         it('should emit job lifecycle events', async () => {
-            const api = getJobsAPI(mockApp);
+            const api = getJobsAPI(mockKernel);
             const handler = jest.fn(async (ctx: JobContext) => {});
 
             api!.registerHandler({
@@ -394,7 +385,7 @@ describe('Jobs Plugin', () => {
                 data: {},
             });
 
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'job.enqueued',
                 expect.any(Object)
             );
