@@ -5,42 +5,79 @@
  */
 
 import {
-    createAutomationPlugin,
+    AutomationPlugin,
     getAutomationAPI,
-    AutomationManifest,
 } from '../src/plugin';
-import type { PluginContextData } from '@objectstack/spec/system';
+import type { PluginContext } from '@objectstack/runtime';
 import type { AutomationRule, FormulaField } from '../src/types';
 
+// Mock context for testing
+const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {
+    const hooks: Map<string, Function[]> = new Map();
+    const kernel = {
+        getService: jest.fn(),
+        services: new Map(),
+    };
+    
+    const context: PluginContext = {
+        logger: {
+            info: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+            debug: jest.fn(),
+        },
+        registerService: jest.fn((name: string, service: any) => {
+            kernel.services.set(name, service);
+            kernel.getService.mockImplementation((n: string) => {
+                if (kernel.services.has(n)) return kernel.services.get(n);
+                throw new Error(`Service ${n} not found`);
+            });
+        }),
+        getService: jest.fn((name: string) => {
+            if (kernel.services.has(name)) return kernel.services.get(name);
+            throw new Error(`Service ${name} not found`);
+        }),
+        hasService: jest.fn((name: string) => kernel.services.has(name)),
+        getServices: jest.fn(() => kernel.services),
+        hook: jest.fn((name: string, handler: Function) => {
+            if (!hooks.has(name)) {
+                hooks.set(name, []);
+            }
+            hooks.get(name)!.push(handler);
+        }),
+        trigger: jest.fn(async (name: string, ...args: any[]) => {
+            const handlers = hooks.get(name) || [];
+            for (const handler of handlers) {
+                await handler(...args);
+            }
+        }),
+        getKernel: jest.fn(() => kernel),
+    } as any;
+    
+    return { context, kernel, hooks };
+};
+
+// Helper to trigger a hook
+const triggerHook = async (hooks: Map<string, Function[]>, name: string, data: any) => {
+    const handlers = hooks.get(name) || [];
+    for (const handler of handlers) {
+        await handler(data);
+    }
+};
+
 describe('Automation Plugin', () => {
-    let plugin: any;
-    let mockContext: PluginContextData;
-    let mockApp: any;
+    let plugin: AutomationPlugin;
+    let mockContext: PluginContext;
+    let mockKernel: any;
+    let hooks: Map<string, Function[]>;
 
     beforeEach(() => {
-        mockApp = {
-            eventBus: {
-                on: jest.fn(),
-                emit: jest.fn(),
-            },
-        };
+        const mock = createMockContext();
+        mockContext = mock.context;
+        mockKernel = mock.kernel;
+        hooks = mock.hooks;
 
-        mockContext = {
-            app: mockApp,
-            logger: {
-                info: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
-                debug: jest.fn(),
-            },
-            storage: {
-                get: jest.fn(),
-                set: jest.fn(),
-                delete: jest.fn(),
-            },
-        } as any;
-
-        plugin = createAutomationPlugin({
+        plugin = new AutomationPlugin({
             enabled: true,
             enableEmail: true,
             enableHttp: true,
@@ -49,122 +86,76 @@ describe('Automation Plugin', () => {
     });
 
     afterEach(async () => {
-        const api = getAutomationAPI(mockApp);
-        if (api) {
+        if (plugin) {
             try {
-                await api.shutdown();
+                await plugin.destroy();
             } catch (error) {
                 // Ignore errors during cleanup
             }
         }
     });
 
-    describe('Plugin Manifest', () => {
-        it('should have correct manifest structure', () => {
-            expect(AutomationManifest.id).toBe('com.objectos.automation');
-            expect(AutomationManifest.version).toBe('0.1.0');
-            expect(AutomationManifest.type).toBe('plugin');
-            expect(AutomationManifest.name).toBe('Automation Plugin');
-            expect(AutomationManifest.permissions).toContain('system.automation.read');
-            expect(AutomationManifest.permissions).toContain('system.automation.write');
-            expect(AutomationManifest.permissions).toContain('system.automation.execute');
-        });
-
-        it('should contribute automation events', () => {
-            expect(AutomationManifest.contributes?.events).toContain('automation.rule.created');
-            expect(AutomationManifest.contributes?.events).toContain('automation.rule.executed');
-            expect(AutomationManifest.contributes?.events).toContain('automation.rule.failed');
-            expect(AutomationManifest.contributes?.events).toContain('automation.trigger.fired');
-            expect(AutomationManifest.contributes?.events).toContain('automation.action.executed');
-            expect(AutomationManifest.contributes?.events).toContain('automation.formula.calculated');
+    describe('Plugin Metadata', () => {
+        it('should have correct plugin metadata', () => {
+            expect(plugin.name).toBe('com.objectos.automation');
+            expect(plugin.version).toBe('0.1.0');
+            expect(plugin.dependencies).toEqual([]);
         });
     });
 
     describe('Plugin Lifecycle', () => {
-        it('should install successfully', async () => {
-            await plugin.onInstall(mockContext);
+        it('should initialize successfully', async () => {
+            await plugin.init(mockContext);
 
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'install_date',
-                expect.any(String)
-            );
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'config',
-                expect.any(String)
-            );
+            expect(mockContext.registerService).toHaveBeenCalledWith('automation', plugin);
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Automation Plugin] Installation complete'
+                expect.stringContaining('Initialized successfully')
             );
         });
 
-        it('should enable successfully', async () => {
-            await plugin.onEnable(mockContext);
+        it('should start successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.start(mockContext);
 
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Automation Plugin] Enabled successfully'
-            );
-            expect(mockApp.__automationPlugin).toBeDefined();
-        });
-
-        it('should disable successfully', async () => {
-            await plugin.onEnable(mockContext);
-            await plugin.onDisable(mockContext);
-
-            expect(mockContext.storage.set).toHaveBeenCalledWith(
-                'last_disabled',
-                expect.any(String)
+                expect.stringContaining('Starting')
             );
             expect(mockContext.logger.info).toHaveBeenCalledWith(
-                '[Automation Plugin] Disabled successfully'
-            );
-            expect(mockApp.__automationPlugin).toBeUndefined();
-        });
-
-        it('should uninstall successfully', async () => {
-            await plugin.onInstall(mockContext);
-            await plugin.onEnable(mockContext);
-            await plugin.onUninstall(mockContext);
-
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('install_date');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('last_disabled');
-            expect(mockContext.storage.delete).toHaveBeenCalledWith('config');
-            expect(mockContext.logger.warn).toHaveBeenCalledWith(
-                expect.stringContaining('Uninstalled - Automation data preserved')
+                expect.stringContaining('Started successfully')
             );
         });
 
-        it('should handle enable errors', async () => {
-            const errorContext = {
-                ...mockContext,
-                app: null,
-            } as any;
+        it('should destroy successfully', async () => {
+            await plugin.init(mockContext);
+            await plugin.destroy();
 
-            await expect(plugin.onEnable(errorContext)).rejects.toThrow();
+            expect(mockContext.logger.info).toHaveBeenCalledWith(
+                expect.stringContaining('Destroyed')
+            );
+        });
+
+        it('should register event hooks during init', async () => {
+            await plugin.init(mockContext);
+
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
         });
     });
 
     describe('Event Integration', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should set up event listeners', () => {
-            expect(mockApp.eventBus.on).toHaveBeenCalledWith(
-                'data.create',
-                expect.any(Function)
-            );
-            expect(mockApp.eventBus.on).toHaveBeenCalledWith(
-                'data.update',
-                expect.any(Function)
-            );
-            expect(mockApp.eventBus.on).toHaveBeenCalledWith(
-                'data.delete',
-                expect.any(Function)
-            );
+            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
         });
 
         it('should emit trigger fired event', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             const rule: AutomationRule = {
                 id: 'rule-1',
@@ -181,16 +172,12 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            const eventHandler = mockApp.eventBus.on.mock.calls.find(
-                (call: any) => call[0] === 'data.create'
-            )[1];
-
-            await eventHandler({
+            await triggerHook(hooks, 'data.create', {
                 objectName: 'Contact',
                 record: { id: '123', name: 'John Doe' },
             });
 
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'automation.trigger.fired',
                 expect.objectContaining({
                     ruleId: 'rule-1',
@@ -203,11 +190,11 @@ describe('Automation Plugin', () => {
 
     describe('Rule Execution', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should register and retrieve a rule', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             const rule: AutomationRule = {
                 id: 'rule-1',
@@ -236,7 +223,7 @@ describe('Automation Plugin', () => {
         });
 
         it('should list rules with filters', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             const rules: AutomationRule[] = [
                 {
@@ -267,7 +254,7 @@ describe('Automation Plugin', () => {
         });
 
         it('should execute rule actions on trigger', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             const mockUpdateHandler = jest.fn().mockResolvedValue(undefined);
             api!.getActionExecutor().setUpdateFieldHandler(mockUpdateHandler);
@@ -294,11 +281,7 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            const eventHandler = mockApp.eventBus.on.mock.calls.find(
-                (call: any) => call[0] === 'data.create'
-            )[1];
-
-            await eventHandler({
+            await triggerHook(hooks, 'data.create', {
                 objectName: 'Contact',
                 record: { id: '123', name: 'John Doe' },
             });
@@ -309,7 +292,7 @@ describe('Automation Plugin', () => {
                 { status: 'new' }
             );
 
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'automation.rule.executed',
                 expect.objectContaining({
                     ruleId: 'rule-1',
@@ -321,11 +304,11 @@ describe('Automation Plugin', () => {
 
     describe('Formula Fields', () => {
         beforeEach(async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
         });
 
         it('should register and calculate a formula', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             const formula: FormulaField = {
                 name: 'totalAmount',
@@ -346,7 +329,7 @@ describe('Automation Plugin', () => {
 
             expect(result).toBe(500);
 
-            expect(mockApp.eventBus.emit).toHaveBeenCalledWith(
+            expect(mockContext.trigger).toHaveBeenCalledWith(
                 'automation.formula.calculated',
                 expect.objectContaining({
                     objectName: 'Order',
@@ -357,7 +340,7 @@ describe('Automation Plugin', () => {
         });
 
         it('should throw error for non-existent formula', async () => {
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
 
             await expect(
                 api!.calculateFormula('Order', 'nonExistent', {})
@@ -366,10 +349,10 @@ describe('Automation Plugin', () => {
     });
 
     describe('API Access', () => {
-        it('should provide API access after enable', async () => {
-            await plugin.onEnable(mockContext);
+        it('should provide API access after init', async () => {
+            await plugin.init(mockContext);
 
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
             expect(api).toBeDefined();
             expect(api).toHaveProperty('registerRule');
             expect(api).toHaveProperty('getRule');
@@ -381,15 +364,20 @@ describe('Automation Plugin', () => {
             expect(api).toHaveProperty('getFormulaEngine');
         });
 
-        it('should return null for API before enable', () => {
-            const api = getAutomationAPI(mockApp);
+        it('should return null for API before init', () => {
+            // Create a fresh kernel without the service
+            const freshKernel = {
+                getService: jest.fn(() => { throw new Error('Service not found'); }),
+                services: new Map(),
+            };
+            const api = getAutomationAPI(freshKernel);
             expect(api).toBeNull();
         });
 
         it('should provide access to engines', async () => {
-            await plugin.onEnable(mockContext);
+            await plugin.init(mockContext);
 
-            const api = getAutomationAPI(mockApp);
+            const api = getAutomationAPI(mockKernel);
             const triggerEngine = api!.getTriggerEngine();
             const actionExecutor = api!.getActionExecutor();
             const formulaEngine = api!.getFormulaEngine();
