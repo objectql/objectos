@@ -13,12 +13,7 @@
  * - Provides query API for audit trail and field history
  */
 
-import type {
-    PluginDefinition,
-    PluginContextData,
-    ObjectStackManifest,
-} from '@objectstack/spec/system';
-
+import type { Plugin, PluginContext } from '@objectstack/runtime';
 import type { AuditEventType } from '@objectstack/spec/system';
 import type {
     AuditLogConfig,
@@ -30,46 +25,17 @@ import type {
 import { InMemoryAuditStorage } from './storage';
 
 /**
- * Extended app context with event bus
+ * Audit Log Plugin
+ * Implements the Plugin interface for @objectstack/runtime
  */
-interface ExtendedAppContext {
-    eventBus?: {
-        on?: (event: string, handler: (data: any) => void) => void;
-        emit?: (event: string, data: any) => void;
-    };
-}
+export class AuditLogPlugin implements Plugin {
+    name = 'com.objectos.audit-log';
+    version = '0.1.0';
+    dependencies: string[] = [];
 
-/**
- * Plugin Manifest
- * Conforms to @objectstack/spec/system/ManifestSchema
- */
-export const AuditLogManifest: ObjectStackManifest = {
-    id: 'com.objectos.audit-log',
-    version: '0.1.0',
-    type: 'plugin',
-    name: 'Audit Log Plugin',
-    description: 'Comprehensive audit logging with event recording, tracking, and field history',
-    permissions: [
-        'system.audit.read',
-        'system.audit.write',
-    ],
-    contributes: {
-        // Register audit-related events
-        events: [
-            'audit.event.recorded',
-            'audit.trail.created',
-            'audit.field.changed',
-        ],
-    },
-};
-
-/**
- * Audit Log Plugin Instance
- */
-class AuditLogPluginInstance {
     private config: AuditLogConfig;
     private storage: any;
-    private context?: PluginContextData;
+    private context?: PluginContext;
 
     constructor(config: AuditLogConfig = {}) {
         this.config = {
@@ -84,53 +50,79 @@ class AuditLogPluginInstance {
     }
 
     /**
-     * Initialize plugin and set up event listeners
+     * Initialize plugin - Register services and subscribe to events
      */
-    async initialize(context: PluginContextData): Promise<void> {
+    async init(context: PluginContext): Promise<void> {
         this.context = context;
 
-        const app = context.app as ExtendedAppContext;
-        if (!app.eventBus) {
-            context.logger.warn('[Audit Log] EventBus not available, event tracking disabled');
-            return;
-        }
+        // Register audit log service
+        context.registerService('audit-log', this);
 
+        // Set up event listeners using kernel hooks
+        await this.setupEventListeners(context);
+
+        context.logger.info('[Audit Log] Initialized successfully');
+    }
+
+    /**
+     * Start plugin - Connect to databases, start servers
+     */
+    async start(context: PluginContext): Promise<void> {
+        context.logger.info('[Audit Log] Starting...');
+        context.logger.info('[Audit Log] Started successfully');
+    }
+
+    /**
+     * Set up event listeners using kernel hooks
+     */
+    private async setupEventListeners(context: PluginContext): Promise<void> {
         // Subscribe to data events
-        const events = [
-            'data.create',
-            'data.update',
-            'data.delete',
-            'data.find',
-        ];
+        context.hook('data.create', async (data: any) => {
+            await this.handleDataEvent('data.create', data);
+        });
 
-        for (const event of events) {
-            if (typeof app.eventBus.on === 'function') {
-                app.eventBus.on(event, async (data: any) => {
-                    await this.handleDataEvent(event, data);
-                });
-            }
-        }
+        context.hook('data.update', async (data: any) => {
+            await this.handleDataEvent('data.update', data);
+        });
+
+        context.hook('data.delete', async (data: any) => {
+            await this.handleDataEvent('data.delete', data);
+        });
+
+        context.hook('data.find', async (data: any) => {
+            await this.handleDataEvent('data.find', data);
+        });
 
         // Subscribe to job events
-        const jobEvents = [
-            'job.enqueued',
-            'job.started',
-            'job.completed',
-            'job.failed',
-            'job.retried',
-            'job.cancelled',
-            'job.scheduled',
-        ];
+        context.hook('job.enqueued', async (data: any) => {
+            await this.handleJobEvent('job.enqueued', data);
+        });
 
-        for (const event of jobEvents) {
-            if (typeof app.eventBus.on === 'function') {
-                app.eventBus.on(event, async (data: any) => {
-                    await this.handleJobEvent(event, data);
-                });
-            }
-        }
+        context.hook('job.started', async (data: any) => {
+            await this.handleJobEvent('job.started', data);
+        });
 
-        context.logger.info('[Audit Log] Event listeners registered');
+        context.hook('job.completed', async (data: any) => {
+            await this.handleJobEvent('job.completed', data);
+        });
+
+        context.hook('job.failed', async (data: any) => {
+            await this.handleJobEvent('job.failed', data);
+        });
+
+        context.hook('job.retried', async (data: any) => {
+            await this.handleJobEvent('job.retried', data);
+        });
+
+        context.hook('job.cancelled', async (data: any) => {
+            await this.handleJobEvent('job.cancelled', data);
+        });
+
+        context.hook('job.scheduled', async (data: any) => {
+            await this.handleJobEvent('job.scheduled', data);
+        });
+
+        this.context?.logger.info('[Audit Log] Event listeners registered');
     }
 
     /**
@@ -185,13 +177,8 @@ class AuditLogPluginInstance {
         // Store the audit event
         await this.storage.logEvent(auditEntry);
 
-        // Emit audit event
-        if (this.context) {
-            const app = this.context.app as ExtendedAppContext;
-            if (app.eventBus && typeof app.eventBus.emit === 'function') {
-                app.eventBus.emit('audit.event.recorded', auditEntry);
-            }
-        }
+        // Emit audit event using kernel trigger system
+        await this.emitEvent('audit.event.recorded', auditEntry);
 
         this.context?.logger.debug(`[Audit Log] Recorded ${eventType} event for ${objectName}/${recordId}`);
     }
@@ -254,13 +241,8 @@ class AuditLogPluginInstance {
         // Store the audit event
         await this.storage.logEvent(auditEntry);
 
-        // Emit audit event
-        if (this.context) {
-            const app = this.context.app as ExtendedAppContext;
-            if (app.eventBus && typeof app.eventBus.emit === 'function') {
-                app.eventBus.emit('audit.event.recorded', auditEntry);
-            }
-        }
+        // Emit audit event using kernel trigger system
+        await this.emitEvent('audit.event.recorded', auditEntry);
 
         this.context?.logger.debug(`[Audit Log] Recorded ${event} for job ${jobId || id}`);
     }
@@ -287,6 +269,15 @@ class AuditLogPluginInstance {
     }
 
     /**
+     * Emit audit events using kernel trigger system
+     */
+    private async emitEvent(event: string, data: any): Promise<void> {
+        if (this.context) {
+            await this.context.trigger(event, data);
+        }
+    }
+
+    /**
      * Generate unique ID for audit entries
      */
     private generateId(): string {
@@ -296,109 +287,19 @@ class AuditLogPluginInstance {
     /**
      * Cleanup and shutdown
      */
-    async shutdown(): Promise<void> {
+    async destroy(): Promise<void> {
         // Could implement retention policy cleanup here
-        this.context?.logger.info('[Audit Log] Plugin shutdown');
+        this.context?.logger.info('[Audit Log] Plugin destroyed');
     }
 }
 
 /**
- * Create Audit Log Plugin
- * Factory function to create the plugin with custom configuration
+ * Helper function to access the audit log API from kernel
  */
-export const createAuditLogPlugin = (config: AuditLogConfig = {}): PluginDefinition => {
-    const instance = new AuditLogPluginInstance(config);
-
-    return {
-        /**
-         * Called when the plugin is first installed
-         */
-        onInstall: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Audit Log Plugin] Installing...');
-            
-            // Store installation configuration
-            await context.storage.set('install_date', new Date().toISOString());
-            await context.storage.set('config', JSON.stringify(config));
-            
-            context.logger.info('[Audit Log Plugin] Installation complete');
-        }) as any,
-
-        /**
-         * Called when the plugin is enabled
-         */
-        onEnable: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Audit Log Plugin] Enabling...');
-            
-            try {
-                // Initialize the audit logging system
-                await instance.initialize(context);
-                
-                // Store plugin instance reference for API access
-                (context.app as any).__auditLogPlugin = instance;
-                
-                context.logger.info('[Audit Log Plugin] Enabled successfully');
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                context.logger.error(`[Audit Log Plugin] Failed to enable: ${errorMessage}`, error);
-                throw new Error(`Audit Log Plugin initialization failed: ${errorMessage}`);
-            }
-        }) as any,
-
-        /**
-         * Called when the plugin is disabled
-         */
-        onDisable: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Audit Log Plugin] Disabling...');
-            
-            try {
-                // Shutdown the plugin
-                await instance.shutdown();
-                
-                // Remove plugin instance reference
-                delete (context.app as any).__auditLogPlugin;
-                
-                // Store last disabled timestamp
-                await context.storage.set('last_disabled', new Date().toISOString());
-                
-                context.logger.info('[Audit Log Plugin] Disabled successfully');
-            } catch (error) {
-                context.logger.error('[Audit Log Plugin] Error during disable:', error);
-                throw error;
-            }
-        }) as any,
-
-        /**
-         * Called when the plugin is uninstalled
-         */
-        onUninstall: (async (context: PluginContextData): Promise<void> => {
-            context.logger.info('[Audit Log Plugin] Uninstalling...');
-            
-            try {
-                // Shutdown the plugin
-                await instance.shutdown();
-                
-                // Cleanup plugin storage
-                await context.storage.delete('install_date');
-                await context.storage.delete('last_disabled');
-                await context.storage.delete('config');
-                
-                context.logger.warn('[Audit Log Plugin] Uninstalled - Audit data preserved');
-            } catch (error) {
-                context.logger.error('[Audit Log Plugin] Error during uninstall:', error);
-                throw error;
-            }
-        }) as any,
-    };
-};
-
-/**
- * Default plugin instance with default configuration
- */
-export const AuditLogPlugin: PluginDefinition = createAuditLogPlugin();
-
-/**
- * Helper function to access the audit log API
- */
-export function getAuditLogAPI(app: any): AuditLogPluginInstance | null {
-    return app.__auditLogPlugin || null;
+export function getAuditLogAPI(kernel: any): AuditLogPlugin | null {
+    try {
+        return kernel.getService('audit-log');
+    } catch {
+        return null;
+    }
 }
