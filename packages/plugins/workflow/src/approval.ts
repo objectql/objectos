@@ -29,7 +29,8 @@ export class ApprovalService {
             throw new Error(`Task not found: ${taskId}`);
         }
 
-        if (task.status !== 'pending') {
+        // Allow delegation of pending or already delegated tasks (for re-delegation)
+        if (task.status !== 'pending' && task.status !== 'delegated') {
             throw new Error(`Cannot delegate task in status: ${task.status}`);
         }
 

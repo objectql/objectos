@@ -65,10 +65,7 @@ describe('ApprovalService', () => {
                 reason: 'First delegation',
             });
 
-            // Update status back to pending for second delegation
-            await storage.updateTask('task_1', { status: 'pending' });
-
-            // Second delegation
+            // Second delegation (should work on delegated task)
             const delegated = await approvalService.delegateTask({
                 taskId: 'task_1',
                 delegateTo: 'user3@example.com',
@@ -91,7 +88,7 @@ describe('ApprovalService', () => {
             ).rejects.toThrow('Task not found');
         });
 
-        it('should throw error when delegating non-pending task', async () => {
+        it('should throw error when delegating completed task', async () => {
             const task: WorkflowTask = {
                 id: 'task_1',
                 instanceId: 'wf_1',

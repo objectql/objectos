@@ -12,6 +12,7 @@ import type {
     WorkflowQueryOptions,
 } from './types';
 import { WorkflowEngine } from './engine';
+import { ApprovalService } from './approval';
 
 /**
  * Workflow API class
@@ -19,10 +20,12 @@ import { WorkflowEngine } from './engine';
 export class WorkflowAPI {
     private engine: WorkflowEngine;
     private storage: WorkflowStorage;
+    private approvalService: ApprovalService;
 
     constructor(storage: WorkflowStorage, engine?: WorkflowEngine) {
         this.storage = storage;
         this.engine = engine || new WorkflowEngine();
+        this.approvalService = new ApprovalService(storage);
     }
 
     /**
@@ -261,29 +264,12 @@ export class WorkflowAPI {
         delegatedBy: string,
         reason?: string
     ): Promise<WorkflowTask> {
-        const task = await this.storage.getTask(taskId);
-        if (!task) {
-            throw new Error(`Task not found: ${taskId}`);
-        }
-
-        if (task.status !== 'pending') {
-            throw new Error(`Cannot delegate task in status: ${task.status}`);
-        }
-
-        // Store original assignee if not already delegated
-        const originalAssignee = task.originalAssignee || task.assignedTo;
-
-        await this.storage.updateTask(taskId, {
-            status: 'delegated',
-            originalAssignee,
-            delegatedTo: delegateTo,
-            delegatedAt: new Date(),
-            delegationReason: reason,
-            assignedTo: delegateTo,
+        return this.approvalService.delegateTask({
+            taskId,
+            delegateTo,
+            delegatedBy,
+            reason,
         });
-
-        const updatedTask = await this.storage.getTask(taskId);
-        return updatedTask!;
     }
 
     /**
@@ -295,25 +281,12 @@ export class WorkflowAPI {
         reason?: string,
         escalatedBy?: string
     ): Promise<WorkflowTask> {
-        const task = await this.storage.getTask(taskId);
-        if (!task) {
-            throw new Error(`Task not found: ${taskId}`);
-        }
-
-        if (task.status === 'completed' || task.status === 'rejected') {
-            throw new Error(`Cannot escalate task in status: ${task.status}`);
-        }
-
-        await this.storage.updateTask(taskId, {
-            status: 'escalated',
-            escalatedTo: escalateTo,
-            escalatedAt: new Date(),
-            escalationReason: reason,
-            assignedTo: escalateTo,
+        return this.approvalService.escalateTask({
+            taskId,
+            escalateTo,
+            reason,
+            escalatedBy,
         });
-
-        const updatedTask = await this.storage.getTask(taskId);
-        return updatedTask!;
     }
 
     /**

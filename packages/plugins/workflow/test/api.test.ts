@@ -466,10 +466,7 @@ describe('WorkflowAPI', () => {
                 'First delegation'
             );
 
-            // Update to pending to allow second delegation
-            await storage.updateTask(task.id, { status: 'pending' });
-
-            // Second delegation
+            // Second delegation (should work on delegated task)
             const delegated = await api.delegateTask(
                 task.id,
                 'assistant2@example.com',
@@ -487,7 +484,7 @@ describe('WorkflowAPI', () => {
             ).rejects.toThrow('Task not found');
         });
 
-        it('should throw error when delegating non-pending task', async () => {
+        it('should throw error when delegating completed task', async () => {
             const task = await api.createTask({
                 instanceId,
                 name: 'Approval Task',
