@@ -1,13 +1,12 @@
 # ObjectOS Architecture Comparison: Kernel vs Runtime
-# ObjectOS 架构对比：内核 vs 运行时
 
 > **Visual guide to understanding the architectural evolution**
 
 ---
 
-## 🏛️ The Big Picture | 全局架构
+## 🏛️ The Big Picture
 
-### ObjectStack Ecosystem | ObjectStack 生态系统
+### ObjectStack Ecosystem
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -30,9 +29,9 @@
 
 ---
 
-## 🔄 Architecture Evolution | 架构演进
+## 🔄 Architecture Evolution
 
-### Phase 1: Monolithic Kernel (Deprecated) | 单体内核（已弃用）
+### Phase 1: Monolithic Kernel (Deprecated)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -64,7 +63,7 @@ Problems:
 ❌ All-or-nothing approach
 ```
 
-### Phase 2: Microkernel (Current) | 微内核（当前）
+### Phase 2: Microkernel (Current)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -96,9 +95,9 @@ Benefits:
 
 ---
 
-## 📦 Package Comparison | 包对比
+## 📦 Package Comparison
 
-### Old Architecture (Kernel) | 旧架构（内核）
+### Old Architecture (Kernel)
 
 ```
 @objectos/kernel
@@ -141,7 +140,7 @@ Benefits:
     └── NestJS wrapper
 ```
 
-### New Architecture (Runtime + Plugins) | 新架构（运行时 + 插件）
+### New Architecture (Runtime + Plugins)
 
 ```
 @objectstack/runtime (Minimal Core)
@@ -208,7 +207,7 @@ Benefits:
 
 ---
 
-## 🔌 Plugin System Comparison | 插件系统对比
+## 🔌 Plugin System Comparison
 
 ### Old Kernel Plugin API
 
@@ -270,7 +269,7 @@ export class MyPlugin implements Plugin {
 
 ---
 
-## 🔄 Data Flow Comparison | 数据流对比
+## 🔄 Data Flow Comparison
 
 ### Old Architecture: Request → Kernel → Database
 
@@ -359,7 +358,7 @@ export class MyPlugin implements Plugin {
 
 ---
 
-## 🎯 Feature Distribution | 功能分布
+## 🎯 Feature Distribution
 
 ### Kernel (All Built-in) vs Runtime (Plugin-based)
 
@@ -382,7 +381,7 @@ export class MyPlugin implements Plugin {
 
 ---
 
-## 📊 Size & Performance Comparison | 大小和性能对比
+## 📊 Size & Performance Comparison
 
 ### Bundle Size
 
@@ -416,7 +415,7 @@ Savings: ~44%
 
 ---
 
-## 🔐 Security Model Comparison | 安全模型对比
+## 🔐 Security Model Comparison
 
 ### Kernel (Integrated)
 
@@ -459,7 +458,7 @@ Benefit: Plugins can be sandboxed
 
 ---
 
-## 🚀 Startup Time Comparison | 启动时间对比
+## 🚀 Startup Time Comparison
 
 ### Kernel Startup
 
@@ -486,7 +485,7 @@ Total: ~1.2 seconds (29% faster)
 
 ---
 
-## 🛠️ Development Experience | 开发体验
+## 🛠️ Development Experience
 
 ### Adding a New Feature
 
@@ -534,7 +533,7 @@ kernel.use(new NewFeaturePlugin());
 
 ---
 
-## 📈 Scalability | 可扩展性
+## 📈 Scalability
 
 ### Kernel (Vertical Scaling)
 
@@ -564,7 +563,7 @@ Can scale specific features independently
 
 ---
 
-## 🎓 Learning Curve | 学习曲线
+## 🎓 Learning Curve
 
 ```
 Complexity
@@ -585,7 +584,7 @@ Runtime: Gradual learning (learn plugins as needed)
 
 ---
 
-## ✅ Migration Checklist | 迁移检查清单
+## ✅ Migration Checklist
 
 ### From Kernel to Runtime
 
@@ -621,7 +620,7 @@ export class ObjectOS {
 
 ---
 
-## 🎯 Recommendation | 建议
+## 🎯 Recommendation
 
 ### When to Use Kernel (Deprecated)
 - ⚠️ Legacy applications (maintenance mode only)
@@ -637,7 +636,7 @@ export class ObjectOS {
 
 ---
 
-## 📚 Next Steps | 下一步
+## 📚 Next Steps
 
 1. Read [SPEC_SYSTEM_DEVELOPMENT_PLAN.md](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)
 2. Review [packages/runtime/README.md](./packages/runtime/README.md)

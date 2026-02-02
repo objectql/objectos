@@ -1,11 +1,10 @@
 # ObjectOS Spec System - Quick Reference
-# 快速参考指南
 
 > **Quick access to key information from the complete development plan**
 
 ---
 
-## 🎯 What is ObjectOS? | ObjectOS 是什么？
+## 🎯 What is ObjectOS?
 
 ObjectOS is the **Business Operating System** for the ObjectStack ecosystem:
 
@@ -15,9 +14,9 @@ ObjectOS is the **Business Operating System** for the ObjectStack ecosystem:
 
 ---
 
-## 📦 Package Overview | 包概览
+## 📦 Package Overview
 
-### Current Status | 当前状态
+### Current Status
 
 ```
 ✅ Active Packages (Use These)
@@ -32,7 +31,7 @@ ObjectOS is the **Business Operating System** for the ObjectStack ecosystem:
 └── @objectos/server            - Old NestJS wrapper
 ```
 
-### What Exists vs What's Missing | 现有 vs 缺失
+### What Exists vs What's Missing
 
 | Feature | Runtime | Kernel | Status |
 |---------|---------|--------|--------|
@@ -45,7 +44,7 @@ ObjectOS is the **Business Operating System** for the ObjectStack ecosystem:
 
 ---
 
-## 🚀 Implementation Plan (16 Weeks) | 实施计划
+## 🚀 Implementation Plan (16 Weeks)
 
 ### Phase 1-2 (Weeks 1-5): Foundation + API
 **Goal**: Runtime enhancement + Complete API protocol as plugins
@@ -74,9 +73,9 @@ ObjectOS is the **Business Operating System** for the ObjectStack ecosystem:
 
 ---
 
-## 🏗️ Architecture Principles | 架构原则
+## 🏗️ Architecture Principles
 
-### The Microkernel Pattern | 微内核模式
+### The Microkernel Pattern
 
 ```
 @objectstack/runtime (Core)
@@ -90,7 +89,7 @@ Database Drivers
 
 **Rule**: Everything is a plugin except the kernel core.
 
-### Plugin Interface | 插件接口
+### Plugin Interface
 
 ```typescript
 interface Plugin {
@@ -102,7 +101,7 @@ interface Plugin {
 }
 ```
 
-### Plugin Context Capabilities | 插件上下文能力
+### Plugin Context Capabilities
 
 ```typescript
 interface PluginContext {
@@ -115,7 +114,7 @@ interface PluginContext {
 
 ---
 
-## 📊 Spec Protocol Compliance | 规范协议合规
+## 📊 Spec Protocol Compliance
 
 ### Must Implement from @objectstack/spec
 
@@ -145,7 +144,7 @@ interface PluginContext {
 
 ---
 
-## 🔐 Security Requirements | 安全要求
+## 🔐 Security Requirements
 
 ### Authentication (via Better-Auth)
 - ✅ JWT tokens
@@ -164,7 +163,7 @@ interface PluginContext {
 
 ---
 
-## 🧪 Testing Standards | 测试标准
+## 🧪 Testing Standards
 
 ### Coverage Targets
 - **Runtime**: 95%+
@@ -192,7 +191,7 @@ describe('API Endpoint', () => {
 
 ---
 
-## 🔄 Migration from Kernel | 从内核迁移
+## 🔄 Migration from Kernel
 
 ### For Applications Using @objectos/kernel
 
@@ -224,7 +223,7 @@ kernel.use(apiPlugin);
 
 ---
 
-## 📂 File Structure | 文件结构
+## 📂 File Structure
 
 ### Recommended Plugin Structure
 ```
@@ -245,7 +244,7 @@ packages/plugins/my-plugin/
 
 ---
 
-## 🛠️ Development Commands | 开发命令
+## 🛠️ Development Commands
 
 ### Common Tasks
 ```bash
@@ -270,7 +269,7 @@ pnpm server
 
 ---
 
-## 📚 Key Files to Read | 关键文件
+## 📚 Key Files to Read
 
 1. **[SPEC_SYSTEM_DEVELOPMENT_PLAN.md](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)** - Complete plan (this summary)
 2. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture
@@ -280,7 +279,7 @@ pnpm server
 
 ---
 
-## ⚡ Quick Start | 快速开始
+## ⚡ Quick Start
 
 ### Creating a New Plugin
 
@@ -326,7 +325,7 @@ await kernel.start();
 
 ---
 
-## 🎯 Success Criteria | 成功标准
+## 🎯 Success Criteria
 
 ### Technical
 - [ ] 90%+ test coverage across all packages
@@ -342,7 +341,7 @@ await kernel.start();
 
 ---
 
-## 🔗 Related Projects | 相关项目
+## 🔗 Related Projects
 
 - **[@objectstack/spec](https://github.com/objectstack-ai/spec)** - Protocol definition
 - **[ObjectQL](https://github.com/objectql/objectql)** - Data layer
@@ -350,7 +349,7 @@ await kernel.start();
 
 ---
 
-## 📞 Getting Help | 获取帮助
+## 📞 Getting Help
 
 - **Documentation**: [docs/](./docs/)
 - **GitHub Issues**: [Report a bug](https://github.com/objectstack-ai/objectos/issues)
@@ -358,7 +357,7 @@ await kernel.start();
 
 ---
 
-## 🗺️ Where Are We Now? | 当前进度
+## 🗺️ Where Are We Now?
 
 **Current Version**: v0.1.0  
 **Target Version**: v1.0.0 (May 2026)

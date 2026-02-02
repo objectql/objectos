@@ -1,5 +1,4 @@
 # ObjectOS Spec System - Complete Development Plan
-# 完整的开发方案：基于 @objectstack/spec 标准协议
 
 > **Document Version**: 1.0.0  
 > **Date**: February 2, 2026  
@@ -7,29 +6,27 @@
 
 ---
 
-## 📋 Executive Summary | 执行摘要
+## 📋 Executive Summary
 
-本文档提供了 ObjectOS 基于 @objectstack/spec 标准协议的完整开发方案。ObjectOS 作为 ObjectStack 生态系统的"业务操作系统"，与 ObjectQL（数据层）和 ObjectUI（视图层）协同工作，负责状态管理、身份认证、同步和编排。
-
-**This document provides a complete development plan for ObjectOS aligned with the @objectstack/spec standard protocol.** ObjectOS serves as the "Business Operating System" for the ObjectStack ecosystem, working alongside ObjectQL (Data Layer) and ObjectUI (View Layer) to handle State, Identity, Synchronization, and Orchestration.
+This document provides a complete development plan for ObjectOS aligned with the @objectstack/spec standard protocol. ObjectOS serves as the "Business Operating System" for the ObjectStack ecosystem, working alongside ObjectQL (Data Layer) and ObjectUI (View Layer) to handle State, Identity, Synchronization, and Orchestration.
 
 ---
 
-## 🎯 Project Goals | 项目目标
+## 🎯 Project Goals
 
-### Primary Objectives | 主要目标
+### Primary Objectives
 
-1. **Full Spec Compliance** | 完全符合规范
+1. **Full Spec Compliance**
    - Implement 100% of @objectstack/spec System Protocol
    - Align with Data, Kernel, UI, and API protocols
    - Ensure interoperability with ObjectQL and ObjectUI
 
-2. **Migration to Microkernel** | 迁移到微内核架构
+2. **Migration to Microkernel**
    - Complete migration from monolithic kernel to @objectstack/runtime
    - Convert features to plugin-based architecture
    - Maintain backward compatibility during transition
 
-3. **Production Readiness** | 生产就绪
+3. **Production Readiness**
    - 90%+ test coverage
    - Complete documentation
    - Performance benchmarks
@@ -37,9 +34,9 @@
 
 ---
 
-## 📦 Current Package Structure | 当前包结构
+## 📦 Current Package Structure
 
-### Active Packages | 活跃的包
+### Active Packages
 
 | Package | Type | Status | Purpose |
 |---------|------|--------|---------|
@@ -49,7 +46,7 @@
 | **@objectos/plugin-better-auth** | Plugin | ✅ Active | Authentication via Better-Auth |
 | **@objectos/preset-base** | Preset | ✅ Active | Base data models (User, Account, etc.) |
 
-### Deprecated Packages | 已弃用的包
+### Deprecated Packages
 
 | Package | Status | Migration Target |
 |---------|--------|------------------|
@@ -58,9 +55,9 @@
 
 ---
 
-## 🏗️ Spec Protocol Compliance Matrix | 规范协议合规矩阵
+## 🏗️ Spec Protocol Compliance Matrix
 
-### System Protocol | 系统协议
+### System Protocol
 
 | Component | Spec Requirement | Current Status | Implementation |
 |-----------|-----------------|----------------|----------------|
@@ -73,7 +70,7 @@
 | **Hot Reload** | Development mode reloading | ✅ Kernel Only | Optional for runtime |
 | **Metrics & Monitoring** | System health tracking | ⚠️ Partial | Kernel has it, need plugin |
 
-### Data Protocol | 数据协议
+### Data Protocol
 
 | Component | Spec Requirement | Current Status | Implementation |
 |-----------|-----------------|----------------|----------------|
@@ -84,7 +81,7 @@
 | **Hooks** | beforeInsert, afterUpdate, etc. | ✅ Via ObjectQL | Through @objectql/core |
 | **Relationships** | Lookup, Master-Detail | ✅ Via ObjectQL | Through @objectql/core |
 
-### Kernel Protocol | 内核协议
+### Kernel Protocol
 
 | Component | Spec Requirement | Current Status | Implementation |
 |-----------|-----------------|----------------|----------------|
@@ -93,7 +90,7 @@
 | **Kernel Context** | Instance identity | ✅ Kernel Only | Need in runtime |
 | **Service Registry** | DI container | ✅ Yes | Runtime has it |
 
-### UI Protocol | 界面协议
+### UI Protocol
 
 | Component | Spec Requirement | Current Status | Implementation |
 |-----------|-----------------|----------------|----------------|
@@ -102,7 +99,7 @@
 | **Dashboard** | Dashboard layout | ❌ Not Yet | ObjectUI responsibility |
 | **UI Metadata API** | Serve UI configs | ⚠️ Kernel Only | Need as plugin endpoint |
 
-### API Protocol | API 协议
+### API Protocol
 
 | Component | Spec Requirement | Current Status | Implementation |
 |-----------|-----------------|----------------|----------------|
@@ -116,9 +113,9 @@
 
 ---
 
-## 🚀 Implementation Phases | 实施阶段
+## 🚀 Implementation Phases
 
-### Phase 1: Foundation (Weeks 1-2) | 基础阶段
+### Phase 1: Foundation (Weeks 1-2)
 
 **Objective**: Establish runtime plugin architecture foundation
 
@@ -157,7 +154,7 @@
 
 ---
 
-### Phase 2: API Protocol Plugin (Weeks 3-5) | API 协议插件
+### Phase 2: API Protocol Plugin (Weeks 3-5)
 
 **Objective**: Implement complete API protocol as plugins
 
@@ -222,7 +219,7 @@
 
 ---
 
-### Phase 3: System Protocol Plugins (Weeks 6-7) | 系统协议插件
+### Phase 3: System Protocol Plugins (Weeks 6-7)
 
 **Objective**: Complete system-level features
 
@@ -276,7 +273,7 @@
 
 ---
 
-### Phase 4: Workflow & Automation (Weeks 8-10) | 工作流和自动化
+### Phase 4: Workflow & Automation (Weeks 8-10)
 
 **Objective**: Implement business process automation
 
@@ -325,7 +322,7 @@
 
 ---
 
-### Phase 5: Synchronization Protocol (Weeks 11-13) | 同步协议
+### Phase 5: Synchronization Protocol (Weeks 11-13)
 
 **Objective**: Implement Local-First Sync for ObjectUI
 
@@ -382,7 +379,7 @@
 
 ---
 
-### Phase 6: Integration & Testing (Weeks 14-16) | 集成和测试
+### Phase 6: Integration & Testing (Weeks 14-16)
 
 **Objective**: Ensure production quality
 
@@ -445,7 +442,7 @@
 
 ---
 
-## 📂 Proposed File Structure | 建议的文件结构
+## 📂 Proposed File Structure
 
 ```
 packages/
@@ -570,7 +567,7 @@ packages/
 
 ---
 
-## 🔄 Migration Strategy | 迁移策略
+## 🔄 Migration Strategy
 
 ### From Kernel to Runtime
 
@@ -597,7 +594,7 @@ packages/
 
 ---
 
-## 📊 Success Metrics | 成功指标
+## 📊 Success Metrics
 
 ### Technical Metrics
 - [ ] **Test Coverage**: 90%+ across all packages
@@ -620,7 +617,7 @@ packages/
 
 ---
 
-## 🛠️ Technology Stack | 技术栈
+## 🛠️ Technology Stack
 
 ### Core Dependencies
 - **Runtime**: Node.js 18+ LTS
@@ -643,7 +640,7 @@ packages/
 
 ---
 
-## 📅 Timeline Summary | 时间表总结
+## 📅 Timeline Summary
 
 | Phase | Duration | Deliverable |
 |-------|----------|-------------|
@@ -659,7 +656,7 @@ packages/
 
 ---
 
-## 👥 Team & Resources | 团队和资源
+## 👥 Team & Resources
 
 ### Recommended Team
 - **1x Lead Architect**: Overall design and coordination
@@ -674,7 +671,7 @@ packages/
 
 ---
 
-## ⚠️ Risks & Mitigation | 风险和缓解
+## ⚠️ Risks & Mitigation
 
 ### Technical Risks
 
@@ -695,7 +692,7 @@ packages/
 
 ---
 
-## 📖 References | 参考资料
+## 📖 References
 
 ### Internal Documentation
 - [Architecture Guide](./ARCHITECTURE.md)
@@ -716,7 +713,7 @@ packages/
 
 ---
 
-## ✅ Next Immediate Steps | 下一步行动
+## ✅ Next Immediate Steps
 
 ### Week 1 (Current)
 1. ✅ Create comprehensive development plan (this document)
@@ -733,7 +730,7 @@ packages/
 
 ---
 
-## 📞 Contact & Feedback | 联系和反馈
+## 📞 Contact & Feedback
 
 - **GitHub Issues**: [objectstack-ai/objectos/issues](https://github.com/objectstack-ai/objectos/issues)
 - **Project Lead**: [See CONTRIBUTING.md](./CONTRIBUTING.md)
@@ -741,7 +738,7 @@ packages/
 
 ---
 
-## 📝 Document History | 文档历史
+## 📝 Document History
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
@@ -754,7 +751,7 @@ packages/
 
 ---
 
-## Appendix A: Spec Protocol Reference | 附录 A：规范协议参考
+## Appendix A: Spec Protocol Reference
 
 ### @objectstack/spec v0.8.0 Namespaces
 
@@ -780,7 +777,7 @@ packages/
 
 ---
 
-## Appendix B: Plugin Development Template | 附录 B：插件开发模板
+## Appendix B: Plugin Development Template
 
 ```typescript
 // packages/plugins/example/src/plugin.ts
@@ -825,7 +822,7 @@ export default ExamplePlugin;
 
 ---
 
-## Appendix C: Testing Strategy | 附录 C：测试策略
+## Appendix C: Testing Strategy
 
 ### Test Types
 
@@ -866,4 +863,4 @@ packages/plugins/example/
 
 ---
 
-**END OF DOCUMENT** | **文档结束**
+**END OF DOCUMENT**

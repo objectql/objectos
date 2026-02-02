@@ -1,43 +1,38 @@
 # ObjectOS Spec System - Documentation Index
-# ObjectOS 规范系统 - 文档索引
 
-> **Central hub for all spec system development documentation**  
-> **所有规范系统开发文档的中心枢纽**
+> **Central hub for all spec system development documentation**
 
 ---
 
-## 📚 Available Documentation | 可用文档
+## 📚 Available Documentation
 
 This repository contains comprehensive documentation for implementing ObjectOS based on the @objectstack/spec standard protocol. Below is a guide to help you navigate the documentation.
 
-本仓库包含基于 @objectstack/spec 标准协议实施 ObjectOS 的完整文档。以下是帮助您浏览文档的指南。
-
 ---
 
-## 🎯 Start Here | 从这里开始
+## 🎯 Start Here
 
-### For Developers | 开发者
+### For Developers
 👉 **[SPEC_SYSTEM_QUICK_REFERENCE.md](./SPEC_SYSTEM_QUICK_REFERENCE.md)**
 - Quick overview of ObjectOS architecture
 - Package structure at a glance
 - Common development commands
 - Quick start guide
 
-### For Project Managers | 项目经理
+### For Project Managers
 👉 **[IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md)**
 - 16-week implementation timeline
 - Resource planning
 - Milestones and deliverables
-- Bilingual (Chinese & English)
 
-### For Architects | 架构师
+### For Architects
 👉 **[SPEC_SYSTEM_DEVELOPMENT_PLAN.md](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)**
 - Complete technical specification
 - Detailed implementation phases
 - Spec protocol compliance matrix
 - Plugin architecture design
 
-### For Decision Makers | 决策者
+### For Decision Makers
 👉 **[ARCHITECTURE_COMPARISON.md](./ARCHITECTURE_COMPARISON.md)**
 - Visual comparison: Kernel vs Runtime
 - Migration benefits analysis
@@ -46,10 +41,10 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 
 ---
 
-## 📖 Document Descriptions | 文档说明
+## 📖 Document Descriptions
 
 ### 1. SPEC_SYSTEM_DEVELOPMENT_PLAN.md
-**Complete Development Plan | 完整开发计划**
+**Complete Development Plan**
 
 **Length**: ~25,000 words  
 **Time to read**: 60-90 minutes  
@@ -75,7 +70,7 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 ---
 
 ### 2. SPEC_SYSTEM_QUICK_REFERENCE.md
-**Quick Reference Guide | 快速参考指南**
+**Quick Reference Guide**
 
 **Length**: ~8,500 words  
 **Time to read**: 15-20 minutes  
@@ -100,7 +95,7 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 ---
 
 ### 3. ARCHITECTURE_COMPARISON.md
-**Kernel vs Runtime Comparison | 内核与运行时对比**
+**Kernel vs Runtime Comparison**
 
 **Length**: ~17,000 words  
 **Time to read**: 40-50 minutes  
@@ -125,13 +120,13 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 ---
 
 ### 4. IMPLEMENTATION_ROADMAP.md
-**Implementation Roadmap (Bilingual) | 实施路线图（双语）**
+**Implementation Roadmap**
 
 **Length**: ~14,000 words  
 **Time to read**: 30-40 minutes  
 **Audience**: Project managers, team leads, developers
 
-**Contents** (Chinese & English):
+**Contents**:
 - 16-week timeline breakdown
 - Phase-by-phase task lists
 - Resource planning
@@ -145,36 +140,36 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 - Planning sprints
 - Estimating effort
 - Tracking progress
-- Communicating with Chinese-speaking stakeholders
+- Communicating with stakeholders
 
 ---
 
-## 🗺️ Navigation Guide | 导航指南
+## 🗺️ Navigation Guide
 
-### By Role | 按角色
+### By Role
 
-#### Developers | 开发者
+#### Developers
 ```
 1. Start: SPEC_SYSTEM_QUICK_REFERENCE.md
 2. Deep dive: SPEC_SYSTEM_DEVELOPMENT_PLAN.md
 3. Reference: ARCHITECTURE_COMPARISON.md
 ```
 
-#### Architects | 架构师
+#### Architects
 ```
 1. Start: ARCHITECTURE_COMPARISON.md
 2. Details: SPEC_SYSTEM_DEVELOPMENT_PLAN.md
 3. Timeline: IMPLEMENTATION_ROADMAP.md
 ```
 
-#### Project Managers | 项目经理
+#### Project Managers
 ```
 1. Start: IMPLEMENTATION_ROADMAP.md
 2. Overview: SPEC_SYSTEM_QUICK_REFERENCE.md
 3. Technical details: SPEC_SYSTEM_DEVELOPMENT_PLAN.md (as needed)
 ```
 
-### By Task | 按任务
+### By Task
 
 #### Understanding ObjectOS
 - Read: [SPEC_SYSTEM_QUICK_REFERENCE.md](./SPEC_SYSTEM_QUICK_REFERENCE.md) - Section "What is ObjectOS?"
@@ -196,9 +191,9 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 
 ---
 
-## 📊 Implementation Status | 实施状态
+## 📊 Implementation Status
 
-### Current Phase | 当前阶段
+### Current Phase
 **Phase 0: Planning & Documentation** ✅ **COMPLETED**
 
 **Completed**:
@@ -209,7 +204,7 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 - [x] Architecture comparison
 - [x] Implementation roadmap
 
-### Next Phase | 下一阶段
+### Next Phase
 **Phase 1: Foundation (Weeks 1-2)** 🚧 **READY TO START**
 
 **Tasks**:
@@ -221,7 +216,7 @@ This repository contains comprehensive documentation for implementing ObjectOS b
 
 ---
 
-## 🎯 Key Concepts | 关键概念
+## 🎯 Key Concepts
 
 ### The ObjectStack Ecosystem
 
@@ -263,9 +258,9 @@ interface Plugin {
 
 ---
 
-## 📈 Progress Tracking | 进度跟踪
+## 📈 Progress Tracking
 
-### Phase Completion | 阶段完成度
+### Phase Completion
 
 | Phase | Status | Progress | Target Date |
 |-------|--------|----------|-------------|
@@ -277,7 +272,7 @@ interface Plugin {
 | **Phase 5**: Sync Protocol | ⏳ Pending | 0% | Week 13 |
 | **Phase 6**: Integration | ⏳ Pending | 0% | Week 16 |
 
-### Package Completion | 包完成度
+### Package Completion
 
 | Package | Status | Description |
 |---------|--------|-------------|
@@ -295,7 +290,7 @@ interface Plugin {
 
 ---
 
-## 🔗 Related Documentation | 相关文档
+## 🔗 Related Documentation
 
 ### Repository Documentation
 - [README.md](./README.md) - Project overview
@@ -317,7 +312,7 @@ interface Plugin {
 
 ---
 
-## 🛠️ Quick Commands | 快速命令
+## 🛠️ Quick Commands
 
 ### Development
 ```bash
@@ -348,7 +343,7 @@ pnpm site:dev
 
 ---
 
-## ❓ FAQ | 常见问题
+## ❓ FAQ
 
 ### Q1: Which document should I read first?
 **A**: Start with [SPEC_SYSTEM_QUICK_REFERENCE.md](./SPEC_SYSTEM_QUICK_REFERENCE.md) for a quick overview.
@@ -362,12 +357,12 @@ pnpm site:dev
 ### Q4: How long will the implementation take?
 **A**: 16 weeks according to [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md).
 
-### Q5: Is the documentation in Chinese?
-**A**: [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) is bilingual. Others are in English.
+### Q5: Is the documentation bilingual?
+**A**: All documentation is now in English only.
 
 ---
 
-## 📞 Getting Help | 获取帮助
+## 📞 Getting Help
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/objectstack-ai/objectos/issues)
 - **Discussions**: [Ask questions](https://github.com/objectstack-ai/objectos/discussions)
@@ -375,7 +370,7 @@ pnpm site:dev
 
 ---
 
-## 📝 Document Versioning | 文档版本
+## 📝 Document Versioning
 
 All documents are version 1.0.0 as of February 2, 2026.
 
@@ -384,7 +379,7 @@ All documents are version 1.0.0 as of February 2, 2026.
 
 ---
 
-## ✅ Checklist for New Team Members | 新团队成员检查清单
+## ✅ Checklist for New Team Members
 
 - [ ] Read [README.md](./README.md) - Understand the project
 - [ ] Read [SPEC_SYSTEM_QUICK_REFERENCE.md](./SPEC_SYSTEM_QUICK_REFERENCE.md) - Get familiar with architecture
@@ -396,5 +391,4 @@ All documents are version 1.0.0 as of February 2, 2026.
 
 ---
 
-**Welcome to the ObjectOS development team!**  
-**欢迎加入 ObjectOS 开发团队！**
+**Welcome to the ObjectOS development team!**

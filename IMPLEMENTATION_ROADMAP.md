@@ -1,116 +1,113 @@
-# ObjectOS 实施路线图 | Implementation Roadmap
-# 基于 @objectstack/spec 标准协议的完整开发计划
+# Implementation Roadmap
 
-> **文档版本**: 1.0.0  
-> **创建日期**: 2026年2月2日  
-> **状态**: 待实施
-
----
-
-## 📋 概述 | Overview
-
-本文档提供了 ObjectOS 项目的详细实施路线图，包括16周的开发计划，旨在实现与 @objectstack/spec 标准协议的100%合规。
-
-**This document provides a detailed implementation roadmap for the ObjectOS project, including a 16-week development plan to achieve 100% compliance with the @objectstack/spec standard protocol.**
+> **Document Version**: 1.0.0  
+> **Date**: February 2, 2026  
+> **Status**: Ready for Implementation
 
 ---
 
-## 🎯 项目目标 | Project Objectives
+## 📋 Overview
 
-### 核心目标 | Core Goals
+This document provides a detailed implementation roadmap for the ObjectOS project, including a 16-week development plan to achieve 100% compliance with the @objectstack/spec standard protocol.
 
-1. **完全符合规范** | Full Spec Compliance
-   - 实现 @objectstack/spec 的所有系统协议
-   - 与 ObjectQL 和 ObjectUI 完全互操作
+---
+
+## 🎯 Project Objectives
+
+### Core Goals
+
+1. **Full Spec Compliance**
+   - Implement all system protocols from @objectstack/spec
+   - Full interoperability with ObjectQL and ObjectUI
    
-2. **微内核架构** | Microkernel Architecture
-   - 从单体内核迁移到插件架构
-   - 保持向后兼容性
+2. **Microkernel Architecture**
+   - Migrate from monolithic kernel to plugin architecture
+   - Maintain backward compatibility
    
-3. **生产就绪** | Production Readiness
-   - 90%+ 测试覆盖率
-   - 完整文档
-   - 性能基准测试
+3. **Production Readiness**
+   - 90%+ test coverage
+   - Complete documentation
+   - Performance benchmarks
 
 ---
 
-## 📅 开发阶段（16周）| Development Phases (16 Weeks)
+## 📅 Development Phases (16 Weeks)
 
-### 第一阶段：基础建设（第1-2周）| Phase 1: Foundation (Weeks 1-2)
+### Phase 1: Foundation (Weeks 1-2)
 
-**目标 | Objective**: 增强运行时核心功能
+**Objective**: Enhance runtime core functionality
 
-#### 1.1 运行时增强 | Runtime Enhancements
+#### 1.1 Runtime Enhancements
 
-**任务清单 | Task List**:
-- [ ] 添加插件清单（PluginDefinition）支持
-- [ ] 实现清单验证系统
-- [ ] 添加插件元数据（版本、依赖、作者）
-- [ ] 从内核移植依赖解析器
-- [ ] 实现拓扑排序的插件加载顺序
-- [ ] 添加循环依赖检测
-- [ ] 增强生命周期钩子（onEnable/onLoad/onDisable）
-- [ ] 支持异步生命周期方法
-- [ ] 优雅关闭处理
+**Task List**:
+- [ ] Add PluginDefinition manifest support
+- [ ] Implement manifest validation system
+- [ ] Add plugin metadata (version, dependencies, author)
+- [ ] Port dependency resolver from kernel
+- [ ] Implement topological sort for plugin loading order
+- [ ] Add circular dependency detection
+- [ ] Enhanced lifecycle hooks (onEnable/onLoad/onDisable)
+- [ ] Support for async lifecycle methods
+- [ ] Graceful shutdown handling
 
-**交付成果 | Deliverables**:
+**Deliverables**:
 - ✅ @objectstack/runtime v0.2.0
-- ✅ 20+ 单元测试
-- ✅ 从内核迁移指南
+- ✅ 20+ unit tests
+- ✅ Migration guide from kernel
 
-#### 1.2 核心插件 | Core Plugins
+#### 1.2 Core Plugins
 
-**新插件 | New Plugins**:
+**New Plugins**:
 
-1. **@objectos/plugin-storage** (存储插件)
-   - [ ] 为插件提供隔离的 KV 存储
-   - [ ] 内存和持久化模式
-   - [ ] 插件隔离保证
+1. **@objectos/plugin-storage**
+   - [ ] Provide isolated KV storage for plugins
+   - [ ] In-memory and persistent modes
+   - [ ] Plugin isolation guarantees
    
-2. **@objectos/plugin-metrics** (指标插件)
-   - [ ] 系统健康监控
-   - [ ] 插件性能跟踪
-   - [ ] Prometheus 兼容指标
+2. **@objectos/plugin-metrics**
+   - [ ] System health monitoring
+   - [ ] Plugin performance tracking
+   - [ ] Prometheus-compatible metrics
 
-**技术栈 | Tech Stack**:
+**Tech Stack**:
 - TypeScript 5.0+ (strict mode)
 - Jest for testing
 - pnpm for package management
 
-**预计工时 | Estimated Effort**: 80 小时
+**Estimated Effort**: 80 hours
 
 ---
 
-### 第二阶段：API 协议插件（第3-5周）| Phase 2: API Protocol Plugins (Weeks 3-5)
+### Phase 2: API Protocol Plugins (Weeks 3-5)
 
-**目标 | Objective**: 实现完整的 API 协议作为插件
+**Objective**: Implement complete API protocol as plugins
 
-#### 2.1 @objectos/plugin-api-core (API 核心插件)
+#### 2.1 @objectos/plugin-api-core
 
-**功能模块 | Features**:
+**Features**:
 
-1. **路由系统 | Router System**
-   - [ ] 高级 HTTP 路由
-   - [ ] 路径参数提取
-   - [ ] 路由元数据（摘要、标签）
-   - [ ] 路由分类（系统、API、认证、Webhook）
+1. **Router System**
+   - [ ] Advanced HTTP routing
+   - [ ] Path parameter extraction
+   - [ ] Route metadata (summary, tags)
+   - [ ] Route categories (system, api, auth, webhook)
 
-2. **请求/响应契约 | Request/Response Contracts**
-   - [ ] 标准请求模式（CreateRequest, QueryRequest 等）
-   - [ ] ApiResponse<T> 包装器
-   - [ ] 错误标准化
-   - [ ] 请求/响应元数据（traceId, duration）
+2. **Request/Response Contracts**
+   - [ ] Standard request schemas (CreateRequest, QueryRequest, etc.)
+   - [ ] ApiResponse<T> wrapper
+   - [ ] Error standardization
+   - [ ] Request/response metadata (traceId, duration)
 
-3. **中间件栈 | Middleware Stack**
-   - [ ] 中间件链执行
-   - [ ] 内置中间件：
-     - 认证（JWT 验证）
-     - CORS 头
-     - 日志记录（请求/响应）
-     - 验证（模式验证）
-     - 速率限制（令牌桶）
+3. **Middleware Stack**
+   - [ ] Middleware chain execution
+   - [ ] Built-in middleware:
+     - Authentication (JWT validation)
+     - CORS headers
+     - Logging (request/response)
+     - Validation (schema validation)
+     - Rate limiting (token bucket)
 
-**文件结构 | File Structure**:
+**File Structure**:
 ```
 packages/plugins/api-core/
 ├── src/
@@ -131,79 +128,79 @@ packages/plugins/api-core/
     └── middleware.test.ts
 ```
 
-#### 2.2 @objectos/plugin-api-discovery (API 发现插件)
+#### 2.2 @objectos/plugin-api-discovery
 
-**功能模块 | Features**:
+**Features**:
 
-1. **发现端点 | Discovery Endpoint**
+1. **Discovery Endpoint**
    - [ ] GET /api/discovery
-   - [ ] 列出所有注册的端点
-   - [ ] 系统能力
-   - [ ] 环境信息
+   - [ ] List all registered endpoints
+   - [ ] System capabilities
+   - [ ] Environment information
 
-2. **OpenAPI 生成器 | OpenAPI Generator**
-   - [ ] 生成 OpenAPI 3.0 规范
-   - [ ] 包含请求/响应模式
-   - [ ] 认证方案
-   - [ ] Swagger UI 集成
+2. **OpenAPI Generator**
+   - [ ] Generate OpenAPI 3.0 specification
+   - [ ] Include request/response schemas
+   - [ ] Authentication schemes
+   - [ ] Swagger UI integration
 
-#### 2.3 @objectos/plugin-api-endpoints (API 端点插件)
+#### 2.3 @objectos/plugin-api-endpoints
 
-**功能模块 | Features**:
+**Features**:
 
-1. **端点注册表 | Endpoint Registry**
-   - [ ] 声明式端点配置（YAML/JSON）
-   - [ ] 动态端点加载
-   - [ ] 冲突检测
+1. **Endpoint Registry**
+   - [ ] Declarative endpoint configuration (YAML/JSON)
+   - [ ] Dynamic endpoint loading
+   - [ ] Conflict detection
 
-2. **端点类型 | Endpoint Types**
-   - [ ] FlowEndpoint（执行工作流）
-   - [ ] ScriptEndpoint（自定义代码）
-   - [ ] ObjectOperationEndpoint（对象 CRUD）
-   - [ ] ProxyEndpoint（代理到外部 API）
+2. **Endpoint Types**
+   - [ ] FlowEndpoint (execute workflow)
+   - [ ] ScriptEndpoint (custom code)
+   - [ ] ObjectOperationEndpoint (object CRUD)
+   - [ ] ProxyEndpoint (proxy to external API)
 
-3. **数据转换 | Data Transformation**
-   - [ ] 输入/输出映射
-   - [ ] JSONPath 支持
-   - [ ] 自定义转换器
+3. **Data Transformation**
+   - [ ] Input/output mapping
+   - [ ] JSONPath support
+   - [ ] Custom transformers
 
-**交付成果 | Deliverables**:
-- ✅ 3 个新的 API 插件
-- ✅ 完全符合 API 协议
-- ✅ 50+ 单元测试
-- ✅ OpenAPI 规范生成
-- ✅ 带示例的文档
+**Deliverables**:
+- ✅ 3 new API plugins
+- ✅ Full API protocol compliance
+- ✅ 50+ unit tests
+- ✅ OpenAPI spec generation
+- ✅ Documentation with examples
 
-**预计工时 | Estimated Effort**: 120 小时
+**Estimated Effort**: 120 hours
 
 ---
 
-### 第三阶段：系统协议插件（第6-7周）| Phase 3: System Protocol Plugins (Weeks 6-7)
+### Phase 3: System Protocol Plugins (Weeks 6-7)
 
-**目标 | Objective**: 完成系统级功能
+**Objective**: Complete system-level features
 
-#### 3.1 @objectos/plugin-permissions (权限插件)
+#### 3.1 @objectos/plugin-permissions
 
-**功能模块 | Features**:
+**Features**:
 
-1. **权限引擎 | Permission Engine**
-   - [ ] 对象级权限（CRUD）
-   - [ ] 字段级安全（visible_to, editable_by）
-   - [ ] 从 YAML 加载权限集
-   - [ ] 权限检查 API
+1. **Permission Engine**
+   - [ ] Object-level permissions (CRUD)
+   - [ ] Field-level security (visible_to, editable_by)
+   - [ ] Load permission sets from YAML
+   - [ ] Permission checking API
 
-2. **记录级安全（RLS）| Record-Level Security**
-   - [ ] 查询的过滤器注入
-   - [ ] 基于所有者的过滤
-   - [ ] 共享规则
-   - [ ] 层级权限
+2. **Record-Level Security (RLS)**
+   - [ ] Filter injection for queries
+   - [ ] Owner-based filtering
+   - [ ] Sharing rules
+   - [ ] Hierarchical permissions
 
-3. **权限感知的 CRUD | Permission-Aware CRUD**
-   - [ ] 自动权限检查
-   - [ ] 响应中的字段过滤
-   - [ ] 审计集成
+3. **Permission-Aware CRUD**
+   - [ ] Automatic permission checks
+   - [ ] Field filtering in responses
+   - [ ] Audit integration
 
-**示例权限集 | Example Permission Set**:
+**Example Permission Set**:
 ```yaml
 # permissions/contact_permissions.yml
 name: contact_permissions
@@ -225,69 +222,69 @@ field_permissions:
     editable_by: [admin]
 ```
 
-#### 3.2 增强审计插件 | Enhanced Audit Plugin
+#### 3.2 Enhanced Audit Plugin
 
-**改进 | Improvements**:
-- [ ] 字段级变更跟踪
-- [ ] 用户上下文捕获
-- [ ] IP 地址和用户代理
-- [ ] 查询审计跟踪
-- [ ] 审计日志搜索 API
-- [ ] 导出审计报告
-- [ ] 保留策略
+**Improvements**:
+- [ ] Field-level change tracking
+- [ ] User context capture
+- [ ] IP address and user agent
+- [ ] Query audit trail
+- [ ] Audit log search API
+- [ ] Export audit reports
+- [ ] Retention policies
 
-#### 3.3 @objectos/plugin-jobs (作业插件)
+#### 3.3 @objectos/plugin-jobs
 
-**功能模块 | Features**:
+**Features**:
 
-1. **作业队列系统 | Job Queue System**
-   - [ ] 后台作业处理
-   - [ ] 作业调度（cron）
-   - [ ] 作业重试逻辑
-   - [ ] 作业监控
+1. **Job Queue System**
+   - [ ] Background job processing
+   - [ ] Job scheduling (cron)
+   - [ ] Job retry logic
+   - [ ] Job monitoring
 
-2. **内置作业 | Built-in Jobs**
-   - [ ] 数据清理作业
-   - [ ] 报表生成
-   - [ ] 备份作业
+2. **Built-in Jobs**
+   - [ ] Data cleanup jobs
+   - [ ] Report generation
+   - [ ] Backup jobs
 
-**交付成果 | Deliverables**:
-- ✅ 2 个新的系统插件
-- ✅ 增强的审计插件
-- ✅ 40+ 单元测试
-- ✅ 权限系统文档
+**Deliverables**:
+- ✅ 2 new system plugins
+- ✅ Enhanced audit plugin
+- ✅ 40+ unit tests
+- ✅ Permission system documentation
 
-**预计工时 | Estimated Effort**: 80 小时
+**Estimated Effort**: 80 hours
 
 ---
 
-### 第四阶段：工作流和自动化（第8-10周）| Phase 4: Workflow & Automation (Weeks 8-10)
+### Phase 4: Workflow & Automation (Weeks 8-10)
 
-**目标 | Objective**: 实现业务流程自动化
+**Objective**: Implement business process automation
 
-#### 4.1 @objectos/plugin-workflow (工作流插件)
+#### 4.1 @objectos/plugin-workflow
 
-**功能模块 | Features**:
+**Features**:
 
-1. **状态机引擎 | State Machine Engine**
-   - [ ] 从 YAML 定义有限状态机（FSM）
-   - [ ] 带守卫的状态转换
-   - [ ] 转换操作
-   - [ ] 工作流版本控制
+1. **State Machine Engine**
+   - [ ] Finite state machine (FSM) from YAML
+   - [ ] State transitions with guards
+   - [ ] Transition actions
+   - [ ] Workflow versioning
 
-2. **工作流类型 | Workflow Types**
-   - [ ] 审批工作流
-   - [ ] 顺序工作流
-   - [ ] 并行工作流
-   - [ ] 条件分支
+2. **Workflow Types**
+   - [ ] Approval workflows
+   - [ ] Sequential workflows
+   - [ ] Parallel workflows
+   - [ ] Conditional branching
 
-3. **工作流 API | Workflow API**
-   - [ ] 启动工作流
-   - [ ] 查询工作流状态
-   - [ ] 完成任务
-   - [ ] 中止工作流
+3. **Workflow API**
+   - [ ] Start workflow
+   - [ ] Query workflow status
+   - [ ] Complete task
+   - [ ] Abort workflow
 
-**示例工作流 | Example Workflow**:
+**Example Workflow**:
 ```yaml
 # workflows/leave_request.yml
 name: leave_request_flow
@@ -316,94 +313,94 @@ states:
     final: true
 ```
 
-#### 4.2 @objectos/plugin-automation (自动化插件)
+#### 4.2 @objectos/plugin-automation
 
-**功能模块 | Features**:
+**Features**:
 
-1. **触发器 | Triggers**
-   - [ ] 对象触发器（onCreate, onUpdate, onDelete）
-   - [ ] 计划触发器（cron）
-   - [ ] Webhook 触发器
+1. **Triggers**
+   - [ ] Object triggers (onCreate, onUpdate, onDelete)
+   - [ ] Scheduled triggers (cron)
+   - [ ] Webhook triggers
 
-2. **操作 | Actions**
-   - [ ] 更新字段
-   - [ ] 创建记录
-   - [ ] 发送邮件
-   - [ ] 调用 HTTP 端点
-   - [ ] 执行脚本
+2. **Actions**
+   - [ ] Update field
+   - [ ] Create record
+   - [ ] Send email
+   - [ ] Call HTTP endpoint
+   - [ ] Execute script
 
-3. **公式字段 | Formula Fields**
-   - [ ] 运行时计算字段
-   - [ ] 汇总摘要（SUM, COUNT 等）
-   - [ ] 自动编号字段
+3. **Formula Fields**
+   - [ ] Runtime calculated fields
+   - [ ] Rollup summary (SUM, COUNT, etc.)
+   - [ ] Auto-number fields
 
-**交付成果 | Deliverables**:
-- ✅ 2 个工作流插件
-- ✅ 声明式工作流定义
-- ✅ 35+ 单元测试
-- ✅ 工作流示例
+**Deliverables**:
+- ✅ 2 workflow plugins
+- ✅ Declarative workflow definitions
+- ✅ 35+ unit tests
+- ✅ Workflow examples
 
-**预计工时 | Estimated Effort**: 120 小时
+**Estimated Effort**: 120 hours
 
 ---
 
-### 第五阶段：同步协议（第11-13周）| Phase 5: Synchronization Protocol (Weeks 11-13)
+### Phase 5: Synchronization Protocol (Weeks 11-13)
 
-**目标 | Objective**: 为 ObjectUI 实现本地优先同步
+**Objective**: Implement Local-First Sync for ObjectUI
 
-#### 5.1 @objectos/plugin-sync (同步插件)
+#### 5.1 @objectos/plugin-sync
 
-**功能模块 | Features**:
+**Features**:
 
-1. **同步协议 | Sync Protocol**
-   - [ ] 差异同步引擎
-   - [ ] 向量时钟实现
-   - [ ] 冲突解决（CRDTs/LWW）
-   - [ ] 增量同步（基于游标）
+1. **Sync Protocol**
+   - [ ] Differential sync engine
+   - [ ] Vector clock implementation
+   - [ ] Conflict resolution (CRDTs/LWW)
+   - [ ] Incremental sync (cursor-based)
 
-2. **变更日志 | Mutation Log**
-   - [ ] 客户端发送操作日志，而不是状态
-   - [ ] 操作转换
-   - [ ] 乐观更新
-   - [ ] 冲突时回滚
+2. **Mutation Log**
+   - [ ] Client sends action log, not state
+   - [ ] Operation transformation
+   - [ ] Optimistic updates
+   - [ ] Rollback on conflict
 
-3. **增量包 | Delta Packets**
-   - [ ] 服务器发送检查点后的变更
-   - [ ] 高效的增量编码
-   - [ ] 压缩支持
+3. **Delta Packets**
+   - [ ] Server sends changes since checkpoint
+   - [ ] Efficient delta encoding
+   - [ ] Compression support
 
-#### 5.2 实时订阅 | Realtime Subscriptions
+#### 5.2 Realtime Subscriptions
 
-**功能模块 | Features**:
+**Features**:
 
-1. **WebSocket 服务器 | WebSocket Server**
-   - [ ] 连接管理
-   - [ ] 每个连接的认证
-   - [ ] 消息路由
+1. **WebSocket Server**
+   - [ ] Connection management
+   - [ ] Authentication per connection
+   - [ ] Message routing
 
-2. **订阅管理器 | Subscription Manager**
-   - [ ] 订阅对象变更
-   - [ ] 事件过滤
-   - [ ] 订阅生命周期
+2. **Subscription Manager**
+   - [ ] Subscribe to object changes
+   - [ ] Event filtering
+   - [ ] Subscription lifecycle
 
-3. **事件类型 | Event Types**
+3. **Event Types**
    - [ ] record.created
    - [ ] record.updated
    - [ ] record.deleted
    - [ ] field.changed
 
-4. **备用传输 | Alternative Transports**
-   - [ ] 服务器发送事件（SSE）
-   - [ ] 长轮询后备
+4. **Alternative Transports**
+   - [ ] Server-Sent Events (SSE)
+   - [ ] Long polling fallback
 
-#### 5.3 在线状态系统 | Presence System
+#### 5.3 Presence System
 
-**功能模块 | Features**:
-- [ ] 跟踪用户在线/离线
-- [ ] 广播在线状态更新
-- [ ] 每个对象的活跃用户列表
+**Features**:
+- [ ] Track user online/offline
+- [ ] Broadcast presence updates
+- [ ] Active user list per object
 
-**同步协议示例 | Sync Protocol Example**:
+**Sync Protocol Example**:
 ```typescript
 // Client to Server
 {
@@ -439,275 +436,275 @@ states:
 }
 ```
 
-**交付成果 | Deliverables**:
-- ✅ 完整的同步插件
-- ✅ WebSocket 服务器
-- ✅ 客户端 SDK 示例
-- ✅ 45+ 单元测试
-- ✅ 同步协议文档
+**Deliverables**:
+- ✅ Complete sync plugin
+- ✅ WebSocket server
+- ✅ Client SDK examples
+- ✅ 45+ unit tests
+- ✅ Sync protocol documentation
 
-**预计工时 | Estimated Effort**: 120 小时
+**Estimated Effort**: 120 hours
 
 ---
 
-### 第六阶段：集成和测试（第14-16周）| Phase 6: Integration & Testing (Weeks 14-16)
+### Phase 6: Integration & Testing (Weeks 14-16)
 
-**目标 | Objective**: 确保生产质量
+**Objective**: Ensure production quality
 
-#### 6.1 集成测试 | Integration Testing
+#### 6.1 Integration Testing
 
-**测试类型 | Test Types**:
+**Test Types**:
 
-1. **端到端测试 | End-to-End Tests**
-   - [ ] 完整的插件生命周期测试
-   - [ ] API 请求/响应周期
-   - [ ] 权限执行测试
-   - [ ] 工作流执行测试
-   - [ ] 同步协议测试
+1. **End-to-End Tests**
+   - [ ] Full plugin lifecycle tests
+   - [ ] API request/response cycle
+   - [ ] Permission enforcement tests
+   - [ ] Workflow execution tests
+   - [ ] Sync protocol tests
 
-2. **性能测试 | Performance Tests**
-   - [ ] API 吞吐量（目标：1000+ 请求/秒）
-   - [ ] WebSocket 连接（目标：10k+ 并发）
-   - [ ] 查询性能基准
-   - [ ] 内存使用分析
+2. **Performance Tests**
+   - [ ] API throughput (target: 1000+ req/s)
+   - [ ] WebSocket connections (target: 10k+ concurrent)
+   - [ ] Query performance benchmarks
+   - [ ] Memory usage profiling
 
-**测试工具 | Testing Tools**:
+**Testing Tools**:
 - Jest for unit/integration tests
 - Supertest for API testing
 - k6 or Artillery for load testing
 - Playwright for E2E tests
 
-#### 6.2 文档 | Documentation
+#### 6.2 Documentation
 
-**文档类型 | Documentation Types**:
+**Documentation Types**:
 
-1. **API 参考 | API Reference**
-   - [ ] 完整的 OpenAPI 规范
-   - [ ] 插件 API 文档
-   - [ ] 钩子系统参考
+1. **API Reference**
+   - [ ] Complete OpenAPI specification
+   - [ ] Plugin API documentation
+   - [ ] Hook system reference
 
-2. **指南 | Guides**
-   - [ ] 快速入门指南
-   - [ ] 插件开发指南
-   - [ ] 从内核迁移指南
-   - [ ] 生产部署指南
-   - [ ] 安全最佳实践
+2. **Guides**
+   - [ ] Quick start guide
+   - [ ] Plugin development guide
+   - [ ] Migration from kernel guide
+   - [ ] Production deployment guide
+   - [ ] Security best practices
 
-3. **示例 | Examples**
-   - [ ] 示例插件（10+）
-   - [ ] 示例应用（3+）
-   - [ ] 集成示例
+3. **Examples**
+   - [ ] Example plugins (10+)
+   - [ ] Sample applications (3+)
+   - [ ] Integration examples
 
-#### 6.3 质量保证 | Quality Assurance
+#### 6.3 Quality Assurance
 
-**质量指标 | Quality Metrics**:
+**Quality Metrics**:
 
-1. **测试覆盖率 | Test Coverage**
-   - [ ] 运行时：95%+
-   - [ ] 插件：90%+
-   - [ ] 集成：85%+
+1. **Test Coverage**
+   - [ ] Runtime: 95%+
+   - [ ] Plugins: 90%+
+   - [ ] Integration: 85%+
 
-2. **安全审计 | Security Audit**
-   - [ ] OWASP Top 10 合规
-   - [ ] SQL 注入防护
-   - [ ] XSS 保护
-   - [ ] CSRF 令牌
-   - [ ] 速率限制验证
+2. **Security Audit**
+   - [ ] OWASP Top 10 compliance
+   - [ ] SQL injection prevention
+   - [ ] XSS protection
+   - [ ] CSRF tokens
+   - [ ] Rate limiting verification
 
-3. **代码质量 | Code Quality**
-   - [ ] ESLint 合规
-   - [ ] TypeScript 严格模式
-   - [ ] 无 any 类型
-   - [ ] 文档注释
+3. **Code Quality**
+   - [ ] ESLint compliance
+   - [ ] TypeScript strict mode
+   - [ ] No any types
+   - [ ] Documentation comments
 
-**交付成果 | Deliverables**:
-- ✅ 200+ 总测试
-- ✅ 完整文档
-- ✅ 安全审计报告
-- ✅ 性能基准
+**Deliverables**:
+- ✅ 200+ total tests
+- ✅ Complete documentation
+- ✅ Security audit report
+- ✅ Performance benchmarks
 
-**预计工时 | Estimated Effort**: 120 小时
-
----
-
-## 📊 资源计划 | Resource Planning
-
-### 人员配置 | Team Structure
-
-| 角色 | 人数 | 职责 |
-|------|------|------|
-| **首席架构师** | 1 | 整体设计和协调 |
-| **高级工程师** | 2 | 核心运行时和插件开发 |
-| **QA 工程师** | 1 | 测试和质量保证 |
-| **技术文档工程师** | 1 | 文档编写 |
-
-### 工时分配 | Effort Distribution
-
-| 阶段 | 工时 | 百分比 |
-|------|------|--------|
-| 第一阶段：基础 | 80h | 12.5% |
-| 第二阶段：API | 120h | 18.8% |
-| 第三阶段：系统 | 80h | 12.5% |
-| 第四阶段：工作流 | 120h | 18.8% |
-| 第五阶段：同步 | 120h | 18.8% |
-| 第六阶段：测试 | 120h | 18.8% |
-| **总计** | **640h** | **100%** |
+**Estimated Effort**: 120 hours
 
 ---
 
-## 📈 成功指标 | Success Metrics
+## 📊 Resource Planning
 
-### 技术指标 | Technical Metrics
+### Team Structure
 
-- [ ] **测试覆盖率 | Test Coverage**: 90%+ 覆盖所有包
-- [ ] **API 性能 | API Performance**: <100ms 响应时间（P95）
-- [ ] **并发用户 | Concurrent Users**: 支持 10k+ WebSocket 连接
-- [ ] **插件生态 | Plugin Ecosystem**: 10+ 社区插件
-- [ ] **文档 | Documentation**: 100+ 页
+| Role | Count | Responsibility |
+|------|-------|----------------|
+| **Lead Architect** | 1 | Overall design and coordination |
+| **Senior Engineers** | 2 | Core runtime and plugin development |
+| **QA Engineer** | 1 | Testing and quality assurance |
+| **Technical Writer** | 1 | Documentation |
 
-### 采用指标 | Adoption Metrics
+### Effort Distribution
 
-- [ ] **GitHub Stars**: 2026年增加 2k+
-- [ ] **NPM 下载 | NPM Downloads**: 10k+ 每月
-- [ ] **生产部署 | Production Deployments**: 100+ 项目
-- [ ] **贡献者 | Contributors**: 20+ 活跃
-
-### 质量指标 | Quality Metrics
-
-- [ ] **安全 | Security**: 通过 OWASP Top 10 审计
-- [ ] **可靠性 | Reliability**: 生产环境 99.9% 正常运行时间
-- [ ] **性能 | Performance**: 满足所有基准目标
-- [ ] **文档 | Documentation**: 95%+ 覆盖率
-
----
-
-## ⚠️ 风险和缓解 | Risks & Mitigation
-
-### 技术风险 | Technical Risks
-
-| 风险 | 影响 | 概率 | 缓解措施 |
-|------|------|------|----------|
-| 性能回退 | 高 | 中 | 广泛的基准测试、性能分析 |
-| 破坏性变更 | 高 | 中 | 兼容层、迁移工具 |
-| 插件冲突 | 中 | 中 | 严格的依赖解析、沙箱 |
-| 同步复杂性 | 高 | 高 | 增量实现、全面测试 |
-
-### 时间风险 | Timeline Risks
-
-| 风险 | 影响 | 概率 | 缓解措施 |
-|------|------|------|----------|
-| 范围蔓延 | 高 | 中 | 严格的范围定义、分阶段方法 |
-| 资源限制 | 中 | 低 | 每个阶段的缓冲时间、优先级 |
-| 依赖延迟 | 中 | 低 | 与 ObjectQL/ObjectUI 早期集成 |
+| Phase | Hours | Percentage |
+|-------|-------|------------|
+| Phase 1: Foundation | 80h | 12.5% |
+| Phase 2: API | 120h | 18.8% |
+| Phase 3: System | 80h | 12.5% |
+| Phase 4: Workflow | 120h | 18.8% |
+| Phase 5: Sync | 120h | 18.8% |
+| Phase 6: Testing | 120h | 18.8% |
+| **Total** | **640h** | **100%** |
 
 ---
 
-## 📅 里程碑 | Milestones
+## 📈 Success Metrics
 
-### M1: 运行时增强完成 (第2周末)
-- ✅ 增强的运行时 v0.2.0
-- ✅ 核心插件（storage, metrics）
-- ✅ 迁移指南
+### Technical Metrics
 
-### M2: API 协议完成 (第5周末)
-- ✅ 3 个 API 插件
-- ✅ OpenAPI 生成
-- ✅ 完整的中间件栈
+- [ ] **Test Coverage**: 90%+ across all packages
+- [ ] **API Performance**: <100ms response time (P95)
+- [ ] **Concurrent Users**: Support 10k+ WebSocket connections
+- [ ] **Plugin Ecosystem**: 10+ community plugins
+- [ ] **Documentation**: 100+ pages
 
-### M3: 系统协议完成 (第7周末)
-- ✅ 权限插件
-- ✅ 作业插件
-- ✅ 增强的审计
+### Adoption Metrics
 
-### M4: 工作流完成 (第10周末)
-- ✅ 工作流引擎
-- ✅ 自动化插件
-- ✅ 声明式工作流
+- [ ] **GitHub Stars**: +2k in 2026
+- [ ] **NPM Downloads**: 10k+ monthly
+- [ ] **Production Deployments**: 100+ projects
+- [ ] **Contributors**: 20+ active
 
-### M5: 同步协议完成 (第13周末)
-- ✅ 同步插件
-- ✅ WebSocket 服务器
-- ✅ 实时订阅
+### Quality Metrics
 
-### M6: 生产就绪 (第16周末)
-- ✅ 200+ 测试
-- ✅ 完整文档
-- ✅ 性能基准
-- ✅ 安全审计
+- [ ] **Security**: Pass OWASP Top 10 audit
+- [ ] **Reliability**: 99.9% uptime in production
+- [ ] **Performance**: Meet all benchmark targets
+- [ ] **Documentation**: 95%+ coverage
 
 ---
 
-## 🔄 迁移策略 | Migration Strategy
+## ⚠️ Risks & Mitigation
 
-### 从内核迁移到运行时 | From Kernel to Runtime
+### Technical Risks
 
-#### 步骤1：功能对等（第1-13周）
-- 将所有内核功能实现为运行时插件
-- 保持内核包以实现向后兼容
-- 将内核标记为已弃用但仍可用
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Performance regression | High | Medium | Extensive benchmarking, profiling |
+| Breaking changes | High | Medium | Compatibility layer, migration tools |
+| Plugin conflicts | Medium | Medium | Strict dependency resolution, sandboxing |
+| Sync complexity | High | High | Incremental implementation, thorough testing |
 
-#### 步骤2：逐步采用（第14-16周）
-- 更新文档以推荐运行时
-- 提供迁移示例
-- 创建自动化迁移工具
+### Timeline Risks
 
-#### 步骤3：弃用时间表
-- **2026年第一季度**：运行时达到功能对等
-- **2026年第二季度**：内核标记为已弃用，无新功能
-- **2026年第三季度**：内核仅接收错误修复
-- **2026年第四季度**：从主分支删除内核（移至遗留分支）
-
----
-
-## 📚 参考资料 | References
-
-### 内部文档 | Internal Documentation
-- [完整开发计划](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)
-- [架构对比](./ARCHITECTURE_COMPARISON.md)
-- [快速参考](./SPEC_SYSTEM_QUICK_REFERENCE.md)
-- [架构指南](./ARCHITECTURE.md)
-- [路线图](./ROADMAP.md)
-
-### 外部资源 | External Resources
-- [@objectstack/spec](https://github.com/objectstack-ai/spec) - 协议规范
-- [ObjectQL](https://github.com/objectql/objectql) - 数据层实现
-- [ObjectUI](https://github.com/objectql/objectui) - UI 层（计划中）
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Scope creep | High | Medium | Strict scope definition, phased approach |
+| Resource constraints | Medium | Low | Buffer time in each phase, prioritization |
+| Dependency delays | Medium | Low | Early integration with ObjectQL/ObjectUI |
 
 ---
 
-## ✅ 下一步行动 | Next Immediate Steps
+## 📅 Milestones
 
-### 当前周（第1周）| Current Week (Week 1)
-1. ✅ 创建综合开发计划（本文档）
-2. 🚧 设置新的插件包结构
-3. 🚧 增强运行时清单支持
-4. 🚧 从内核移植依赖解析器
-5. 🚧 创建 @objectos/plugin-storage
+### M1: Runtime Enhancement Complete (End of Week 2)
+- ✅ Enhanced runtime v0.2.0
+- ✅ Core plugins (storage, metrics)
+- ✅ Migration guide
 
-### 下周（第2周）| Next Week (Week 2)
-1. 实现 plugin-metrics
-2. 向运行时添加生命周期钩子
-3. 编写从内核迁移指南
-4. 开始第二阶段：API 协议插件
+### M2: API Protocol Complete (End of Week 5)
+- ✅ 3 API plugins
+- ✅ OpenAPI generation
+- ✅ Complete middleware stack
+
+### M3: System Protocol Complete (End of Week 7)
+- ✅ Permission plugin
+- ✅ Jobs plugin
+- ✅ Enhanced audit
+
+### M4: Workflow Complete (End of Week 10)
+- ✅ Workflow engine
+- ✅ Automation plugin
+- ✅ Declarative workflows
+
+### M5: Sync Protocol Complete (End of Week 13)
+- ✅ Sync plugin
+- ✅ WebSocket server
+- ✅ Realtime subscriptions
+
+### M6: Production Ready (End of Week 16)
+- ✅ 200+ tests
+- ✅ Complete documentation
+- ✅ Performance benchmarks
+- ✅ Security audit
 
 ---
 
-## 📞 联系方式 | Contact
+## 🔄 Migration Strategy
+
+### From Kernel to Runtime
+
+#### Step 1: Feature Parity (Weeks 1-13)
+- Implement all kernel features as runtime plugins
+- Maintain kernel package for backward compatibility
+- Mark kernel as deprecated but functional
+
+#### Step 2: Gradual Adoption (Weeks 14-16)
+- Update documentation to prefer runtime
+- Provide migration examples
+- Create automated migration tool
+
+#### Step 3: Deprecation Timeline
+- **Q1 2026**: Runtime reaches feature parity
+- **Q2 2026**: Kernel marked deprecated, no new features
+- **Q3 2026**: Kernel receives bug fixes only
+- **Q4 2026**: Kernel removed from main branch (move to legacy branch)
+
+---
+
+## 📚 References
+
+### Internal Documentation
+- [Complete Development Plan](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)
+- [Architecture Comparison](./ARCHITECTURE_COMPARISON.md)
+- [Quick Reference](./SPEC_SYSTEM_QUICK_REFERENCE.md)
+- [Architecture Guide](./ARCHITECTURE.md)
+- [Roadmap](./ROADMAP.md)
+
+### External Resources
+- [@objectstack/spec](https://github.com/objectstack-ai/spec) - Protocol specification
+- [ObjectQL](https://github.com/objectql/objectql) - Data layer implementation
+- [ObjectUI](https://github.com/objectql/objectui) - UI layer (planned)
+
+---
+
+## ✅ Next Immediate Steps
+
+### Current Week (Week 1)
+1. ✅ Create comprehensive development plan (this document)
+2. 🚧 Set up new plugin package structure
+3. 🚧 Enhance runtime manifest support
+4. 🚧 Port dependency resolver from kernel
+5. 🚧 Create @objectos/plugin-storage
+
+### Next Week (Week 2)
+1. Implement plugin-metrics
+2. Add lifecycle hooks to runtime
+3. Write migration guide from kernel
+4. Begin Phase 2: API protocol plugins
+
+---
+
+## 📞 Contact
 
 - **GitHub Issues**: [objectstack-ai/objectos/issues](https://github.com/objectstack-ai/objectos/issues)
-- **项目负责人 | Project Lead**: 见 [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **社区 | Community**: [Discord/Forums]
+- **Project Lead**: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Community**: [Discord/Forums]
 
 ---
 
-**状态 | Status**: ✅ 待实施 | Ready for Implementation  
-**下次审查 | Next Review**: 2026-02-16（第一阶段完成后）
+**Status**: ✅ Ready for Implementation  
+**Next Review**: 2026-02-16 (After Phase 1 completion)
 
 ---
 
-## 附录：开发环境设置 | Appendix: Development Environment Setup
+## Appendix: Development Environment Setup
 
-### 环境要求 | Environment Requirements
+### Environment Requirements
 ```bash
 # Node.js version
 node --version  # v18.0.0 or higher
@@ -719,7 +716,7 @@ pnpm --version  # v8.0.0 or higher
 tsc --version   # v5.0.0 or higher
 ```
 
-### 初始设置 | Initial Setup
+### Initial Setup
 ```bash
 # Clone repository
 git clone https://github.com/objectstack-ai/objectos.git
@@ -738,16 +735,16 @@ pnpm test
 pnpm dev
 ```
 
-### IDE 配置 | IDE Configuration
+### IDE Configuration
 
-**VS Code 推荐扩展 | Recommended Extensions**:
+**VS Code Recommended Extensions**:
 - ESLint
 - Prettier
 - TypeScript and JavaScript Language Features
 - Jest Runner
 - YAML
 
-**VS Code 设置 | VS Code Settings**:
+**VS Code Settings**:
 ```json
 {
   "editor.formatOnSave": true,
@@ -759,7 +756,7 @@ pnpm dev
 
 ---
 
-**文档结束 | END OF DOCUMENT**
+**END OF DOCUMENT**
 
-**版本 | Version**: 1.0.0  
-**最后更新 | Last Updated**: 2026-02-02
+**Version**: 1.0.0  
+**Last Updated**: 2026-02-02
