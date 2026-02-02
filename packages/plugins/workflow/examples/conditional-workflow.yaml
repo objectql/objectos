@@ -1,0 +1,116 @@
+# Conditional Branching Workflow Example
+# This workflow demonstrates conditional decision making
+
+name: "Support Ticket Routing"
+description: "Conditional ticket routing based on priority and type"
+type: conditional
+version: "1.0.0"
+
+states:
+  created:
+    initial: true
+    transitions:
+      triage: triaging
+    on_enter:
+      - log_ticket_created
+      - send_confirmation
+    metadata:
+      label: "Ticket Created"
+  
+  triaging:
+    transitions:
+      route_critical: critical_path
+      route_high: high_priority_path
+      route_normal: normal_path
+      route_low: low_priority_path
+    guards:
+      - check_priority_level
+    on_enter:
+      - analyze_ticket
+      - categorize_issue
+    metadata:
+      label: "Triaging Ticket"
+  
+  critical_path:
+    transitions:
+      escalate: escalated
+    guards:
+      - is_critical_priority
+    on_enter:
+      - page_on_call_team
+      - create_incident
+    metadata:
+      label: "Critical Priority Path"
+      priority: "critical"
+  
+  high_priority_path:
+    transitions:
+      assign: assigned
+    guards:
+      - is_high_priority
+    on_enter:
+      - notify_senior_team
+      - set_sla_2_hours
+    metadata:
+      label: "High Priority Path"
+      priority: "high"
+      sla_hours: 2
+  
+  normal_path:
+    transitions:
+      assign: assigned
+    guards:
+      - is_normal_priority
+    on_enter:
+      - add_to_queue
+      - set_sla_8_hours
+    metadata:
+      label: "Normal Priority Path"
+      priority: "normal"
+      sla_hours: 8
+  
+  low_priority_path:
+    transitions:
+      auto_resolve: resolved
+      assign: assigned
+    guards:
+      - is_low_priority
+    on_enter:
+      - check_knowledge_base
+      - set_sla_24_hours
+    metadata:
+      label: "Low Priority Path"
+      priority: "low"
+      sla_hours: 24
+  
+  escalated:
+    transitions:
+      resolve: resolved
+      downgrade: assigned
+    on_enter:
+      - notify_leadership
+      - start_war_room
+    metadata:
+      label: "Escalated to Leadership"
+  
+  assigned:
+    transitions:
+      resolve: resolved
+      escalate_if_needed: escalated
+      reassign: assigned
+    guards:
+      - has_assignee
+    on_enter:
+      - assign_to_agent
+      - notify_agent
+    metadata:
+      label: "Assigned to Agent"
+  
+  resolved:
+    final: true
+    on_enter:
+      - close_ticket
+      - send_resolution_notification
+      - request_feedback
+    metadata:
+      label: "Resolved"

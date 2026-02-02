@@ -1,0 +1,78 @@
+# Parallel Workflow Example
+# This workflow demonstrates parallel execution paths
+
+name: "Employee Onboarding"
+description: "Parallel onboarding tasks workflow"
+type: parallel
+version: "1.0.0"
+
+states:
+  started:
+    initial: true
+    transitions:
+      begin: parallel_tasks
+    on_enter:
+      - create_onboarding_ticket
+      - assign_buddy
+    metadata:
+      label: "Onboarding Started"
+  
+  parallel_tasks:
+    transitions:
+      it_complete: it_completed
+      hr_complete: hr_completed
+      facilities_complete: facilities_completed
+    metadata:
+      label: "Parallel Tasks in Progress"
+      tasks:
+        - it_setup
+        - hr_paperwork
+        - facilities_access
+  
+  it_completed:
+    transitions:
+      check: check_all_complete
+    metadata:
+      label: "IT Setup Complete"
+      completed_task: "it_setup"
+  
+  hr_completed:
+    transitions:
+      check: check_all_complete
+    metadata:
+      label: "HR Paperwork Complete"
+      completed_task: "hr_paperwork"
+  
+  facilities_completed:
+    transitions:
+      check: check_all_complete
+    metadata:
+      label: "Facilities Access Complete"
+      completed_task: "facilities_access"
+  
+  check_all_complete:
+    transitions:
+      all_done: training
+      continue: parallel_tasks
+    guards:
+      - all_parallel_tasks_complete
+    metadata:
+      label: "Checking Completion Status"
+  
+  training:
+    transitions:
+      complete: completed
+    on_enter:
+      - schedule_training
+      - send_training_materials
+    metadata:
+      label: "Training"
+  
+  completed:
+    final: true
+    on_enter:
+      - mark_onboarding_complete
+      - notify_manager
+      - celebrate
+    metadata:
+      label: "Onboarding Complete"

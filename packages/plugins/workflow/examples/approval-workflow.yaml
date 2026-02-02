@@ -1,0 +1,66 @@
+# Approval Workflow Example
+# This workflow demonstrates a multi-level approval process
+
+name: "Document Approval"
+description: "Multi-level approval workflow for documents"
+type: approval
+version: "1.0.0"
+
+states:
+  draft:
+    initial: true
+    transitions:
+      submit:
+        target: pending_manager
+        guards:
+          - has_required_fields
+        actions:
+          - notify_manager
+    metadata:
+      label: "Draft"
+      description: "Document is being drafted"
+  
+  pending_manager:
+    transitions:
+      approve:
+        target: pending_director
+        actions:
+          - notify_director
+      reject:
+        target: rejected
+        actions:
+          - notify_requester
+    on_enter:
+      - set_pending_date
+    metadata:
+      label: "Pending Manager Approval"
+  
+  pending_director:
+    transitions:
+      approve:
+        target: approved
+        actions:
+          - notify_requester
+          - publish_document
+      reject:
+        target: rejected
+        actions:
+          - notify_requester
+    metadata:
+      label: "Pending Director Approval"
+  
+  approved:
+    final: true
+    on_enter:
+      - set_approved_date
+    metadata:
+      label: "Approved"
+      description: "Document has been approved"
+  
+  rejected:
+    final: true
+    on_enter:
+      - set_rejected_date
+    metadata:
+      label: "Rejected"
+      description: "Document was rejected"
