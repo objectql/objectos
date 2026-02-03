@@ -1,0 +1,43 @@
+{
+  "app": {
+    "title": "Mon Application",
+    "description": "Bienvenue dans notre application"
+  },
+  "user": {
+    "profile": {
+      "name": "Nom",
+      "email": "Email",
+      "bio": "Biographie"
+    },
+    "greeting": "Bonjour, {{name}}!",
+    "welcome": "Bon retour, {{name}}. Vous avez {{count}} nouveaux messages."
+  },
+  "messages": {
+    "one": "Vous avez {{count}} message",
+    "other": "Vous avez {{count}} messages"
+  },
+  "cart": {
+    "total": "Total: {{amount | currency:EUR}}",
+    "items": {
+      "zero": "Votre panier est vide",
+      "one": "{{count}} article dans le panier",
+      "other": "{{count}} articles dans le panier"
+    }
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "errors": {
+    "required": "Ce champ est obligatoire",
+    "invalid_email": "Adresse email invalide",
+    "password_too_short": "Le mot de passe doit contenir au moins {{minLength}} caractères"
+  },
+  "dates": {
+    "published": "Publié le {{date | date}}"
+  }
+}
