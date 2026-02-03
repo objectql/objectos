@@ -1,6 +1,7 @@
 {
   "name": "@objectstack/runtime",
   "version": "0.1.0",
+  "deprecated": "This local package is deprecated. Use the published npm version @objectstack/runtime@0.9.0 instead.",
   "license": "AGPL-3.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

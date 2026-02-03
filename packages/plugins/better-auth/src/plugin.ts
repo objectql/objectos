@@ -61,9 +61,9 @@ export class BetterAuthPlugin implements Plugin {
             // Register route handler through a hook or service
             // The kernel should provide a way to register routes
             // For now, we'll use a hook to expose the handler
-            context.hook('http.route.register', async (routeData: any) => {
+            context.hook('http.route.register', (routeData: any) => {
                 if (routeData?.path === '/api/auth/*') {
-                    return handler;
+                    // Store or use handler as needed
                 }
             });
 
@@ -76,7 +76,8 @@ export class BetterAuthPlugin implements Plugin {
             context.logger.info('[Better-Auth Plugin] Initialized successfully');
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, error);
+            const errorObj = error instanceof Error ? error : undefined;
+            context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, errorObj);
             throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
         }
     }
@@ -136,7 +137,8 @@ export class BetterAuthPlugin implements Plugin {
 
             this.context?.logger.info('[Better-Auth Plugin] Destroyed successfully');
         } catch (error) {
-            this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', error);
+            const errorObj = error instanceof Error ? error : undefined;
+            this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', errorObj);
             throw error;
         }
     }
