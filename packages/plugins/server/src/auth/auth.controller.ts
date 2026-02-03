@@ -1,19 +1,36 @@
-import { Controller, All, Req, Res } from '@nestjs/common';
+import { Controller, All, Req, Res, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { getAuth } from './auth.client.js';
 
+/**
+ * Auth Controller - Delegates to Better-Auth Plugin
+ * 
+ * This controller no longer directly manages authentication.
+ * Instead, it delegates to the @objectos/plugin-better-auth plugin
+ * which is registered in the ObjectOS kernel.
+ */
 @Controller('api/auth')
 export class AuthController {
+    constructor(
+        @Inject('BETTER_AUTH_PLUGIN') private betterAuthPlugin?: any
+    ) {}
+
     @All('*')
     async handleAuth(@Req() req: Request, @Res() res: Response) {
         try {
-            const auth = await getAuth();
-            const { toNodeHandler } = await import('better-auth/node');
-            return toNodeHandler(auth)(req, res);
+            // Get the Better-Auth handler from the plugin
+            if (!this.betterAuthPlugin) {
+                throw new Error('Better-Auth plugin not available. Ensure @objectos/plugin-better-auth is loaded in the kernel.');
+            }
+
+            const handler = await this.betterAuthPlugin.getHandler();
+            return handler(req, res);
         } catch (error) {
-            console.error('Auth Error:', error);
+            console.error('[Auth Controller] Error:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            res.status(500).json({ error: 'Internal Server Error', details: errorMessage });
+            res.status(500).json({ 
+                error: 'Authentication service unavailable', 
+                details: errorMessage 
+            });
         }
     }
 }

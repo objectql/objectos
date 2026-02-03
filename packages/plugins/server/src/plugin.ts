@@ -26,6 +26,7 @@ export interface ServerPluginOptions {
     allowedHeaders?: string[];
   };
   objectql?: any;
+  betterAuthPlugin?: any; // Better-Auth plugin instance from kernel
 }
 
 /**
@@ -38,7 +39,7 @@ export const createServerPlugin = (options: ServerPluginOptions = {}): Plugin =>
   return {
     name: 'com.objectos.server',
     version: '0.1.0',
-    dependencies: ['com.objectstack.engine.objectql'],
+    dependencies: ['com.objectstack.engine.objectql', 'com.objectos.auth.better-auth'],
 
     /**
      * Initialize plugin - Create NestJS app instance
@@ -47,6 +48,17 @@ export const createServerPlugin = (options: ServerPluginOptions = {}): Plugin =>
       ctx.logger.info('[Server Plugin] Initializing NestJS application...');
       
       try {
+        // Get Better-Auth plugin from service registry
+        let betterAuthPlugin;
+        try {
+          betterAuthPlugin = ctx.getService('better-auth');
+          ctx.logger.debug('[Server Plugin] Better-Auth plugin found in registry');
+          // Store the kernel reference globally so the NestJS app can access it
+          (global as any).__OBJECTOS_KERNEL__ = { getService: ctx.getService.bind(ctx) };
+        } catch (error) {
+          ctx.logger.warn('[Server Plugin] Better-Auth plugin not available in registry');
+        }
+        
         // Create NestJS application
         app = await NestFactory.create(AppModule, {
           logger: ['log', 'error', 'warn', 'debug'],

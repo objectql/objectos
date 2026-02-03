@@ -1,3 +1,17 @@
+/**
+ * @deprecated This file is deprecated and will be removed in a future version.
+ * 
+ * The authentication logic has been migrated to @objectos/plugin-better-auth.
+ * This module is now integrated with the Better-Auth plugin through the ObjectOS kernel.
+ * 
+ * Migration Guide:
+ * - Ensure @objectos/plugin-better-auth is loaded in your ObjectOS kernel
+ * - The server plugin will automatically use the Better-Auth instance from the kernel
+ * - No code changes required in your application
+ * 
+ * This file is kept for backward compatibility during the migration period.
+ * It will be removed in version 0.2.0.
+ */
 
 let authInstance: any;
 

@@ -12,7 +12,27 @@ import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@ob
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Provide a factory for the Better-Auth plugin instance
+    {
+      provide: 'BETTER_AUTH_PLUGIN',
+      useFactory: () => {
+        // In a production setup, this would get the plugin from the kernel's service registry
+        // For now, we return undefined and the middleware/controller will handle gracefully
+        // This will be properly wired when the server plugin is loaded by the kernel
+        if (global && (global as any).__OBJECTOS_KERNEL__) {
+          try {
+            const kernel = (global as any).__OBJECTOS_KERNEL__;
+            return kernel.getService?.('better-auth') || null;
+          } catch {
+            return null;
+          }
+        }
+        return null;
+      }
+    }
+  ],
 })
 export class AppModule implements NestModule {
   constructor(@Inject('OBJECTQL') private objectql: any) {}
