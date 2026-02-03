@@ -61,7 +61,7 @@ export class BetterAuthPlugin implements Plugin {
             // Register route handler through a hook or service
             // The kernel should provide a way to register routes
             // For now, we'll use a hook to expose the handler
-            context.hook('http.route.register', (routeData: any) => {
+            context.hook('http.beforeStart', (routeData: any) => {
                 if (routeData?.path === '/api/auth/*') {
                     // Store or use handler as needed
                 }
