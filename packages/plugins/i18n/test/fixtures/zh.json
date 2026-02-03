@@ -1,0 +1,41 @@
+{
+  "app": {
+    "title": "我的应用",
+    "description": "欢迎使用我们的应用"
+  },
+  "user": {
+    "profile": {
+      "name": "姓名",
+      "email": "邮箱",
+      "bio": "简介"
+    },
+    "greeting": "你好，{{name}}！",
+    "welcome": "欢迎回来，{{name}}。你有 {{count}} 条新消息。"
+  },
+  "messages": {
+    "other": "你有 {{count}} 条消息"
+  },
+  "cart": {
+    "total": "总计：{{amount | currency:USD}}",
+    "items": {
+      "zero": "购物车是空的",
+      "other": "购物车中有 {{count}} 件商品"
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "yes": "是",
+    "no": "否"
+  },
+  "errors": {
+    "required": "此字段为必填项",
+    "invalid_email": "无效的邮箱地址",
+    "password_too_short": "密码长度至少为 {{minLength}} 个字符"
+  },
+  "dates": {
+    "published": "发布于 {{date | date}}"
+  }
+}
