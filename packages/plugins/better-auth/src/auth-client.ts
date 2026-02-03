@@ -12,13 +12,21 @@ export interface BetterAuthConfig {
     databaseUrl?: string;
     baseURL?: string;
     trustedOrigins?: string[];
+    // OAuth providers
+    googleClientId?: string;
+    googleClientSecret?: string;
+    githubClientId?: string;
+    githubClientSecret?: string;
+    // Two-factor authentication
+    twoFactorEnabled?: boolean;
+    twoFactorIssuer?: string;
 }
 
 export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
     if (authInstance) return authInstance;
     
     const { betterAuth } = await import("better-auth");
-    const { organization } = await import("better-auth/plugins");
+    const { organization, twoFactor } = await import("better-auth/plugins");
     const { role } = await import("better-auth/plugins/access");
     
     try {
@@ -26,6 +34,72 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
         const dbUrl = config.databaseUrl || process.env.OBJECTQL_DATABASE_URL;
         const isPostgres = dbUrl && dbUrl.startsWith('postgres');
         const isMongo = dbUrl && dbUrl.startsWith('mongodb');
+
+        // OAuth configuration
+        const googleClientId = config.googleClientId || process.env.GOOGLE_CLIENT_ID;
+        const googleClientSecret = config.googleClientSecret || process.env.GOOGLE_CLIENT_SECRET;
+        const githubClientId = config.githubClientId || process.env.GITHUB_CLIENT_ID;
+        const githubClientSecret = config.githubClientSecret || process.env.GITHUB_CLIENT_SECRET;
+        
+        // Build plugins array conditionally
+        const plugins: any[] = [];
+
+        // Add Two-Factor Authentication (enabled by default unless explicitly disabled)
+        if (config.twoFactorEnabled !== false) {
+            plugins.push(twoFactor({
+                issuer: config.twoFactorIssuer || process.env.BETTER_AUTH_2FA_ISSUER || "ObjectOS",
+                totpPeriod: 30,
+            }));
+        }
+
+        // Add OAuth providers if credentials are available
+        if (googleClientId && googleClientSecret) {
+            const { google } = await import("better-auth/social-providers");
+            plugins.push(google({
+                clientId: googleClientId,
+                clientSecret: googleClientSecret,
+            }));
+            console.log('[Better-Auth Plugin] Google OAuth enabled');
+        }
+
+        if (githubClientId && githubClientSecret) {
+            const { github } = await import("better-auth/social-providers");
+            plugins.push(github({
+                clientId: githubClientId,
+                clientSecret: githubClientSecret,
+            }));
+            console.log('[Better-Auth Plugin] GitHub OAuth enabled');
+        }
+
+        // Add organization and team management
+        plugins.push(organization({
+            dynamicAccessControl: {
+                enabled: true
+            },
+            teams: {
+                enabled: true
+            },
+            creatorRole: 'owner',
+            roles: {
+                owner: role({
+                    organization: ['update', 'delete', 'read'],
+                    member: ['create', 'update', 'delete', 'read'],
+                    invitation: ['create', 'cancel', 'read'],
+                    team: ['create', 'update', 'delete', 'read']
+                }),
+                admin: role({
+                    organization: ['update', 'read'],
+                    member: ['create', 'update', 'delete', 'read'],
+                    invitation: ['create', 'cancel', 'read'],
+                    team: ['create', 'update', 'delete', 'read']
+                }),
+                user: role({
+                    organization: ['read'],
+                    member: ['read'],
+                    team: ['read']
+                })
+            }
+        }));
 
         // Initialize database connection based on database type
         if (isPostgres) {
@@ -121,36 +195,7 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                     }
                 }
             },
-            plugins: [
-                organization({
-                    dynamicAccessControl: {
-                        enabled: true
-                    },
-                    teams: {
-                        enabled: true
-                    },
-                    creatorRole: 'owner',
-                    roles: {
-                        owner: role({
-                            organization: ['update', 'delete', 'read'],
-                            member: ['create', 'update', 'delete', 'read'],
-                            invitation: ['create', 'cancel', 'read'],
-                            team: ['create', 'update', 'delete', 'read']
-                        }),
-                        admin: role({
-                            organization: ['update', 'read'],
-                            member: ['create', 'update', 'delete', 'read'],
-                            invitation: ['create', 'cancel', 'read'],
-                            team: ['create', 'update', 'delete', 'read']
-                        }),
-                        user: role({
-                            organization: ['read'],
-                            member: ['read'],
-                            team: ['read']
-                        })
-                    }
-                })
-            ]
+            plugins: plugins,
         });
         
         console.log('[Better-Auth Plugin] Initialized successfully');

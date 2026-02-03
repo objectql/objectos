@@ -5,6 +5,8 @@ Authentication plugin for ObjectOS based on [Better-Auth](https://www.better-aut
 ## Features
 
 - 🔐 **Email/Password Authentication** - Built-in email and password authentication
+- 🔑 **OAuth2/OIDC Support** - Social login with Google, GitHub, and more
+- 🛡️ **Two-Factor Authentication (2FA)** - Enhanced security with TOTP-based 2FA
 - 🏢 **Organization Management** - Multi-tenant organization support with teams
 - 👥 **Role-Based Access Control (RBAC)** - Flexible role and permission system
 - 💾 **Multi-Database Support** - Works with PostgreSQL, MongoDB, and SQLite
@@ -42,7 +44,15 @@ import { createBetterAuthPlugin } from '@objectos/plugin-better-auth';
 const customAuthPlugin = createBetterAuthPlugin({
   databaseUrl: 'postgres://localhost:5432/mydb',
   baseURL: 'https://myapp.com/api/auth',
-  trustedOrigins: ['https://myapp.com', 'https://app.myapp.com']
+  trustedOrigins: ['https://myapp.com', 'https://app.myapp.com'],
+  // OAuth providers (optional)
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  githubClientId: process.env.GITHUB_CLIENT_ID,
+  githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
+  // Two-factor authentication (enabled by default)
+  twoFactorEnabled: true,
+  twoFactorIssuer: 'MyApp'
 });
 
 const os = new ObjectOS({
@@ -70,6 +80,12 @@ Once enabled, the plugin registers the following authentication endpoints:
 | `databaseUrl` | `string` | `process.env.OBJECTQL_DATABASE_URL` | Database connection string |
 | `baseURL` | `string` | `http://localhost:3000/api/auth` | Base URL for authentication endpoints |
 | `trustedOrigins` | `string[]` | `['http://localhost:5173', 'http://localhost:3000']` | Allowed origins for CORS |
+| `googleClientId` | `string` | `process.env.GOOGLE_CLIENT_ID` | Google OAuth client ID (optional) |
+| `googleClientSecret` | `string` | `process.env.GOOGLE_CLIENT_SECRET` | Google OAuth client secret (optional) |
+| `githubClientId` | `string` | `process.env.GITHUB_CLIENT_ID` | GitHub OAuth client ID (optional) |
+| `githubClientSecret` | `string` | `process.env.GITHUB_CLIENT_SECRET` | GitHub OAuth client secret (optional) |
+| `twoFactorEnabled` | `boolean` | `true` | Enable two-factor authentication |
+| `twoFactorIssuer` | `string` | `ObjectOS` | Issuer name for 2FA TOTP tokens |
 
 ## Database Support
 
