@@ -115,7 +115,7 @@ export function parsePrometheusLine(line: string): { name: string; labels: Label
     }
 
     // Parse metric line: name{labels} value timestamp
-    const match = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)((?:\{[^}]*\})?) ([0-9.+-eE]+)(?: ([0-9]+))?$/);
+    const match = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)((?:\{[^}]*\})?) ([+-]?[0-9.eE]+)(?: ([0-9]+))?$/);
     if (!match) {
         return null;
     }
