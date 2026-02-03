@@ -1,7 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/runtime" },
     { "path": "./packages/plugins/server" }
   ]
 }
