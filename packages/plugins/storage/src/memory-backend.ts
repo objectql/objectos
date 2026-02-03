@@ -77,6 +77,7 @@ export class MemoryStorageBackend implements StorageBackend {
     async close(): Promise<void> {
         if (this.ttlCheckInterval) {
             clearInterval(this.ttlCheckInterval);
+            this.ttlCheckInterval = undefined;
         }
         this.store.clear();
     }

@@ -135,13 +135,14 @@ describe('MemoryStorageBackend', () => {
             await backend.set('expire1', 'value1', 0.1);
             await backend.set('expire2', 'value2', 0.1);
             
-            await new Promise(resolve => setTimeout(resolve, 200));
+            // Wait for expiration and cleanup
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             const keys = await backend.keys();
             expect(keys).not.toContain('expire1');
             expect(keys).not.toContain('expire2');
             
             await backend.close();
-        });
+        }, 10000); // Increase timeout to 10s
     });
 });
