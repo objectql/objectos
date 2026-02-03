@@ -1,6 +1,17 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/plugins/server" }
+    { "path": "./packages/plugins/audit-log" },
+    { "path": "./packages/plugins/automation" },
+    { "path": "./packages/plugins/better-auth" },
+    { "path": "./packages/plugins/cache" },
+    { "path": "./packages/plugins/i18n" },
+    { "path": "./packages/plugins/jobs" },
+    { "path": "./packages/plugins/metrics" },
+    { "path": "./packages/plugins/notification" },
+    { "path": "./packages/plugins/permissions" },
+    { "path": "./packages/plugins/server" },
+    { "path": "./packages/plugins/storage" },
+    { "path": "./packages/plugins/workflow" }
   ]
 }

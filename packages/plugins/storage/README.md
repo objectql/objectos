@@ -1,14 +1,15 @@
 # @objectos/plugin-storage
 
-Plugin-isolated KV storage for ObjectOS with multiple backend support.
+Key-Value and Blob storage abstraction for ObjectOS.
 
 ## Features
 
-- **Multiple Backends**: Memory (development), SQLite (file-based), Redis (production)
-- **Plugin Isolation**: Each plugin gets its own namespace to prevent data conflicts
-- **TTL Support**: Automatic expiration of keys after a specified time
-- **Pattern Matching**: Query keys using glob patterns (`user:*`, `config:?:name`)
-- **High Performance**: Optimized for both read and write operations
+- **KV Storage**: Simple Key-Value store API.
+- **Backends**:
+  - **Memory Backend**: For testing and ephemeral data.
+  - **SQLite Backend**: For local persistent storage.
+  - **Redis Backend**: For high-performance, shared storage.
+- **Type Safety**: TypeScript support for stored values.
 
 ## Installation
 
@@ -16,165 +17,55 @@ Plugin-isolated KV storage for ObjectOS with multiple backend support.
 pnpm add @objectos/plugin-storage
 ```
 
-### Optional Dependencies
-
-For SQLite backend:
-```bash
-pnpm add better-sqlite3
-```
-
-For Redis backend:
-```bash
-pnpm add ioredis
-```
-
 ## Usage
 
-### Basic Setup
-
 ```typescript
-import { StoragePlugin } from '@objectos/plugin-storage';
-import { ObjectOS } from '@objectstack/runtime';
+import { StoragePlugin, getStorageAPI } from '@objectos/plugin-storage';
 
-const storage = new StoragePlugin({
-  backend: 'memory' // or 'sqlite' or 'redis'
-});
+// Initialize with a backend
+// ...
 
-const os = new ObjectOS();
-await os.registerPlugin(storage);
-await os.start();
+// Use the API
+const storage = getStorageAPI(kernel);
+await storage.set('config:retry_count', 5);
+const val = await storage.get('config:retry_count');
 ```
 
-### Backend Configuration
+## Development Plan
 
-#### Memory Backend (Development)
+- [ ] Add **Object/Blob Storage** support (S3, MinIO, Azure Blob) for file uploads.
+- [ ] Implement file upload handlers (Multipart).
+- [ ] Add file metadata management.
+- [ ] Add encryption support for stored va# @objectos/plug cat > packages/plugins/server/README.md <<'EOF'
+# @objectos/plugin-server
 
-```typescript
-const storage = new StoragePlugin({
-  backend: 'memory',
-  options: {
-    maxKeys: 10000,
-    ttlCheckInterval: 60000 // Clean expired keys every minute
-  }
-});
-```
+NestJS-based HTTP Server plugin for the ObjectOS Runtime.
 
-#### SQLite Backend (File-based)
+## Features
 
-```typescript
-const storage = new StoragePlugin({
-  backend: 'sqlite',
-  options: {
-    path: './data/storage.db',
-    wal: true // Enable WAL mode for better concurrency
-  }
-});
-```
+- **Kernel Hosting**: Acts as the host environment for the ObjectOS Kernel.
+- **NestJS Integration**: Leverages the robust NestJS framework architecture.
+- **API Gateway**: Serves as the entry point for GraphQL and REST APIs.
+- **Static Assets**: Capabilities to serve static files.
+- **Middleware**: supports standard Express/NestJS middleware iimport { Sto
+#
+// Initialize with a backend
+// ...
 
-#### Redis Backend (Production)
+// Use the API
+const storage = ge
+Th// ...
 
-```typescript
-const storage = new StoragePlugin({
-  backend: 'redis',
-  options: {
-    host: '127.0.0.1',
-    port: 6379,
-    password: 'your-password',
-    db: 0,
-    keyPrefix: 'objectos:storage:'
-  }
-});
-```
+// Use the API
+cons a
+// U enconst storage tawait storage.set('config:retry_count pconst val = await storage.get('config:retrer```
 
-### Using Storage in Plugins
+## Development Plan
 
-```typescript
-import type { Plugin, PluginContext } from '@objectstack/runtime';
+- [ ] Add **Object/Blob Sra
+#ing
+- [ ] Add **Objecelo- [ ] Implement file upload handlers (Multipart).
+- [ ] Add file metmplement automat- [ ] Add file metadata management.
+- [ ] Add en [- [ ] Add encryption support for s ]# @objectos/plugin-server
 
-class MyPlugin implements Plugin {
-  name = 'my-plugin';
-  version = '1.0.0';
-  
-  async init(context: PluginContext) {
-    const storage = context.getService('storage');
-    const scopedStorage = storage.getScopedStorage('my-plugin');
-    
-    // Store data
-    await scopedStorage.set('config', { theme: 'dark' });
-    
-    // Retrieve data
-    const config = await scopedStorage.get('config');
-    
-    // Set with TTL (expires in 60 seconds)
-    await scopedStorage.set('session', { user: 'john' }, 60);
-    
-    // List keys
-    const keys = await scopedStorage.keys('config:*');
-    
-    // Delete data
-    await scopedStorage.delete('config');
-    
-    // Clear all plugin data
-    await scopedStorage.clear();
-  }
-}
-```
-
-## API Reference
-
-### StoragePlugin
-
-#### Methods
-
-- `get(key: string): Promise<any>` - Get a value by key
-- `set(key: string, value: any, ttl?: number): Promise<void>` - Set a value with optional TTL (seconds)
-- `delete(key: string): Promise<void>` - Delete a value
-- `keys(pattern?: string): Promise<string[]>` - Get all keys matching pattern
-- `clear(): Promise<void>` - Clear all data
-- `getScopedStorage(pluginId: string): ScopedStorage` - Get plugin-scoped storage
-
-### ScopedStorage
-
-Same API as StoragePlugin but all keys are automatically prefixed with the plugin ID.
-
-### Pattern Matching
-
-Supports glob-style patterns:
-- `*` - Matches any characters
-- `?` - Matches a single character
-
-Examples:
-- `user:*` - Matches `user:1`, `user:2:name`, etc.
-- `config:?` - Matches `config:1`, `config:a`, but not `config:10`
-- `*:name` - Matches `user:name`, `admin:name`, etc.
-
-## Best Practices
-
-1. **Use Scoped Storage**: Always use `getScopedStorage()` in plugins to ensure data isolation
-2. **Choose the Right Backend**:
-   - Memory: Fast but data is lost on restart
-   - SQLite: Good for single-server deployments
-   - Redis: Required for multi-server deployments
-3. **Set Appropriate TTLs**: Use TTL for temporary data like sessions and caches
-4. **Use Patterns Wisely**: Prefix keys with namespaces for easier management
-
-## Performance
-
-### Memory Backend
-- **Read**: O(1)
-- **Write**: O(1)
-- **Pattern Match**: O(n) where n is total keys
-
-### SQLite Backend
-- **Read**: O(1) with index
-- **Write**: O(1) 
-- **Pattern Match**: O(n) where n is total keys
-
-### Redis Backend
-- **Read**: O(1)
-- **Write**: O(1)
-- **Pattern Match**: O(n) where n is matching keys
-
-## License
-
-AGPL-3.0
+NestJS- exception filters to map ObjectOS errors to HTTP codes.
