@@ -174,24 +174,41 @@ bootstrap();
 
 ---
 
-## 📋 Development & Roadmap
+## 📋 Documentation & Development
 
-Want to contribute or see what's coming next?
+### 🆕 **NEW: Complete Development Documentation (2026)** 📖
 
-### 🆕 Spec System Development (2026)
+**Comprehensive bilingual guides (中文/English) for building world-class enterprise software:**
 
-**Complete implementation plan based on @objectstack/spec protocol:**
+#### 📚 Core Documentation
+- **[📑 Documentation Index](./OBJECTOS_DOCUMENTATION_INDEX.md)** - 📍 **START HERE** - Complete documentation navigation
+- **[📋 Development Master Plan](./OBJECTOS_DEVELOPMENT_MASTER_PLAN.md)** - 22-week implementation roadmap
+- **[🏗️ Architecture Design](./OBJECTOS_ARCHITECTURE_DESIGN.md)** - Deep dive into microkernel architecture
+- **[🔌 Plugin System Specification](./OBJECTOS_PLUGIN_SPECIFICATION.md)** - Complete plugin development guide
+- **[🔗 Integration Guide](./OBJECTOS_INTEGRATION_GUIDE.md)** - Integrating ObjectQL and ObjectUI
+- **[🚀 Deployment Guide](./OBJECTOS_DEPLOYMENT_GUIDE.md)** - Production deployment and operations
 
-- **[📑 Documentation Index](./SPEC_SYSTEM_INDEX.md)** - Central hub for all spec system docs
-- **[📘 Development Plan](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)** - Complete 16-week technical plan
+#### 🎯 Quick Navigation
+- **For Product Managers**: Start with [Development Master Plan](./OBJECTOS_DEVELOPMENT_MASTER_PLAN.md)
+- **For Architects**: Read [Architecture Design](./OBJECTOS_ARCHITECTURE_DESIGN.md)
+- **For Developers**: Follow [Plugin Specification](./OBJECTOS_PLUGIN_SPECIFICATION.md)
+- **For DevOps**: Refer to [Deployment Guide](./OBJECTOS_DEPLOYMENT_GUIDE.md)
+
+---
+
+### 📘 Spec System Development
+
+**Implementation plan based on @objectstack/spec protocol:**
+
+- **[📑 Spec Documentation Index](./SPEC_SYSTEM_INDEX.md)** - Central hub for all spec system docs
+- **[📘 Spec Development Plan](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)** - Complete 16-week technical plan
 - **[⚡ Quick Reference](./SPEC_SYSTEM_QUICK_REFERENCE.md)** - Quick start guide and cheat sheet
 - **[🏗️ Architecture Comparison](./ARCHITECTURE_COMPARISON.md)** - Kernel vs Runtime visual guide
 - **[🗺️ Implementation Roadmap](./IMPLEMENTATION_ROADMAP.md)** - Bilingual roadmap (中文/English)
 
-### 📚 General Documentation
+### 📚 Additional Documentation
 
 - **[Phase 3 Implementation Summary](./PHASE_3_IMPLEMENTATION_SUMMARY.md)** - Complete summary of 5 system plugins implementation
-- **[Development Plan (Q1 2026)](./docs/guide/development-plan.md)** - Detailed implementation plan for upcoming features
 - **[Long-term Roadmap](./ROADMAP.md)** - Strategic vision through 2026 and beyond
 - **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
@@ -200,16 +217,18 @@ Want to contribute or see what's coming next?
 
 Detailed migration guides for upgrading ObjectStack dependencies:
 
-- **[ObjectStack 0.8.0 Upgrade Guide](./OBJECTSTACK_0.8.0_UPGRADE.md)** - Latest upgrade (Zod v4, TypeScript fixes)
+- **[ObjectStack 0.9.1 Upgrade (中文)](./OBJECTSTACK_0.9.1_UPGRADE_CN.md)** - Latest upgrade guide (Chinese)
+- **[ObjectStack 0.9.1 Upgrade](./OBJECTSTACK_0.9.1_UPGRADE.md)** - Latest upgrade guide (English)
+- **[ObjectStack 0.8.0 Upgrade Guide](./OBJECTSTACK_0.8.0_UPGRADE.md)** - Zod v4, TypeScript fixes
 - **[ObjectStack 0.7.2 Upgrade Guide](./OBJECTSTACK_0.7.2_UPGRADE.md)** - CLI integration and ES module fixes
-- **[ObjectStack 0.7.1 Upgrade Guide](./UPGRADE_SUMMARY_0.7.1.md)** - Initial runtime migration
 
-**Key Q1 2026 Goals:**
+**Key 2026 Goals:**
 - 🔐 Production-grade permission system (Object/Field/Record-level)
 - 🪝 Complete lifecycle hooks system
 - 🔗 Full relationship support (Lookup, Master-Detail, Many-to-Many)
 - 🧪 Test coverage (90% Kernel, 80% Server, 70% UI)
 - 🎯 100% @objectstack/spec protocol compliance
+- 🌐 Comprehensive bilingual documentation
 
 ---
 
