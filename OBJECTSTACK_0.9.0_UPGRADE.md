@@ -20,7 +20,6 @@ All @objectstack packages have been upgraded to version 0.9.0:
 Based on the package exports and structure, @objectstack/spec 0.9.0 includes:
 
 1. **Expanded Protocol Coverage**
-   - AI Protocol: Agent orchestration, RAG, model registry, prompts
    - Automation Protocol: Approval flows, ETL, workflows
    - Integration Protocol: Connectors for databases, file storage, GitHub
    - Hub Protocol: Composer for building integrations
@@ -163,17 +162,6 @@ The CLI patch is not currently managed via pnpm's patch system due to patch appl
 ## New Capabilities to Explore
 
 With @objectstack/spec 0.9.0, you can now leverage:
-
-### AI Integration
-```typescript
-import { AI } from '@objectstack/spec';
-
-const agent: AI.Agent = {
-  name: 'my-agent',
-  type: 'code-generation',
-  // ... configuration
-};
-```
 
 ### Automation Workflows
 ```typescript

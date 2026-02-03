@@ -49,18 +49,12 @@ Successfully upgraded ObjectOS kernel and all @objectstack dependencies from ver
 - Retry guidance for each error type
 - Localization support
 
-### 3. Enhanced AI Protocol
-- New agent action types
-- Improved conversation token tracking (required fields for prompt/completion/total)
-- Cost tracking support
-- File URL support in conversation messages
-
-### 4. GraphQL Protocol Support
+### 3. GraphQL Protocol Support
 - Schema definitions for GraphQL APIs
 - Query and mutation support
 - Subscription protocol
 
-### 5. API Contract Improvements
+### 4. API Contract Improvements
 - Enhanced discovery service schemas
 - Better endpoint metadata
 - Improved OpenAPI generation support
