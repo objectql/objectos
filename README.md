@@ -89,6 +89,11 @@ This ensures interoperability across the ObjectStack ecosystem (ObjectQL, Object
 | **`@objectos/plugin-server`** | **The Gateway** | NestJS HTTP server as a runtime plugin. |
 | **`@objectos/plugin-better-auth`** | **Auth** | Authentication strategies (Local, OAuth2, Enterprise SSO). |
 | **`@objectos/plugin-audit-log`** | **Audit** | Comprehensive audit logging and field history tracking. |
+| **`@objectos/plugin-storage`** | **Storage** | Plugin-isolated KV storage (Memory, SQLite, Redis). |
+| **`@objectos/plugin-metrics`** | **Monitoring** | System metrics collection with Prometheus export. |
+| **`@objectos/plugin-cache`** | **Cache** | Cache abstraction layer (LRU, Redis). |
+| **`@objectos/plugin-i18n`** | **i18n** | Internationalization with multi-locale support. |
+| **`@objectos/plugin-notification`** | **Notifications** | Multi-channel notifications (Email, SMS, Push, Webhook). |
 | **`@objectos/presets`** | **Config** | Standard system objects (`_users`, `_roles`, `_audit_log`). |
 | **`@objectos/kernel`** | **DEPRECATED** | ⚠️ Use `@objectstack/runtime` instead |
 | **`@objectos/server`** | **DEPRECATED** | ⚠️ Use `@objectos/plugin-server` instead |
@@ -185,6 +190,7 @@ Want to contribute or see what's coming next?
 
 ### 📚 General Documentation
 
+- **[Phase 3 Implementation Summary](./PHASE_3_IMPLEMENTATION_SUMMARY.md)** - Complete summary of 5 system plugins implementation
 - **[Development Plan (Q1 2026)](./docs/guide/development-plan.md)** - Detailed implementation plan for upcoming features
 - **[Long-term Roadmap](./ROADMAP.md)** - Strategic vision through 2026 and beyond
 - **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
