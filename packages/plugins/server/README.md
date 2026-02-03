@@ -1,10 +1,17 @@
 # @objectos/plugin-server
 
-The Runtime Gateway using NestJS.
+The Enterprise Runtime Gateway using NestJS.
 
 ## Overview
 
-The primary entry point for the ObjectOS Kernel. It boots up the NestJS application, mounts all other plugins, and exposes the public API surfaces (REST, GraphQL, WebSocket).
+The primary entry point for the ObjectOS Kernel. While `@objectstack/plugin-hono-server` provides a lightweight, edge-compatible server, **@objectos/plugin-server** brings the full power of the **NestJS** ecosystem to ObjectOS.
+
+It is designed for complex, "Modular Monolith" business applications that require:
+- **Dependency Injection**: Robust management of service dependencies.
+- **Structured Architecture**: Controllers, Providers, Modules.
+- **Rich Ecosystem**: Easy integration with vast NestJS libraries.
+
+It boots up the NestJS application, mounts all other plugins, and exposes the public API surfaces (REST, GraphQL, WebSocket).
 
 ## Features
 

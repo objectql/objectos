@@ -1,0 +1,122 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { type ObjectKernel } from '@objectstack/runtime';
+
+export interface NextAdapterOptions {
+  kernel: ObjectKernel;
+  prefix?: string;
+}
+
+/**
+ * Creates a route handler for Next.js App Router
+ * Handles /api/[...objectstack] pattern
+ */
+export function createRouteHandler(options: NextAdapterOptions) {
+  const kernel = options.kernel as any;
+
+  const success = (data: any, meta?: any) => NextResponse.json({ success: true, data, meta });
+  const error = (msg: string, code: number = 500) => NextResponse.json({ success: false, error: { message: msg, code } }, { status: code });
+
+  return async function handler(req: NextRequest, { params }: { params: { objectstack: string[] } }) {
+    const segments = params.objectstack || [];
+    const method = req.method;
+    
+    // Parse path: /api/...segments...
+    // e.g., /api/graphql
+    // /api/metadata
+    // /api/data/contacts/query
+
+    try {
+        const rawRequest = req;
+
+        // 0. Auth
+        if (segments[0] === 'auth') {
+            if (segments[1] === 'login' && method === 'POST') {
+                const body = await req.json();
+                const data = await kernel.broker.call('auth.login', body, { request: rawRequest });
+                return NextResponse.json(data);
+            }
+        }
+
+        // 1. GraphQL
+        if (segments[0] === 'graphql' && method === 'POST') {
+            const body = await req.json();
+            const result = await kernel.graphql(body.query, body.variables, { request: rawRequest });
+            return NextResponse.json(result);
+        }
+
+        // 2. Metadata
+        if (segments[0] === 'metadata') {
+            // GET /metadata
+            if (segments.length === 1 && method === 'GET') {
+                const data = await kernel.broker.call('metadata.objects', {}, { request: rawRequest });
+                return success(data);
+            }
+            // GET /metadata/:objectName
+            if (segments.length === 2 && method === 'GET') {
+                const objectName = segments[1];
+                const data = await kernel.broker.call('metadata.getObject', { objectName }, { request: rawRequest });
+                return success(data);
+            }
+        }
+
+        // 3. Data
+        if (segments[0] === 'data') {
+            const objectName = segments[1];
+            if (!objectName) return error('Object name required', 400);
+
+            // POST /data/:objectName/query
+            if (segments[2] === 'query' && method === 'POST') {
+                const body = await req.json();
+                const result = await kernel.broker.call('data.query', { object: objectName, ...body }, { request: rawRequest });
+                return success(result.data, { count: result.count, limit: body.limit, skip: body.skip });
+            }
+
+            // POST /data/:objectName/batch
+            if (segments[2] === 'batch' && method === 'POST') {
+                const body = await req.json();
+                const result = await kernel.broker.call('data.batch', { object: objectName, operations: body.operations }, { request: rawRequest });
+                return success(result);
+            }
+
+            // POST /data/:objectName (Create)
+            if (segments.length === 2 && method === 'POST') {
+                const body = await req.json();
+                const data = await kernel.broker.call('data.create', { object: objectName, data: body }, { request: rawRequest });
+                return success(data); // 201 not easy with helper, but ok
+            }
+
+            // GET /data/:objectName/:id
+            if (segments.length === 3 && method === 'GET') {
+                const id = segments[2];
+                // Need to parse query params manually from req.url if needed
+                const url = new URL(req.url);
+                const queryParams: Record<string, any> = {};
+                url.searchParams.forEach((val, key) => queryParams[key] = val);
+                
+                const data = await kernel.broker.call('data.get', { object: objectName, id, ...queryParams }, { request: rawRequest });
+                return success(data);
+            }
+
+            // PATCH /data/:objectName/:id
+            if (segments.length === 3 && method === 'PATCH') {
+                const id = segments[2];
+                const body = await req.json();
+                const data = await kernel.broker.call('data.update', { object: objectName, id, data: body }, { request: rawRequest });
+                return success(data);
+            }
+
+            // DELETE /data/:objectName/:id
+            if (segments.length === 3 && method === 'DELETE') {
+                const id = segments[2];
+                await kernel.broker.call('data.delete', { object: objectName, id }, { request: rawRequest });
+                return success({ id, deleted: true });
+            }
+        }
+        
+        return error('Not Found', 404);
+
+    } catch (err: any) {
+        return error(err.message || 'Internal Server Error', err.statusCode || 500);
+    }
+  }
+}

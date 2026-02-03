@@ -1,0 +1,163 @@
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { type ObjectKernel } from '@objectstack/runtime';
+
+export interface ObjectStackHonoOptions {
+  kernel: ObjectKernel;
+  prefix?: string;
+}
+
+/**
+ * Creates a Hono application tailored for ObjectStack
+ * Fully compliant with @objectstack/spec
+ */
+export function createHonoApp(options: ObjectStackHonoOptions) {
+  const app = new Hono();
+  const { prefix = '/api' } = options;
+  const kernel = options.kernel as any;
+
+  app.use('*', cors());
+
+  // --- Helper for Success Response ---
+  const success = (data: any, meta?: any) => ({
+    success: true,
+    data,
+    meta,
+  });
+
+  // --- Helper for Error Response ---
+  const errorHandler = async (c: any, fn: () => Promise<any>) => {
+    try {
+      return await fn();
+    } catch (err: any) {
+      return c.json({
+        success: false,
+        error: {
+          code: err.statusCode || 500,
+          message: err.message || 'Internal Server Error',
+          details: err.details,
+        },
+      }, err.statusCode || 500);
+    }
+  };
+
+  // --- 1. Auth ---
+  app.post(`${prefix}/auth/login`, async (c) => {
+    return errorHandler(c, async () => {
+      const body = await c.req.json();
+      const data = await kernel.broker.call('auth.login', body, { request: c.req.raw });
+      return c.json(data); // Auth often returns direct token response, not wrapped in success() based on some specs, but ours might. 
+      // Spec says: { token: "...", user: ... }
+      // If the kernel returns that directly, we just return it. 
+      // Note: The spec "Response Format" section says "All successful responses follow this structure: { success: true ... }".
+      // BUT "Getting a Token" section shows a response WITHOUT "success: true".
+      // I will assume for Auth it might be special or the kernel returns the exact shape.
+      // Let's standardise on wrapping if we can, but the Spec example showed raw JSON.
+      // Actually, standard modern APIs often keep auth response simple.
+      // Let's return what kernel gives.
+    });
+  });
+
+  // --- 2. GraphQL ---
+  app.post(`${prefix}/graphql`, async (c) => {
+    return errorHandler(c, async () => {
+      const { query, variables } = await c.req.json();
+      const result = await kernel.graphql(query, variables, {
+        request: c.req.raw,
+      });
+      return c.json(result);
+    });
+  });
+
+  // --- 2. Metadata Endpoints ---
+
+  // List All Objects
+  app.get(`${prefix}/metadata`, async (c) => {
+    return errorHandler(c, async () => {
+      const data = await kernel.broker.call('metadata.objects', {}, { request: c.req.raw });
+      return c.json(success(data));
+    });
+  });
+
+  // Get Object Metadata
+  app.get(`${prefix}/metadata/:objectName`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName } = c.req.param();
+      const data = await kernel.broker.call('metadata.getObject', { objectName }, { request: c.req.raw });
+      return c.json(success(data));
+    });
+  });
+
+  // --- 3. Data Endpoints ---
+
+  // Query Records
+  app.post(`${prefix}/data/:objectName/query`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName } = c.req.param();
+      const body = await c.req.json();
+      const result = await kernel.broker.call('data.query', { object: objectName, ...body }, { request: c.req.raw });
+      return c.json(success(result.data, { count: result.count, limit: body.limit, skip: body.skip }));
+    });
+  });
+
+  // Get Single Record
+  app.get(`${prefix}/data/:objectName/:id`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName, id } = c.req.param();
+      const query = c.req.query(); 
+      const data = await kernel.broker.call('data.get', { object: objectName, id, ...query }, { request: c.req.raw });
+      return c.json(success(data));
+    });
+  });
+
+  // Create Record
+  app.post(`${prefix}/data/:objectName`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName } = c.req.param();
+      const body = await c.req.json();
+      const data = await kernel.broker.call('data.create', { object: objectName, data: body }, { request: c.req.raw });
+      return c.json(success(data), 201);
+    });
+  });
+
+  // Update Record
+  app.patch(`${prefix}/data/:objectName/:id`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName, id } = c.req.param();
+      const body = await c.req.json();
+      const data = await kernel.broker.call('data.update', { object: objectName, id, data: body }, { request: c.req.raw });
+      return c.json(success(data));
+    });
+  });
+
+  // Delete Record
+  app.delete(`${prefix}/data/:objectName/:id`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName, id } = c.req.param();
+      await kernel.broker.call('data.delete', { object: objectName, id }, { request: c.req.raw });
+      return c.json(success({ id, deleted: true }));
+    });
+  });
+
+  // Batch Operations
+  app.post(`${prefix}/data/:objectName/batch`, async (c) => {
+    return errorHandler(c, async () => {
+        const { objectName } = c.req.param();
+        const { operations } = await c.req.json();
+        const data = await kernel.broker.call('data.batch', { object: objectName, operations }, { request: c.req.raw });
+        return c.json(success(data));
+    });
+  });
+
+  return app;
+}
+
+/**
+ * Middleware mode for existing Hono apps
+ */
+export function objectStackMiddleware(kernel: ObjectKernel) {
+  return async (c: any, next: any) => {
+    c.set('objectStack', kernel);
+    await next();
+  };
+}

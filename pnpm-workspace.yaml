@@ -1,6 +1,7 @@
 packages:
   - packages/presets/*
   - packages/plugins/*
+  - packages/adapters/*
   - apps/site
   - apps/web
   - examples/*
