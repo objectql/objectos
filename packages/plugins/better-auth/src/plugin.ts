@@ -33,6 +33,7 @@ export class BetterAuthPlugin implements Plugin {
     private config: BetterAuthPluginOptions;
     private context?: PluginContext;
     private authInstance?: any;
+    public handler?: any;
 
     constructor(config: BetterAuthPluginOptions = {}) {
         this.config = config;
@@ -53,9 +54,11 @@ export class BetterAuthPlugin implements Plugin {
             // Register authentication routes
             // Better-Auth provides a Node.js handler that we need to mount
             const { toNodeHandler } = await import('better-auth/node');
-            const handler = toNodeHandler(this.authInstance);
+            this.handler = toNodeHandler(this.authInstance);
 
             // Register the plugin as a service
+            // Register as 'auth' to provide the standard Auth interface
+            context.registerService('auth', this);
             context.registerService('better-auth', this);
 
             // Register route handler through a hook or service

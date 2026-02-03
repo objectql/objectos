@@ -25,6 +25,27 @@ export function createRouteHandler(options: NextAdapterOptions) {
     // /api/metadata
     // /api/data/contacts/query
 
+    // --- 1. Auth (Generic Auth Handler) ---
+    if (segments[0] === 'auth') {
+       const authService = (kernel as any).getService?.('auth') || (kernel as any).services?.['auth'];
+       if (authService && authService.handler) {
+          return authService.handler(req);
+       }
+       
+       // Fallback for /api/auth/login
+       if (segments[1] === 'login' && method === 'POST') {
+          try {
+             // Clone request body because it might be consumed by handler above? No, we checked availability.
+             const body = await req.json();
+             const data = await kernel.broker.call('auth.login', body, { request: req });
+             return NextResponse.json(data);
+          } catch (e: any) {
+             return error(e.message, e.statusCode || 500);
+          }
+       }
+       return error('Auth provider not configured', 404);
+    }
+
     try {
         const rawRequest = req;
 

@@ -41,21 +41,24 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
     }
   };
 
-  // --- 1. Auth ---
-  app.post(`${prefix}/auth/login`, async (c) => {
-    return errorHandler(c, async () => {
-      const body = await c.req.json();
-      const data = await kernel.broker.call('auth.login', body, { request: c.req.raw });
-      return c.json(data); // Auth often returns direct token response, not wrapped in success() based on some specs, but ours might. 
-      // Spec says: { token: "...", user: ... }
-      // If the kernel returns that directly, we just return it. 
-      // Note: The spec "Response Format" section says "All successful responses follow this structure: { success: true ... }".
-      // BUT "Getting a Token" section shows a response WITHOUT "success: true".
-      // I will assume for Auth it might be special or the kernel returns the exact shape.
-      // Let's standardise on wrapping if we can, but the Spec example showed raw JSON.
-      // Actually, standard modern APIs often keep auth response simple.
-      // Let's return what kernel gives.
-    });
+  // --- 1. Auth (Generic Auth Handler) ---
+  app.all(`${prefix}/auth/*`, async (c) => {
+    // 1. Try to use generic Auth Service if available
+    const authService = (kernel as any).getService?.('auth') || (kernel as any).services?.['auth'];
+    if (authService && authService.handler) {
+      return authService.handler(c.req.raw);
+    }
+
+    // 2. Fallback to Legacy Auth Spec (only for login)
+    if (c.req.path.endsWith('/login') && c.req.method === 'POST') {
+      return errorHandler(c, async () => {
+        const body = await c.req.json();
+        const data = await kernel.broker.call('auth.login', body, { request: c.req.raw });
+        return c.json(data);
+      });
+    }
+
+    return c.json({ success: false, error: { message: 'Auth provider not configured', code: 404 } }, 404);
   });
 
   // --- 2. GraphQL ---

@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Global, Inject, Provider, Controller, Post, Get, Patch, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { DynamicModule, Module, Global, Inject, Provider, Controller, Post, Get, Patch, Delete, Body, Param, Query, Req, Res, All, UseGuards } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { ObjectKernel } from '@objectstack/runtime';
 
@@ -39,11 +39,33 @@ export class ObjectStackController {
     return this.service.executeGraphQL(query, variables, req);
   }
 
-  // Auth
-  @Post('auth/login')
-  async login(@Body() body: any, @Req() req: any) {
-    // Auth endpoints often return direct token response as per Spec example
-    return this.service.call('auth.login', body, req);
+  // Auth (Generic Auth Handler)
+  @All('auth/*')
+  async auth(@Req() req: any, @Res() res: any, @Body() body: any) {
+    const kernel = this.service.getKernel() as any;
+    const authService = kernel.getService?.('auth') || kernel.services?.['auth'];
+    
+    if (authService && authService.handler) {
+       const response = await authService.handler(req, res);
+       
+       if (response instanceof Response) {
+           res.status(response.status);
+           response.headers.forEach((v, k) => res.setHeader(k, v));
+           const text = await response.text();
+           res.send(text);
+           return;
+       }
+       
+       return response;
+    }
+    
+    // Fallback: Legacy login
+    if (req.path.endsWith('/login') && req.method === 'POST') {
+       const result = await this.service.call('auth.login', body, req);
+       return res.json(result);
+    }
+    
+    return res.status(404).json({ success: false, error: { message: 'Auth provider not configured', code: 404 } });
   }
 
   // Metadata
