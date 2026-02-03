@@ -15,6 +15,15 @@ export { WorkflowEngine } from './engine';
 export { WorkflowAPI } from './api';
 export { InMemoryWorkflowStorage } from './storage';
 
+// Approval and notifications
+export { ApprovalService } from './approval';
+export {
+    NotificationService,
+    EmailNotificationHandler,
+    SlackNotificationHandler,
+    WebhookNotificationHandler,
+} from './notifications';
+
 // Parser
 export { parseWorkflowYAML, validateWorkflowDefinition } from './parser';
 
@@ -37,4 +46,11 @@ export type {
     YAMLWorkflowDefinition,
     YAMLStateConfig,
     YAMLTransitionConfig,
+    NotificationChannel,
+    NotificationConfig,
+    NotificationHandler,
+    ApprovalChain,
+    ApprovalLevel,
+    DelegationRequest,
+    EscalationRequest,
 } from './types';

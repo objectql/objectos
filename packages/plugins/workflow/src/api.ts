@@ -12,6 +12,7 @@ import type {
     WorkflowQueryOptions,
 } from './types';
 import { WorkflowEngine } from './engine';
+import { ApprovalService } from './approval';
 
 /**
  * Workflow API class
@@ -19,10 +20,12 @@ import { WorkflowEngine } from './engine';
 export class WorkflowAPI {
     private engine: WorkflowEngine;
     private storage: WorkflowStorage;
+    private approvalService: ApprovalService;
 
     constructor(storage: WorkflowStorage, engine?: WorkflowEngine) {
         this.storage = storage;
         this.engine = engine || new WorkflowEngine();
+        this.approvalService = new ApprovalService(storage);
     }
 
     /**
@@ -250,6 +253,40 @@ export class WorkflowAPI {
 
         const updatedTask = await this.storage.getTask(taskId);
         return updatedTask!;
+    }
+
+    /**
+     * Delegate a task to another user
+     */
+    async delegateTask(
+        taskId: string,
+        delegateTo: string,
+        delegatedBy: string,
+        reason?: string
+    ): Promise<WorkflowTask> {
+        return this.approvalService.delegateTask({
+            taskId,
+            delegateTo,
+            delegatedBy,
+            reason,
+        });
+    }
+
+    /**
+     * Escalate a task to a higher authority
+     */
+    async escalateTask(
+        taskId: string,
+        escalateTo: string,
+        reason?: string,
+        escalatedBy?: string
+    ): Promise<WorkflowTask> {
+        return this.approvalService.escalateTask({
+            taskId,
+            escalateTo,
+            reason,
+            escalatedBy,
+        });
     }
 
     /**
