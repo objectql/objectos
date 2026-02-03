@@ -5,10 +5,23 @@ Authentication plugin for ObjectOS based on [Better-Auth](https://www.better-aut
 ## Features
 
 - 🔐 **Email/Password Authentication** - Built-in email and password authentication
+- 🔑 **OAuth2/OIDC Support** - Social login with Google, GitHub, and more
+- 🛡️ **Two-Factor Authentication (2FA)** - Enhanced security with TOTP-based 2FA
 - 🏢 **Organization Management** - Multi-tenant organization support with teams
 - 👥 **Role-Based Access Control (RBAC)** - Flexible role and permission system
 - 💾 **Multi-Database Support** - Works with PostgreSQL, MongoDB, and SQLite
 - 🔌 **Plugin Architecture** - Follows ObjectOS plugin lifecycle and conventions
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration-options)
+- [Guides](#guides)
+- [API Endpoints](#api-endpoints)
+- [Database Support](#database-support)
+- [Security](#security)
+- [License](#license)
 
 ## Installation
 
@@ -42,7 +55,15 @@ import { createBetterAuthPlugin } from '@objectos/plugin-better-auth';
 const customAuthPlugin = createBetterAuthPlugin({
   databaseUrl: 'postgres://localhost:5432/mydb',
   baseURL: 'https://myapp.com/api/auth',
-  trustedOrigins: ['https://myapp.com', 'https://app.myapp.com']
+  trustedOrigins: ['https://myapp.com', 'https://app.myapp.com'],
+  // OAuth providers (optional)
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  githubClientId: process.env.GITHUB_CLIENT_ID,
+  githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
+  // Two-factor authentication (enabled by default)
+  twoFactorEnabled: true,
+  twoFactorIssuer: 'MyApp'
 });
 
 const os = new ObjectOS({
@@ -70,6 +91,12 @@ Once enabled, the plugin registers the following authentication endpoints:
 | `databaseUrl` | `string` | `process.env.OBJECTQL_DATABASE_URL` | Database connection string |
 | `baseURL` | `string` | `http://localhost:3000/api/auth` | Base URL for authentication endpoints |
 | `trustedOrigins` | `string[]` | `['http://localhost:5173', 'http://localhost:3000']` | Allowed origins for CORS |
+| `googleClientId` | `string` | `process.env.GOOGLE_CLIENT_ID` | Google OAuth client ID (optional) |
+| `googleClientSecret` | `string` | `process.env.GOOGLE_CLIENT_SECRET` | Google OAuth client secret (optional) |
+| `githubClientId` | `string` | `process.env.GITHUB_CLIENT_ID` | GitHub OAuth client ID (optional) |
+| `githubClientSecret` | `string` | `process.env.GITHUB_CLIENT_SECRET` | GitHub OAuth client secret (optional) |
+| `twoFactorEnabled` | `boolean` | `true` | Enable two-factor authentication |
+| `twoFactorIssuer` | `string` | `ObjectOS` | Issuer name for 2FA TOTP tokens |
 
 ## Database Support
 
@@ -116,6 +143,24 @@ The plugin contributes the following events to the ObjectOS event system:
 - Supports CORS with configurable trusted origins
 - Session-based authentication with secure cookies
 - Database hooks for user creation validation
+- OAuth2/OIDC support for social authentication
+- Two-factor authentication (2FA) with TOTP
+- Secure password hashing and validation
+
+## Guides
+
+Comprehensive guides are available in the [docs](./docs) directory:
+
+- **[OAuth Setup Guide](./docs/OAUTH_SETUP.md)** - Configure Google, GitHub, and other OAuth providers
+- **[Two-Factor Authentication Guide](./docs/TWO_FACTOR_SETUP.md)** - Set up and use 2FA/TOTP
+- **[Environment Variables Reference](./docs/ENVIRONMENT_VARIABLES.md)** - Complete list of configuration options
+
+## Additional Resources
+
+- [Better-Auth Documentation](https://www.better-auth.com/docs) - Official Better-Auth docs
+- [Integration Guide](./INTEGRATION.md) - How to integrate with ObjectOS Server
+- [Changelog](./CHANGELOG.md) - Version history and updates
+- [Examples](./examples) - Code examples and usage patterns
 
 ## License
 
@@ -123,6 +168,6 @@ AGPL-3.0
 
 ## Related
 
-- [Better-Auth Documentation](https://www.better-auth.com/docs)
 - [ObjectOS Documentation](../../README.md)
 - [@objectstack/spec](https://github.com/objectstack-ai/spec)
+- [@objectstack/runtime](https://www.npmjs.com/package/@objectstack/runtime)

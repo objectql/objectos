@@ -5,6 +5,28 @@ All notable changes to the `@objectos/plugin-better-auth` plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- OAuth2/OIDC authentication support for Google and GitHub
+- Two-Factor Authentication (2FA) with TOTP
+- Configurable OAuth client credentials via environment variables or config
+- Configurable 2FA issuer name for authenticator apps
+- Comprehensive documentation:
+  - OAuth Setup Guide (docs/OAUTH_SETUP.md)
+  - Two-Factor Authentication Guide (docs/TWO_FACTOR_SETUP.md)
+  - Environment Variables Reference (docs/ENVIRONMENT_VARIABLES.md)
+- Example code for OAuth usage (examples/oauth-usage.ts)
+- Example code for 2FA usage (examples/2fa-usage.ts)
+- Enhanced README with links to all documentation
+
+### Changed
+
+- Updated BetterAuthConfig interface to include OAuth and 2FA options
+- Enhanced auth-client.ts to conditionally load OAuth providers
+- Plugins array now built dynamically based on configuration
+
 ## [0.1.0] - 2026-01-28
 
 ### Added
