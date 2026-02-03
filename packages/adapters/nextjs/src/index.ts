@@ -26,13 +26,14 @@ export function createRouteHandler(options: NextAdapterOptions) {
     // /api/data/contacts/query
 
     // --- 0. Discovery Endpoint ---
-    // If no segments (e.g. /api), return discovery info. 
-    // Next.js catch-all usually implies at least one segment if [...slug] is used, 
-    // but [[...slug]] allows optional. Assuming user hits /api/ (empty segments) or we construct it manually.
-    // Actually, createRouteHandler is usually used in `app/api/[...objectstack]/route.ts`.
-    // If it's `[[...objectstack]]`, it matches /api too.
     if (segments.length === 0 && method === 'GET') {
       const prefix = options.prefix || '/api';
+      const services = (kernel as any).services || {};
+      const hasGraphQL = !!(services['graphql'] || (kernel as any).graphql);
+      const hasSearch = !!services['search'];
+      const hasWebSockets = !!services['realtime'];
+      const hasFiles = !!(services['file-storage'] || services['storage']?.supportsFiles);
+
       return NextResponse.json({
         name: 'ObjectOS',
         version: '1.0.0',
@@ -41,13 +42,14 @@ export function createRouteHandler(options: NextAdapterOptions) {
           data: `${prefix}/data`,
           metadata: `${prefix}/metadata`,
           auth: `${prefix}/auth`,
-          graphql: `${prefix}/graphql`,
+          graphql: hasGraphQL ? `${prefix}/graphql` : undefined,
+          storage: hasFiles ? `${prefix}/storage` : undefined,
         },
         features: {
-          graphql: true,
-          search: false,
-          websockets: false,
-          files: false,
+          graphql: hasGraphQL,
+          search: hasSearch,
+          websockets: hasWebSockets,
+          files: hasFiles,
         },
       });
     }
@@ -168,6 +170,49 @@ export function createRouteHandler(options: NextAdapterOptions) {
                 const id = segments[2];
                 await kernel.broker.call('data.delete', { object: objectName, id }, { request: rawRequest });
                 return success({ id, deleted: true });
+            }
+        }
+
+        // 4. Storage (Files)
+        if (segments[0] === 'storage') {
+            const storageService = (kernel as any).getService?.('file-storage') || (kernel as any).services?.['file-storage'];
+            if (!storageService) return error('File storage not configured', 501);
+
+            // POST /storage/upload
+            if (segments[1] === 'upload' && method === 'POST') {
+                try {
+                    const formData = await req.formData();
+                    const file = formData.get('file');
+                    
+                    if (!file) return error('No file provided', 400);
+                    
+                    const result = await storageService.upload(file, { request: rawRequest });
+                    return success(result);
+                } catch (e: any) {
+                    return error(e.message, e.statusCode || 500);
+                }
+            }
+
+            // GET /storage/file/:id
+            if (segments[1] === 'file' && segments[2] && method === 'GET') {
+                const id = segments[2];
+                try {
+                    const result = await storageService.download(id, { request: rawRequest });
+                    if (result.url && result.redirect) {
+                        return NextResponse.redirect(result.url);
+                    }
+                    if (result.stream) {
+                         return new NextResponse(result.stream, {
+                             headers: {
+                                 'Content-Type': result.mimeType || 'application/octet-stream',
+                                 'Content-Length': result.size,
+                             }
+                         });
+                    }
+                    return success(result);
+                } catch (e: any) {
+                     return error(e.message, e.statusCode || 500);
+                }
             }
         }
         

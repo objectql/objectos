@@ -43,6 +43,13 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
 
   // --- 0. Discovery Endpoint ---
   app.get(prefix, (c) => {
+    // Check capabilities based on registered services
+    const services = (kernel as any).services || {};
+    const hasGraphQL = !!(services['graphql'] || (kernel as any).graphql); // Kernel often has direct graphql support
+    const hasSearch = !!services['search'];
+    const hasWebSockets = !!services['realtime'];
+    const hasFiles = !!(services['file-storage'] || services['storage']?.supportsFiles);
+
     return c.json({
       name: 'ObjectOS',
       version: '1.0.0',
@@ -51,13 +58,14 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
         data: `${prefix}/data`,
         metadata: `${prefix}/metadata`,
         auth: `${prefix}/auth`,
-        graphql: `${prefix}/graphql`,
+        graphql: hasGraphQL ? `${prefix}/graphql` : undefined,
+        storage: hasFiles ? `${prefix}/storage` : undefined,
       },
       features: {
-        graphql: true,
-        search: false,
-        websockets: false,
-        files: false,
+        graphql: hasGraphQL,
+        search: hasSearch,
+        websockets: hasWebSockets,
+        files: hasFiles,
       },
     });
   });
@@ -182,6 +190,49 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
         const { operations } = await c.req.json();
         const data = await kernel.broker.call('data.batch', { object: objectName, operations }, { request: c.req.raw });
         return c.json(success(data));
+    });
+  });
+
+  // --- 4. Storage & Files ---
+  
+  // Upload File
+  app.post(`${prefix}/storage/upload`, async (c) => {
+    return errorHandler(c, async () => {
+      const storageService = (kernel as any).getService?.('file-storage') || (kernel as any).services?.['file-storage'];
+      if (!storageService) throw { statusCode: 501, message: 'File storage not configured' };
+
+      const body = await c.req.parseBody();
+      const file = body['file']; 
+      
+      if (!file) throw { statusCode: 400, message: 'No file provided' };
+      
+      // Allow service to handle raw file object or buffer
+      const result = await storageService.upload(file, { request: c.req.raw });
+      return c.json(success(result));
+    });
+  });
+
+  // Get File
+  app.get(`${prefix}/storage/file/:id`, async (c) => {
+    return errorHandler(c, async () => {
+        const storageService = (kernel as any).getService?.('file-storage') || (kernel as any).services?.['file-storage'];
+        if (!storageService) throw { statusCode: 501, message: 'File storage not configured' };
+
+        const { id } = c.req.param();
+        const result = await storageService.download(id, { request: c.req.raw });
+        
+        // If result is a stream or blob, return it. 
+        // If result is a URL (e.g. S3 signed url), redirect.
+        if (result.url && result.redirect) {
+            return c.redirect(result.url);
+        }
+        if (result.stream) {
+            return c.body(result.stream, 200, {
+                'Content-Type': result.mimeType || 'application/octet-stream',
+                'Content-Length': result.size,
+            });
+        }
+        return c.json(success(result));
     });
   });
 

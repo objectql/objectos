@@ -1,8 +1,14 @@
-import { DynamicModule, Module, Global, Inject, Provider, Controller, Post, Get, Patch, Delete, Body, Param, Query, Req, Res, All, UseGuards } from '@nestjs/common';
+import { DynamicModule, Module, Global, Inject, Provider, Controller, Post, Get, Patch, Delete, Body, Param, Query, Req, Res, All, UseGuards, createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { ObjectKernel } from '@objectstack/runtime';
 
 export const OBJECT_KERNEL = 'OBJECT_KERNEL';
+
+export const ConnectReq = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    return ctx.switchToHttp().getRequest();
+  },
+);
 
 // --- Service ---
 
@@ -37,6 +43,12 @@ export class ObjectStackController {
   @Get()
   discovery() {
     const prefix = '/api'; // NestJS controller is mapped to 'api'
+    const kernel = this.service.getKernel() as any;
+    const services = kernel.services || {};
+    const hasGraphQL = !!(services['graphql'] || kernel.graphql);
+    // NestJS adapter doesn't expose services map directly but we have access to kernel
+    // We can try to guess or use safe default
+    
     return {
       name: 'ObjectOS',
       version: '1.0.0',
@@ -45,13 +57,14 @@ export class ObjectStackController {
         data: `${prefix}/data`,
         metadata: `${prefix}/metadata`,
         auth: `${prefix}/auth`,
-        graphql: `${prefix}/graphql`,
+        graphql: hasGraphQL ? `${prefix}/graphql` : undefined,
+        storage: `${prefix}/storage`, // NestJS implementation below
       },
       features: {
-        graphql: true,
+        graphql: hasGraphQL,
         search: false,
-        websockets: false,
-        files: false,
+        websockets: false, // NestJS Gateway is separate usually
+        files: true, // Implemented below
       },
     };
   }
@@ -145,6 +158,55 @@ export class ObjectStackController {
   async batch(@Param('objectName') objectName: string, @Body() body: any, @Req() req: any) {
     const data = await this.service.call('data.batch', { object: objectName, operations: body.operations }, req);
     return this.success(data);
+  }
+
+  // --- Storage (Files) ---
+  
+  // Note: Handling file uploads in NestJS in abstract Adapter is hard because we don't want to enforce multer/platform-express.
+  // We will assume the request object is raw or handled by a global interceptor if available.
+  // But for now, we provide the definition.
+  
+  @Post('storage/upload')
+  async upload(@ConnectReq() req: any) {
+      // We need to access the kernel service
+      const kernel = this.service.getKernel() as any;
+      const storageService = kernel.getService?.('file-storage') || kernel.services?.['file-storage'];
+      if (!storageService) throw { statusCode: 501, message: 'File storage not configured' };
+      
+      // In NestJS/Express, file is usually in req.file or req.files if multer is used.
+      // If using Fastify, it's different.
+      // We will try to find the file or pass the request.
+      const file = req.file || req.files?.file;
+      
+      if (!file && !req.body) throw { statusCode: 400, message: 'No file provided' };
+      
+      // Pass underlying object
+      const result = await storageService.upload(file || req, { request: req });
+      return this.success(result);
+  }
+
+  @Get('storage/file/:id')
+  async download(@Param('id') id: string, @Req() req: any, @Res() res: any) {
+      const kernel = this.service.getKernel() as any;
+      const storageService = kernel.getService?.('file-storage') || kernel.services?.['file-storage'];
+      if (!storageService) throw { statusCode: 501, message: 'File storage not configured' };
+      
+      const result = await storageService.download(id, { request: req });
+      
+      if (result.url && result.redirect) {
+          return res.redirect(result.url);
+      }
+      
+      if (result.stream) {
+          res.set({
+              'Content-Type': result.mimeType || 'application/octet-stream',
+              'Content-Length': result.size,
+          });
+          result.stream.pipe(res);
+          return;
+      }
+      
+      return res.json(this.success(result));
   }
 }
 
