@@ -23,7 +23,7 @@ const createMockContext = (): { context: PluginContext; hooks: Map<string, Funct
         }),
         getService: jest.fn((name: string) => {
             if (services.has(name)) return services.get(name);
-            throw new Error(\`Service \${name} not found\`);
+            throw new Error(`Service ${name} not found`);
         }),
         hasService: jest.fn((name: string) => services.has(name)),
         getServices: jest.fn(() => services),
