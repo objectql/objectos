@@ -68,7 +68,9 @@ export class AIAgentPlugin implements Plugin {
     context.logger.info('[AI Agent Plugin] Starting...');
 
     // Check if ai-models service is available
-    if (!context.hasService('ai-models')) {
+    try {
+      context.getService('ai-models');
+    } catch (error) {
       throw new Error('AI Agent Plugin requires ai-models service');
     }
 
@@ -115,10 +117,14 @@ export class AIAgentPlugin implements Plugin {
    * Get AI models service
    */
   private getAIModelsService(): any {
-    if (!this.context?.hasService('ai-models')) {
+    if (!this.context) {
+      throw new Error('Plugin not initialized');
+    }
+    try {
+      return this.context.getService('ai-models');
+    } catch (error) {
       throw new Error('AI models service not available');
     }
-    return this.context.getService('ai-models');
   }
 
   /**

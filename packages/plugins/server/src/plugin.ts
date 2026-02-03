@@ -69,16 +69,19 @@ export const createServerPlugin = (options: ServerPluginOptions = {}): Plugin =>
         ctx.registerService('nestjs.app', app);
         
         // Get ObjectQL instance from service registry if available
-        if (ctx.hasService('objectql')) {
+        try {
           const objectql = ctx.getService('objectql');
           ctx.logger.debug('[Server Plugin] ObjectQL instance found in registry');
           // You could inject ObjectQL into the app here if needed
+        } catch (error) {
+          // ObjectQL service not available
         }
         
         ctx.logger.info('[Server Plugin] NestJS application initialized');
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        ctx.logger.error(`[Server Plugin] Failed to initialize: ${errorMessage}`, error);
+        const errorObj = error instanceof Error ? error : undefined;
+        ctx.logger.error(`[Server Plugin] Failed to initialize: ${errorMessage}`, errorObj);
         throw new Error(`Server Plugin initialization failed: ${errorMessage}`);
       }
     },
@@ -99,7 +102,8 @@ export const createServerPlugin = (options: ServerPluginOptions = {}): Plugin =>
         console.log(`Application is running on: ${url}`);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        ctx.logger.error(`[Server Plugin] Failed to start server: ${errorMessage}`, error);
+        const errorObj = error instanceof Error ? error : undefined;
+        ctx.logger.error(`[Server Plugin] Failed to start server: ${errorMessage}`, errorObj);
         throw new Error(`Server Plugin start failed: ${errorMessage}`);
       }
     },

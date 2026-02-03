@@ -88,7 +88,8 @@ export class WorkflowPlugin implements Plugin {
             try {
                 await this.emitEvent('workflow.trigger', { type: 'data.create', data });
             } catch (error) {
-                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', error);
+                const errorObj = error instanceof Error ? error : undefined;
+                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', errorObj);
             }
         });
 

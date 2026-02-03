@@ -1,5 +1,12 @@
 # @objectstack/runtime
 
+> **⚠️ DEPRECATED: This local package is no longer maintained. Please use the published npm version `@objectstack/runtime@0.9.0` instead.**
+>
+> Install the published version:
+> ```bash
+> npm install @objectstack/runtime@0.9.0
+> ```
+
 The micro-kernel runtime for ObjectStack, implementing a plugin-based architecture.
 
 ## Overview

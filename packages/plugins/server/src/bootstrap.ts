@@ -8,7 +8,9 @@
  */
 
 import 'reflect-metadata';
-import { ObjectKernel, ObjectQLPlugin, DriverPlugin } from '@objectstack/runtime';
+import { ObjectKernel } from '@objectstack/runtime';
+import { ObjectQLPlugin } from '@objectstack/objectql';
+import { DriverPlugin } from '@objectstack/runtime';
 import { createServerPlugin } from './plugin';
 import { KnexDriver } from '@objectql/driver-sql';
 

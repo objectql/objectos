@@ -69,7 +69,9 @@ export class AIRAGPlugin implements Plugin {
     context.logger.info('[AI RAG Plugin] Starting...');
 
     // Check if ai-models service is available
-    if (!context.hasService('ai-models')) {
+    try {
+      context.getService('ai-models');
+    } catch (error) {
       context.logger.warn('[AI RAG Plugin] ai-models service not found, RAG features may be limited');
     }
 
@@ -80,10 +82,14 @@ export class AIRAGPlugin implements Plugin {
    * Get AI models service
    */
   private getAIModelsService(): any {
-    if (!this.context?.hasService('ai-models')) {
+    if (!this.context) {
+      throw new Error('Plugin not initialized');
+    }
+    try {
+      return this.context.getService('ai-models');
+    } catch (error) {
       throw new Error('AI models service not available');
     }
-    return this.context.getService('ai-models');
   }
 
   /**
