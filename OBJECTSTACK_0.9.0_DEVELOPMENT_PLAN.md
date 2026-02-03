@@ -14,30 +14,7 @@ This document re-evaluates the ObjectOS development roadmap in light of the @obj
 
 ## 🆕 What's New in @objectstack/spec 0.9.0
 
-### 1. AI Protocol (New Namespace)
-**Purpose:** Intelligent system orchestration and automation
-
-**Key Components:**
-- **`AI.Agent`**: Autonomous agent orchestration
-  - Code generation agents
-  - Data processing agents  
-  - DevOps automation agents
-- **`AI.RAG`**: Retrieval-Augmented Generation
-  - Document indexing
-  - Semantic search
-  - Context retrieval
-- **`AI.Model`**: Model registry and management
-  - Model versioning
-  - Provider abstraction (OpenAI, Anthropic, Local)
-- **`AI.Prompt`**: Prompt engineering and templates
-- **`AI.FeedbackLoop`**: Learning from user interactions
-- **`AI.Cost`**: AI API cost tracking and optimization
-
-**Strategic Impact:** ObjectOS can now serve as an AI-native platform, not just a data platform.
-
----
-
-### 2. Automation Protocol (Expanded)
+### 1. Automation Protocol (Expanded)
 **Purpose:** No-code/low-code business process automation
 
 **Key Components:**
@@ -58,7 +35,7 @@ This document re-evaluates the ObjectOS development roadmap in light of the @obj
 
 ---
 
-### 3. Integration Protocol (New Namespace)
+### 2. Integration Protocol (New Namespace)
 **Purpose:** Connect ObjectOS to external systems
 
 **Key Components:**
@@ -83,7 +60,7 @@ This document re-evaluates the ObjectOS development roadmap in light of the @obj
 
 ---
 
-### 4. Hub Protocol (New Namespace)
+### 3. Hub Protocol (New Namespace)
 **Purpose:** Marketplace and ecosystem management
 
 **Key Components:**
@@ -100,7 +77,7 @@ This document re-evaluates the ObjectOS development roadmap in light of the @obj
 
 ---
 
-### 5. System Protocol (Enhanced)
+### 4. System Protocol (Enhanced)
 **Purpose:** Core infrastructure and governance
 
 **New/Enhanced Components:**
@@ -129,7 +106,7 @@ This document re-evaluates the ObjectOS development roadmap in light of the @obj
 
 ---
 
-### 6. API Protocol (Enhanced)
+### 5. API Protocol (Enhanced)
 **Purpose:** External connectivity and developer experience
 
 **New/Enhanced Components:**
@@ -175,41 +152,7 @@ Given the expanded scope of @objectstack/spec 0.9.0, the development plan needs 
 
 ---
 
-### Priority 2: AI Protocol Implementation (Weeks 5-8) 🆕
-**Goal:** Make ObjectOS AI-native
-
-**Tasks:**
-- [ ] **Agent System**
-  - Implement Agent orchestration engine
-  - Support for code generation, data processing agents
-  - Agent state management and monitoring
-  
-- [ ] **RAG Integration**
-  - Document indexing (vector embeddings)
-  - Semantic search API
-  - Context retrieval for AI queries
-  
-- [ ] **Model Registry**
-  - Abstract LLM provider (OpenAI, Anthropic, Ollama)
-  - Model versioning and switching
-  - Cost tracking per model/user
-
-- [ ] **Prompt Management**
-  - Prompt templating system
-  - Version control for prompts
-  - A/B testing for prompts
-
-**Deliverables:**
-- ✅ @objectos/plugin-ai-agent (new)
-- ✅ @objectos/plugin-ai-rag (new)
-- ✅ @objectos/plugin-ai-models (new)
-- ✅ Example: AI-powered customer support agent
-
-**Strategic Value:** First low-code platform with built-in AI orchestration.
-
----
-
-### Priority 3: Integration & Hub (Weeks 9-12) 🆕
+### Priority 2: Integration & Hub (Weeks 5-8) 🆕
 **Goal:** Make ObjectOS an integration platform
 
 **Tasks:**
@@ -303,11 +246,10 @@ Given the expanded scope of @objectstack/spec 0.9.0, the development plan needs 
 | Phase | Duration | Focus | Key Deliverable |
 |-------|----------|-------|-----------------|
 | **Phase 1** | Weeks 1-4 | Foundation | Stable runtime, kernel migration complete |
-| **Phase 2** | Weeks 5-8 | AI Protocol | AI agents, RAG, model registry |
-| **Phase 3** | Weeks 9-12 | Integration & Hub | Connector framework, marketplace |
-| **Phase 4** | Weeks 13-16 | Advanced Automation | Visual workflows, ETL |
-| **Phase 5** | Weeks 17-20 | Enterprise | Compliance, encryption, change mgmt |
-| **Total** | **20 weeks** | **Q1-Q2 2026** | **Production v1.0** |
+| **Phase 2** | Weeks 5-8 | Integration & Hub | Connector framework, marketplace |
+| **Phase 3** | Weeks 9-12 | Advanced Automation | Visual workflows, ETL |
+| **Phase 4** | Weeks 13-16 | Enterprise | Compliance, encryption, change mgmt |
+| **Total** | **16 weeks** | **Q1-Q2 2026** | **Production v1.0** |
 
 **Target Completion:** June 2026
 
@@ -351,7 +293,6 @@ Given the expanded scope of @objectstack/spec 0.9.0, the development plan needs 
 - [ ] API.Discovery (exists in kernel, needs runtime port)
 
 ### ❌ Not Implemented (NEW in 0.9.0)
-- [ ] **AI Protocol** (all components)
 - [ ] **Integration Protocol** (all connectors)
 - [ ] **Hub Protocol** (marketplace)
 - [ ] **Automation.Approval**
@@ -387,9 +328,9 @@ Given the expanded scope of @objectstack/spec 0.9.0, the development plan needs 
 **Goal:** Understand 0.9.0 protocol in detail
 
 **Tasks:**
-1. Review all new namespaces (AI, Integration, Hub, Automation)
+1. Review all new namespaces (Integration, Hub, Automation)
 2. Document protocol interfaces
-3. Identify dependencies (e.g., AI.RAG needs vector DB)
+3. Identify dependencies
 4. Create technical specifications
 
 **Timeline:** 3-4 days
@@ -406,7 +347,7 @@ C. **Hybrid**: Core in runtime, advanced features as plugins
 
 **Recommendation:** Option C (Hybrid)
 - Reason: Keeps runtime lightweight, allows optional features
-- Example: AI protocol is opt-in via @objectos/plugin-ai
+- Example: Integration and automation features are opt-in via plugins
 
 **Timeline:** 1-2 days
 
