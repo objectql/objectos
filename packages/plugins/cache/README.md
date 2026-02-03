@@ -341,13 +341,15 @@ await dataCache.set('token', dataToken);
 const cache = new CachePlugin({
   backend: 'lru',
   options: {
-    // Small cache: 100-500 items
+    // Small cache: 100-500 items (~50KB-250KB)
     maxSize: 500,
     
-    // Medium cache: 1000-5000 items
+    // Medium cache: 1000-5000 items (~500KB-2.5MB)
     maxSize: 5000,
     
-    // Large cache: 10000+ items (monitor memory!)
+    // Large cache: 10000+ items (~5MB+)
+    // Each entry uses ~100-500 bytes depending on value size
+    // Monitor memory usage in production
     maxSize: 10000,
   }
 });
