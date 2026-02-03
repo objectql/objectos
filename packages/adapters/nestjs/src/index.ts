@@ -33,6 +33,29 @@ export class ObjectStackController {
     return { success: true, data, meta };
   }
 
+  // --- Discovery Endpoint ---
+  @Get()
+  discovery() {
+    const prefix = '/api'; // NestJS controller is mapped to 'api'
+    return {
+      name: 'ObjectOS',
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      routes: {
+        data: `${prefix}/data`,
+        metadata: `${prefix}/metadata`,
+        auth: `${prefix}/auth`,
+        graphql: `${prefix}/graphql`,
+      },
+      features: {
+        graphql: true,
+        search: false,
+        websockets: false,
+        files: false,
+      },
+    };
+  }
+
   @Post('graphql')
   async graphql(@Body() body: any, @Req() req: any) {
     const { query, variables } = body;

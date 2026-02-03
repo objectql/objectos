@@ -25,6 +25,33 @@ export function createRouteHandler(options: NextAdapterOptions) {
     // /api/metadata
     // /api/data/contacts/query
 
+    // --- 0. Discovery Endpoint ---
+    // If no segments (e.g. /api), return discovery info. 
+    // Next.js catch-all usually implies at least one segment if [...slug] is used, 
+    // but [[...slug]] allows optional. Assuming user hits /api/ (empty segments) or we construct it manually.
+    // Actually, createRouteHandler is usually used in `app/api/[...objectstack]/route.ts`.
+    // If it's `[[...objectstack]]`, it matches /api too.
+    if (segments.length === 0 && method === 'GET') {
+      const prefix = options.prefix || '/api';
+      return NextResponse.json({
+        name: 'ObjectOS',
+        version: '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        routes: {
+          data: `${prefix}/data`,
+          metadata: `${prefix}/metadata`,
+          auth: `${prefix}/auth`,
+          graphql: `${prefix}/graphql`,
+        },
+        features: {
+          graphql: true,
+          search: false,
+          websockets: false,
+          files: false,
+        },
+      });
+    }
+
     // --- 1. Auth (Generic Auth Handler) ---
     if (segments[0] === 'auth') {
        const authService = (kernel as any).getService?.('auth') || (kernel as any).services?.['auth'];

@@ -41,6 +41,27 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
     }
   };
 
+  // --- 0. Discovery Endpoint ---
+  app.get(prefix, (c) => {
+    return c.json({
+      name: 'ObjectOS',
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      routes: {
+        data: `${prefix}/data`,
+        metadata: `${prefix}/metadata`,
+        auth: `${prefix}/auth`,
+        graphql: `${prefix}/graphql`,
+      },
+      features: {
+        graphql: true,
+        search: false,
+        websockets: false,
+        files: false,
+      },
+    });
+  });
+
   // --- 1. Auth (Generic Auth Handler) ---
   app.all(`${prefix}/auth/*`, async (c) => {
     // 1. Try to use generic Auth Service if available
