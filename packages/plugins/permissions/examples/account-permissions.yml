@@ -1,0 +1,73 @@
+# Account Permissions
+#
+# This permission set demonstrates department-based record-level security
+# using metadata filters.
+
+name: account-permissions
+objectName: accounts
+label: Account Permissions
+description: Permission set for managing access to account records
+
+# Profile-based object permissions
+profiles:
+  # Admin profile - full access
+  admin:
+    objectName: accounts
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+
+  # Sales profile - can manage accounts in their department
+  sales:
+    objectName: accounts
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    # Record-level security: only see accounts in their department
+    viewFilters:
+      department: "{{ dept }}"
+      owner: "{{ userId }}"
+
+  # Manager profile - can see all accounts in their department
+  manager:
+    objectName: accounts
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    viewFilters:
+      department: "{{ dept }}"
+
+  # Support profile - read-only access
+  support:
+    objectName: accounts
+    allowRead: true
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
+
+# Field-level permissions
+fieldPermissions:
+  # Revenue - restricted to management
+  annualRevenue:
+    fieldName: annualRevenue
+    visibleTo:
+      - admin
+      - manager
+      - finance
+    editableBy:
+      - admin
+      - finance
+
+  # Contract details - restricted
+  contractDetails:
+    fieldName: contractDetails
+    visibleTo:
+      - admin
+      - manager
+      - legal
+    editableBy:
+      - admin
+      - legal
