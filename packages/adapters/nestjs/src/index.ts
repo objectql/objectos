@@ -105,6 +105,12 @@ export class ObjectStackController {
   }
 
   // Data
+  @Get('data/:objectName')
+  async list(@Param('objectName') objectName: string, @Query() query: any, @Req() req: any) {
+    const result = await this.service.call('data.query', { object: objectName, filters: query }, req);
+    return this.success(result.data, { count: result.count });
+  }
+
   @Post('data/:objectName/query')
   async query(@Param('objectName') objectName: string, @Body() body: any, @Req() req: any) {
     const result = await this.service.call('data.query', { object: objectName, ...body }, req);

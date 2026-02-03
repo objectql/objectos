@@ -114,7 +114,19 @@ export function createHonoApp(options: ObjectStackHonoOptions) {
 
   // --- 3. Data Endpoints ---
 
-  // Query Records
+  // List Records (Standard REST)
+  app.get(`${prefix}/data/:objectName`, async (c) => {
+    return errorHandler(c, async () => {
+      const { objectName } = c.req.param();
+      const query = c.req.query();
+      // Basic support: pass query params as filter
+      // In a real implementation, we might parse OData or JSON filters from query params
+      const result = await kernel.broker.call('data.query', { object: objectName, filters: query }, { request: c.req.raw });
+      return c.json(success(result.data, { count: result.count }));
+    });
+  });
+
+  // Query Records (POST with JSON body)
   app.post(`${prefix}/data/:objectName/query`, async (c) => {
     return errorHandler(c, async () => {
       const { objectName } = c.req.param();

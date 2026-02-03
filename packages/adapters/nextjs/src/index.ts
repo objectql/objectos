@@ -126,6 +126,16 @@ export function createRouteHandler(options: NextAdapterOptions) {
                 return success(result);
             }
 
+            // GET /data/:objectName (List)
+            if (segments.length === 2 && method === 'GET') {
+                const url = new URL(req.url);
+                const queryParams: Record<string, any> = {};
+                url.searchParams.forEach((val, key) => queryParams[key] = val);
+                
+                const result = await kernel.broker.call('data.query', { object: objectName, filters: queryParams }, { request: rawRequest });
+                return success(result.data, { count: result.count });
+            }
+
             // POST /data/:objectName (Create)
             if (segments.length === 2 && method === 'POST') {
                 const body = await req.json();
