@@ -1,0 +1,77 @@
+# Contact Permissions
+# 
+# This permission set defines access control for the contacts object.
+# It demonstrates object-level CRUD permissions and field-level security.
+
+name: contact-permissions
+objectName: contacts
+label: Contact Permissions
+description: Permission set for managing access to contact records
+
+# Profile-based object permissions
+profiles:
+  # Admin profile - full access to all operations
+  admin:
+    objectName: contacts
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+
+  # Sales profile - can read, create, and edit their own contacts
+  sales:
+    objectName: contacts
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+    # Record-level security: only see contacts they own
+    viewFilters:
+      owner: "{{ userId }}"
+
+  # Marketing profile - read-only access to all contacts
+  marketing:
+    objectName: contacts
+    allowRead: true
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
+
+  # Guest profile - no access
+  guest:
+    objectName: contacts
+    allowRead: false
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
+
+# Field-level permissions
+fieldPermissions:
+  # Sensitive financial information
+  salary:
+    fieldName: salary
+    visibleTo:
+      - admin
+      - hr
+    editableBy:
+      - admin
+
+  # Social security number - highly restricted
+  ssn:
+    fieldName: ssn
+    visibleTo:
+      - admin
+      - hr
+    editableBy:
+      - admin
+
+  # Internal notes - restricted visibility
+  internalNotes:
+    fieldName: internalNotes
+    visibleTo:
+      - admin
+      - sales
+      - manager
+    editableBy:
+      - admin
+      - manager

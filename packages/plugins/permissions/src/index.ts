@@ -22,6 +22,7 @@
  * ```
  */
 
+// Export types
 export type {
     PermissionAction,
     ActionPermission,
@@ -32,3 +33,33 @@ export type {
     PermissionCheckResult,
     PermissionPluginConfig,
 } from './types';
+
+// Export plugin
+export {
+    PermissionsPlugin,
+    createPermissionsPlugin,
+    getPermissionsAPI,
+} from './plugin';
+
+// Export engine
+export {
+    PermissionEngine,
+} from './engine';
+export type {
+    PermissionEngineConfig,
+} from './engine';
+
+// Export storage
+export {
+    InMemoryPermissionStorage,
+} from './storage';
+export type {
+    PermissionStorage,
+} from './storage';
+
+// Export loader
+export {
+    loadPermissionSetsFromDirectory,
+    loadPermissionSetFromFile,
+    loadPermissionSetFromYAML,
+} from './loader';

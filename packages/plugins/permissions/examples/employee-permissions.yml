@@ -1,0 +1,100 @@
+# Employee Permissions
+#
+# This permission set demonstrates HR-specific access control
+# with strict field-level security for sensitive employee data.
+
+name: employee-permissions
+objectName: employees
+label: Employee Permissions
+description: Permission set for managing access to employee records
+
+# Profile-based object permissions
+profiles:
+  # HR Admin - full access to all employee data
+  hr_admin:
+    objectName: employees
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+
+  # HR Staff - can view and edit most fields
+  hr:
+    objectName: employees
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+
+  # Manager - can view their team members
+  manager:
+    objectName: employees
+    allowRead: true
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
+    viewFilters:
+      manager: "{{ userId }}"
+
+  # Employee - can only view their own record
+  employee:
+    objectName: employees
+    allowRead: true
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
+    viewFilters:
+      userId: "{{ userId }}"
+
+# Field-level permissions
+fieldPermissions:
+  # Salary - highly restricted
+  salary:
+    fieldName: salary
+    visibleTo:
+      - hr_admin
+      - hr
+    editableBy:
+      - hr_admin
+
+  # Social Security Number - highly restricted
+  ssn:
+    fieldName: ssn
+    visibleTo:
+      - hr_admin
+    editableBy:
+      - hr_admin
+
+  # Performance review - restricted
+  performanceReview:
+    fieldName: performanceReview
+    visibleTo:
+      - hr_admin
+      - hr
+      - manager
+    editableBy:
+      - hr_admin
+      - manager
+
+  # Emergency contact - semi-restricted
+  emergencyContact:
+    fieldName: emergencyContact
+    visibleTo:
+      - hr_admin
+      - hr
+      - employee
+    editableBy:
+      - hr_admin
+      - hr
+      - employee
+
+  # Personal email - employee can view and edit their own
+  personalEmail:
+    fieldName: personalEmail
+    visibleTo:
+      - hr_admin
+      - hr
+      - employee
+    editableBy:
+      - hr_admin
+      - employee
