@@ -12,6 +12,17 @@ Authentication plugin for ObjectOS based on [Better-Auth](https://www.better-aut
 - 💾 **Multi-Database Support** - Works with PostgreSQL, MongoDB, and SQLite
 - 🔌 **Plugin Architecture** - Follows ObjectOS plugin lifecycle and conventions
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration-options)
+- [Guides](#guides)
+- [API Endpoints](#api-endpoints)
+- [Database Support](#database-support)
+- [Security](#security)
+- [License](#license)
+
 ## Installation
 
 This plugin is part of the ObjectOS monorepo. It's already available in the workspace.
@@ -132,6 +143,24 @@ The plugin contributes the following events to the ObjectOS event system:
 - Supports CORS with configurable trusted origins
 - Session-based authentication with secure cookies
 - Database hooks for user creation validation
+- OAuth2/OIDC support for social authentication
+- Two-factor authentication (2FA) with TOTP
+- Secure password hashing and validation
+
+## Guides
+
+Comprehensive guides are available in the [docs](./docs) directory:
+
+- **[OAuth Setup Guide](./docs/OAUTH_SETUP.md)** - Configure Google, GitHub, and other OAuth providers
+- **[Two-Factor Authentication Guide](./docs/TWO_FACTOR_SETUP.md)** - Set up and use 2FA/TOTP
+- **[Environment Variables Reference](./docs/ENVIRONMENT_VARIABLES.md)** - Complete list of configuration options
+
+## Additional Resources
+
+- [Better-Auth Documentation](https://www.better-auth.com/docs) - Official Better-Auth docs
+- [Integration Guide](./INTEGRATION.md) - How to integrate with ObjectOS Server
+- [Changelog](./CHANGELOG.md) - Version history and updates
+- [Examples](./examples) - Code examples and usage patterns
 
 ## License
 
@@ -139,6 +168,6 @@ AGPL-3.0
 
 ## Related
 
-- [Better-Auth Documentation](https://www.better-auth.com/docs)
 - [ObjectOS Documentation](../../README.md)
 - [@objectstack/spec](https://github.com/objectstack-ai/spec)
+- [@objectstack/runtime](https://www.npmjs.com/package/@objectstack/runtime)
