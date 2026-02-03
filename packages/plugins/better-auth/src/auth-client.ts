@@ -42,7 +42,7 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
         const githubClientSecret = config.githubClientSecret || process.env.GITHUB_CLIENT_SECRET;
         
         // Build plugins array conditionally
-        const plugins: any[] = [];
+        const plugins: Array<any> = []; // Note: Better-Auth plugin types are complex, using any for flexibility
 
         // Add Two-Factor Authentication (enabled by default unless explicitly disabled)
         if (config.twoFactorEnabled !== false) {
@@ -59,7 +59,9 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                 clientId: googleClientId,
                 clientSecret: googleClientSecret,
             }));
-            console.log('[Better-Auth Plugin] Google OAuth enabled');
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('[Better-Auth Plugin] Google OAuth enabled');
+            }
         }
 
         if (githubClientId && githubClientSecret) {
@@ -68,7 +70,9 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                 clientId: githubClientId,
                 clientSecret: githubClientSecret,
             }));
-            console.log('[Better-Auth Plugin] GitHub OAuth enabled');
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('[Better-Auth Plugin] GitHub OAuth enabled');
+            }
         }
 
         // Add organization and team management

@@ -61,7 +61,7 @@ BETTER_AUTH_URL=https://api.myapp.com/auth
 Google OAuth 2.0 client ID obtained from Google Cloud Console.
 
 ```bash
-GOOGLE_CLIENT_ID=123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
+GOOGLE_CLIENT_ID=<YOUR_CLIENT_ID>.apps.googleusercontent.com
 ```
 
 #### `GOOGLE_CLIENT_SECRET`
@@ -72,7 +72,7 @@ GOOGLE_CLIENT_ID=123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
 Google OAuth 2.0 client secret obtained from Google Cloud Console.
 
 ```bash
-GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnopqrstuvwxyz
+GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
 ```
 
 ### GitHub OAuth
@@ -85,7 +85,7 @@ GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnopqrstuvwxyz
 GitHub OAuth app client ID obtained from GitHub Developer Settings.
 
 ```bash
-GITHUB_CLIENT_ID=Iv1.a1b2c3d4e5f6g7h8
+GITHUB_CLIENT_ID=<YOUR_GITHUB_CLIENT_ID>
 ```
 
 #### `GITHUB_CLIENT_SECRET`
@@ -96,7 +96,7 @@ GITHUB_CLIENT_ID=Iv1.a1b2c3d4e5f6g7h8
 GitHub OAuth app client secret obtained from GitHub Developer Settings.
 
 ```bash
-GITHUB_CLIENT_SECRET=abcdef1234567890abcdef1234567890abcdef12
+GITHUB_CLIENT_SECRET=<YOUR_GITHUB_CLIENT_SECRET>
 ```
 
 ## Two-Factor Authentication
