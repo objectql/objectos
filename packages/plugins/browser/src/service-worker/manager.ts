@@ -145,6 +145,10 @@ export class ServiceWorkerManager {
 
       // Send response back to service worker
       const responseBody = await response.text();
+      const responseHeaders: [string, string][] = [];
+      response.headers.forEach((value, key) => {
+        responseHeaders.push([key, value]);
+      });
       
       this.postMessage({
         type: 'API_RESPONSE',
@@ -152,7 +156,7 @@ export class ServiceWorkerManager {
         payload: {
           status: response.status,
           statusText: response.statusText,
-          headers: Array.from(response.headers.entries()),
+          headers: responseHeaders,
           body: responseBody
         }
       });

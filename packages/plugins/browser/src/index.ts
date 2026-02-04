@@ -48,4 +48,5 @@ export type {
 /**
  * Default export is the plugin class
  */
+import { BrowserRuntimePlugin } from './plugin';
 export default BrowserRuntimePlugin;

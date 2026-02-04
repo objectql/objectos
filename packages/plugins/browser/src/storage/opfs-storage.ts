@@ -70,7 +70,12 @@ export class OPFSStorageBackend implements OPFSStorage {
       const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
       const writable = await fileHandle.createWritable();
       
-      await writable.write(data);
+      if (data instanceof Blob) {
+        await writable.write(data);
+      } else {
+        // Convert Uint8Array to Blob
+        await writable.write(new Blob([data.buffer as ArrayBuffer]));
+      }
       await writable.close();
       
       console.log(`[OPFS] Wrote file: ${path}`);

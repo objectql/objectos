@@ -90,7 +90,7 @@ export class BrowserRuntimePlugin implements Plugin {
       context.registerService('browser-worker', this.worker);
 
       context.logger.info('[BrowserRuntime] Initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       context.logger.error('[BrowserRuntime] Initialization failed:', error);
       throw error;
     }

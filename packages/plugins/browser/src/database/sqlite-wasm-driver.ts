@@ -56,7 +56,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
     try {
       // Initialize sql.js
       this.SQL = await initSqlJs({
-        locateFile: (file) => {
+        locateFile: (file: string) => {
           if (this.config.wasmPath) {
             return this.config.wasmPath;
           }
@@ -134,9 +134,9 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
       const { columns, values } = results[0];
       
       // Convert array results to objects
-      return values.map(row => {
+      return values.map((row: any[]) => {
         const obj: Record<string, any> = {};
-        columns.forEach((col, idx) => {
+        columns.forEach((col: string, idx: number) => {
           obj[col] = row[idx];
         });
         return obj;
@@ -263,7 +263,8 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
       const fileHandle = await root.getFileHandle(this.dbName, { create: true });
       const writable = await fileHandle.createWritable();
       
-      await writable.write(data);
+      // Convert to Blob for writable stream
+      await writable.write(new Blob([data.buffer as ArrayBuffer]));
       await writable.close();
       
       console.log(`[SQLiteWASM] Saved database to OPFS (${data.byteLength} bytes)`);
@@ -293,7 +294,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
         if (this.db && this.config.useOPFS) {
           const data = this.db.export();
           // Use sendBeacon for reliable save on unload
-          const blob = new Blob([data], { type: 'application/octet-stream' });
+          const blob = new Blob([data.buffer as ArrayBuffer], { type: 'application/octet-stream' });
           // Note: This is a best-effort approach
           this.saveToOPFS();
         }
