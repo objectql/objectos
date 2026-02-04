@@ -13,7 +13,7 @@ import type { WorkerMessage, WorkerMessageType } from '../types';
  */
 export class WorkerManager {
   private worker: Worker | null = null;
-  private messageHandlers: Map<string, (result: any) => void> = new Map();
+  private messageHandlers: Map<string, (result: any, error?: string) => void> = new Map();
   private messageId = 0;
 
   /**
@@ -102,25 +102,25 @@ export class WorkerManager {
     const id = String(++this.messageId);
     
     return new Promise((resolve, reject) => {
-      // Set up response handler
-      this.messageHandlers.set(id, resolve);
-
       // Set timeout
       const timeout = setTimeout(() => {
         this.messageHandlers.delete(id);
         reject(new Error('Worker request timeout'));
       }, 30000); // 30 second timeout
 
+      // Set up response handler that can either resolve or reject
+      this.messageHandlers.set(id, (result: any, error?: string) => {
+        clearTimeout(timeout);
+        if (error) {
+          reject(new Error(error));
+        } else {
+          resolve(result);
+        }
+      });
+
       // Send message
       const message: WorkerMessage = { type, payload, id };
       this.worker!.postMessage(message);
-
-      // Clear timeout on response
-      const originalHandler = this.messageHandlers.get(id)!;
-      this.messageHandlers.set(id, (result) => {
-        clearTimeout(timeout);
-        originalHandler(result);
-      });
     });
   }
 
@@ -132,12 +132,8 @@ export class WorkerManager {
 
     const handler = this.messageHandlers.get(id);
     if (handler) {
-      if (error) {
-        console.error('[Worker] Error response:', error);
-      }
-      
-      handler(error ? Promise.reject(new Error(error)) : result);
       this.messageHandlers.delete(id);
+      handler(result, error);
     }
   }
 }
