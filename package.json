@@ -20,6 +20,7 @@
     "build": "tsc -b && pnpm -r build",
     "start": "pnpm --filter @objectos/plugin-server start:prod",
     "test": "pnpm -r test",
+    "audit:spec": "node scripts/audit-spec-compliance.mjs",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && changeset publish",
