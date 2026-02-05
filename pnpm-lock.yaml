@@ -8,6 +8,42 @@ importers:
 
   .:
     dependencies:
+      '@objectos/audit':
+        specifier: workspace:*
+        version: link:packages/audit
+      '@objectos/auth':
+        specifier: workspace:*
+        version: link:packages/auth
+      '@objectos/automation':
+        specifier: workspace:*
+        version: link:packages/automation
+      '@objectos/cache':
+        specifier: workspace:*
+        version: link:packages/cache
+      '@objectos/i18n':
+        specifier: workspace:*
+        version: link:packages/i18n
+      '@objectos/jobs':
+        specifier: workspace:*
+        version: link:packages/jobs
+      '@objectos/metrics':
+        specifier: workspace:*
+        version: link:packages/metrics
+      '@objectos/notification':
+        specifier: workspace:*
+        version: link:packages/notification
+      '@objectos/permissions':
+        specifier: workspace:*
+        version: link:packages/permissions
+      '@objectos/realtime':
+        specifier: workspace:*
+        version: link:packages/realtime
+      '@objectos/storage':
+        specifier: workspace:*
+        version: link:packages/storage
+      '@objectos/workflow':
+        specifier: workspace:*
+        version: link:packages/workflow
       '@objectql/core':
         specifier: ^4.0.3
         version: 4.0.4

@@ -3,19 +3,35 @@
  * 
  * Configuration file for @objectstack/cli serve command.
  * This defines the kernel configuration, plugins, and metadata sources.
- * 
- * NOTE: This is a template configuration for future use with @objectstack/cli.
- * The ObjectKernel from @objectstack/runtime expects plugins to be passed directly.
- * Since we don't have the @objectstack packages installed as dependencies,
- * this config currently serves as documentation for the expected structure.
  */
+
+import { AuditLogPlugin } from '@objectos/audit';
+import { BetterAuthPlugin } from '@objectos/auth';
+import { AutomationPlugin } from '@objectos/automation';
+import { CachePlugin } from '@objectos/cache';
+import { I18nPlugin } from '@objectos/i18n';
+import { JobsPlugin } from '@objectos/jobs';
+import { MetricsPlugin } from '@objectos/metrics';
+import { NotificationPlugin } from '@objectos/notification';
+import { PermissionsPlugin } from '@objectos/permissions';
+import { createRealtimePlugin } from '@objectos/realtime';
+import { StoragePlugin } from '@objectos/storage';
+import { WorkflowPlugin } from '@objectos/workflow';
+import { resolve } from 'path';
 
 export default {
   /**
    * Metadata sources
    * Define where to load object schemas, permissions, workflows, etc.
    */
-  metadata: {},
+  metadata: {
+    baseDir: resolve(__dirname),
+    patterns: [
+      'packages/*/objects/*.object.yml',
+      'packages/*/workflows/*.workflow.yml',
+      'packages/*/permissions/*.permission.yml',
+    ]
+  },
 
   /**
    * Objects configuration
@@ -24,37 +40,48 @@ export default {
   objects: {},
 
   /**
-   * Plugins to load
+   * Plugins to check/load
    * These are initialized in order during kernel bootstrap
-   * 
-   * Example (when @objectstack packages are installed):
-   * 
-   * import { KnexDriver } from '@objectql/driver-sql';
-   * import { ObjectQLPlugin } from '@objectstack/objectql';
-   * import { DriverPlugin } from '@objectstack/runtime';
-   * 
-   * plugins: [
-   *   new ObjectQLPlugin(),
-   *   new DriverPlugin(
-   *     new KnexDriver({
-   *       client: 'sqlite3',
-   *       connection: { filename: 'objectos.db' },
-   *       useNullAsDefault: true
-   *     }),
-   *     'default'
-   *   ),
-   * ]
    */
-  plugins: [],
+  plugins: [
+    // Foundation
+    new MetricsPlugin(),
+    new CachePlugin(), 
+    new StoragePlugin(),
+
+    // Core
+    new BetterAuthPlugin(),
+    new PermissionsPlugin(),
+    new AuditLogPlugin(),
+
+    // Logic
+    new WorkflowPlugin(),
+    new AutomationPlugin(),
+    new JobsPlugin(),
+    
+    // Services
+    new NotificationPlugin(),
+    new I18nPlugin(),
+    createRealtimePlugin(),
+  ],
 
   /**
-   * Server configuration (for HTTP server plugin)
+   * Server configuration
    */
   server: {
     port: process.env.PORT || 3000,
     cors: {
       origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
       credentials: true,
+    }
+  },
+
+  /**
+   * Kernel Configuration
+   */
+  kernel: {
+    logger: {
+      level: process.env.LOG_LEVEL || 'info',
     }
   }
 };
