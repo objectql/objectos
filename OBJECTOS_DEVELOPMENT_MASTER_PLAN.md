@@ -2,7 +2,7 @@
 
 > **版本 Version**: 1.0.0  
 > **日期 Date**: 2026年2月3日 | February 3, 2026  
-> **状态 Status**: 开发中 | In Progress
+> **状态 Status**: 系统集成阶段 | System Integration Phase (90% Plugins Implemented)
 
 ---
 
@@ -169,18 +169,18 @@ objectos/
    - [ ] 记录级安全 (Record-Level Security, RLS)
    - [ ] 权限集 (Permission Sets)
    - [ ] 共享规则 (Sharing Rules)
-   - [ ] 权限缓存优化
-   - [x] 单元测试 + 集成测试
+   - [x] 权限缓存优化
+   - [x] 单元测试 + 集成测试 (Filter Merging, Recursive Template Vars)
 
 2. **工作流引擎** (2周)
    - [x] 基础插件结构 (@objectos/plugin-workflow)
    - [x] 有限状态机 (FSM) 引擎完善
-   - [ ] 守卫(Guard)与动作(Action)的字符串引用支持
+   - [x] 守卫(Guard)与动作(Action)的字符串引用支持
    - [x] YAML工作流定义解析与加载 (Loader)
-   - [x] 标准动作库 (StdLib: log, sendEmail, webhook) - 支持参数化 (Updated Regex for templates)
-   - [x] 自动触发器 (Listen to data.create/update)
-   - [ ] 状态转换验证
-   - [ ] 工作流钩子 (on_enter, on_exit)
+   - [x] 标准动作库 (StdLib: log, sendEmail, webhook) - 支持参数化
+   - [x] 自动触发器 (Listen to data.create/update -> workflow.trigger)
+   - [x] 状态转换验证
+   - [x] 工作流钩子 (on_enter, on_exit)
    - [ ] 工作流历史记录
    - [ ] 可视化工作流编辑器 (ObjectUI集成)
 
@@ -192,30 +192,17 @@ objectos/
    - [ ] 失败重试机制
    - [ ] 任务监控仪表盘
 
-#### 阶段三：数据能力增强 (4周)
+#### 阶段三：系统集成与验证 (Current Focus)
 
-**目标**: 完善数据层功能
+**目标**: 将独立插件连接成有机的操作系统
 
-**任务清单**:
+1. **数据层集成 (Data Layer Integration)**
+   - [ ] **Hook标准**: 确保 `data.create/update/delete` 事件在 Kernel 中流转
+   - [ ] **安全切面**: 在 Data Operation 前置入 Permission Check
 
-1. **关系支持** (2周)
-   - [ ] Lookup字段 (多对一)
-   - [ ] Master-Detail关系 (级联删除)
-   - [ ] Many-to-Many关系
-   - [ ] 关系查询优化 (JOIN vs. N+1)
-   - [ ] 循环依赖检测
-
-2. **验证引擎** (1周)
-   - [ ] 字段级验证 (required, unique, pattern)
-   - [ ] 跨字段验证 (end_date > start_date)
-   - [ ] 自定义验证函数
-   - [ ] 验证错误消息国际化
-
-3. **高级查询** (1周)
-   - [ ] 聚合查询 (COUNT, SUM, AVG)
-   - [ ] 分组查询 (GROUP BY)
-   - [ ] 子查询支持
-   - [ ] 全文搜索 (PostgreSQL FTS)
+2. **前端集成 (Frontend Integration)**
+   - [ ] `apps/web` 控制台接入 Workflow 管理
+   - [ ] `apps/web` 控制台接入 Permission 配置
 
 #### 阶段四：多租户与安全 (3周)
 

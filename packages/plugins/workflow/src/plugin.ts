@@ -78,7 +78,7 @@ export class WorkflowPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Workflow Plugin] Starting...');
-        Load workflows from directory
+        // Load workflows from directory
         if (this.config.workflowsDir) {
             // If path is relative, resolve from cwd. If absolute, use as is.
             const dirPath = path.isAbsolute(this.config.workflowsDir) 
@@ -150,14 +150,45 @@ export class WorkflowPlugin implements Plugin {
                 }
             } catch (error) {
                 const errorObj = error instanceof Error ? error : undefined;
-                this.context?.logger.error('[Workflow Plugin] Error handling data.update
-            } catch (error) {
-                const errorObj = error instanceof Error ? error : undefined;
-                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', errorObj);
+                this.context?.logger.error('[Workflow Plugin] Error handling data.update:', errorObj);
             }
         });
 
+        // Listen to the very event we emit, to actually Start workflows
+        context.hook('workflow.trigger', async (payload: any) => {
+            await this.handleWorkflowTrigger(payload);
+        });
+
         this.context?.logger.info('[Workflow Plugin] Event listeners registered');
+    }
+
+    /**
+     * Handle workflow trigger event
+     * Finds matching workflows and starts them
+     */
+    private async handleWorkflowTrigger(payload: { type: string, data: any }): Promise<void> {
+        const { type, data } = payload;
+        
+        // Only handle creation triggers for auto-start for now
+        // data.object should be present in the event payload
+        const objectName = data.object; 
+        
+        if (!objectName) return;
+
+        if (type === 'data.create') {
+            const definitions = await this.api.listWorkflows();
+            const matching = definitions.filter(def => def.object === objectName);
+            
+            for (const def of matching) {
+                try {
+                    this.context?.logger.info(`[Workflow Plugin] Auto-starting workflow "${def.name}" for object "${objectName}"`);
+                    await this.api.startWorkflow(def.id, data);
+                } catch (err) {
+                    const error = err instanceof Error ? err : new Error(String(err));
+                    this.context?.logger.error(`[Workflow Plugin] Failed to auto-start workflow ${def.id}:`, error);
+                }
+            }
+        }
     }
 
     /**

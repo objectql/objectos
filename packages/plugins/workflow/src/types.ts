@@ -103,6 +103,8 @@ export interface WorkflowDefinition {
   id: string;
   /** Workflow name */
   name: string;
+  /** Schema Object this workflow applies to (e.g. 'orders') */
+  object?: string;
   /** Workflow description */
   description?: string;
   /** Workflow type */
