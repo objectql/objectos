@@ -14,3 +14,7 @@ package-lock.json
 *.db
 *.db-shm
 *.db-wal
+
+# Turbo
+.turbo
+
