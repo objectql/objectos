@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.0.4"
+    "@objectstack/runtime": "^1.0.5"
   },
   "optionalDependencies": {
     "axios": "^1.7.9",

@@ -12,8 +12,8 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.0.4",
-    "@objectstack/spec": "1.0.4",
+    "@objectstack/runtime": "^1.0.5",
+    "@objectstack/spec": "1.0.5",
     "comlink": "^4.4.1",
     "idb": "^8.0.0",
     "sql.js": "^1.11.0"
