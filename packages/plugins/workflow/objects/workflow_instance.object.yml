@@ -1,0 +1,53 @@
+name: workflow_instance
+label: Workflow Instance
+icon: flow
+hidden: false
+fields:
+  workflow_id:
+    type: text
+    required: true
+    label: Workflow ID
+    index: true
+  version:
+    type: text
+    label: Version
+  current_state:
+    type: text
+    label: Current State
+  status:
+    type: select
+    label: Status
+    options:
+      - label: Pending
+        value: pending
+      - label: Running
+        value: running
+      - label: Completed
+        value: completed
+      - label: Failed
+        value: failed
+      - label: Aborted
+        value: aborted
+  data:
+    type: object
+    label: Workflow Data
+    blackbox: true
+  history:
+    type: object
+    label: History Log
+    blackbox: true
+  error:
+    type: text
+    label: Error Message
+  started_by:
+    type: text
+    label: Started By User ID
+  started_at:
+    type: datetime
+    label: Started At
+  completed_at:
+    type: datetime
+    label: Completed At
+  last_updated:
+    type: datetime
+    label: Last Updated

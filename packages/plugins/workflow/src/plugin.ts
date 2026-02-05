@@ -15,6 +15,7 @@ import type {
     WorkflowDefinition,
 } from './types';
 import { InMemoryWorkflowStorage } from './storage';
+import { ObjectQLWorkflowStorage } from './objectql-storage';
 import { WorkflowEngine } from './engine';
 import { WorkflowAPI } from './api';
 import { loadWorkflows } from './loader';
@@ -57,6 +58,15 @@ export class WorkflowPlugin implements Plugin {
     async init(context: PluginContext): Promise<void> {
         this.context = context;
         this.logger = context.logger;
+
+        // Upgrade storage to ObjectQL if not explicitly provided
+        // We do this in init because we need the context
+        if (!this.config.storage) {
+             this.storage = new ObjectQLWorkflowStorage(context);
+             this.logger.info('[Workflow Plugin] Upgraded to ObjectQL storage');
+             // Re-initialize API with new storage
+             this.api = new WorkflowAPI(this.storage, this.engine);
+        }
 
         // Update engine logger
         (this.engine as any).logger = context.logger;

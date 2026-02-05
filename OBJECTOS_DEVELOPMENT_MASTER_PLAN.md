@@ -181,7 +181,7 @@ objectos/
    - [x] 自动触发器 (Listen to data.create/update -> workflow.trigger)
    - [x] 状态转换验证
    - [x] 工作流钩子 (on_enter, on_exit)
-   - [ ] 工作流历史记录
+   - [x] 工作流历史记录 (Persisted via workflow_instance object)
    - [ ] 可视化工作流编辑器 (ObjectUI集成)
 
 3. **自动化系统** (2周)
