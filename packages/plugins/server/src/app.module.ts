@@ -4,6 +4,7 @@ import { AppService } from './app.service.js';
 import { ObjectQLModule } from './objectql/objectql.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthMiddleware } from './auth/auth.middleware.js';
+import { TenantMiddleware } from './tenant.middleware.js';
 import { createRESTHandler, createMetadataHandler, createNodeHandler } from '@objectql/server';
 
 @Module({
@@ -18,6 +19,10 @@ export class AppModule implements NestModule {
   constructor(@Inject('OBJECTQL') private objectql: any) {}
 
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TenantMiddleware)
+      .forRoutes('*');
+
     const restHandler = createRESTHandler(this.objectql);
     const metadataHandler = createMetadataHandler(this.objectql);
     const objectQLHandler = createNodeHandler(this.objectql);

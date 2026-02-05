@@ -122,20 +122,20 @@ export class PermissionsPlugin implements Plugin {
             return;
         }
 
-        // Hook into data operations for permission checking
-        context.hook('data.create', async (data: any) => {
+        // Hook into data operations for permission checking (PRE-Operation)
+        context.hook('data.beforeCreate', async (data: any) => {
             await this.checkDataPermission(data, 'create');
         });
 
-        context.hook('data.update', async (data: any) => {
+        context.hook('data.beforeUpdate', async (data: any) => {
             await this.checkDataPermission(data, 'update');
         });
 
-        context.hook('data.delete', async (data: any) => {
+        context.hook('data.beforeDelete', async (data: any) => {
             await this.checkDataPermission(data, 'delete');
         });
 
-        context.hook('data.find', async (data: any) => {
+        context.hook('data.beforeFind', async (data: any) => {
             await this.applyRecordLevelSecurity(data);
         });
 

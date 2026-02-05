@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { ObjectKernel, DriverPlugin } from '@objectstack/runtime';
-import { ObjectQLPlugin } from '@objectstack/objectql';
+import { ObjectQLPlugin } from '@objectos/plugin-objectql';
 import { KnexDriver } from '@objectql/driver-sql';
 import * as path from 'path';
 import * as fs from 'fs';

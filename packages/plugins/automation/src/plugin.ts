@@ -134,7 +134,7 @@ export class AutomationPlugin implements Plugin {
      */
     private async setupEventListeners(context: PluginContext): Promise<void> {
         // Listen for data create events
-        context.hook('data.create', async (data: any) => {
+        context.hook('data.afterCreate', async (data: any) => {
             if (data && data.object) {
                 // Map kernel event format (data.object, data.doc) to helper format
                 // In handleDataEvent we expect { objectName, record }
@@ -147,7 +147,7 @@ export class AutomationPlugin implements Plugin {
         });
 
         // Listen for data update events
-        context.hook('data.update', async (data: any) => {
+        context.hook('data.afterUpdate', async (data: any) => {
             if (data && data.object) {
                  await this.handleDataEvent('object.update', {
                     objectName: data.object,
@@ -158,7 +158,7 @@ export class AutomationPlugin implements Plugin {
         });
 
         // Listen for data delete events
-        context.hook('data.delete', async (data: any) => {
+        context.hook('data.afterDelete', async (data: any) => {
             if (data && data.object) {
                  await this.handleDataEvent('object.delete', {
                     objectName: data.object,

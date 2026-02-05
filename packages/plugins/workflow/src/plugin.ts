@@ -139,7 +139,7 @@ export class WorkflowPlugin implements Plugin {
      */
     private async setupEventListeners(context: PluginContext): Promise<void> {
         // Listen for data create events to trigger workflows
-        context.hook('data.create', async (data: any) => {
+        context.hook('data.afterCreate', async (data: any) => {
             try {
                 await this.emitEvent('workflow.trigger', { type: 'data.create', data });
             } catch (error) {
@@ -149,13 +149,11 @@ export class WorkflowPlugin implements Plugin {
         });
 
         // Listen for data update events to trigger workflows or transitions
-        context.hook('data.update', async (eventData: any) => {
-             // eventData structure might prove: { object: 'permission_set', id: '..', previous: {}, changes: {} }
+        context.hook('data.afterUpdate', async (eventData: any) => {
+             // eventData: { object, id, doc, previous }
              try {
                 // If this is an update to a state field, check for active workflows
-                if (eventData.changes && (eventData.changes.status || eventData.changes.state)) {
-                     // TODO: Lookup active workflow instance for this record and try to transition
-                     // For now, just emit generic event
+                if (eventData.doc && (eventData.doc.status || eventData.doc.state)) {
                      await this.emitEvent('workflow.trigger', { type: 'data.update', data: eventData });
                 }
             } catch (error) {

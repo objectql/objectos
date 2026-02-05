@@ -198,10 +198,9 @@ objectos/
 **目标**: 将独立插件连接成有机的操作系统
 
 1. **数据层集成 (Data Layer Integration)**
-   - [ ] **Hook标准**: 确保 `data.create/update/delete` 事件在 Kernel 中流转
-   - [ ] **安全切面**: 在 Data Operation 前置入 Permission Check
-
-2. **前端集成 (Frontend Integration)**
+   - [x] **Hook标准**: 确保 `data.create/update/delete` 事件在 Kernel 中流转 (Created @objectos/plugin-objectql with before/after hooks)
+   - [x] **安全切面**: 在 Data Operation 前置入 Permission Check (Permissions plugin hooks into data.before*)
+   - [ ] **前端集成 (Frontend Integration)**
    - [ ] `apps/web` 控制台接入 Workflow 管理
    - [ ] `apps/web` 控制台接入 Permission 配置
 
