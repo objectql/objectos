@@ -13,6 +13,8 @@ import type {
     StateHistoryEntry,
     TransitionGuard,
     TransitionAction,
+    GuardReference,
+    ActionReference,
 } from './types';
 
 /**
@@ -277,11 +279,24 @@ export class WorkflowEngine {
      * Check guard conditions
      */
     private async checkGuards(
-        guards: TransitionGuard[],
+        guards: GuardReference[],
         context: WorkflowContext
     ): Promise<boolean> {
         for (const guard of guards) {
-            const result = await guard(context);
+            let guardFn: TransitionGuard | undefined;
+
+            if (typeof guard === 'string') {
+                guardFn = this.guards.get(guard);
+                if (!guardFn) {
+                    this.logger.warn(`Guard "${guard}" not found`);
+                    // Fail safe: block transition if guard is missing
+                    return false;
+                }
+            } else {
+                guardFn = guard;
+            }
+
+            const result = await guardFn(context);
             if (!result) {
                 return false;
             }
@@ -293,14 +308,30 @@ export class WorkflowEngine {
      * Execute actions
      */
     private async executeActions(
-        actions: TransitionAction[],
+        actions: ActionReference[],
         context: WorkflowContext
     ): Promise<void> {
         for (const action of actions) {
+            let actionFn: TransitionAction | undefined;
+
+            if (typeof action === 'string') {
+                actionFn = this.actions.get(action);
+                if (!actionFn) {
+                    this.logger.warn(`Action "${action}" not found`);
+                    continue; // Skip missing action
+                }
+            } else {
+                actionFn = action;
+            }
+
             try {
-                await action(context);
+                await actionFn(context);
             } catch (error) {
                 this.logger.error('Error executing action:', error);
+                // Throw error to stop transition? Or just log?
+                // Usually actions failure (e.g. notifications) shouldn't rollback state?
+                // But strict transaction models might want to.
+                // For now, rethrow to indicate system error.
                 throw error;
             }
         }

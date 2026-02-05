@@ -87,7 +87,8 @@ export class PermissionEngine {
 
         // Check permissions for each profile the user has
         let allowed = false;
-        let filters: Record<string, any> = {};
+        const collectedFilters: Array<Record<string, any>> = [];
+        let hasFullAccess = false; // If true, means at least one profile gives access without filters
 
         for (const profile of context.profiles) {
             const profilePermissions = permissionSet.profiles?.[profile];
@@ -102,21 +103,37 @@ export class PermissionEngine {
             if (actionAllowed) {
                 allowed = true;
                 
-                // Merge view filters for record-level security
-                if (profilePermissions.viewFilters) {
-                    filters = { ...filters, ...profilePermissions.viewFilters };
+                // Collect view filters for record-level security
+                if (profilePermissions.viewFilters && Object.keys(profilePermissions.viewFilters).length > 0) {
+                    collectedFilters.push(profilePermissions.viewFilters);
+                } else {
+                    // One of the profiles allows action without restrictions
+                    hasFullAccess = true;
                 }
-                
-                // If we found permission, we can stop checking
-                // (unless we want to collect all filters)
-                break;
+            }
+        }
+
+        // Determine final filters
+        let finalFilters: Record<string, any> | undefined;
+
+        if (allowed) {
+            if (hasFullAccess) {
+                // If any profile grants full access, we don't apply any filters
+                finalFilters = undefined;
+            } else if (collectedFilters.length > 0) {
+                if (collectedFilters.length === 1) {
+                    finalFilters = collectedFilters[0];
+                } else {
+                    // Combine multiple profiles filters with OR
+                    finalFilters = { $or: collectedFilters };
+                }
             }
         }
 
         const result: PermissionCheckResult = {
             allowed,
             reason: allowed ? undefined : `No permission for action '${action}' on object '${objectName}'`,
-            filters: Object.keys(filters).length > 0 ? filters : undefined,
+            filters: finalFilters,
         };
 
         this.setCache(cacheKey, result);
@@ -194,19 +211,44 @@ export class PermissionEngine {
             return {};
         }
 
-        let filters: Record<string, any> = {};
+        const collectedFilters: Array<Record<string, any>> = [];
+        let hasFullAccess = false;
 
         // Collect filters from all profiles
         for (const profile of context.profiles) {
             const profilePermissions = permissionSet.profiles?.[profile];
             
-            if (profilePermissions?.viewFilters) {
-                filters = { ...filters, ...profilePermissions.viewFilters };
+            // Check if profile has read permission (assumption: getting filters implies reading)
+            // Or should we just collect filters if they exist regardless of base permission? 
+            // Usually if you don't have read access, filters don't matter.
+            // But this method just returns filters. Let's assume caller checked basic permission.
+            
+            if (profilePermissions) {
+                 if (profilePermissions.viewFilters && Object.keys(profilePermissions.viewFilters).length > 0) {
+                    collectedFilters.push(profilePermissions.viewFilters);
+                 } else {
+                     // If a profile has permissions defined but no viewFilters, 
+                     // it usually implies full access for that profile.
+                     // But we should verify if 'allowRead' is true?
+                     if (profilePermissions.allowRead) {
+                         hasFullAccess = true;
+                     }
+                 }
+            }
+        }
+
+        let finalFilters: Record<string, any> = {};
+
+        if (!hasFullAccess && collectedFilters.length > 0) {
+             if (collectedFilters.length === 1) {
+                finalFilters = collectedFilters[0];
+            } else {
+                finalFilters = { $or: collectedFilters };
             }
         }
 
         // Replace template variables (e.g., {{ userId }})
-        return this.replaceTemplateVariables(filters, context);
+        return this.replaceTemplateVariables(finalFilters, context);
     }
 
     /**
@@ -231,34 +273,56 @@ export class PermissionEngine {
     }
 
     /**
-     * Replace template variables in filters
+     * Replace template variables in filters (Recursive)
      */
     private replaceTemplateVariables(
-        filters: Record<string, any>,
+        filters: any,
         context: PermissionContext
-    ): Record<string, any> {
-        const result: Record<string, any> = {};
-
-        for (const [key, value] of Object.entries(filters)) {
-            if (typeof value === 'string') {
-                // Replace {{ userId }}
-                result[key] = value.replace('{{ userId }}', context.userId);
-                // Replace {{ profile }}
-                if (context.profiles.length > 0) {
-                    result[key] = result[key].replace('{{ profile }}', context.profiles[0]);
-                }
-                // Replace custom metadata
-                if (context.metadata) {
-                    for (const [metaKey, metaValue] of Object.entries(context.metadata)) {
-                        result[key] = result[key].replace(`{{ ${metaKey} }}`, String(metaValue));
-                    }
-                }
-            } else {
-                result[key] = value;
-            }
+    ): any {
+        if (!filters) return filters;
+        
+        // Handle Array
+        if (Array.isArray(filters)) {
+            return filters.map(item => this.replaceTemplateVariables(item, context));
         }
 
-        return result;
+        // Handle Object
+        if (typeof filters === 'object') {
+            const result: Record<string, any> = {};
+            for (const [key, value] of Object.entries(filters)) {
+                result[key] = this.replaceTemplateVariables(value, context);
+            }
+            return result;
+        }
+
+        // Handle String
+        if (typeof filters === 'string') {
+            let result = filters;
+            
+            // Replace {{ userId }}
+            if (result.includes('{{ userId }}')) {
+                 result = result.replace(/\{\{\s*userId\s*\}\}/g, context.userId);
+            }
+
+            // Replace {{ profile }} - use the first profile as default context if simpler logic needed
+            if (result.includes('{{ profile }}') && context.profiles.length > 0) {
+                 result = result.replace(/\{\{\s*profile\s*\}\}/g, context.profiles[0]);
+            }
+            
+            // Replace custom metadata
+            if (context.metadata) {
+                for (const [metaKey, metaValue] of Object.entries(context.metadata)) {
+                    const pattern = new RegExp(`\\{\\{\\s*${metaKey}\\s*\\}\\}`, 'g');
+                    if (pattern.test(result)) {
+                        result = result.replace(pattern, String(metaValue));
+                    }
+                }
+            }
+            return result;
+        }
+
+        // Return other primitives as is
+        return filters;
     }
 
     /**

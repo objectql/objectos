@@ -2,7 +2,7 @@
 
 > **版本 Version**: 1.0.0  
 > **日期 Date**: 2026年2月3日 | February 3, 2026  
-> **状态 Status**: 规划文档 | Planning Document
+> **状态 Status**: 开发中 | In Progress
 
 ---
 
@@ -146,11 +146,11 @@ objectos/
 
 3. **核心插件迁移** (2周)
    - [ ] 将 @objectos/kernel 功能拆分为插件
-     - [ ] plugin-objectql (ObjectQL集成)
-     - [ ] plugin-server (HTTP服务器)
-     - [ ] plugin-better-auth (认证)
-     - [ ] plugin-audit-log (审计)
-   - [ ] 确保功能平滑过渡
+     - [-] plugin-objectql (已移至外部项目)
+     - [x] plugin-server (HTTP服务器)
+     - [x] plugin-better-auth (认证)
+     - [x] plugin-audit-log (审计)
+   - [x] 确保功能平滑过渡
    - [ ] 弃用旧包，添加迁移指南
 
 #### 阶段二：企业级功能 (6周)
@@ -160,6 +160,9 @@ objectos/
 **任务清单**:
 
 1. **权限系统** (2周)
+   - [x] 基础插件结构 (@objectos/plugin-permissions)
+   - [x] 权限合并优化 (Filter Merging with $or)
+   - [x] 模板变量递归替换
    - [ ] 对象级权限 (CRUD)
    - [ ] 字段级权限 (可见性/可编辑性)
    - [ ] 记录级安全 (Record-Level Security, RLS)
@@ -169,14 +172,17 @@ objectos/
    - [ ] 单元测试 + 集成测试
 
 2. **工作流引擎** (2周)
-   - [ ] 有限状态机 (FSM) 引擎
-   - [ ] YAML工作流定义
+   - [x] 基础插件结构 (@objectos/plugin-workflow)
+   - [x] 有限状态机 (FSM) 引擎完善
+   - [x] 守卫(Guard)与动作(Action)的字符串引用支持
+   - [ ] YAML工作流定义解析
    - [ ] 状态转换验证
    - [ ] 工作流钩子 (on_enter, on_exit)
    - [ ] 工作流历史记录
    - [ ] 可视化工作流编辑器 (ObjectUI集成)
 
 3. **自动化系统** (2周)
+   - [x] 基础插件结构 (@objectos/plugin-automation)
    - [ ] 触发器框架 (beforeInsert, afterUpdate等)
    - [ ] 计划任务 (Cron表达式)
    - [ ] 后台任务队列 (Bull/BullMQ)

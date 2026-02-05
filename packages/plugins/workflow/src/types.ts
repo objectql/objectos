@@ -36,6 +36,16 @@ export type TransitionGuard = (context: WorkflowContext) => boolean | Promise<bo
 export type TransitionAction = (context: WorkflowContext) => void | Promise<void>;
 
 /**
+ * Transition guard reference (name or function)
+ */
+export type GuardReference = string | TransitionGuard;
+
+/**
+ * Transition action reference (name or function)
+ */
+export type ActionReference = string | TransitionAction;
+
+/**
  * State configuration
  */
 export interface StateConfig {
@@ -46,9 +56,9 @@ export interface StateConfig {
   /** Is this a final state? */
   final?: boolean;
   /** Actions to run when entering this state */
-  onEnter?: TransitionAction[];
+  onEnter?: ActionReference[];
   /** Actions to run when exiting this state */
-  onExit?: TransitionAction[];
+  onExit?: ActionReference[];
   /** Available transitions from this state */
   transitions?: Record<string, TransitionConfig>;
   /** Metadata for the state */
@@ -62,9 +72,9 @@ export interface TransitionConfig {
   /** Target state name */
   target: string;
   /** Guard conditions for this transition */
-  guards?: TransitionGuard[];
+  guards?: GuardReference[];
   /** Actions to execute during transition */
-  actions?: TransitionAction[];
+  actions?: ActionReference[];
   /** Metadata for the transition */
   metadata?: Record<string, any>;
 }
