@@ -8,6 +8,7 @@ import {
     WorkflowPlugin,
     getWorkflowAPI,
 } from '../src/plugin';
+import { InMemoryWorkflowStorage } from '../src/storage';
 import type { PluginContext } from '@objectstack/runtime';
 import type { WorkflowDefinition } from '../src/types';
 
@@ -18,30 +19,31 @@ describe('Workflow Plugin', () => {
 
     beforeEach(() => {
         mockKernel = {
-            getService: jest.fn(),
+            getService: vi.fn(),
             services: new Map(),
         };
 
         mockContext = {
             logger: {
-                info: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
-                debug: jest.fn(),
+                info: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
             },
-            registerService: jest.fn((name: string, service: any) => {
+            registerService: vi.fn((name: string, service: any) => {
                 mockKernel.services.set(name, service);
                 mockKernel.getService.mockImplementation((n: string) => {
                     if (n === name) return service;
                     throw new Error(`Service ${n} not found`);
                 });
             }),
-            hook: jest.fn(),
-            trigger: jest.fn(),
+            hook: vi.fn(),
+            trigger: vi.fn(),
         } as any;
 
         plugin = new WorkflowPlugin({
             enabled: true,
+            storage: new InMemoryWorkflowStorage(),
         });
     });
 
@@ -78,14 +80,14 @@ describe('Workflow Plugin', () => {
         it('should set up event listeners using kernel hooks', async () => {
             await plugin.init(mockContext);
 
-            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterCreate', expect.any(Function));
         });
 
         it('should trigger workflow events', async () => {
             await plugin.init(mockContext);
 
             // Simulate data.create event
-            const hookCallback = (mockContext.hook as jest.Mock).mock.calls[0][1];
+            const hookCallback = (mockContext.hook as any).mock.calls[0][1];
             await hookCallback({ objectName: 'test', record: {} });
 
             expect(mockContext.trigger).toHaveBeenCalledWith(

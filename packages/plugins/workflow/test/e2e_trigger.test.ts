@@ -10,20 +10,20 @@ describe('E2E: Event to Workflow Execution', () => {
     beforeEach(async () => {
         // 1. Setup Mock Logger
         mockLogger = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
         };
 
         // 2. Setup Mock Context (Kernel)
         eventHandlers = {};
         mockContext = {
             logger: mockLogger,
-            registerService: jest.fn(),
-            hook: jest.fn((event, handler) => {
+            registerService: vi.fn(),
+            hook: vi.fn((event, handler) => {
                 eventHandlers[event] = handler;
             }),
-            trigger: jest.fn(async (event, data) => {
+            trigger: vi.fn(async (event, data) => {
                 // Determine if we need to route this back to internal listeners?
                 // In SetupEventListeners, the plugin listens to 'data.create' and emits 'workflow.trigger'.
                 // Then it should ALSO listen to 'workflow.trigger' somewhere? 
@@ -65,8 +65,8 @@ describe('E2E: Event to Workflow Execution', () => {
         };
         await workflowPlugin.registerWorkflow(workflowDef);
 
-        // 2. Check if 'data.create' hook was registered
-        expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
+        // 2. Check if 'data.afterCreate' hook was registered
+        expect(mockContext.hook).toHaveBeenCalledWith('data.afterCreate', expect.any(Function));
         
         // 3. Simulate Event Trigger
         // We need to bridge the gap. 
@@ -79,7 +79,7 @@ describe('E2E: Event to Workflow Execution', () => {
         // We probably need to IMPLEMENT that listener in this test cycle if it's missing, 
         // or verify the `emitEvent` happened.
         
-        const dataCreateHandler = eventHandlers['data.create'];
+        const dataCreateHandler = eventHandlers['data.afterCreate'];
         expect(dataCreateHandler).toBeDefined();
 
         const testData = { id: 'u1', email: 'test@example.com' };

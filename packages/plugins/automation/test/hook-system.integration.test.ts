@@ -13,33 +13,33 @@ const createMockContext = (): { context: PluginContext; hooks: Map<string, Funct
     
     const context: PluginContext = {
         logger: {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         },
-        registerService: jest.fn((name: string, service: any) => {
+        registerService: vi.fn((name: string, service: any) => {
             services.set(name, service);
         }),
-        getService: jest.fn((name: string) => {
+        getService: vi.fn((name: string) => {
             if (services.has(name)) return services.get(name);
             throw new Error(`Service ${name} not found`);
         }),
-        hasService: jest.fn((name: string) => services.has(name)),
-        getServices: jest.fn(() => services),
-        hook: jest.fn((name: string, handler: Function) => {
+        hasService: vi.fn((name: string) => services.has(name)),
+        getServices: vi.fn(() => services),
+        hook: vi.fn((name: string, handler: Function) => {
             if (!hooks.has(name)) {
                 hooks.set(name, []);
             }
             hooks.get(name)!.push(handler);
         }),
-        trigger: jest.fn(async (name: string, ...args: any[]) => {
+        trigger: vi.fn(async (name: string, ...args: any[]) => {
             const handlers = hooks.get(name) || [];
             for (const handler of handlers) {
                 await handler(...args);
             }
         }),
-        getKernel: jest.fn(() => ({ getService: context.getService })),
+        getKernel: vi.fn(() => ({ getService: context.getService })),
     } as any;
     
     return { context, hooks };
@@ -57,7 +57,7 @@ describe('Hook System Integration Tests', () => {
 
     describe('Data Hooks - Standard Names', () => {
         it('should register and trigger data.beforeInsert hook', async () => {
-            const hookHandler = jest.fn(async (payload) => {
+            const hookHandler = vi.fn(async (payload) => {
                 expect(payload.object).toBe('accounts');
                 expect(payload.data).toBeDefined();
             });
@@ -75,7 +75,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger data.afterInsert hook', async () => {
-            const hookHandler = jest.fn(async (payload) => {
+            const hookHandler = vi.fn(async (payload) => {
                 expect(payload.object).toBe('contacts');
                 expect(payload.id).toBe('contact123');
             });
@@ -93,7 +93,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger data.beforeUpdate hook', async () => {
-            const hookHandler = jest.fn(async (payload) => {
+            const hookHandler = vi.fn(async (payload) => {
                 expect(payload.previousData).toBeDefined();
                 expect(payload.data).toBeDefined();
             });
@@ -112,7 +112,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger data.afterDelete hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('data.afterDelete', hookHandler);
 
@@ -128,7 +128,7 @@ describe('Hook System Integration Tests', () => {
 
     describe('HTTP Hooks - Standard Names', () => {
         it('should register and trigger http.beforeStart hook', async () => {
-            const hookHandler = jest.fn(async (payload) => {
+            const hookHandler = vi.fn(async (payload) => {
                 expect(payload.port).toBe(3000);
             });
 
@@ -144,7 +144,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger http.beforeRequest hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('http.beforeRequest', hookHandler);
 
@@ -159,7 +159,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger http.error hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('http.error', hookHandler);
 
@@ -177,7 +177,7 @@ describe('Hook System Integration Tests', () => {
 
     describe('Job Hooks - Standard Names', () => {
         it('should register and trigger job.beforeExecute hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('job.beforeExecute', hookHandler);
 
@@ -192,7 +192,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger job.afterExecute hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('job.afterExecute', hookHandler);
 
@@ -208,7 +208,7 @@ describe('Hook System Integration Tests', () => {
         });
 
         it('should register and trigger job.failed hook', async () => {
-            const hookHandler = jest.fn();
+            const hookHandler = vi.fn();
 
             context.hook('job.failed', hookHandler);
 

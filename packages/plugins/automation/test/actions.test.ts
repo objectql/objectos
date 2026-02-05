@@ -22,10 +22,10 @@ describe('ActionExecutor', () => {
 
     beforeEach(() => {
         mockLogger = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         };
 
         executor = new ActionExecutor({
@@ -54,7 +54,7 @@ describe('ActionExecutor', () => {
 
     describe('Update Field Action', () => {
         it('should execute update field action', async () => {
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setUpdateFieldHandler(mockHandler);
 
             const action: UpdateFieldActionConfig = {
@@ -92,7 +92,7 @@ describe('ActionExecutor', () => {
 
     describe('Create Record Action', () => {
         it('should execute create record action', async () => {
-            const mockHandler = jest.fn().mockResolvedValue({ id: 'new-123' });
+            const mockHandler = vi.fn().mockResolvedValue({ id: 'new-123' });
             executor.setCreateRecordHandler(mockHandler);
 
             const action: CreateRecordActionConfig = {
@@ -131,7 +131,7 @@ describe('ActionExecutor', () => {
 
     describe('Send Email Action', () => {
         it('should execute send email action', async () => {
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setSendEmailHandler(mockHandler);
 
             const action: SendEmailActionConfig = {
@@ -150,7 +150,7 @@ describe('ActionExecutor', () => {
         });
 
         it('should handle multiple recipients', async () => {
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setSendEmailHandler(mockHandler);
 
             const action: SendEmailActionConfig = {
@@ -186,11 +186,11 @@ describe('ActionExecutor', () => {
 
     describe('HTTP Request Action', () => {
         it('should execute HTTP POST request', async () => {
-            global.fetch = jest.fn().mockResolvedValue({
+            global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
                 status: 200,
                 statusText: 'OK',
-                json: jest.fn().mockResolvedValue({ success: true }),
+                json: vi.fn().mockResolvedValue({ success: true }),
             }) as any;
 
             const action: HttpRequestActionConfig = {
@@ -214,12 +214,12 @@ describe('ActionExecutor', () => {
         });
 
         it('should execute HTTP GET request', async () => {
-            global.fetch = jest.fn().mockResolvedValue({
+            global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
                 status: 200,
                 statusText: 'OK',
-                json: jest.fn().mockRejectedValue(new Error('Not JSON')),
-                text: jest.fn().mockResolvedValue('Success'),
+                json: vi.fn().mockRejectedValue(new Error('Not JSON')),
+                text: vi.fn().mockResolvedValue('Success'),
             }) as any;
 
             const action: HttpRequestActionConfig = {
@@ -237,7 +237,7 @@ describe('ActionExecutor', () => {
         });
 
         it('should throw error on HTTP failure', async () => {
-            global.fetch = jest.fn().mockResolvedValue({
+            global.fetch = vi.fn().mockResolvedValue({
                 ok: false,
                 status: 500,
                 statusText: 'Internal Server Error',
@@ -321,7 +321,7 @@ describe('ActionExecutor', () => {
 
     describe('Template Interpolation', () => {
         it('should interpolate template values in update action', async () => {
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setUpdateFieldHandler(mockHandler);
 
             const action: UpdateFieldActionConfig = {
@@ -362,7 +362,7 @@ describe('ActionExecutor', () => {
                 },
             };
 
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setUpdateFieldHandler(mockHandler);
 
             const action: UpdateFieldActionConfig = {
@@ -388,7 +388,7 @@ describe('ActionExecutor', () => {
         });
 
         it('should keep template if value not found', async () => {
-            const mockHandler = jest.fn().mockResolvedValue(undefined);
+            const mockHandler = vi.fn().mockResolvedValue(undefined);
             executor.setUpdateFieldHandler(mockHandler);
 
             const action: UpdateFieldActionConfig = {
@@ -422,7 +422,7 @@ describe('ActionExecutor', () => {
         });
 
         it('should log action execution errors', async () => {
-            const mockHandler = jest.fn().mockRejectedValue(new Error('Update failed'));
+            const mockHandler = vi.fn().mockRejectedValue(new Error('Update failed'));
             executor.setUpdateFieldHandler(mockHandler);
 
             const action: UpdateFieldActionConfig = {

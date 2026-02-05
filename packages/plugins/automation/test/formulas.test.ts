@@ -18,10 +18,10 @@ describe('FormulaEngine', () => {
 
     beforeEach(() => {
         mockLogger = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         };
         engine = new FormulaEngine(mockLogger);
     });
@@ -394,7 +394,7 @@ describe('FormulaEngine', () => {
 
     describe('Query Handler Integration', () => {
         it('should use query handler for rollup when no records provided', async () => {
-            const mockQueryHandler = jest.fn().mockResolvedValue([
+            const mockQueryHandler = vi.fn().mockResolvedValue([
                 { accountId: 'acc-1', amount: 100 },
                 { accountId: 'acc-1', amount: 200 },
             ]);

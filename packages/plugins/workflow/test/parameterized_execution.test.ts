@@ -8,9 +8,9 @@ describe('Workflow Parameterized Actions & Guards', () => {
 
     beforeEach(() => {
         loggerMock = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn()
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn()
         };
         engine = new WorkflowEngine(loggerMock);
         

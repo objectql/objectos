@@ -20,10 +20,10 @@ describe('WorkflowEngine', () => {
 
     beforeEach(() => {
         mockLogger = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         };
 
         engine = new WorkflowEngine(mockLogger);
@@ -100,7 +100,7 @@ describe('WorkflowEngine', () => {
         });
 
         it('should execute initial state onEnter actions', async () => {
-            const onEnterAction = jest.fn();
+            const onEnterAction = vi.fn();
             engine.registerAction('logEntry', onEnterAction);
             
             definition.states.draft.onEnter = [onEnterAction];
@@ -216,7 +216,7 @@ describe('WorkflowEngine', () => {
         });
 
         it('should execute onExit actions when aborting', async () => {
-            const onExitAction = jest.fn();
+            const onExitAction = vi.fn();
             engine.registerAction('cleanup', onExitAction);
             definition.states.draft.onExit = [onExitAction];
 
@@ -239,7 +239,7 @@ describe('WorkflowEngine', () => {
 
     describe('guard conditions', () => {
         it('should block transition when guard returns false', async () => {
-            const guardFn = jest.fn().mockReturnValue(false);
+            const guardFn = vi.fn().mockReturnValue(false);
             engine.registerGuard('checkPermission', guardFn);
 
             definition.states.draft.transitions!.submit.guards = [guardFn];
@@ -255,7 +255,7 @@ describe('WorkflowEngine', () => {
         });
 
         it('should allow transition when guard returns true', async () => {
-            const guardFn = jest.fn().mockReturnValue(true);
+            const guardFn = vi.fn().mockReturnValue(true);
             engine.registerGuard('checkPermission', guardFn);
 
             definition.states.draft.transitions!.submit.guards = [guardFn];
@@ -271,7 +271,7 @@ describe('WorkflowEngine', () => {
 
         it('should pass context to guard functions', async () => {
             let receivedContext: WorkflowContext | undefined;
-            const guardFn = jest.fn((ctx: WorkflowContext) => {
+            const guardFn = vi.fn((ctx: WorkflowContext) => {
                 receivedContext = ctx;
                 return true;
             });
@@ -292,7 +292,7 @@ describe('WorkflowEngine', () => {
 
     describe('transition actions', () => {
         it('should execute transition actions', async () => {
-            const actionFn = jest.fn();
+            const actionFn = vi.fn();
             engine.registerAction('sendNotification', actionFn);
 
             definition.states.draft.transitions!.submit.actions = [actionFn];
@@ -308,9 +308,9 @@ describe('WorkflowEngine', () => {
         it('should execute onExit and onEnter actions in correct order', async () => {
             const callOrder: string[] = [];
 
-            const onExitAction = jest.fn(() => { callOrder.push('exit'); });
-            const transitionAction = jest.fn(() => { callOrder.push('transition'); });
-            const onEnterAction = jest.fn(() => { callOrder.push('enter'); });
+            const onExitAction = vi.fn(() => { callOrder.push('exit'); });
+            const transitionAction = vi.fn(() => { callOrder.push('transition'); });
+            const onEnterAction = vi.fn(() => { callOrder.push('enter'); });
 
             definition.states.draft.onExit = [onExitAction as any];
             definition.states.draft.transitions!.submit.actions = [transitionAction as any];
@@ -325,7 +325,7 @@ describe('WorkflowEngine', () => {
         });
 
         it('should allow actions to modify workflow data', async () => {
-            const actionFn = jest.fn((ctx: WorkflowContext) => {
+            const actionFn = vi.fn((ctx: WorkflowContext) => {
                 ctx.setData('processedBy', 'action-fn');
                 ctx.setData('timestamp', Date.now());
             });
@@ -430,7 +430,7 @@ describe('WorkflowEngine', () => {
         });
 
         it('should return false when guard blocks transition', async () => {
-            const guardFn = jest.fn().mockResolvedValue(false);
+            const guardFn = vi.fn().mockResolvedValue(false);
             definition.states.draft.transitions!.submit.guards = [guardFn];
 
             const instance = engine.createInstance(definition);

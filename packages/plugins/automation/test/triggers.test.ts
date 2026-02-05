@@ -17,10 +17,10 @@ describe('TriggerEngine', () => {
 
     beforeEach(() => {
         mockLogger = {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         };
         engine = new TriggerEngine(mockLogger);
     });
@@ -262,7 +262,7 @@ describe('TriggerEngine', () => {
                 cronExpression: '0 0 * * *', // Daily at midnight
             };
 
-            const callback = jest.fn();
+            const callback = vi.fn();
 
             expect(() => {
                 engine.registerScheduledTrigger('rule-1', trigger, callback);
@@ -279,7 +279,7 @@ describe('TriggerEngine', () => {
                 cronExpression: '0 0 * * *',
             };
 
-            engine.registerScheduledTrigger('rule-1', trigger, jest.fn());
+            engine.registerScheduledTrigger('rule-1', trigger, vi.fn());
 
             const nextRun = engine.getNextRunTime('rule-1');
             expect(nextRun).toBeInstanceOf(Date);
@@ -292,7 +292,7 @@ describe('TriggerEngine', () => {
                 cronExpression: '0 0 * * *',
             };
 
-            engine.registerScheduledTrigger('rule-1', trigger, jest.fn());
+            engine.registerScheduledTrigger('rule-1', trigger, vi.fn());
             engine.unregisterScheduledTrigger('rule-1');
 
             expect(mockLogger.info).toHaveBeenCalledWith(
@@ -310,7 +310,7 @@ describe('TriggerEngine', () => {
             };
 
             expect(() => {
-                engine.registerScheduledTrigger('rule-1', trigger, jest.fn());
+                engine.registerScheduledTrigger('rule-1', trigger, vi.fn());
             }).toThrow();
         });
     });
@@ -356,8 +356,8 @@ describe('TriggerEngine', () => {
                 cronExpression: '0 0 * * *',
             };
 
-            engine.registerScheduledTrigger('rule-1', trigger, jest.fn());
-            engine.registerScheduledTrigger('rule-2', trigger, jest.fn());
+            engine.registerScheduledTrigger('rule-1', trigger, vi.fn());
+            engine.registerScheduledTrigger('rule-2', trigger, vi.fn());
 
             engine.shutdown();
 

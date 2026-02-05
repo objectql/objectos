@@ -6,49 +6,50 @@ import {
     PermissionsPlugin,
     getPermissionsAPI,
 } from '../src';
+import { vi } from 'vitest';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock context for testing
 const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {
     const hooks: Map<string, Function[]> = new Map();
     const kernel = {
-        getService: jest.fn(),
+        getService: vi.fn(),
         services: new Map(),
     };
     
     const context: PluginContext = {
         logger: {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
         },
-        registerService: jest.fn((name: string, service: any) => {
+        registerService: vi.fn((name: string, service: any) => {
             kernel.services.set(name, service);
             kernel.getService.mockImplementation((n: string) => {
                 if (kernel.services.has(n)) return kernel.services.get(n);
                 throw new Error(`Service ${n} not found`);
             });
         }),
-        getService: jest.fn((name: string) => {
+        getService: vi.fn((name: string) => {
             if (kernel.services.has(name)) return kernel.services.get(name);
             throw new Error(`Service ${name} not found`);
         }),
-        hasService: jest.fn((name: string) => kernel.services.has(name)),
-        getServices: jest.fn(() => kernel.services),
-        hook: jest.fn((name: string, handler: Function) => {
+        hasService: vi.fn((name: string) => kernel.services.has(name)),
+        getServices: vi.fn(() => kernel.services),
+        hook: vi.fn((name: string, handler: Function) => {
             if (!hooks.has(name)) {
                 hooks.set(name, []);
             }
             hooks.get(name)!.push(handler);
         }),
-        trigger: jest.fn(async (name: string, ...args: any[]) => {
+        trigger: vi.fn(async (name: string, ...args: any[]) => {
             const handlers = hooks.get(name) || [];
             for (const handler of handlers) {
                 await handler(...args);
             }
         }),
-        getKernel: jest.fn(() => kernel),
+        getKernel: vi.fn(() => kernel),
     } as any;
     
     return { context, kernel, hooks };
@@ -112,10 +113,10 @@ describe('Permissions Plugin', () => {
         it('should register event listeners during init', async () => {
             await plugin.init(mockContext);
 
-            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.find', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.beforeCreate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.beforeUpdate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.beforeDelete', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.beforeFind', expect.any(Function));
         });
     });
 
@@ -149,7 +150,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should allow data.create with proper permissions', async () => {
-            const createHook = hooks.get('data.create')![0];
+            const createHook = hooks.get('data.beforeCreate')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -161,7 +162,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should deny data.create without proper permissions', async () => {
-            const createHook = hooks.get('data.create')![0];
+            const createHook = hooks.get('data.beforeCreate')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -173,7 +174,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should allow data.update with proper permissions', async () => {
-            const updateHook = hooks.get('data.update')![0];
+            const updateHook = hooks.get('data.beforeUpdate')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -185,7 +186,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should deny data.update without proper permissions', async () => {
-            const updateHook = hooks.get('data.update')![0];
+            const updateHook = hooks.get('data.beforeUpdate')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -197,7 +198,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should allow data.delete with proper permissions', async () => {
-            const deleteHook = hooks.get('data.delete')![0];
+            const deleteHook = hooks.get('data.beforeDelete')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -209,7 +210,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should deny data.delete without proper permissions', async () => {
-            const deleteHook = hooks.get('data.delete')![0];
+            const deleteHook = hooks.get('data.beforeDelete')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -221,7 +222,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should skip permission check when no user context', async () => {
-            const createHook = hooks.get('data.create')![0];
+            const createHook = hooks.get('data.beforeCreate')![0];
 
             const data = {
                 objectName: 'contacts',
@@ -254,7 +255,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should apply record-level filters for data.find', async () => {
-            const findHook = hooks.get('data.find')![0];
+            const findHook = hooks.get('data.beforeFind')![0];
 
             const data: any = {
                 objectName: 'contacts',
@@ -269,7 +270,7 @@ describe('Permissions Plugin', () => {
         });
 
         it('should skip RLS when no user context', async () => {
-            const findHook = hooks.get('data.find')![0];
+            const findHook = hooks.get('data.beforeFind')![0];
 
             const data = {
                 objectName: 'contacts',

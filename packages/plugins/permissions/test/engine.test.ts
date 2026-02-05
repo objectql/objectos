@@ -412,8 +412,14 @@ describe('PermissionEngine', () => {
 
             const filters = await engine.getRecordFilters(context, 'contacts');
 
-            expect(filters.owner).toBe('user123');
-            expect(filters.department).toBe('sales');
+            // Permissions are additive (OR), so we expect an $or condition
+            // containing both filters.
+            expect(filters).toEqual({
+                $or: [
+                    { owner: 'user123' },
+                    { department: 'sales' }
+                ]
+            });
         });
     });
 

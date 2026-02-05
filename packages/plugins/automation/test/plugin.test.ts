@@ -15,43 +15,43 @@ import type { AutomationRule, FormulaField } from '../src/types';
 const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {
     const hooks: Map<string, Function[]> = new Map();
     const kernel = {
-        getService: jest.fn(),
+        getService: vi.fn(),
         services: new Map(),
     };
     
     const context: PluginContext = {
         logger: {
-            info: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            debug: jest.fn(),
+            info: vi.fn(),
+            warn: vi.fn((...args) => console.error('MOCK WARN:', ...args)),
+            error: vi.fn((...args) => console.error('MOCK ERROR:', ...args)),
+            debug: vi.fn(),
         },
-        registerService: jest.fn((name: string, service: any) => {
+        registerService: vi.fn((name: string, service: any) => {
             kernel.services.set(name, service);
             kernel.getService.mockImplementation((n: string) => {
                 if (kernel.services.has(n)) return kernel.services.get(n);
                 throw new Error(`Service ${n} not found`);
             });
         }),
-        getService: jest.fn((name: string) => {
+        getService: vi.fn((name: string) => {
             if (kernel.services.has(name)) return kernel.services.get(name);
             throw new Error(`Service ${name} not found`);
         }),
-        hasService: jest.fn((name: string) => kernel.services.has(name)),
-        getServices: jest.fn(() => kernel.services),
-        hook: jest.fn((name: string, handler: Function) => {
+        hasService: vi.fn((name: string) => kernel.services.has(name)),
+        getServices: vi.fn(() => kernel.services),
+        hook: vi.fn((name: string, handler: Function) => {
             if (!hooks.has(name)) {
                 hooks.set(name, []);
             }
             hooks.get(name)!.push(handler);
         }),
-        trigger: jest.fn(async (name: string, ...args: any[]) => {
+        trigger: vi.fn(async (name: string, ...args: any[]) => {
             const handlers = hooks.get(name) || [];
             for (const handler of handlers) {
                 await handler(...args);
             }
         }),
-        getKernel: jest.fn(() => kernel),
+        getKernel: vi.fn(() => kernel),
     } as any;
     
     return { context, kernel, hooks };
@@ -129,9 +129,9 @@ describe('Automation Plugin', () => {
         it('should register event hooks during init', async () => {
             await plugin.init(mockContext);
 
-            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterCreate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterUpdate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterDelete', expect.any(Function));
         });
     });
 
@@ -141,9 +141,9 @@ describe('Automation Plugin', () => {
         });
 
         it('should set up event listeners', () => {
-            expect(mockContext.hook).toHaveBeenCalledWith('data.create', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.update', expect.any(Function));
-            expect(mockContext.hook).toHaveBeenCalledWith('data.delete', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterCreate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterUpdate', expect.any(Function));
+            expect(mockContext.hook).toHaveBeenCalledWith('data.afterDelete', expect.any(Function));
         });
 
         it('should emit trigger fired event', async () => {
@@ -164,9 +164,9 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            await mockContext.trigger('data.create', {
-                objectName: 'Contact',
-                record: { id: '123', name: 'John Doe' },
+            await mockContext.trigger('data.afterCreate', {
+                object: 'Contact',
+                doc: { id: '123', name: 'John Doe' },
             });
 
             expect(mockContext.trigger).toHaveBeenCalledWith(
@@ -183,6 +183,7 @@ describe('Automation Plugin', () => {
     describe('Rule Execution', () => {
         beforeEach(async () => {
             await plugin.init(mockContext);
+            await plugin.start(mockContext);
         });
 
         it('should register and retrieve a rule', async () => {
@@ -248,7 +249,7 @@ describe('Automation Plugin', () => {
         it('should execute rule actions on trigger', async () => {
             const api = getAutomationAPI(mockKernel);
 
-            const mockUpdateHandler = jest.fn().mockResolvedValue(undefined);
+            const mockUpdateHandler = vi.fn().mockResolvedValue(undefined);
             api!.getActionExecutor().setUpdateFieldHandler(mockUpdateHandler);
 
             const rule: AutomationRule = {
@@ -273,10 +274,14 @@ describe('Automation Plugin', () => {
             await api!.registerRule(rule);
 
             // Simulate data.create event
-            await mockContext.trigger('data.create', {
-                objectName: 'Contact',
-                record: { id: '123', name: 'John Doe' },
+            await mockContext.trigger('data.afterCreate', {
+                object: 'Contact',
+                doc: { id: '123', name: 'John Doe' },
+                record: { id: '123', name: 'John Doe' } // Keep record for compatibility if needed
             });
+
+            // Wait for async queue processing
+            await new Promise(resolve => setTimeout(resolve, 300));
 
             expect(mockUpdateHandler).toHaveBeenCalledWith(
                 'Contact',
@@ -359,7 +364,7 @@ describe('Automation Plugin', () => {
         it('should return null for API before init', () => {
             // Create a fresh kernel without the service
             const freshKernel = {
-                getService: jest.fn(() => { throw new Error('Service not found'); }),
+                getService: vi.fn(() => { throw new Error('Service not found'); }),
                 services: new Map(),
             };
             const api = getAutomationAPI(freshKernel);

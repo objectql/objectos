@@ -41,13 +41,13 @@ describe('NotificationService', () => {
                 name: 'pending',
             },
             logger: {
-                info: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
-                debug: jest.fn(),
+                info: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
             },
-            getData: jest.fn((key?: string) => key ? mockContext.instance.data[key] : mockContext.instance.data),
-            setData: jest.fn(),
+            getData: vi.fn((key?: string) => key ? mockContext.instance.data[key] : mockContext.instance.data),
+            setData: vi.fn(),
         } as any;
     });
 
@@ -173,10 +173,10 @@ describe('EmailNotificationHandler', () => {
                 data: { userName: 'John Doe', title: 'Test Workflow' },
             } as any,
             logger: {
-                info: jest.fn(),
-                debug: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
+                info: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
             },
         } as any;
     });
@@ -258,10 +258,10 @@ describe('SlackNotificationHandler', () => {
                 data: { title: 'Test Workflow' },
             } as any,
             logger: {
-                info: jest.fn(),
-                debug: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
+                info: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
             },
         } as any;
     });
@@ -334,10 +334,10 @@ describe('WebhookNotificationHandler', () => {
                 data: { title: 'Test Workflow' },
             } as any,
             logger: {
-                info: jest.fn(),
-                debug: jest.fn(),
-                warn: jest.fn(),
-                error: jest.fn(),
+                info: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
             },
         } as any;
     });
