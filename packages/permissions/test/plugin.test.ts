@@ -76,9 +76,9 @@ describe('Permissions Plugin', () => {
 
     describe('Plugin Metadata', () => {
         it('should have correct plugin metadata', () => {
-            expect(plugin.name).toBe('@objectos/plugin-permissions');
+            expect(plugin.name).toBe('@objectos/permissions');
             expect(plugin.version).toBe('0.1.0');
-            expect(plugin.dependencies).toEqual(['@objectos/plugin-audit-log']);
+            expect(plugin.dependencies).toEqual(['@objectos/audit']);
         });
     });
 
