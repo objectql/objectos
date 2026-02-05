@@ -18,8 +18,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Configure Git Merge Driver for pnpm-lock.yaml
         run: |
