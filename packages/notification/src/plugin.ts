@@ -99,7 +99,7 @@ export class NotificationPlugin implements Plugin {
   /**
    * Plugin lifecycle: Initialize
    */
-  async init(context: PluginContext): Promise<void> {
+  init = async (context: PluginContext): Promise<void> => {
     this.context = context;
     
     // Register notification service

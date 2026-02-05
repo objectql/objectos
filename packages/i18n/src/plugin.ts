@@ -47,7 +47,7 @@ export class I18nPlugin implements Plugin {
     private interpolationDelimiters: { start: string; end: string };
     private yamlEnabled: boolean;
 
-    constructor(config: I18nConfig) {
+    constructor(config: I18nConfig = { defaultLocale: 'en' }) {
         this.defaultLocale = config.defaultLocale;
         this.currentLocale = config.defaultLocale;
         this.fallbackLocale = config.fallbackLocale;
@@ -68,7 +68,7 @@ export class I18nPlugin implements Plugin {
     /**
      * Initialize plugin
      */
-    async init(context: PluginContext): Promise<void> {
+    init = async (context: PluginContext): Promise<void> => {
         this.context = context;
 
         // Register i18n service

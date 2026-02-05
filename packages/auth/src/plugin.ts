@@ -46,7 +46,7 @@ export class BetterAuthPlugin implements Plugin {
     /**
      * Initialize plugin - Initialize Better-Auth and register routes
      */
-    async init(context: PluginContext): Promise<void> {
+    init = async (context: PluginContext): Promise<void> => {
         this.context = context;
 
         context.logger.info('[Better-Auth Plugin] Initializing...');

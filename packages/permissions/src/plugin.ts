@@ -59,7 +59,7 @@ export class PermissionsPlugin implements Plugin {
     /**
      * Initialize plugin - Load permission sets, register services, subscribe to events
      */
-    async init(context: PluginContext): Promise<void> {
+    init = async (context: PluginContext): Promise<void> => {
         this.context = context;
 
         // Load permission sets from YAML files

@@ -4,7 +4,8 @@
  * Cron-based job scheduling implementation
  */
 
-import { parseExpression } from 'cron-parser';
+import CronParser from 'cron-parser';
+const { parseExpression } = CronParser;
 import type {
     Job,
     JobConfig,

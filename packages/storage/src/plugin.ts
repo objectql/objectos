@@ -89,7 +89,7 @@ export class StoragePlugin implements Plugin {
     /**
      * Initialize plugin
      */
-    async init(context: PluginContext): Promise<void> {
+    init = async (context: PluginContext): Promise<void> => {
         this.context = context;
 
         // Register storage service

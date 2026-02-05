@@ -75,7 +75,7 @@ export class JobsPlugin implements Plugin {
     /**
      * Initialize plugin - Register services and subscribe to events
      */
-    async init(context: PluginContext): Promise<void> {
+    init = async (context: PluginContext): Promise<void> => {
         this.context = context;
 
         // Update loggers
