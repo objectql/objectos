@@ -87,7 +87,7 @@ describe('Jobs Plugin', () => {
 
     describe('Plugin Metadata', () => {
         it('should have correct plugin metadata', () => {
-            expect(plugin.name).toBe('com.objectos.jobs');
+            expect(plugin.name).toBe('@objectos/jobs');
             expect(plugin.version).toBe('0.1.0');
             expect(plugin.dependencies).toEqual([]);
         });

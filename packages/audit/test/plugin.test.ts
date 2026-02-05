@@ -82,7 +82,7 @@ describe('Audit Log Plugin', () => {
 
     describe('Plugin Metadata', () => {
         it('should have correct plugin metadata', () => {
-            expect(plugin.name).toBe('com.objectos.audit-log');
+            expect(plugin.name).toBe('@objectos/audit');
             expect(plugin.version).toBe('0.1.0');
             expect(plugin.dependencies).toEqual([]);
         });
@@ -140,7 +140,7 @@ describe('Audit Log Plugin', () => {
             });
             
             expect(customPlugin).toBeDefined();
-            expect(customPlugin.name).toBe('com.objectos.audit-log');
+            expect(customPlugin.name).toBe('@objectos/audit');
         });
     });
 

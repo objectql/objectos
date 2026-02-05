@@ -62,7 +62,7 @@ describe('Storage Plugin', () => {
 
     describe('Plugin Metadata', () => {
         it('should have correct plugin metadata', () => {
-            expect(plugin.name).toBe('com.objectos.storage');
+            expect(plugin.name).toBe('@objectos/storage');
             expect(plugin.version).toBe('0.1.0');
             expect(plugin.dependencies).toEqual([]);
         });

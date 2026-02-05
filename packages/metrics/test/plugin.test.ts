@@ -86,7 +86,7 @@ describe('MetricsPlugin', () => {
         it('should have correct plugin metadata', () => {
             const plugin = new MetricsPlugin();
 
-            expect(plugin.name).toBe('com.objectos.metrics');
+            expect(plugin.name).toBe('@objectos/metrics');
             expect(plugin.version).toBe('0.1.0');
             expect(plugin.dependencies).toEqual([]);
         });

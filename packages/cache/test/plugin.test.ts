@@ -65,7 +65,7 @@ describe('Cache Plugin', () => {
 
     describe('Plugin Metadata', () => {
         it('should have correct plugin metadata', () => {
-            expect(plugin.name).toBe('com.objectos.cache');
+            expect(plugin.name).toBe('@objectos/cache');
             expect(plugin.version).toBe('0.1.0');
             expect(plugin.dependencies).toEqual([]);
         });

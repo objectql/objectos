@@ -13,7 +13,7 @@ describe('Better-Auth Plugin', () => {
     it('should create plugin instance with default config', () => {
         const plugin = new BetterAuthPlugin();
         expect(plugin).toBeDefined();
-        expect(plugin.name).toBe('com.objectos.auth.better-auth');
+        expect(plugin.name).toBe('@objectos/auth');
         expect(plugin.version).toBe('0.1.0');
         expect(plugin.dependencies).toEqual([]);
     });
@@ -24,7 +24,7 @@ describe('Better-Auth Plugin', () => {
             trustedOrigins: ['https://example.com']
         });
         expect(customPlugin).toBeDefined();
-        expect(customPlugin.name).toBe('com.objectos.auth.better-auth');
+        expect(customPlugin.name).toBe('@objectos/auth');
     });
 
     it('should have all lifecycle methods', () => {
@@ -42,7 +42,7 @@ describe('Better-Auth Plugin', () => {
 
     it('should have correct plugin metadata', () => {
         const plugin = new BetterAuthPlugin();
-        expect(plugin.name).toBe('com.objectos.auth.better-auth');
+        expect(plugin.name).toBe('@objectos/auth');
         expect(plugin.version).toBe('0.1.0');
         expect(Array.isArray(plugin.dependencies)).toBe(true);
     });

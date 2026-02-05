@@ -25,7 +25,7 @@ describe('BrowserRuntimePlugin', () => {
 
   describe('Plugin Metadata', () => {
     it('should have correct plugin name', () => {
-      expect(plugin.name).toBe('com.objectos.browser-runtime');
+      expect(plugin.name).toBe('@objectos/browser');
     });
 
     it('should have correct version', () => {

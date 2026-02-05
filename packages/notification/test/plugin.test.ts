@@ -33,7 +33,7 @@ describe('NotificationPlugin', () => {
   describe('Plugin Lifecycle', () => {
     it('should create plugin instance', () => {
       plugin = new NotificationPlugin();
-      expect(plugin.name).toBe('com.objectos.notification');
+      expect(plugin.name).toBe('@objectos/notification');
       expect(plugin.version).toBe('0.1.0');
     });
 
