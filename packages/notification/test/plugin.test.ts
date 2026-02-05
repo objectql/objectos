@@ -6,6 +6,18 @@ import { NotificationPlugin } from '../src/plugin.js';
 import { NotificationChannel } from '../src/types.js';
 import type { PluginContext } from '@objectstack/runtime';
 
+// Mock axios
+jest.mock('axios', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockResolvedValue({ 
+      status: 200, 
+      statusText: 'OK', 
+      data: { success: true } 
+    })
+  };
+});
+
 // Mock PluginContext
 const createMockContext = (): PluginContext => {
   const services = new Map();
