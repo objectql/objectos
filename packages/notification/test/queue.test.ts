@@ -277,7 +277,12 @@ describe('NotificationQueue', () => {
         body: 'SMS'
       });
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Wait for processing
+      let attempts = 0;
+      while ((emailChannel.callCount < 1 || smsChannel.callCount < 1) && attempts < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
 
       expect(emailChannel.callCount).toBe(1);
       expect(smsChannel.callCount).toBe(1);
@@ -292,7 +297,12 @@ describe('NotificationQueue', () => {
         });
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for processing
+      let attempts = 0;
+      while (mockChannel.callCount < 5 && attempts < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
 
       expect(mockChannel.callCount).toBe(5);
       expect(queue.size()).toBe(0);

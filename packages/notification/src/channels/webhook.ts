@@ -27,12 +27,22 @@ export class WebhookChannel implements NotificationChannelInterface {
       retryDelay: config.retryDelay ?? 1000,
       headers: config.headers ?? {}
     };
+    
+    this.axios = null;
+  }
 
-    // Lazy load axios (optional dependency)
+  /**
+   * Load axios dynamically
+   */
+  private async loadAxios(): Promise<any> {
+    if (this.axios) return this.axios;
     try {
-      this.axios = require('axios');
+      // Dynamic import
+      const module = await import('axios');
+      this.axios = module.default;
+      return this.axios;
     } catch (error) {
-      this.axios = null;
+      return null;
     }
   }
 
@@ -41,7 +51,8 @@ export class WebhookChannel implements NotificationChannelInterface {
    */
   async send(request: NotificationRequest): Promise<NotificationResult> {
     try {
-      if (!this.axios) {
+      const axios = await this.loadAxios();
+      if (!axios) {
         throw new Error('axios is not installed. Install with: npm install axios');
       }
 
@@ -90,7 +101,8 @@ export class WebhookChannel implements NotificationChannelInterface {
    */
   async sendWebhook(options: WebhookOptions): Promise<NotificationResult> {
     try {
-      if (!this.axios) {
+      const axios = await this.loadAxios();
+      if (!axios) {
         throw new Error('axios is not installed. Install with: npm install axios');
       }
 
@@ -158,6 +170,9 @@ export class WebhookChannel implements NotificationChannelInterface {
         headers,
         timeout: this.config.timeout
       };
+
+      // Ensure axios is avail
+      if (!this.axios) await this.loadAxios();
 
       const response = await this.axios(config);
       return response;

@@ -25,19 +25,27 @@ export class EmailChannel implements NotificationChannelInterface {
   constructor(config: EmailConfig, templateEngine: TemplateEngine) {
     this.config = config;
     this.templateEngine = templateEngine;
-    
-    // Lazy load nodemailer (optional dependency)
+    this.transporter = null;
+  }
+
+  /**
+   * Load nodemailer dynamically
+   */
+  private async loadTransporter(): Promise<any> {
+    if (this.transporter) return this.transporter;
     try {
-      const nodemailer = require('nodemailer');
+      const module = await import('nodemailer');
+      const nodemailer = module.default || module;
+      
       this.transporter = nodemailer.createTransport({
-        host: config.host,
-        port: config.port,
-        secure: config.secure ?? false,
-        auth: config.auth
+        host: this.config.host,
+        port: this.config.port,
+        secure: this.config.secure ?? false,
+        auth: this.config.auth
       });
+      return this.transporter;
     } catch (error) {
-      // nodemailer not installed
-      this.transporter = null;
+      return null;
     }
   }
 
@@ -46,7 +54,8 @@ export class EmailChannel implements NotificationChannelInterface {
    */
   async send(request: NotificationRequest): Promise<NotificationResult> {
     try {
-      if (!this.transporter) {
+      const transporter = await this.loadTransporter();
+      if (!transporter) {
         throw new Error('nodemailer is not installed. Install with: npm install nodemailer');
       }
 
