@@ -12,8 +12,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.0.4",
-    "@objectstack/spec": "1.0.4",
+    "@objectstack/runtime": "^1.0.6",
+    "@objectstack/spec": "1.0.6",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
