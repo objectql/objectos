@@ -4,7 +4,7 @@
  * Tests for ActionExecutor
  */
 
-import { ActionExecutor } from '../src/actions';
+import { ActionExecutor } from '../src/actions.js';
 import type {
     UpdateFieldActionConfig,
     CreateRecordActionConfig,
@@ -13,7 +13,7 @@ import type {
     ExecuteScriptActionConfig,
     AutomationContext,
     AutomationRule,
-} from '../src/types';
+} from '../src/types.js';
 
 describe('ActionExecutor', () => {
     let executor: ActionExecutor;

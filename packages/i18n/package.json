@@ -1,6 +1,7 @@
 {
   "name": "@objectos/i18n",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Internationalization and localization plugin for ObjectOS with translation management and interpolation",
   "main": "dist/index.js",

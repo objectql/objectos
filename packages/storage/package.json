@@ -1,6 +1,7 @@
 {
   "name": "@objectos/storage",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Plugin-isolated KV storage for ObjectOS with multiple backend support",
   "main": "dist/index.js",

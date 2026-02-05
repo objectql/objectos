@@ -10,7 +10,7 @@ import type {
     DataCleanupJobConfig,
     ReportJobConfig,
     BackupJobConfig,
-} from './types';
+} from './types.js';
 
 /**
  * Data Cleanup Job

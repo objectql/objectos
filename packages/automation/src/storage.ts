@@ -10,7 +10,7 @@ import type {
     FormulaField,
     AutomationRuleStatus,
     TriggerType,
-} from './types';
+} from './types.js';
 
 /**
  * In-memory automation storage

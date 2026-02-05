@@ -5,7 +5,7 @@
  * Provides ACID guarantees and good performance for local development and small-scale production.
  */
 
-import type { StorageBackend, SqliteStorageOptions, StorageEntry } from './types';
+import type { StorageBackend, SqliteStorageOptions, StorageEntry } from './types.js';
 
 export class SqliteStorageBackend implements StorageBackend {
     private db: any;

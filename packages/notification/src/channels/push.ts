@@ -11,8 +11,8 @@ import type {
   NotificationResult,
   NotificationChannelInterface,
   PushOptions
-} from '../types';
-import { NotificationChannel } from '../types';
+} from '../types.js';
+import { NotificationChannel } from '../types.js';
 
 /**
  * Push notification channel implementation

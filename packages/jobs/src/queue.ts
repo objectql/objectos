@@ -15,8 +15,8 @@ import type {
     JobPriority,
     JobQueryOptions,
     JobQueueStats,
-} from './types';
-import { InMemoryJobStorage } from './storage';
+} from './types.js';
+import { InMemoryJobStorage } from './storage.js';
 
 export class JobQueue {
     private handlers: Map<string, JobHandler> = new Map();

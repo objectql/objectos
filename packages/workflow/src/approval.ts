@@ -10,7 +10,7 @@ import type {
     DelegationRequest,
     EscalationRequest,
     ApprovalChain,
-} from './types';
+} from './types.js';
 
 /**
  * Approval service for managing approval workflows
@@ -161,9 +161,9 @@ export class ApprovalService {
         const tasks = await this.storage.getInstanceTasks(instanceId);
         
         // Check if all required tasks are completed
-        const requiredTasks = tasks.filter(t => t.data?.required !== false);
+        const requiredTasks = tasks.filter((t: WorkflowTask) => t.data?.required !== false);
         
-        return requiredTasks.every(t => t.status === 'completed');
+        return requiredTasks.every((t: WorkflowTask) => t.status === 'completed');
     }
 
     /**
@@ -171,7 +171,7 @@ export class ApprovalService {
      */
     async hasRejectedApproval(instanceId: string): Promise<boolean> {
         const tasks = await this.storage.getInstanceTasks(instanceId);
-        return tasks.some(t => t.status === 'rejected');
+        return tasks.some((t: WorkflowTask) => t.status === 'rejected');
     }
 
     /**
@@ -181,7 +181,7 @@ export class ApprovalService {
         const tasks = await this.storage.getInstanceTasks(instanceId);
         
         // Sort by completion date
-        return tasks.sort((a, b) => {
+        return tasks.sort((a: WorkflowTask, b: WorkflowTask) => {
             if (!a.completedAt) return 1;
             if (!b.completedAt) return -1;
             return a.completedAt.getTime() - b.completedAt.getTime();

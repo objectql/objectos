@@ -2,8 +2,8 @@
  * Tests for Cache Plugin
  */
 
-import { CachePlugin, ScopedCache, getCacheAPI } from '../src';
-import { LruCacheBackend } from '../src/lru-backend';
+import { CachePlugin, ScopedCache, getCacheAPI } from '../src/index.js';
+import { LruCacheBackend } from '../src/lru-backend.js';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock context for testing

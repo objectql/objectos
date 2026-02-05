@@ -9,8 +9,8 @@ import type {
     Job,
     JobConfig,
     JobStorage,
-} from './types';
-import { JobQueue } from './queue';
+} from './types.js';
+import { JobQueue } from './queue.js';
 
 export class JobScheduler {
     private storage: JobStorage;

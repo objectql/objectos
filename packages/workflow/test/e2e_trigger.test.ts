@@ -1,5 +1,5 @@
-import { WorkflowPlugin } from '../src/plugin';
-import { WorkflowDefinition } from '../src/types';
+import { WorkflowPlugin } from '../src/plugin.js';
+import { WorkflowDefinition } from '../src/types.js';
 
 describe('E2E: Event to Workflow Execution', () => {
     let workflowPlugin: WorkflowPlugin;

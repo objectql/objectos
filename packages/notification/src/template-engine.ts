@@ -4,7 +4,7 @@
  * Handles template compilation and rendering using Handlebars
  */
 
-import type { TemplateEngine as ITemplateEngine, TemplateData } from './types';
+import type { TemplateEngine as ITemplateEngine, TemplateData } from './types.js';
 
 /**
  * Handlebars-based template engine with caching support

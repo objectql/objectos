@@ -1,6 +1,7 @@
 {
   "name": "@objectos/browser",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Browser runtime plugin for ObjectOS - enables running ObjectOS backend entirely in the browser",
   "main": "dist/index.js",

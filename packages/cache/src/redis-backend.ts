@@ -5,7 +5,7 @@
  * Optimized for cache patterns with TTL support.
  */
 
-import type { CacheBackend, RedisCacheOptions, CacheStats } from './types';
+import type { CacheBackend, RedisCacheOptions, CacheStats } from './types.js';
 
 export class RedisCacheBackend implements CacheBackend {
     private client?: any; // Redis client (ioredis)
@@ -31,7 +31,7 @@ export class RedisCacheBackend implements CacheBackend {
 
         try {
             // Dynamic import of ioredis
-            const Redis = (await import('ioredis')).default;
+            const Redis: any = (await import('ioredis')).default;
             
             this.client = new Redis({
                 host: this.options.host || 'localhost',

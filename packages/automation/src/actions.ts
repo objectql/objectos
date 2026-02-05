@@ -13,7 +13,7 @@ import type {
     ExecuteScriptActionConfig,
     AutomationContext,
     EmailConfig,
-} from './types';
+} from './types.js';
 
 /**
  * Action executor for running automation actions

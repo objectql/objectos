@@ -1,6 +1,7 @@
 {
   "name": "@objectos/jobs",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Job queue and scheduling plugin for ObjectOS - background processing, cron jobs, and job monitoring",
   "main": "dist/index.js",

@@ -1,6 +1,7 @@
 {
   "name": "@objectos/realtime",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Realtime WebSocket plugin for ObjectOS",
   "main": "dist/index.js",

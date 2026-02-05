@@ -11,7 +11,7 @@ import type {
     JobQueryOptions,
     JobQueueStats,
     JobStatus,
-} from './types';
+} from './types.js';
 
 export class InMemoryJobStorage implements JobStorage {
     private jobs: Map<string, Job> = new Map();
@@ -71,9 +71,9 @@ export class InMemoryJobStorage implements JobStorage {
                         bVal = b.createdAt.getTime();
                         break;
                     case 'priority':
-                        const priorityOrder = { critical: 4, high: 3, normal: 2, low: 1 };
-                        aVal = priorityOrder[a.priority];
-                        bVal = priorityOrder[b.priority];
+                        const priorityOrder: Record<string, number> = { critical: 4, high: 3, normal: 2, low: 1 };
+                        aVal = priorityOrder[a.priority as string] || 0;
+                        bVal = priorityOrder[b.priority as string] || 0;
                         break;
                     case 'nextRun':
                         aVal = a.nextRun?.getTime() || 0;
@@ -149,8 +149,8 @@ export class InMemoryJobStorage implements JobStorage {
 
         // Sort by priority (critical > high > normal > low) then by createdAt
         pendingJobs.sort((a, b) => {
-            const priorityOrder = { critical: 4, high: 3, normal: 2, low: 1 };
-            const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+            const priorityOrder: Record<string, number> = { critical: 4, high: 3, normal: 2, low: 1 };
+            const priorityDiff = (priorityOrder[b.priority as string] || 0) - (priorityOrder[a.priority as string] || 0);
             
             if (priorityDiff !== 0) {
                 return priorityDiff;

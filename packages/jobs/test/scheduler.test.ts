@@ -4,10 +4,10 @@
  * Tests for JobScheduler
  */
 
-import { JobScheduler } from '../src/scheduler';
-import { JobQueue } from '../src/queue';
-import { InMemoryJobStorage } from '../src/storage';
-import type { JobContext } from '../src/types';
+import { JobScheduler } from '../src/scheduler.js';
+import { JobQueue } from '../src/queue.js';
+import { InMemoryJobStorage } from '../src/storage.js';
+import type { JobContext } from '../src/types.js';
 
 describe('JobScheduler', () => {
     let scheduler: JobScheduler;

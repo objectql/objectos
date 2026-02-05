@@ -1,6 +1,7 @@
 {
   "name": "@objectos/workflow",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Workflow and state machine plugin for ObjectOS - FSM engine, workflow types, and workflow API",
   "main": "dist/index.js",

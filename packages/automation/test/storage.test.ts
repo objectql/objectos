@@ -4,8 +4,8 @@
  * Tests for InMemoryAutomationStorage
  */
 
-import { InMemoryAutomationStorage } from '../src/storage';
-import type { AutomationRule, FormulaField } from '../src/types';
+import { InMemoryAutomationStorage } from '../src/storage.js';
+import type { AutomationRule, FormulaField } from '../src/types.js';
 
 describe('InMemoryAutomationStorage', () => {
     let storage: InMemoryAutomationStorage;

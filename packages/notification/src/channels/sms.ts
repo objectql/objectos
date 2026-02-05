@@ -11,9 +11,9 @@ import type {
   NotificationResult,
   NotificationChannelInterface,
   SmsOptions
-} from '../types';
-import { NotificationChannel } from '../types';
-import { TemplateEngine } from '../template-engine';
+} from '../types.js';
+import { NotificationChannel } from '../types.js';
+import { TemplateEngine } from '../template-engine.js';
 
 /**
  * SMS channel implementation

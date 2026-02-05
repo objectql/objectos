@@ -10,9 +10,9 @@ import type {
     WorkflowTask,
     WorkflowStorage,
     WorkflowQueryOptions,
-} from './types';
-import { WorkflowEngine } from './engine';
-import { ApprovalService } from './approval';
+} from './types.js';
+import { WorkflowEngine } from './engine.js';
+import { ApprovalService } from './approval.js';
 
 /**
  * Workflow API class

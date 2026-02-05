@@ -4,8 +4,8 @@
  * Tests for InMemoryWorkflowStorage
  */
 
-import { InMemoryWorkflowStorage } from '../src/storage';
-import type { WorkflowDefinition, WorkflowInstance, WorkflowTask } from '../src/types';
+import { InMemoryWorkflowStorage } from '../src/storage.js';
+import type { WorkflowDefinition, WorkflowInstance, WorkflowTask } from '../src/types.js';
 
 describe('InMemoryWorkflowStorage', () => {
     let storage: InMemoryWorkflowStorage;

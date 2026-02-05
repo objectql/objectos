@@ -4,15 +4,15 @@
  * Formats metrics in Prometheus text format
  */
 
-import { MetricType } from './types';
+import { MetricType } from './types.js';
 import type {
     Labels,
     Metric,
     CounterMetric,
     GaugeMetric,
     HistogramMetric,
-} from './types';
-import { HistogramCollector } from './collectors';
+} from './types.js';
+import { HistogramCollector } from './collectors.js';
 
 /**
  * Format labels for Prometheus output
@@ -71,7 +71,7 @@ function formatMetric(metric: Metric): string {
             );
             
             // Restore observations
-            m.observations.forEach(obs => {
+            m.observations.forEach((obs: any) => {
                 collector.observe(obs.value);
             });
             

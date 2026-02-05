@@ -4,7 +4,7 @@
  * Implementations of different metric collector types
  */
 
-import { MetricType } from './types';
+import { MetricType } from './types.js';
 import type {
     Labels,
     CounterMetric,
@@ -13,7 +13,7 @@ import type {
     HistogramObservation,
     Percentiles,
     MetricCollector,
-} from './types';
+} from './types.js';
 
 /**
  * Counter Collector - monotonically increasing value

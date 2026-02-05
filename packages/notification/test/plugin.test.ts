@@ -2,8 +2,8 @@
  * Notification Plugin Tests
  */
 
-import { NotificationPlugin } from '../src/plugin';
-import { NotificationChannel } from '../src/types';
+import { NotificationPlugin } from '../src/plugin.js';
+import { NotificationChannel } from '../src/types.js';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock PluginContext

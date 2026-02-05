@@ -6,8 +6,8 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { parseWorkflowYAML } from './parser';
-import type { WorkflowDefinition } from './types';
+import { parseWorkflowYAML } from './parser.js';
+import type { WorkflowDefinition } from './types.js';
 
 /**
  * Load workflows from a directory recursively

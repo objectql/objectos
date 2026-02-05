@@ -5,7 +5,7 @@
  * Implementations can use in-memory, database, or file-based storage.
  */
 
-import type { PermissionSet } from './types';
+import type { PermissionSet } from './types.js';
 
 /**
  * Permission Storage Interface

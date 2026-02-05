@@ -14,10 +14,10 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { StorageBackend, StorageConfig } from './types';
-import { MemoryStorageBackend } from './memory-backend';
-import { SqliteStorageBackend } from './sqlite-backend';
-import { RedisStorageBackend } from './redis-backend';
+import type { StorageBackend, StorageConfig } from './types.js';
+import { MemoryStorageBackend } from './memory-backend.js';
+import { SqliteStorageBackend } from './sqlite-backend.js';
+import { RedisStorageBackend } from './redis-backend.js';
 
 /**
  * Scoped Storage for a single plugin

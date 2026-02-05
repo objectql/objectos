@@ -2,8 +2,8 @@
  * Tests for Permission Storage
  */
 
-import { InMemoryPermissionStorage } from '../src/storage';
-import type { PermissionSet } from '../src/types';
+import { InMemoryPermissionStorage } from '../src/storage.js';
+import type { PermissionSet } from '../src/types.js';
 
 describe('InMemoryPermissionStorage', () => {
     let storage: InMemoryPermissionStorage;

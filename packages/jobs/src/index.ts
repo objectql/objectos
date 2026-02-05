@@ -64,26 +64,26 @@
 export {
     JobsPlugin,
     getJobsAPI,
-} from './plugin';
+} from './plugin.js';
 
 export {
     InMemoryJobStorage,
-} from './storage';
+} from './storage.js';
 
 export {
     JobQueue,
-} from './queue';
+} from './queue.js';
 
 export {
     JobScheduler,
-} from './scheduler';
+} from './scheduler.js';
 
 export {
     createDataCleanupJob,
     createReportJob,
     createBackupJob,
     builtInJobs,
-} from './built-in-jobs';
+} from './built-in-jobs.js';
 
 export type {
     Job,
@@ -100,4 +100,4 @@ export type {
     DataCleanupJobConfig,
     ReportJobConfig,
     BackupJobConfig,
-} from './types';
+} from './types.js';

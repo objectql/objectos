@@ -9,7 +9,7 @@ import type {
     NotificationConfig,
     NotificationHandler,
     WorkflowContext,
-} from './types';
+} from './types.js';
 
 /**
  * Base notification service

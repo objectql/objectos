@@ -12,7 +12,7 @@ import type {
     YAMLWorkflowDefinition,
     YAMLStateConfig,
     YAMLTransitionConfig,
-} from './types';
+} from './types.js';
 
 /**
  * Parse a workflow definition from YAML string
@@ -34,7 +34,7 @@ export function parseWorkflowYAML(yamlContent: string, id?: string): WorkflowDef
 
     // Find the initial state
     const initialStateEntry = Object.entries(parsed.states).find(
-        ([_, state]) => state.initial === true
+        ([_, state]) => (state as any).initial === true
     );
 
     if (!initialStateEntry) {
@@ -53,10 +53,11 @@ export function parseWorkflowYAML(yamlContent: string, id?: string): WorkflowDef
     for (const [stateName, state] of Object.entries(states)) {
         if (state.transitions) {
             for (const [transitionName, transition] of Object.entries(state.transitions)) {
-                if (!states[transition.target]) {
+                const target = (transition as any).target;
+                if (!states[target]) {
                     throw new Error(
                         `Invalid transition "${transitionName}" in state "${stateName}": ` +
-                        `target state "${transition.target}" does not exist`
+                        `target state "${target}" does not exist`
                     );
                 }
             }
@@ -168,19 +169,19 @@ export function validateWorkflowDefinition(definition: WorkflowDefinition): stri
     }
 
     // Check for at least one final state
-    const hasFinalState = Object.values(definition.states).some(s => s.final === true);
+    const hasFinalState = Object.values(definition.states).some(s => (s as any).final === true);
     if (!hasFinalState) {
         errors.push('Workflow must have at least one final state');
     }
 
     // Validate each state
     for (const [stateName, state] of Object.entries(definition.states)) {
-        if (state.transitions) {
-            for (const [transitionName, transition] of Object.entries(state.transitions)) {
-                if (!definition.states[transition.target]) {
+        if ((state as any).transitions) {
+            for (const [transitionName, transition] of Object.entries((state as any).transitions)) {
+                if (!definition.states[(transition as any).target]) {
                     errors.push(
                         `Invalid transition "${transitionName}" in state "${stateName}": ` +
-                        `target state "${transition.target}" does not exist`
+                        `target state "${(transition as any).target}" does not exist`
                     );
                 }
             }

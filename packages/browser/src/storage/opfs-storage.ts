@@ -5,7 +5,7 @@
  * Origin Private File System API for storing user files and attachments.
  */
 
-import type { OPFSStorage, FileMetadata, StorageUsage } from '../types';
+import type { OPFSStorage, FileMetadata, StorageUsage } from '../types/index.js';
 
 /**
  * OPFS Storage Configuration

@@ -2,8 +2,8 @@
  * Tests for Storage Plugin
  */
 
-import { StoragePlugin, ScopedStorage, getStorageAPI } from '../src';
-import { MemoryStorageBackend } from '../src/memory-backend';
+import { StoragePlugin, ScopedStorage, getStorageAPI } from '../src/index.js';
+import { MemoryStorageBackend } from '../src/memory-backend.js';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock context for testing

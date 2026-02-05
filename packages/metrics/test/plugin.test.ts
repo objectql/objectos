@@ -4,10 +4,10 @@
  * Comprehensive test suite for the metrics plugin
  */
 
-import { MetricsPlugin, getMetricsAPI } from '../src/plugin';
-import { MetricType } from '../src/types';
-import { CounterCollector, GaugeCollector, HistogramCollector } from '../src/collectors';
-import { exportPrometheus, parsePrometheusLine } from '../src/prometheus';
+import { MetricsPlugin, getMetricsAPI } from '../src/plugin.js';
+import { MetricType } from '../src/types.js';
+import { CounterCollector, GaugeCollector, HistogramCollector } from '../src/collectors.js';
+import { exportPrometheus, parsePrometheusLine } from '../src/prometheus.js';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock PluginContext

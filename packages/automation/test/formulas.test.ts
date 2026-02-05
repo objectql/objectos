@@ -4,13 +4,13 @@
  * Tests for FormulaEngine
  */
 
-import { FormulaEngine } from '../src/formulas';
+import { FormulaEngine } from '../src/formulas.js';
 import type {
     FormulaField,
     CalculatedFormulaConfig,
     RollupFormulaConfig,
     AutoNumberFormulaConfig,
-} from '../src/types';
+} from '../src/types.js';
 
 describe('FormulaEngine', () => {
     let engine: FormulaEngine;

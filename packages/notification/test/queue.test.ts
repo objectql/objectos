@@ -2,13 +2,13 @@
  * Notification Queue Tests
  */
 
-import { NotificationQueue } from '../src/queue';
-import { NotificationChannel, NotificationStatus } from '../src/types';
+import { NotificationQueue } from '../src/queue.js';
+import { NotificationChannel, NotificationStatus } from '../src/types.js';
 import type { 
   NotificationRequest, 
   NotificationResult,
   NotificationChannelInterface 
-} from '../src/types';
+} from '../src/types.js';
 
 // Mock channel implementation
 class MockChannel implements NotificationChannelInterface {

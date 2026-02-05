@@ -2,9 +2,9 @@
  * Tests for Permission Engine
  */
 
-import { PermissionEngine } from '../src/engine';
-import { InMemoryPermissionStorage } from '../src/storage';
-import type { PermissionSet, PermissionContext } from '../src/types';
+import { PermissionEngine } from '../src/engine.js';
+import { InMemoryPermissionStorage } from '../src/storage.js';
+import type { PermissionSet, PermissionContext } from '../src/types.js';
 
 describe('PermissionEngine', () => {
     let storage: InMemoryPermissionStorage;

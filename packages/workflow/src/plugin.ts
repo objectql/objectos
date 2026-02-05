@@ -13,13 +13,13 @@ import type { Plugin, PluginContext } from '@objectstack/runtime';
 import type {
     WorkflowPluginConfig,
     WorkflowDefinition,
-} from './types';
-import { InMemoryWorkflowStorage } from './storage';
-import { ObjectQLWorkflowStorage } from './objectql-storage';
-import { WorkflowEngine } from './engine';
-import { WorkflowAPI } from './api';
-import { loadWorkflows } from './loader';
-import { StandardActions, StandardGuards } from './stdlib';
+} from './types.js';
+import { InMemoryWorkflowStorage } from './storage.js';
+import { ObjectQLWorkflowStorage } from './objectql-storage.js';
+import { WorkflowEngine } from './engine.js';
+import { WorkflowAPI } from './api.js';
+import { loadWorkflows } from './loader.js';
+import { StandardActions, StandardGuards } from './stdlib.js';
 import * as path from 'path';
 
 /**

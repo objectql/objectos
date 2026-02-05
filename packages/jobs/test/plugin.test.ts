@@ -7,9 +7,9 @@
 import {
     JobsPlugin,
     getJobsAPI,
-} from '../src/plugin';
+} from '../src/plugin.js';
 import type { PluginContext } from '@objectstack/runtime';
-import type { JobContext } from '../src/types';
+import type { JobContext } from '../src/types.js';
 
 // Mock context for testing
 const createMockContext = (): { context: PluginContext; kernel: any; hooks: Map<string, Function[]> } => {

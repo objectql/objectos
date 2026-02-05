@@ -5,7 +5,7 @@
  * Supports TTL expiration.
  */
 
-import type { StorageBackend, MemoryStorageOptions, StorageEntry } from './types';
+import type { StorageBackend, MemoryStorageOptions, StorageEntry } from './types.js';
 
 export class MemoryStorageBackend implements StorageBackend {
     private store: Map<string, StorageEntry> = new Map();

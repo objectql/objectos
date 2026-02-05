@@ -8,24 +8,24 @@
 export {
     WorkflowPlugin,
     getWorkflowAPI,
-} from './plugin';
+} from './plugin.js';
 
 // Core classes
-export { WorkflowEngine } from './engine';
-export { WorkflowAPI } from './api';
-export { InMemoryWorkflowStorage } from './storage';
+export { WorkflowEngine } from './engine.js';
+export { WorkflowAPI } from './api.js';
+export { InMemoryWorkflowStorage } from './storage.js';
 
 // Approval and notifications
-export { ApprovalService } from './approval';
+export { ApprovalService } from './approval.js';
 export {
     NotificationService,
     EmailNotificationHandler,
     SlackNotificationHandler,
     WebhookNotificationHandler,
-} from './notifications';
+} from './notifications.js';
 
 // Parser
-export { parseWorkflowYAML, validateWorkflowDefinition } from './parser';
+export { parseWorkflowYAML, validateWorkflowDefinition } from './parser.js';
 
 // Types
 export type {
@@ -53,4 +53,4 @@ export type {
     ApprovalLevel,
     DelegationRequest,
     EscalationRequest,
-} from './types';
+} from './types.js';

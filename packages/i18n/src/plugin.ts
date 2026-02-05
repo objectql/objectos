@@ -25,8 +25,8 @@ import type {
     TranslationResult,
     NumberFormatOptions,
     DateFormatOptions
-} from './types';
-import { interpolate, pluralize, processDirectives, formatNumber, formatDate } from './interpolation';
+} from './types.js';
+import { interpolate, pluralize, processDirectives, formatNumber, formatDate } from './interpolation.js';
 
 /**
  * I18n Plugin

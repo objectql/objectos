@@ -4,8 +4,8 @@
  * Tests for YAML workflow parser
  */
 
-import { parseWorkflowYAML, validateWorkflowDefinition } from '../src/parser';
-import type { WorkflowDefinition } from '../src/types';
+import { parseWorkflowYAML, validateWorkflowDefinition } from '../src/parser.js';
+import type { WorkflowDefinition } from '../src/types.js';
 
 describe('parseWorkflowYAML', () => {
     describe('basic parsing', () => {

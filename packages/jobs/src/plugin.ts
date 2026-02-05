@@ -17,15 +17,15 @@ import type {
     Job,
     JobQueryOptions,
     JobQueueStats,
-} from './types';
-import { InMemoryJobStorage } from './storage';
-import { JobQueue } from './queue';
-import { JobScheduler } from './scheduler';
+} from './types.js';
+import { InMemoryJobStorage } from './storage.js';
+import { JobQueue } from './queue.js';
+import { JobScheduler } from './scheduler.js';
 import {
     createDataCleanupJob,
     createReportJob,
     createBackupJob,
-} from './built-in-jobs';
+} from './built-in-jobs.js';
 
 /**
  * Jobs Plugin

@@ -2,7 +2,7 @@
  * I18n Plugin Tests
  */
 
-import { I18nPlugin } from '../src/plugin';
+import { I18nPlugin } from '../src/plugin.js';
 import type { PluginContext } from '@objectstack/runtime';
 import * as fs from 'fs/promises';
 import * as path from 'path';

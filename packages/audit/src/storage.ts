@@ -11,7 +11,7 @@ import type {
     AuditQueryOptions,
     FieldChange,
     AuditTrailEntry,
-} from './types';
+} from './types.js';
 
 /**
  * In-memory implementation of AuditStorage

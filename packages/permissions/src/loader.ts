@@ -7,7 +7,7 @@
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';
-import type { PermissionSet } from './types';
+import type { PermissionSet } from './types.js';
 
 /**
  * Load permission sets from a directory

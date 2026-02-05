@@ -14,9 +14,9 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { CacheBackend, CacheConfig, CacheStats } from './types';
-import { LruCacheBackend } from './lru-backend';
-import { RedisCacheBackend } from './redis-backend';
+import type { CacheBackend, CacheConfig, CacheStats } from './types.js';
+import { LruCacheBackend } from './lru-backend.js';
+import { RedisCacheBackend } from './redis-backend.js';
 
 /**
  * Scoped Cache for a single plugin

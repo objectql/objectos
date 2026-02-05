@@ -2,7 +2,7 @@
  * Tests for LRU Cache Backend
  */
 
-import { LruCacheBackend } from '../src/lru-backend';
+import { LruCacheBackend } from '../src/lru-backend.js';
 
 describe('LRU Cache Backend', () => {
     let cache: LruCacheBackend;

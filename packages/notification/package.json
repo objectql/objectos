@@ -1,6 +1,7 @@
 {
   "name": "@objectos/notification",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Multi-channel notification system for ObjectOS with Email, SMS, Push, and Webhook support",
   "main": "dist/index.js",

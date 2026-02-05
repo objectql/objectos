@@ -54,11 +54,11 @@
 export {
     AuditLogPlugin,
     getAuditLogAPI,
-} from './plugin';
+} from './plugin.js';
 
 export {
     InMemoryAuditStorage,
-} from './storage';
+} from './storage.js';
 
 export type {
     AuditLogConfig,
@@ -71,4 +71,4 @@ export type {
     AuditEvent,
     AuditEventType,
     ExtendedAuditEventType,
-} from './types';
+} from './types.js';

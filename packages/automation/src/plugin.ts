@@ -15,13 +15,12 @@ import type {
     AutomationRule,
     FormulaField,
     AutomationExecutionResult,
-} from './types';
-import { InMemoryAutomationStorage } from './storage';
-import { ToggleQueue } from './queue'; // Import Queue
-import { TriggerEngine } from './triggers';
-import { ActionExecutor } from './actions';
-import { FormulaEngine } from './formulas';
-import { InMemoryQueue, Queue, Job } from './queue';
+} from './types.js';
+import { InMemoryAutomationStorage } from './storage.js';
+import { TriggerEngine } from './triggers.js';
+import { ActionExecutor } from './actions.js';
+import { FormulaEngine } from './formulas.js';
+import { InMemoryQueue, Queue, Job } from './queue.js';
 
 /**
  * Automation Plugin
@@ -339,11 +338,11 @@ export class AutomationPlugin implements Plugin {
     }
     
     private async logExecution(logData: any) {
-        if (this.context?.broker) {
+        if ((this.context as any)?.broker) {
             try {
                 logData.triggered_by = logData.triggered_by || 'auto';
-                this.context.broker.call('data.create', { object: 'automation_log', doc: logData })
-                    .catch(e => {}); // fire and forget
+                (this.context as any).broker.call('data.create', { object: 'automation_log', doc: logData })
+                    .catch((e: any) => {}); // fire and forget
             } catch (ignore) {}
         }
     }

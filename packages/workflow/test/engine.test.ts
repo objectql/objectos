@@ -4,14 +4,14 @@
  * Tests for WorkflowEngine - FSM execution
  */
 
-import { WorkflowEngine } from '../src/engine';
+import { WorkflowEngine } from '../src/engine.js';
 import type {
     WorkflowDefinition,
     WorkflowInstance,
     StateConfig,
     TransitionConfig,
     WorkflowContext,
-} from '../src/types';
+} from '../src/types.js';
 
 describe('WorkflowEngine', () => {
     let engine: WorkflowEngine;

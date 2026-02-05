@@ -5,7 +5,7 @@
 import {
     PermissionsPlugin,
     getPermissionsAPI,
-} from '../src';
+} from '../src/index.js';
 import { vi } from 'vitest';
 import type { PluginContext } from '@objectstack/runtime';
 

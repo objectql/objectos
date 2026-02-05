@@ -2,7 +2,7 @@
  * Template Engine Tests
  */
 
-import { TemplateEngine } from '../src/template-engine';
+import { TemplateEngine } from '../src/template-engine.js';
 
 describe('TemplateEngine', () => {
   let engine: TemplateEngine;

@@ -9,7 +9,7 @@ import type {
     PluralizationOptions,
     NumberFormatOptions,
     DateFormatOptions 
-} from './types';
+} from './types.js';
 
 /**
  * Default interpolation delimiters

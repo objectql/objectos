@@ -8,7 +8,7 @@ import {
     formatNumber, 
     formatDate,
     processDirectives 
-} from '../src/interpolation';
+} from '../src/interpolation.js';
 
 describe('Interpolation', () => {
     describe('interpolate', () => {

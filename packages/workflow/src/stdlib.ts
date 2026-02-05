@@ -4,7 +4,7 @@
  * Built-in functions that can be used in workflow definitions
  */
 
-import type { WorkflowContext } from './types';
+import type { WorkflowContext } from './types.js';
 
 /**
  * Standard Actions

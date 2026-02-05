@@ -2,8 +2,8 @@
  * Browser Runtime Plugin Tests
  */
 
-import { BrowserRuntimePlugin } from '../src/plugin';
-import { SQLiteWASMDriver } from '../src/database/sqlite-wasm-driver';
+import { BrowserRuntimePlugin } from '../src/plugin.js';
+import { SQLiteWASMDriver } from '../src/database/sqlite-wasm-driver.js';
 
 describe('BrowserRuntimePlugin', () => {
   let plugin: BrowserRuntimePlugin;

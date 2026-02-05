@@ -5,7 +5,7 @@
  * to browser-based handlers, enabling a fully offline-capable application.
  */
 
-import type { APIRequestHandler } from '../types';
+import type { APIRequestHandler } from '../types/index.js';
 
 /**
  * Service Worker Manager
@@ -146,7 +146,7 @@ export class ServiceWorkerManager {
       // Send response back to service worker
       const responseBody = await response.text();
       const responseHeaders: [string, string][] = [];
-      response.headers.forEach((value, key) => {
+      response.headers.forEach((value: string, key: string) => {
         responseHeaders.push([key, value]);
       });
       

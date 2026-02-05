@@ -1,6 +1,7 @@
 {
   "name": "@objectos/automation",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Automation plugin for ObjectOS - triggers, actions, and formula fields",
   "main": "dist/index.js",

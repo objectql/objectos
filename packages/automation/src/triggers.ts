@@ -12,7 +12,7 @@ import type {
     WebhookTriggerConfig,
     TriggerCondition,
     AutomationRule,
-} from './types';
+} from './types.js';
 
 /**
  * Trigger engine for evaluating trigger conditions

@@ -2,7 +2,7 @@
  * Tests for Memory Storage Backend
  */
 
-import { MemoryStorageBackend } from '../src/memory-backend';
+import { MemoryStorageBackend } from '../src/memory-backend.js';
 
 describe('MemoryStorageBackend', () => {
     let backend: MemoryStorageBackend;

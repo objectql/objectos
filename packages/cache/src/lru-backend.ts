@@ -5,7 +5,7 @@
  * Evicts the least recently accessed items when the cache reaches maxSize.
  */
 
-import type { CacheBackend, LruCacheOptions, CacheEntry, CacheStats } from './types';
+import type { CacheBackend, LruCacheOptions, CacheEntry, CacheStats } from './types.js';
 
 /**
  * Internal node for doubly linked list (for LRU tracking)

@@ -2,9 +2,9 @@
  * Approval Service Tests
  */
 
-import { ApprovalService } from '../src/approval';
-import { InMemoryWorkflowStorage } from '../src/storage';
-import type { WorkflowTask, ApprovalChain } from '../src/types';
+import { ApprovalService } from '../src/approval.js';
+import { InMemoryWorkflowStorage } from '../src/storage.js';
+import type { WorkflowTask, ApprovalChain } from '../src/types.js';
 
 describe('ApprovalService', () => {
     let storage: InMemoryWorkflowStorage;

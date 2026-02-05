@@ -1,6 +1,7 @@
 {
   "name": "@objectos/audit",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Audit logging plugin for ObjectOS - tracks events, changes, and field history",
   "main": "dist/index.js",

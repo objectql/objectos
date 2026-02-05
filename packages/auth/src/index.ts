@@ -28,6 +28,6 @@ export {
     getBetterAuthAPI,
     type BetterAuthPluginOptions,
     type BetterAuthConfig,
-} from './plugin';
+} from './plugin.js';
 
-export { resetAuthInstance } from './auth-client';
+export { resetAuthInstance } from './auth-client.js';

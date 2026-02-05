@@ -8,8 +8,8 @@ import {
     loadPermissionSetFromYAML,
     loadPermissionSetFromFile,
     loadPermissionSetsFromDirectory,
-} from '../src/loader';
-import type { PermissionSet } from '../src/types';
+} from '../src/loader.js';
+import type { PermissionSet } from '../src/types.js';
 
 describe('Permission Loader', () => {
     const testDir = path.join(__dirname, 'test-permissions');

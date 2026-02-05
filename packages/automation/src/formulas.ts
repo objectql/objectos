@@ -12,7 +12,7 @@ import type {
     AutoNumberFormulaConfig,
     RollupOperation,
     TriggerCondition,
-} from './types';
+} from './types.js';
 
 /**
  * Formula engine for calculating field values

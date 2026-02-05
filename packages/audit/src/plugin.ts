@@ -21,8 +21,8 @@ import type {
     AuditTrailEntry,
     FieldChange,
     AuditQueryOptions,
-} from './types';
-import { InMemoryAuditStorage } from './storage';
+} from './types.js';
+import { InMemoryAuditStorage } from './storage.js';
 
 /**
  * Audit Log Plugin

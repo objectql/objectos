@@ -5,7 +5,7 @@
  * Supports clustering, persistence, and high availability.
  */
 
-import type { StorageBackend, RedisStorageOptions } from './types';
+import type { StorageBackend, RedisStorageOptions } from './types.js';
 
 export class RedisStorageBackend implements StorageBackend {
     private client: any;

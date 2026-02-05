@@ -6,7 +6,7 @@
  */
 
 import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
-import type { BrowserDatabaseDriver, SQLiteResult } from '../types';
+import type { BrowserDatabaseDriver, SQLiteResult } from '../types/index.js';
 
 /**
  * Configuration for SQLite WASM driver

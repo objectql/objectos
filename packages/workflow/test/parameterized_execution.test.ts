@@ -1,6 +1,6 @@
-import { WorkflowEngine } from '../src/engine';
-import { StandardActions, StandardGuards } from '../src/stdlib';
-import { WorkflowDefinition } from '../src/types';
+import { WorkflowEngine } from '../src/engine.js';
+import { StandardActions, StandardGuards } from '../src/stdlib.js';
+import { WorkflowDefinition } from '../src/types.js';
 
 describe('Workflow Parameterized Actions & Guards', () => {
     let engine: WorkflowEngine;

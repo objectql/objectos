@@ -1,4 +1,4 @@
-import { ObjectSchema, Field } from '@objectstack/spec';
+import { ObjectSchema, Field } from '../schema-helpers.js';
 
 export const MemberObject = ObjectSchema.create({
   name: 'member',

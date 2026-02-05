@@ -21,10 +21,10 @@ import type {
     PermissionPluginConfig,
     PermissionContext,
     PermissionAction,
-} from './types';
-import { InMemoryPermissionStorage, PermissionStorage } from './storage';
-import { PermissionEngine } from './engine';
-import { loadPermissionSetsFromDirectory } from './loader';
+} from './types.js';
+import { InMemoryPermissionStorage, PermissionStorage } from './storage.js';
+import { PermissionEngine } from './engine.js';
+import { loadPermissionSetsFromDirectory } from './loader.js';
 
 /**
  * Permissions Plugin

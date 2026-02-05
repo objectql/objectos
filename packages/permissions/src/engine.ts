@@ -12,8 +12,8 @@ import type {
     PermissionSet,
     ObjectPermissions,
     FieldPermission,
-} from './types';
-import type { PermissionStorage } from './storage';
+} from './types.js';
+import type { PermissionStorage } from './storage.js';
 
 /**
  * Permission Engine Configuration

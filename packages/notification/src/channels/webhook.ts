@@ -10,8 +10,8 @@ import type {
   NotificationResult,
   NotificationChannelInterface,
   WebhookOptions
-} from '../types';
-import { NotificationChannel } from '../types';
+} from '../types.js';
+import { NotificationChannel } from '../types.js';
 
 /**
  * Webhook channel implementation using HTTP POST

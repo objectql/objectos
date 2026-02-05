@@ -4,9 +4,9 @@
  * Tests for JobQueue
  */
 
-import { JobQueue } from '../src/queue';
-import { InMemoryJobStorage } from '../src/storage';
-import type { JobDefinition, JobContext } from '../src/types';
+import { JobQueue } from '../src/queue.js';
+import { InMemoryJobStorage } from '../src/storage.js';
+import type { JobDefinition, JobContext } from '../src/types.js';
 
 describe('JobQueue', () => {
     let queue: JobQueue;

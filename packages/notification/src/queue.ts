@@ -9,8 +9,8 @@ import type {
   NotificationResult, 
   QueuedNotification,
   NotificationChannelInterface 
-} from './types';
-import { NotificationStatus } from './types';
+} from './types.js';
+import { NotificationStatus } from './types.js';
 
 export interface QueueConfig {
   maxRetries?: number;

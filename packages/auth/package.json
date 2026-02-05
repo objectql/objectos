@@ -1,6 +1,7 @@
 {
   "name": "@objectos/auth",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Better-Auth authentication plugin for ObjectOS",
   "main": "dist/index.js",

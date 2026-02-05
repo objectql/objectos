@@ -9,8 +9,9 @@ import type {
     WorkflowStorage,
     WorkflowDefinition,
     WorkflowInstance,
+    WorkflowTask,
     WorkflowQueryOptions,
-} from './types';
+} from './types.js';
 
 export class ObjectQLWorkflowStorage implements WorkflowStorage {
     private context: PluginContext;
@@ -50,7 +51,7 @@ export class ObjectQLWorkflowStorage implements WorkflowStorage {
      * Save a new workflow instance
      */
     async saveInstance(instance: WorkflowInstance): Promise<void> {
-        await this.context.broker.call('data.create', {
+        await (this.context as any).broker.call('data.create', {
             object: 'workflow_instance',
             doc: this.mapInstanceToDoc(instance)
         });
@@ -61,7 +62,7 @@ export class ObjectQLWorkflowStorage implements WorkflowStorage {
      */
     async getInstance(id: string): Promise<WorkflowInstance | null> {
         try {
-            const result = await this.context.broker.call('data.get', {
+            const result = await (this.context as any).broker.call('data.get', {
                 object: 'workflow_instance',
                 id: id
             });
@@ -100,7 +101,7 @@ export class ObjectQLWorkflowStorage implements WorkflowStorage {
         
         docUpdates.last_updated = new Date();
 
-        await this.context.broker.call('data.update', {
+        await (this.context as any).broker.call('data.update', {
             object: 'workflow_instance',
             id: id,
             doc: docUpdates
@@ -110,14 +111,14 @@ export class ObjectQLWorkflowStorage implements WorkflowStorage {
     /**
      * Query workflow instances
      */
-    async findInstances(options: WorkflowQueryOptions): Promise<WorkflowInstance[]> {
+    async queryInstances(options: WorkflowQueryOptions): Promise<WorkflowInstance[]> {
         const query: any = {};
         
         if (options.workflowId) query.workflow_id = options.workflowId;
         if (options.status) query.status = options.status;
         if (options.startedBy) query.started_by = options.startedBy;
 
-        const results = await this.context.broker.call('data.find', {
+        const results = await (this.context as any).broker.call('data.find', {
             object: 'workflow_instance',
             query: query,
             limit: options.limit || 50,
@@ -126,6 +127,71 @@ export class ObjectQLWorkflowStorage implements WorkflowStorage {
         });
 
         return results.map((doc: any) => this.mapDocToInstance(doc));
+    }
+
+    async saveTask(task: WorkflowTask): Promise<void> {
+        await (this.context as any).broker.call('data.create', {
+            object: 'workflow_task',
+            record: this.mapTaskToDoc(task)
+        });
+    }
+
+    async getTask(id: string): Promise<WorkflowTask | null> {
+        const result = await (this.context as any).broker.call('data.get', {
+            object: 'workflow_task',
+            id: id
+        });
+        return result ? this.mapDocToTask(result) : null;
+    }
+
+    async getInstanceTasks(instanceId: string): Promise<WorkflowTask[]> {
+         const results = await (this.context as any).broker.call('data.find', {
+            object: 'workflow_task',
+            query: {
+                instance_id: instanceId
+            }
+        });
+        return results.map((doc: any) => this.mapDocToTask(doc));
+    }
+
+    async updateTask(id: string, updates: Partial<WorkflowTask>): Promise<void> {
+         const record: any = {};
+         if (updates.status) record.status = updates.status;
+         if (updates.completedAt) record.completed_at = updates.completedAt;
+         if (updates.data) record.data = updates.data;
+         
+         await (this.context as any).broker.call('data.update', {
+            object: 'workflow_task',
+            id: id,
+            record: record
+        });
+    }
+
+    private mapTaskToDoc(task: WorkflowTask): any {
+        return {
+             _id: task.id,
+             id: task.id,
+             instance_id: task.instanceId,
+             name: task.name,
+             assigned_to: task.assignedTo,
+             status: task.status,
+             created_at: task.createdAt,
+             completed_at: task.completedAt,
+             data: task.data
+        };
+    }
+    
+    private mapDocToTask(doc: any): WorkflowTask {
+        return {
+            id: doc.id || doc._id,
+            instanceId: doc.instance_id,
+            name: doc.name,
+            assignedTo: doc.assigned_to,
+            status: doc.status,
+            createdAt: new Date(doc.created_at),
+            completedAt: doc.completed_at ? new Date(doc.completed_at) : undefined,
+            data: doc.data || {}
+        } as WorkflowTask;
     }
 
     // --- Helpers ---

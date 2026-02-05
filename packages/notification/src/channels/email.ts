@@ -10,9 +10,9 @@ import type {
   NotificationResult,
   NotificationChannelInterface,
   EmailOptions
-} from '../types';
-import { NotificationChannel } from '../types';
-import { TemplateEngine } from '../template-engine';
+} from '../types.js';
+import { NotificationChannel } from '../types.js';
+import { TemplateEngine } from '../template-engine.js';
 
 /**
  * Email channel implementation using nodemailer

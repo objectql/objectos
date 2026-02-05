@@ -12,11 +12,11 @@ export type {
     CacheStats,
     LruCacheOptions,
     RedisCacheOptions,
-} from './types';
+} from './types.js';
 
 // Backends
-export { LruCacheBackend } from './lru-backend';
-export { RedisCacheBackend } from './redis-backend';
+export { LruCacheBackend } from './lru-backend.js';
+export { RedisCacheBackend } from './redis-backend.js';
 
 // Plugin
-export { CachePlugin, ScopedCache, getCacheAPI } from './plugin';
+export { CachePlugin, ScopedCache, getCacheAPI } from './plugin.js';

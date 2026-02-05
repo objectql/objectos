@@ -32,34 +32,34 @@ export type {
     PermissionContext,
     PermissionCheckResult,
     PermissionPluginConfig,
-} from './types';
+} from './types.js';
 
 // Export plugin
 export {
     PermissionsPlugin,
     createPermissionsPlugin,
     getPermissionsAPI,
-} from './plugin';
+} from './plugin.js';
 
 // Export engine
 export {
     PermissionEngine,
-} from './engine';
+} from './engine.js';
 export type {
     PermissionEngineConfig,
-} from './engine';
+} from './engine.js';
 
 // Export storage
 export {
     InMemoryPermissionStorage,
-} from './storage';
+} from './storage.js';
 export type {
     PermissionStorage,
-} from './storage';
+} from './storage.js';
 
 // Export loader
 export {
     loadPermissionSetsFromDirectory,
     loadPermissionSetFromFile,
     loadPermissionSetFromYAML,
-} from './loader';
+} from './loader.js';

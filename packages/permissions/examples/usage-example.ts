@@ -5,7 +5,7 @@
  * in an ObjectOS application.
  */
 
-import { PermissionsPlugin, createPermissionsPlugin } from '../src';
+import { PermissionsPlugin, createPermissionsPlugin } from '../src.js';
 
 // Example 1: Create a plugin instance
 console.log('=== Example 1: Creating Permissions Plugin ===');

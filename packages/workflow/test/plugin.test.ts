@@ -7,10 +7,10 @@
 import {
     WorkflowPlugin,
     getWorkflowAPI,
-} from '../src/plugin';
-import { InMemoryWorkflowStorage } from '../src/storage';
+} from '../src/plugin.js';
+import { InMemoryWorkflowStorage } from '../src/storage.js';
 import type { PluginContext } from '@objectstack/runtime';
-import type { WorkflowDefinition } from '../src/types';
+import type { WorkflowDefinition } from '../src/types.js';
 
 describe('Workflow Plugin', () => {
     let plugin: WorkflowPlugin;

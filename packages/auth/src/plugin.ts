@@ -12,9 +12,8 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import { getBetterAuth, resetAuthInstance, BetterAuthConfig } from './auth-client';
-import type { ObjectDefinition } from '@objectql/core';
-import * as Objects from './objects';
+import { getBetterAuth, resetAuthInstance, BetterAuthConfig } from './auth-client.js';
+import * as Objects from './objects/index.js';
 
 /**
  * Plugin Configuration Options
@@ -167,4 +166,4 @@ export function getBetterAuthAPI(kernel: any): BetterAuthPlugin | null {
  * Export helper function to get auth instance
  * This can be used by other plugins or modules
  */
-export { getBetterAuth, BetterAuthConfig } from './auth-client';
+export { getBetterAuth, BetterAuthConfig } from './auth-client.js';

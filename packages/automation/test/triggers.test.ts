@@ -4,12 +4,12 @@
  * Tests for TriggerEngine
  */
 
-import { TriggerEngine } from '../src/triggers';
+import { TriggerEngine } from '../src/triggers.js';
 import type {
     ObjectTriggerConfig,
     ScheduledTriggerConfig,
     WebhookTriggerConfig,
-} from '../src/types';
+} from '../src/types.js';
 
 describe('TriggerEngine', () => {
     let engine: TriggerEngine;

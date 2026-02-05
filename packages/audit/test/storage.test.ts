@@ -2,8 +2,8 @@
  * Tests for InMemoryAuditStorage
  */
 
-import { InMemoryAuditStorage } from '../src/storage';
-import type { AuditLogEntry, AuditTrailEntry } from '../src/types';
+import { InMemoryAuditStorage } from '../src/storage.js';
+import type { AuditLogEntry, AuditTrailEntry } from '../src/types.js';
 
 describe('InMemoryAuditStorage', () => {
     let storage: InMemoryAuditStorage;

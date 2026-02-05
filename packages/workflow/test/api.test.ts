@@ -4,10 +4,10 @@
  * Tests for WorkflowAPI - high-level API operations
  */
 
-import { WorkflowAPI } from '../src/api';
-import { WorkflowEngine } from '../src/engine';
-import { InMemoryWorkflowStorage } from '../src/storage';
-import type { WorkflowDefinition, WorkflowTask } from '../src/types';
+import { WorkflowAPI } from '../src/api.js';
+import { WorkflowEngine } from '../src/engine.js';
+import { InMemoryWorkflowStorage } from '../src/storage.js';
+import type { WorkflowDefinition, WorkflowTask } from '../src/types.js';
 
 describe('WorkflowAPI', () => {
     let api: WorkflowAPI;

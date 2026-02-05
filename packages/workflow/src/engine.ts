@@ -15,7 +15,7 @@ import type {
     TransitionAction,
     GuardReference,
     ActionReference,
-} from './types';
+} from './types.js';
 
 /**
  * Workflow engine for executing state machines

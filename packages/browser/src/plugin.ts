@@ -9,11 +9,11 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { BrowserRuntimeConfig } from './types';
-import { SQLiteWASMDriver } from './database/sqlite-wasm-driver';
-import { OPFSStorageBackend } from './storage/opfs-storage';
-import { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager';
-import { WorkerManager, WORKER_SCRIPT } from './worker/manager';
+import type { BrowserRuntimeConfig } from './types/index.js';
+import { SQLiteWASMDriver } from './database/sqlite-wasm-driver.js';
+import { OPFSStorageBackend } from './storage/opfs-storage.js';
+import { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager.js';
+import { WorkerManager, WORKER_SCRIPT } from './worker/manager.js';
 
 /**
  * Browser Runtime Plugin
@@ -286,7 +286,7 @@ export class BrowserRuntimePlugin implements Plugin {
     }
 
     // GraphQL endpoint handler
-    this.serviceWorker.registerHandler('/api/graphql', async (request) => {
+    this.serviceWorker.registerHandler('/api/graphql', async (request: any) => {
       try {
         const body = await request.json();
         const { query, variables } = body;
@@ -315,7 +315,7 @@ export class BrowserRuntimePlugin implements Plugin {
     });
 
     // REST endpoint handler
-    this.serviceWorker.registerHandler('/api/data/*', async (request) => {
+    this.serviceWorker.registerHandler('/api/data/*', async (request: any) => {
       try {
         const url = new URL(request.url);
         const pathParts = url.pathname.split('/').filter(p => p);

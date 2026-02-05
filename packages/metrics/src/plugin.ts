@@ -12,10 +12,10 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { MetricsConfig, Labels, Metric } from './types';
-import { MetricType } from './types';
-import { CounterCollector, GaugeCollector, HistogramCollector } from './collectors';
-import { exportPrometheus } from './prometheus';
+import type { MetricsConfig, Labels, Metric } from './types.js';
+import { MetricType } from './types.js';
+import { CounterCollector, GaugeCollector, HistogramCollector } from './collectors.js';
+import { exportPrometheus } from './prometheus.js';
 
 /**
  * Metric key for storage (name + labels)

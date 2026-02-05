@@ -4,15 +4,15 @@
  * Export all public types and classes
  */
 
-export { NotificationPlugin } from './plugin';
-export { TemplateEngine } from './template-engine';
-export { NotificationQueue } from './queue';
+export { NotificationPlugin } from './plugin.js';
+export { TemplateEngine } from './template-engine.js';
+export { NotificationQueue } from './queue.js';
 
 // Export channel implementations
-export { EmailChannel } from './channels/email';
-export { SmsChannel } from './channels/sms';
-export { PushChannel } from './channels/push';
-export { WebhookChannel } from './channels/webhook';
+export { EmailChannel } from './channels/email.js';
+export { SmsChannel } from './channels/sms.js';
+export { PushChannel } from './channels/push.js';
+export { WebhookChannel } from './channels/webhook.js';
 
 // Export all types
 export type {
@@ -31,9 +31,9 @@ export type {
   TemplateEngine as ITemplateEngine,
   QueuedNotification,
   NotificationChannelInterface
-} from './types';
+} from './types.js';
 
 export { 
   NotificationChannel,
   NotificationStatus
-} from './types';
+} from './types.js';

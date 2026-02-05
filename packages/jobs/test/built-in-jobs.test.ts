@@ -8,8 +8,8 @@ import {
     createDataCleanupJob,
     createReportJob,
     createBackupJob,
-} from '../src/built-in-jobs';
-import type { JobContext } from '../src/types';
+} from '../src/built-in-jobs.js';
+import type { JobContext } from '../src/types.js';
 
 describe('Built-in Jobs', () => {
     const mockContext: JobContext = {

@@ -1,6 +1,7 @@
 {
   "name": "@objectos/cache",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "High-performance cache abstraction layer for ObjectOS with LRU and Redis support",
   "main": "dist/index.js",

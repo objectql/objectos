@@ -4,8 +4,8 @@
  * Tests for InMemoryJobStorage
  */
 
-import { InMemoryJobStorage } from '../src/storage';
-import type { Job } from '../src/types';
+import { InMemoryJobStorage } from '../src/storage.js';
+import type { Job } from '../src/types.js';
 
 describe('InMemoryJobStorage', () => {
     let storage: InMemoryJobStorage;

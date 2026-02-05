@@ -5,7 +5,7 @@
 import {
     AuditLogPlugin,
     getAuditLogAPI,
-} from '../src';
+} from '../src/index.js';
 import type { PluginContext } from '@objectstack/runtime';
 
 // Mock context for testing
@@ -188,7 +188,7 @@ describe('Audit Log Plugin', () => {
             const trail = await api!.getAuditTrail('orders', '12345');
             expect(trail.length).toBeGreaterThan(0);
             
-            const updateEvent = trail.find(e => e.eventType === 'data.update');
+            const updateEvent = trail.find((e: any) => e.eventType === 'data.update');
             expect(updateEvent).toBeDefined();
             expect(updateEvent!.changes).toBeDefined();
             expect(updateEvent!.changes!.length).toBe(2);
@@ -237,8 +237,8 @@ describe('Audit Log Plugin', () => {
             const updateEvent = trail[0];
             
             expect(updateEvent.changes).toBeDefined();
-            expect(updateEvent.changes!.find(c => c.field === 'email')).toBeDefined();
-            expect(updateEvent.changes!.find(c => c.field === 'password')).toBeUndefined();
+            expect(updateEvent.changes!.find((c: any) => c.field === 'email')).toBeDefined();
+            expect(updateEvent.changes!.find((c: any) => c.field === 'password')).toBeUndefined();
         });
     });
 
@@ -372,8 +372,8 @@ describe('Audit Log Plugin', () => {
             
             const trail = await api!.getAuditTrail('orders', '99999');
             expect(trail.length).toBe(2);
-            expect(trail.some(e => e.eventType === 'data.create')).toBe(true);
-            expect(trail.some(e => e.eventType === 'data.update')).toBe(true);
+            expect(trail.some((e: any) => e.eventType === 'data.create')).toBe(true);
+            expect(trail.some((e: any) => e.eventType === 'data.update')).toBe(true);
         });
     });
 

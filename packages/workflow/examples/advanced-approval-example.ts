@@ -14,7 +14,7 @@ import {
     EmailNotificationHandler,
     SlackNotificationHandler,
     ApprovalService,
-} from '../src';
+} from '../src.js';
 
 async function main() {
     console.log('=== Advanced Approval Workflow Example ===\n');

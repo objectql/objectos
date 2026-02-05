@@ -12,21 +12,21 @@
  * @module @objectos/plugin-browser
  */
 
-export { BrowserRuntimePlugin } from './plugin';
+export { BrowserRuntimePlugin } from './plugin.js';
 
 // Database exports
-export { SQLiteWASMDriver } from './database/sqlite-wasm-driver';
-export type { SQLiteWASMConfig } from './database/sqlite-wasm-driver';
+export { SQLiteWASMDriver } from './database/sqlite-wasm-driver.js';
+export type { SQLiteWASMConfig } from './database/sqlite-wasm-driver.js';
 
 // Storage exports
-export { OPFSStorageBackend } from './storage/opfs-storage';
-export type { OPFSStorageConfig } from './storage/opfs-storage';
+export { OPFSStorageBackend } from './storage/opfs-storage.js';
+export type { OPFSStorageConfig } from './storage/opfs-storage.js';
 
 // Service Worker exports
-export { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager';
+export { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager.js';
 
 // Worker exports
-export { WorkerManager, WORKER_SCRIPT } from './worker/manager';
+export { WorkerManager, WORKER_SCRIPT } from './worker/manager.js';
 
 // Type exports
 export type {
@@ -43,10 +43,10 @@ export type {
   WorkerMessage,
   WorkerMessageType,
   BrowserDatabaseDriver
-} from './types';
+} from './types/index.js';
 
 /**
  * Default export is the plugin class
  */
-import { BrowserRuntimePlugin } from './plugin';
+import { BrowserRuntimePlugin } from './plugin.js';
 export default BrowserRuntimePlugin;

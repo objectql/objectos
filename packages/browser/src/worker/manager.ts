@@ -5,7 +5,7 @@
  * in isolation from the main thread, improving performance and security.
  */
 
-import type { WorkerMessage, WorkerMessageType } from '../types';
+import type { WorkerMessage, WorkerMessageType } from '../types/index.js';
 
 /**
  * Web Worker Manager
@@ -149,7 +149,7 @@ export const WORKER_SCRIPT = `
  */
 
 // Import database driver (will be bundled)
-// import { SQLiteWASMDriver } from './database/sqlite-wasm-driver';
+// import { SQLiteWASMDriver } from './database/sqlite-wasm-driver.js';
 
 let database = null;
 const plugins = new Map();

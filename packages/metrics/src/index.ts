@@ -67,22 +67,22 @@
 export {
     MetricsPlugin,
     getMetricsAPI,
-} from './plugin';
+} from './plugin.js';
 
 export {
     CounterCollector,
     GaugeCollector,
     HistogramCollector,
-} from './collectors';
+} from './collectors.js';
 
 export {
     exportPrometheus,
     parsePrometheusLine,
-} from './prometheus';
+} from './prometheus.js';
 
 export {
     MetricType,
-} from './types';
+} from './types.js';
 
 export type {
     MetricsConfig,
@@ -94,4 +94,4 @@ export type {
     HistogramObservation,
     Percentiles,
     MetricCollector,
-} from './types';
+} from './types.js';

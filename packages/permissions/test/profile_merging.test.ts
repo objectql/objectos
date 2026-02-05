@@ -1,6 +1,6 @@
-import { PermissionEngine } from '../src/engine';
-import { InMemoryPermissionStorage } from '../src/storage';
-import type { PermissionSet } from '../src/types';
+import { PermissionEngine } from '../src/engine.js';
+import { InMemoryPermissionStorage } from '../src/storage.js';
+import type { PermissionSet } from '../src/types.js';
 
 describe('Permission Profile Merging Integration', () => {
     let engine: PermissionEngine;

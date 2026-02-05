@@ -8,13 +8,13 @@
 export {
     AutomationPlugin,
     getAutomationAPI,
-} from './plugin';
+} from './plugin.js';
 
 // Core classes
-export { TriggerEngine } from './triggers';
-export { ActionExecutor } from './actions';
-export { FormulaEngine } from './formulas';
-export { InMemoryAutomationStorage } from './storage';
+export { TriggerEngine } from './triggers.js';
+export { ActionExecutor } from './actions.js';
+export { FormulaEngine } from './formulas.js';
+export { InMemoryAutomationStorage } from './storage.js';
 
 // Types
 export type {
@@ -46,4 +46,4 @@ export type {
     EmailConfig,
     AutomationExecutionResult,
     EmailAttachment,
-} from './types';
+} from './types.js';

@@ -21,14 +21,14 @@ import type {
   PushOptions,
   WebhookOptions,
   TemplateData
-} from './types';
-import { NotificationChannel } from './types';
-import { TemplateEngine } from './template-engine';
-import { NotificationQueue } from './queue';
-import { EmailChannel } from './channels/email';
-import { SmsChannel } from './channels/sms';
-import { PushChannel } from './channels/push';
-import { WebhookChannel } from './channels/webhook';
+} from './types.js';
+import { NotificationChannel } from './types.js';
+import { TemplateEngine } from './template-engine.js';
+import { NotificationQueue } from './queue.js';
+import { EmailChannel } from './channels/email.js';
+import { SmsChannel } from './channels/sms.js';
+import { PushChannel } from './channels/push.js';
+import { WebhookChannel } from './channels/webhook.js';
 
 /**
  * Notification Plugin

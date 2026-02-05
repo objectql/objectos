@@ -11,7 +11,7 @@ import type {
     WorkflowTask,
     WorkflowQueryOptions,
     WorkflowStatus,
-} from './types';
+} from './types.js';
 
 /**
  * In-memory workflow storage

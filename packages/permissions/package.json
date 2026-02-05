@@ -1,6 +1,7 @@
 {
   "name": "@objectos/permissions",
   "version": "0.1.0",
+  "type": "module",
   "license": "AGPL-3.0",
   "description": "Permission and authorization plugin for ObjectOS - RBAC, field-level security, and record-level security",
   "main": "dist/index.js",

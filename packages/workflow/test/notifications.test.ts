@@ -7,8 +7,8 @@ import {
     EmailNotificationHandler,
     SlackNotificationHandler,
     WebhookNotificationHandler,
-} from '../src/notifications';
-import type { WorkflowContext, NotificationConfig } from '../src/types';
+} from '../src/notifications.js';
+import type { WorkflowContext, NotificationConfig } from '../src/types.js';
 
 describe('NotificationService', () => {
     let notificationService: NotificationService;

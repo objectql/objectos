@@ -2,7 +2,7 @@
  * Basic test for Better-Auth Plugin
  */
 
-import { BetterAuthPlugin } from '../src';
+import { BetterAuthPlugin } from '../src/index.js';
 
 describe('Better-Auth Plugin', () => {
     it('should export BetterAuthPlugin class', () => {
