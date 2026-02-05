@@ -18,6 +18,7 @@ import { InMemoryWorkflowStorage } from './storage';
 import { WorkflowEngine } from './engine';
 import { WorkflowAPI } from './api';
 import { loadWorkflows } from './loader';
+import { StandardActions, StandardGuards } from './stdlib';
 import * as path from 'path';
 
 /**
@@ -63,6 +64,9 @@ export class WorkflowPlugin implements Plugin {
         // Register workflow service
         context.registerService('workflow', this);
 
+        // Register Standard Actions and Guards
+        this.registerStandardLibrary();
+
         // Set up event listeners using kernel hooks
         await this.setupEventListeners(context);
 
@@ -98,10 +102,26 @@ export class WorkflowPlugin implements Plugin {
                 // Log but don't crash startup if workflows directory is missing or invalid
                 context.logger.warn(`[Workflow Plugin] Could not load workflows from ${dirPath}: ${(err as Error).message}`);
             }
-        }on-demand
-        // via API calls or event triggers that are already registered in init().
+        }
         
         context.logger.info('[Workflow Plugin] Started successfully');
+    }Register Standard Library of Actions and Guards
+     */
+    private registerStandardLibrary(): void {
+        // Register Actions
+        this.engine.registerAction('log', StandardActions.log('Workflow transition triggered'));
+        this.engine.registerAction('send_email', StandardActions.sendEmail('{{ email }}', 'Workflow Update', 'Your request has been processed'));
+        this.engine.registerAction('webhook', StandardActions.webhook('http://localhost:3000/webhook'));
+        
+        // Register Guards
+        this.engine.registerGuard('always', StandardGuards.always);
+        this.engine.registerGuard('never', StandardGuards.never);
+        
+        // Note: For parameterizable actions/guards in YAML (e.g. log(message)), 
+        // we would need a more complex parsing logic in the engine to instantiate them with args.
+        // For now, we register simple "aliases" or pre-configured instances.
+        
+        // We can expose a way to register dynamic factories later.
     }
 
     /**
@@ -112,6 +132,25 @@ export class WorkflowPlugin implements Plugin {
         context.hook('data.create', async (data: any) => {
             try {
                 await this.emitEvent('workflow.trigger', { type: 'data.create', data });
+            } catch (error) {
+                const errorObj = error instanceof Error ? error : undefined;
+                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', errorObj);
+            }
+        });
+
+        // Listen for data update events to trigger workflows or transitions
+        context.hook('data.update', async (eventData: any) => {
+             // eventData structure might prove: { object: 'permission_set', id: '..', previous: {}, changes: {} }
+             try {
+                // If this is an update to a state field, check for active workflows
+                if (eventData.changes && (eventData.changes.status || eventData.changes.state)) {
+                     // TODO: Lookup active workflow instance for this record and try to transition
+                     // For now, just emit generic event
+                     await this.emitEvent('workflow.trigger', { type: 'data.update', data: eventData });
+                }
+            } catch (error) {
+                const errorObj = error instanceof Error ? error : undefined;
+                this.context?.logger.error('[Workflow Plugin] Error handling data.update
             } catch (error) {
                 const errorObj = error instanceof Error ? error : undefined;
                 this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', errorObj);

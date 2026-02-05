@@ -177,6 +177,8 @@ objectos/
    - [x] 有限状态机 (FSM) 引擎完善
    - [x] 守卫(Guard)与动作(Action)的字符串引用支持
    - [x] YAML工作流定义解析与加载 (Loader)
+   - [x] 标准动作库 (StdLib: log, sendEmail, webhook)
+   - [x] 自动触发器 (Listen to data.create/update)
    - [ ] 状态转换验证
    - [ ] 工作流钩子 (on_enter, on_exit)
    - [ ] 工作流历史记录
