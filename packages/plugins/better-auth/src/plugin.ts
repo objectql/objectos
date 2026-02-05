@@ -13,6 +13,8 @@
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
 import { getBetterAuth, resetAuthInstance, BetterAuthConfig } from './auth-client';
+import type { ObjectDefinition } from '@objectql/core';
+import * as Objects from './objects';
 
 /**
  * Plugin Configuration Options
@@ -28,6 +30,9 @@ export interface BetterAuthPluginOptions extends BetterAuthConfig {
 export class BetterAuthPlugin implements Plugin {
     name = 'com.objectos.auth.better-auth';
     version = '0.1.0';
+    
+    // Register objects
+    objects = Object.values(Objects);
     dependencies: string[] = [];
 
     private config: BetterAuthPluginOptions;

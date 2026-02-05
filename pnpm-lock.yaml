@@ -587,16 +587,6 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)
 
-  packages/presets/base:
-    dependencies:
-      '@objectql/core':
-        specifier: ^4.0.3
-        version: 4.0.4
-    devDependencies:
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
 packages:
 
   '@algolia/abtesting@1.13.0':

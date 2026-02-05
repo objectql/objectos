@@ -6,6 +6,6 @@ export default {
         }
     },
     presets: [
-        '@objectos/preset-base'
+        // Presets removed, using plugin-defined objects now
     ]
 };
