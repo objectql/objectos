@@ -94,8 +94,8 @@ function parseStateConfig(name: string, config: YAMLStateConfig): StateConfig {
         name,
         initial: config.initial,
         final: config.final,
-        onEnter: config.on_enter ? [] : undefined, // Actions will be registered separately
-        onExit: config.on_exit ? [] : undefined,
+        onEnter: config.on_enter,
+        onExit: config.on_exit,
         transitions,
         metadata: config.metadata,
     };
@@ -121,8 +121,8 @@ function parseTransitionConfig(
 
     return {
         target: config.target,
-        guards: config.guards ? [] : undefined, // Guards will be registered separately
-        actions: config.actions ? [] : undefined, // Actions will be registered separately
+        guards: config.guards,
+        actions: config.actions,
         metadata: config.metadata,
     };
 }

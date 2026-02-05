@@ -294,6 +294,8 @@ export interface WorkflowStorage {
 export interface WorkflowPluginConfig {
   /** Whether workflow processing is enabled */
   enabled?: boolean;
+  /** Directory to load workflow definitions from (default: ./workflows) */
+  workflowsDir?: string;
   /** Custom storage implementation */
   storage?: WorkflowStorage;
   /** Default workflow timeout in milliseconds */

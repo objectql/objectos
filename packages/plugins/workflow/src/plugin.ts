@@ -17,6 +17,8 @@ import type {
 import { InMemoryWorkflowStorage } from './storage';
 import { WorkflowEngine } from './engine';
 import { WorkflowAPI } from './api';
+import { loadWorkflows } from './loader';
+import * as path from 'path';
 
 /**
  * Workflow Plugin
@@ -37,6 +39,7 @@ export class WorkflowPlugin implements Plugin {
     constructor(config: WorkflowPluginConfig = {}) {
         this.config = {
             enabled: true,
+            workflowsDir: './workflows',
             defaultTimeout: 3600000, // 1 hour
             maxTransitions: 1000,
             ...config,
@@ -71,9 +74,31 @@ export class WorkflowPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Workflow Plugin] Starting...');
-        
-        // Note: Unlike the Automation Plugin, the Workflow Plugin does not have scheduled
-        // triggers that need to be registered at startup. Workflows are started on-demand
+        Load workflows from directory
+        if (this.config.workflowsDir) {
+            // If path is relative, resolve from cwd. If absolute, use as is.
+            const dirPath = path.isAbsolute(this.config.workflowsDir) 
+                ? this.config.workflowsDir 
+                : path.resolve(process.cwd(), this.config.workflowsDir);
+            
+            context.logger.info(`[Workflow Plugin] Loading workflows from ${dirPath}`);
+            
+            try {
+                const workflows = await loadWorkflows(dirPath);
+                for (const workflow of workflows) {
+                    await this.registerWorkflow(workflow);
+                }
+                
+                if (workflows.length > 0) {
+                    context.logger.info(`[Workflow Plugin] Loaded ${workflows.length} workflows from disk`);
+                } else {
+                    context.logger.info(`[Workflow Plugin] No workflows found in ${dirPath}`);
+                }
+            } catch (err) {
+                // Log but don't crash startup if workflows directory is missing or invalid
+                context.logger.warn(`[Workflow Plugin] Could not load workflows from ${dirPath}: ${(err as Error).message}`);
+            }
+        }on-demand
         // via API calls or event triggers that are already registered in init().
         
         context.logger.info('[Workflow Plugin] Started successfully');

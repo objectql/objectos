@@ -163,19 +163,20 @@ objectos/
    - [x] 基础插件结构 (@objectos/plugin-permissions)
    - [x] 权限合并优化 (Filter Merging with $or)
    - [x] 模板变量递归替换
+   - [x] 集成测试：多角色权限合并
    - [ ] 对象级权限 (CRUD)
    - [ ] 字段级权限 (可见性/可编辑性)
    - [ ] 记录级安全 (Record-Level Security, RLS)
    - [ ] 权限集 (Permission Sets)
    - [ ] 共享规则 (Sharing Rules)
    - [ ] 权限缓存优化
-   - [ ] 单元测试 + 集成测试
+   - [x] 单元测试 + 集成测试
 
 2. **工作流引擎** (2周)
    - [x] 基础插件结构 (@objectos/plugin-workflow)
    - [x] 有限状态机 (FSM) 引擎完善
    - [x] 守卫(Guard)与动作(Action)的字符串引用支持
-   - [ ] YAML工作流定义解析
+   - [x] YAML工作流定义解析与加载 (Loader)
    - [ ] 状态转换验证
    - [ ] 工作流钩子 (on_enter, on_exit)
    - [ ] 工作流历史记录
