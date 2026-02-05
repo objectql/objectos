@@ -62,7 +62,7 @@ export default {
     // Services
     new NotificationPlugin(),
     new I18nPlugin(),
-    createRealtimePlugin(),
+    // createRealtimePlugin(),
   ],
 
   /**

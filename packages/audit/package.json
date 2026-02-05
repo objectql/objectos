@@ -11,8 +11,8 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.0.0",
-    "@objectstack/spec": "1.0.0"
+    "@objectstack/runtime": "^1.0.4",
+    "@objectstack/spec": "1.0.4"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
