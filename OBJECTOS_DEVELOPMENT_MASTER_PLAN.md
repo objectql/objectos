@@ -164,10 +164,10 @@ objectos/
    - [x] 权限合并优化 (Filter Merging with $or)
    - [x] 模板变量递归替换
    - [x] 集成测试：多角色权限合并
-   - [ ] 对象级权限 (CRUD)
-   - [ ] 字段级权限 (可见性/可编辑性)
-   - [ ] 记录级安全 (Record-Level Security, RLS)
-   - [ ] 权限集 (Permission Sets)
+   - [x] 对象级权限 (CRUD)
+   - [x] 字段级权限 (可见性/可编辑性)
+   - [x] 记录级安全 (Record-Level Security, RLS)
+   - [x] 权限集 (Permission Sets)
    - [ ] 共享规则 (Sharing Rules)
    - [x] 权限缓存优化
    - [x] 单元测试 + 集成测试 (Filter Merging, Recursive Template Vars)
@@ -545,13 +545,13 @@ ObjectOS **100% complies** with the @objectstack/spec protocol, including:
 **Task List**:
 
 1. **Permission System** (2 weeks)
-   - [ ] Object-level permissions (CRUD)
-   - [ ] Field-level permissions (visibility/editability)
-   - [ ] Record-level security (RLS)
-   - [ ] Permission sets
+   - [x] Object-level permissions (CRUD)
+   - [x] Field-level permissions (visibility/editability)
+   - [x] Record-level security (RLS)
+   - [x] Permission sets
    - [ ] Sharing rules
-   - [ ] Permission caching optimization
-   - [ ] Unit tests + integration tests
+   - [x] Permission caching optimization
+   - [x] Unit tests + integration tests
 
 2. **Workflow Engine** (2 weeks)
    - [ ] Finite State Machine (FSM) engine
