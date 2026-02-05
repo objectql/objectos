@@ -64,6 +64,8 @@
     "@objectql/driver-sql": "^4.0.3",
     "@objectql/platform-node": "^4.0.3",
     "@objectstack/spec": "1.0.0",
-    "build": "^0.1.4"
+    "build": "^0.1.4",
+    "pino": "^10.3.0",
+    "pino-pretty": "^13.1.3"
   }
 }
