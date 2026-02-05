@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration"
   },
   "dependencies": {
     "@objectstack/runtime": "^1.0.4",
@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
+    "tsup": "^8.5.1",
     "typescript": "^5.3.3"
   }
 }

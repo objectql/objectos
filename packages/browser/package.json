@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "browser": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.0.0",
     "ts-jest": "^29.4.6",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "keywords": [
