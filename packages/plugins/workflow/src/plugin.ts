@@ -105,23 +105,23 @@ export class WorkflowPlugin implements Plugin {
         }
         
         context.logger.info('[Workflow Plugin] Started successfully');
-    }Register Standard Library of Actions and Guards
+    }
+
+    /**
+     * Register Standard Library of Actions and Guards
      */
     private registerStandardLibrary(): void {
         // Register Actions
-        this.engine.registerAction('log', StandardActions.log('Workflow transition triggered'));
-        this.engine.registerAction('send_email', StandardActions.sendEmail('{{ email }}', 'Workflow Update', 'Your request has been processed'));
-        this.engine.registerAction('webhook', StandardActions.webhook('http://localhost:3000/webhook'));
+        this.engine.registerAction('log', StandardActions.log);
+        this.engine.registerAction('send_email', StandardActions.sendEmail);
+        this.engine.registerAction('webhook', StandardActions.webhook);
+        this.engine.registerAction('update_record', StandardActions.updateRecord);
         
         // Register Guards
         this.engine.registerGuard('always', StandardGuards.always);
         this.engine.registerGuard('never', StandardGuards.never);
-        
-        // Note: For parameterizable actions/guards in YAML (e.g. log(message)), 
-        // we would need a more complex parsing logic in the engine to instantiate them with args.
-        // For now, we register simple "aliases" or pre-configured instances.
-        
-        // We can expose a way to register dynamic factories later.
+        this.engine.registerGuard('field_equals', StandardGuards.fieldEquals);
+        this.engine.registerGuard('greater_than', StandardGuards.greaterThan);
     }
 
     /**

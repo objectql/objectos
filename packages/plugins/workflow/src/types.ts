@@ -27,23 +27,39 @@ export type WorkflowType =
  * Transition guard function
  * Returns true if transition is allowed, false otherwise
  */
-export type TransitionGuard = (context: WorkflowContext) => boolean | Promise<boolean>;
+export type TransitionGuard = (context: WorkflowContext, params?: any) => boolean | Promise<boolean>;
 
 /**
  * Transition action function
  * Executed when a transition occurs
  */
-export type TransitionAction = (context: WorkflowContext) => void | Promise<void>;
+export type TransitionAction = (context: WorkflowContext, params?: any) => void | Promise<void>;
 
 /**
- * Transition guard reference (name or function)
+ * Parameterized Action Configuration
  */
-export type GuardReference = string | TransitionGuard;
+export interface ActionConfig {
+    type: string;
+    params?: any;
+}
 
 /**
- * Transition action reference (name or function)
+ * Parameterized Guard Configuration
  */
-export type ActionReference = string | TransitionAction;
+export interface GuardConfig {
+    type: string;
+    params?: any;
+}
+
+/**
+ * Transition guard reference (name, config object, or function)
+ */
+export type GuardReference = string | GuardConfig | TransitionGuard;
+
+/**
+ * Transition action reference (name, config object, or function)
+ */
+export type ActionReference = string | ActionConfig | TransitionAction;
 
 /**
  * State configuration
@@ -331,9 +347,9 @@ export interface YAMLStateConfig {
   /** Is this a final state? */
   final?: boolean;
   /** Actions on enter */
-  on_enter?: string[];
+  on_enter?: (string | ActionConfig)[];
   /** Actions on exit */
-  on_exit?: string[];
+  on_exit?: (string | ActionConfig)[];
   /** Transitions */
   transitions?: Record<string, YAMLTransitionConfig>;
   /** Metadata */
@@ -347,9 +363,9 @@ export interface YAMLTransitionConfig {
   /** Target state (can be string or object) */
   target?: string;
   /** Guards */
-  guards?: string[];
+  guards?: (string | GuardConfig)[];
   /** Actions */
-  actions?: string[];
+  actions?: (string | ActionConfig)[];
   /** Metadata */
   metadata?: Record<string, any>;
 }

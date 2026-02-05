@@ -284,6 +284,7 @@ export class WorkflowEngine {
     ): Promise<boolean> {
         for (const guard of guards) {
             let guardFn: TransitionGuard | undefined;
+            let params: any = undefined;
 
             if (typeof guard === 'string') {
                 guardFn = this.guards.get(guard);
@@ -292,11 +293,19 @@ export class WorkflowEngine {
                     // Fail safe: block transition if guard is missing
                     return false;
                 }
+            } else if (typeof guard === 'object' && guard !== null && 'type' in guard) {
+                // Handle object configuration: { type: 'greaterThan', params: { value: 10 } }
+                guardFn = this.guards.get(guard.type);
+                if (!guardFn) {
+                    this.logger.warn(`Guard type "${guard.type}" not found`);
+                    return false;
+                }
+                params = guard.params;
             } else {
-                guardFn = guard;
+                guardFn = guard as TransitionGuard;
             }
 
-            const result = await guardFn(context);
+            const result = await guardFn(context, params);
             if (!result) {
                 return false;
             }
@@ -313,6 +322,7 @@ export class WorkflowEngine {
     ): Promise<void> {
         for (const action of actions) {
             let actionFn: TransitionAction | undefined;
+            let params: any = undefined;
 
             if (typeof action === 'string') {
                 actionFn = this.actions.get(action);
@@ -320,12 +330,20 @@ export class WorkflowEngine {
                     this.logger.warn(`Action "${action}" not found`);
                     continue; // Skip missing action
                 }
+            } else if (typeof action === 'object' && action !== null && 'type' in action) {
+                // Handle object configuration: { type: 'log', params: { message: 'hi' } }
+                actionFn = this.actions.get(action.type);
+                if (!actionFn) {
+                    this.logger.warn(`Action type "${action.type}" not found`);
+                    continue; 
+                }
+                params = action.params;
             } else {
-                actionFn = action;
+                actionFn = action as TransitionAction;
             }
 
             try {
-                await actionFn(context);
+                await actionFn(context, params);
             } catch (error) {
                 this.logger.error('Error executing action:', error);
                 // Throw error to stop transition? Or just log?

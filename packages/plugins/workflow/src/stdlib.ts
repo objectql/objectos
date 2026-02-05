@@ -13,48 +13,52 @@ export const StandardActions = {
     /**
      * Log a message to the console
      */
-    log: (message: string) => {
-        return async (context: WorkflowContext) => {
-            const msg = typeof message === 'string' 
-                ? message.replace(/\{\{(\w+)\}\}/g, (_, key) => context.getData(key) || '')
-                : message;
-            context.logger.info(`[Workflow Action] ${msg}`);
-        };
+    log: (context: WorkflowContext, params?: any) => {
+        // Handle direct string param (backward compat) or object (new style)
+        let message = '';
+        if (typeof params === 'string') {
+            message = params;
+        } else if (params && params.message) {
+            message = params.message;
+        } else {
+             message = 'Workflow Action Triggered';
+        }
+
+        const msg = message.replace(/\{\{\s*(\w+)\s*\}\}/g, (_: string, key: string) => context.getData(key) || '');
+        context.logger.info(`[Workflow Action] ${msg}`);
     },
 
     /**
      * Send an email (mock implementation)
      */
-    sendEmail: (to: string, subject: string, body: string) => {
-        return async (context: WorkflowContext) => {
-            const resolvedTo = to.replace(/\{\{(\w+)\}\}/g, (_, key) => context.getData(key) || '');
-            context.logger.info(`[Workflow Action] Sending email to ${resolvedTo}: ${subject}`);
-            // In a real implementation, this would call the NotificationService
-        };
+    sendEmail: (context: WorkflowContext, params?: any) => {
+        const to = params?.to || '';
+        const subject = params?.subject || '';
+        // Unused body for now, but would be params.body
+
+        const resolvedTo = to.replace(/\{\{\s*(\w+)\s*\}\}/g, (_: string, key: string) => context.getData(key) || '');
+        context.logger.info(`[Workflow Action] Sending email to ${resolvedTo}: ${subject}`);
     },
 
     /**
      * Update a record (mock implementation for now)
-     * In a real system, this would use the ObjectQL service
      */
-    updateRecord: (updates: Record<string, any>) => {
-        return async (context: WorkflowContext) => {
-            context.logger.info(`[Workflow Action] Updating record ${context.instance.id}`, updates);
-            // Simulate update in context data
-            for (const [key, value] of Object.entries(updates)) {
-                context.setData(key, value);
-            }
-        };
+    updateRecord: (context: WorkflowContext, params?: any) => {
+        const updates = params || {};
+        context.logger.info(`[Workflow Action] Updating record ${context.instance.id}`, updates);
+        // Simulate update in context data
+        for (const [key, value] of Object.entries(updates)) {
+            context.setData(key, value);
+        }
     },
     
     /**
      * Webhook call (mock implementation)
      */
-    webhook: (url: string, method: string = 'POST') => {
-        return async (context: WorkflowContext) => {
-             context.logger.info(`[Workflow Action] Calling Webhook ${method} ${url}`);
-             // fetch(url, ...)
-        };
+    webhook: (context: WorkflowContext, params?: any) => {
+         const url = params?.url || '';
+         const method = params?.method || 'POST';
+         context.logger.info(`[Workflow Action] Calling Webhook ${method} ${url}`);
     }
 };
 
@@ -65,11 +69,21 @@ export const StandardGuards = {
     /**
      * Check if a field equals a value
      */
-    fieldEquals: (field: string, value: any) => {
-        return (context: WorkflowContext) => {
-            const actualValue = context.getData(field);
-            return actualValue === value;
-        };
+    fieldEquals: (context: WorkflowContext, params?: any) => {
+        if (!params || !params.field) return false;
+        
+        const actualValue = context.getData(params.field);
+        return actualValue === params.value;
+    },
+
+    /**
+     * Check if a value is greater than a threshold
+     */
+    greaterThan: (context: WorkflowContext, params?: any) => {
+         if (!params || !params.field) return false;
+         const val = Number(context.getData(params.field));
+         const threshold = Number(params.value);
+         return !isNaN(val) && !isNaN(threshold) && val > threshold;
     },
 
     /**
