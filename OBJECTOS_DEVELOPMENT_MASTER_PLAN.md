@@ -186,11 +186,12 @@ objectos/
 
 3. **自动化系统** (2周)
    - [x] 基础插件结构 (@objectos/plugin-automation)
-   - [ ] 触发器框架 (beforeInsert, afterUpdate等)
-   - [ ] 计划任务 (Cron表达式)
-   - [ ] 后台任务队列 (Bull/BullMQ)
-   - [ ] 失败重试机制
-   - [ ] 任务监控仪表盘
+   - [x] 触发器框架 (Evaluated in-memory, dispatched to Queue)
+   - [x] 计划任务 (Cron - handled via scheduledJobs)
+   - [x] 后台任务队列 (InMemoryQueue with Retry & Backoff)
+   - [x] 失败重试机制 (Exponential backoff in Queue)
+   - [x] 任务监控 (via automation_log object)
+   - [ ] 任务监控仪表盘 (UI Task)
 
 #### 阶段三：系统集成与验证 (Current Focus)
 

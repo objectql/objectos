@@ -1,0 +1,43 @@
+name: automation_log
+label: Automation Log
+icon: history
+hidden: false
+fields:
+  rule_id:
+    type: text
+    label: Rule ID
+    index: true
+  object_name:
+    type: text
+    label: Object Name
+  record_id:
+    type: text
+    label: Record ID
+  triggered_by:
+    type: text
+    label: Trigger Event
+  status:
+    type: select
+    label: Status
+    options:
+      - label: Success
+        value: success
+      - label: Failed
+        value: failed
+  executed_at:
+    type: datetime
+    label: Executed At
+    index: true
+  duration:
+    type: number
+    label: Duration (ms)
+  actions_executed:
+    type: number
+    label: Actions Count
+  results:
+    type: object
+    label: Action Results
+    blackbox: true
+  error:
+    type: text
+    label: Error Message

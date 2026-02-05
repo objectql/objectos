@@ -17,9 +17,11 @@ import type {
     AutomationExecutionResult,
 } from './types';
 import { InMemoryAutomationStorage } from './storage';
+import { ToggleQueue } from './queue'; // Import Queue
 import { TriggerEngine } from './triggers';
 import { ActionExecutor } from './actions';
 import { FormulaEngine } from './formulas';
+import { InMemoryQueue, Queue, Job } from './queue';
 
 /**
  * Automation Plugin
@@ -35,6 +37,7 @@ export class AutomationPlugin implements Plugin {
     private triggerEngine: TriggerEngine;
     private actionExecutor: ActionExecutor;
     private formulaEngine: FormulaEngine;
+    private jobQueue: Queue; // Job Queue
     private context?: PluginContext;
 
     constructor(config: AutomationPluginConfig = {}) {
@@ -57,6 +60,13 @@ export class AutomationPlugin implements Plugin {
             maxExecutionTime: this.config.maxExecutionTime,
         });
         this.formulaEngine = new FormulaEngine();
+        
+        // Initialize Queue (In-Memory for now)
+        this.jobQueue = new InMemoryQueue({ 
+            name: 'automation-jobs', 
+            isWorker: true, 
+            concurrency: 5 
+        });
     }
 
     /**
@@ -69,9 +79,16 @@ export class AutomationPlugin implements Plugin {
         (this.triggerEngine as any).logger = context.logger;
         (this.actionExecutor as any).logger = context.logger;
         (this.formulaEngine as any).logger = context.logger;
+        (this.jobQueue as any).logger = context.logger;
 
         // Register automation service
         context.registerService('automation', this);
+
+        // Register Queue Handler
+        this.jobQueue.process('execute-rule', async (job: Job) => {
+            const { rule, triggerData } = job.data;
+            await this.executeRuleInternal(rule, triggerData);
+        });
 
         // Set up event listeners using kernel hooks
         await this.setupEventListeners(context);
@@ -84,6 +101,9 @@ export class AutomationPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Automation Plugin] Starting...');
+
+        // Start Queue Worker
+        await this.jobQueue.start();
 
         // Register scheduled triggers
         const rules = await this.storage.listRules({ status: 'active', triggerType: 'scheduled' });
@@ -101,22 +121,50 @@ export class AutomationPlugin implements Plugin {
     }
 
     /**
+     * Stop plugin
+     */
+    async stop(): Promise<void> {
+        this.triggerEngine.shutdown();
+        await this.jobQueue.stop();
+        this.context?.logger.info('[Automation Plugin] Stopped');
+    }
+
+    /**
      * Set up event listeners for data events using kernel hooks
      */
     private async setupEventListeners(context: PluginContext): Promise<void> {
         // Listen for data create events
         context.hook('data.create', async (data: any) => {
-            await this.handleDataEvent('object.create', data);
+            if (data && data.object) {
+                // Map kernel event format (data.object, data.doc) to helper format
+                // In handleDataEvent we expect { objectName, record }
+                // So we fix the call here.
+                await this.handleDataEvent('object.create', { 
+                    objectName: data.object, 
+                    record: data.doc || data.data // flexible mapping
+                });
+            }
         });
 
         // Listen for data update events
         context.hook('data.update', async (data: any) => {
-            await this.handleDataEvent('object.update', data);
+            if (data && data.object) {
+                 await this.handleDataEvent('object.update', {
+                    objectName: data.object,
+                    record: data.doc || data.data,
+                    oldRecord: data.previous
+                 });
+            }
         });
 
         // Listen for data delete events
         context.hook('data.delete', async (data: any) => {
-            await this.handleDataEvent('object.delete', data);
+            if (data && data.object) {
+                 await this.handleDataEvent('object.delete', {
+                    objectName: data.object,
+                    record: data.doc || data.data || { id: data.id }
+                 });
+            }
         });
 
         this.context?.logger.info('[Automation Plugin] Event listeners registered');
@@ -134,14 +182,14 @@ export class AutomationPlugin implements Plugin {
         const { objectName, record, oldRecord } = data;
 
         // Get active rules for this trigger type
+        // Filter by objectName efficiently if storage supports it
         const rules = await this.storage.listRules({ 
             status: 'active', 
-            triggerType: eventType 
+            triggerType: eventType,
+            objectName
         });
 
         for (const rule of rules) {
-            if (rule.trigger.type !== eventType) continue;
-
             // Evaluate if trigger should fire
             const shouldFire = this.triggerEngine.evaluateObjectTrigger(
                 rule.trigger as any,
@@ -158,7 +206,7 @@ export class AutomationPlugin implements Plugin {
                     objectName 
                 });
 
-                // Execute the rule
+                // Enqueue the rule execution
                 await this.executeRule(rule, { 
                     objectName, 
                     record, 
@@ -170,9 +218,26 @@ export class AutomationPlugin implements Plugin {
     }
 
     /**
-     * Execute an automation rule
+     * Execute an automation rule (Queued)
      */
-    private async executeRule(rule: AutomationRule, triggerData: any): Promise<AutomationExecutionResult> {
+    private async executeRule(rule: AutomationRule, triggerData: any): Promise<void> {
+         // Add to queue
+        await this.jobQueue.add('execute-rule', {
+            rule,
+            triggerData
+        }, {
+            priority: rule.priority || 0,
+            maxAttempts: 3, 
+            backoff: { type: 'exponential', delay: 1000 }
+        });
+        
+        this.context?.logger.info(`[Automation Plugin] Rule ${rule.id} queued`);
+    }
+
+    /**
+     * Internal Rule Execution Logic (Worker)
+     */
+    private async executeRuleInternal(rule: AutomationRule, triggerData: any): Promise<AutomationExecutionResult> {
         const startTime = Date.now();
         const actionResults: any[] = [];
 
@@ -202,8 +267,9 @@ export class AutomationPlugin implements Plugin {
                         `Error executing action ${action.type} in rule ${rule.id}:`,
                         error instanceof Error ? error : new Error(errorMessage)
                     );
-
-                    // Continue with next action
+                    
+                    // Throw to trigger Queue Retry
+                    throw error; 
                 }
             }
 
@@ -211,6 +277,17 @@ export class AutomationPlugin implements Plugin {
             await this.storage.updateRule(rule.id, {
                 lastExecutedAt: new Date(),
                 executionCount: (rule.executionCount || 0) + 1,
+            });
+            
+             // Log success
+            this.logExecution({
+                rule_id: rule.id,
+                object_name: triggerData.objectName,
+                status: 'success',
+                executed_at: new Date(),
+                duration: Date.now() - startTime,
+                actions_executed: rule.actions.length,
+                results: actionResults
             });
 
             const result: AutomationExecutionResult = {
@@ -227,11 +304,24 @@ export class AutomationPlugin implements Plugin {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-            // Mark rule as errored
-            await this.storage.updateRule(rule.id, {
-                status: 'error',
-                error: errorMessage,
+            // Mark rule as errored if queue finally fails
+            // But here we are inside one attempt.
+            
+            // Log failure for this attempt
+             this.logExecution({
+                rule_id: rule.id,
+                object_name: triggerData.objectName,
+                status: 'failed',
+                executed_at: new Date(),
+                duration: Date.now() - startTime,
+                actions_executed: actionResults.length,
+                results: actionResults,
+                error: errorMessage
             });
+
+            // We do NOT update rule status to 'error' globally yet, 
+            // because Queue might retry and succeed. 
+            // If we wanted to track final failure, we'd do it in a Queue 'failed' event handler.
 
             const result: AutomationExecutionResult = {
                 ruleId: rule.id,
@@ -244,7 +334,17 @@ export class AutomationPlugin implements Plugin {
 
             this.emitEvent('automation.rule.failed', result);
 
-            return result;
+            throw error;
+        }
+    }
+    
+    private async logExecution(logData: any) {
+        if (this.context?.broker) {
+            try {
+                logData.triggered_by = logData.triggered_by || 'auto';
+                this.context.broker.call('data.create', { object: 'automation_log', doc: logData })
+                    .catch(e => {}); // fire and forget
+            } catch (ignore) {}
         }
     }
 

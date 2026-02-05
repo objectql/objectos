@@ -1,0 +1,50 @@
+name: automation_rule
+label: Automation Rule
+icon: robot
+hidden: false
+fields:
+  name:
+    type: text
+    label: Rule Name
+    required: true
+  object_name:
+    type: text
+    label: Object Name
+    index: true
+  trigger:
+    type: object
+    label: Trigger Configuration
+    blackbox: true
+  conditions:
+    type: object
+    label: Conditions
+    blackbox: true
+  actions:
+    type: object
+    label: Actions
+    blackbox: true
+  status:
+    type: select
+    label: Status
+    options:
+      - label: Active
+        value: active
+      - label: Inactive
+        value: inactive
+      - label: Error
+        value: error
+    default: active
+  priority:
+    type: number
+    label: Priority
+    default: 0
+  execution_count:
+    type: number
+    label: Execution Count
+    default: 0
+  last_executed_at:
+    type: datetime
+    label: Last Executed
+  error:
+    type: text
+    label: Last Error Message
