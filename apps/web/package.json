@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@objectos/plugin-better-auth": "workspace:*",
+    "@objectos/auth": "workspace:*",
     "better-auth": "^1.4.18",
     "better-sqlite3": "^12.6.0",
     "next": "^15.1.4",
