@@ -130,19 +130,19 @@ objectos/
 
 **任务清单**:
 
-1. **@objectstack/runtime 完善** (1周)
-   - [ ] 实现完整插件生命周期 (onInstall, onEnable, onLoad, onDisable, onUninstall)
-   - [ ] 依赖解析和拓扑排序
-   - [ ] 插件隔离存储 (plugin-storage)
-   - [ ] 热重载支持 (开发模式)
-   - [ ] 单元测试覆盖率 90%+
+1. **@objectstack/runtime 完善** (1周) - *独立项目*
+   - [x] 实现完整插件生命周期 (onInstall, onEnable, onLoad, onDisable, onUninstall)
+   - [x] 依赖解析和拓扑排序
+   - [x] 插件隔离存储 (plugin-storage)
+   - [x] 热重载支持 (开发模式)
+   - [x] 单元测试覆盖率 90%+
 
-2. **标准插件清单** (1周)
-   - [ ] 定义 PluginManifest 标准结构
-   - [ ] 实现插件元数据验证 (Zod)
-   - [ ] 插件版本兼容性检查
-   - [ ] 插件依赖冲突检测
-   - [ ] 文档：《插件开发指南》
+2. **标准插件清单** (1周) - *独立项目*
+   - [x] 定义 PluginManifest 标准结构
+   - [x] 实现插件元数据验证 (Zod)
+   - [x] 插件版本兼容性检查
+   - [x] 插件依赖冲突检测
+   - [x] 文档：《插件开发指南》
 
 3. **核心插件迁移** (2周)
    - [ ] 将 @objectos/kernel 功能拆分为插件
