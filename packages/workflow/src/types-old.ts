@@ -1,33 +1,8 @@
 /**
  * Workflow System Types
  * 
- * Type definitions aligned with @objectstack/spec/automation specification
+ * Type definitions for the workflow and state machine system
  */
-
-// ============================================================================
-// Import and Re-export Spec-Compliant Types
-// ============================================================================
-
-import type {
-  Flow,
-  FlowNode,
-  FlowEdge,
-  ApprovalProcess,
-  ApprovalStep,
-} from '@objectstack/spec/automation';
-
-// Re-export spec types as primary types
-export type {
-  Flow,
-  FlowNode,
-  FlowEdge,
-  ApprovalProcess,
-  ApprovalStep,
-};
-
-// ============================================================================
-// Legacy Compatibility Types (for gradual migration)
-// ============================================================================
 
 /**
  * Workflow status
@@ -121,7 +96,7 @@ export interface TransitionConfig {
 }
 
 /**
- * Workflow definition (legacy format)
+ * Workflow definition
  */
 export interface WorkflowDefinition {
   /** Unique workflow ID */
@@ -142,20 +117,6 @@ export interface WorkflowDefinition {
   initialState: string;
   /** Workflow metadata */
   metadata?: Record<string, any>;
-}
-
-/**
- * Spec-compliant workflow definition (using Flow from spec)
- */
-export interface SpecWorkflowDefinition extends Flow {
-  /** Unique workflow ID */
-  id?: string;
-  /** Schema Object this workflow applies to */
-  object?: string;
-  /** Created timestamp */
-  createdAt?: Date;
-  /** Updated timestamp */
-  updatedAt?: Date;
 }
 
 /**
@@ -219,7 +180,7 @@ export interface StateHistoryEntry {
 export interface WorkflowContext {
   /** Workflow instance */
   instance: WorkflowInstance;
-  /** Workflow definition (legacy format) */
+  /** Workflow definition */
   definition: WorkflowDefinition;
   /** Current state config */
   currentState: StateConfig;
@@ -228,29 +189,6 @@ export interface WorkflowContext {
     name: string;
     config: TransitionConfig;
   };
-  /** Logger */
-  logger: {
-    info: (message: string, ...args: any[]) => void;
-    warn: (message: string, ...args: any[]) => void;
-    error: (message: string, ...args: any[]) => void;
-    debug: (message: string, ...args: any[]) => void;
-  };
-  /** Get workflow data */
-  getData: <T = any>(key?: string) => T;
-  /** Set workflow data */
-  setData: (key: string, value: any) => void;
-}
-
-/**
- * Spec-compliant workflow context (future)
- */
-export interface SpecWorkflowContext {
-  /** Workflow instance */
-  instance: WorkflowInstance;
-  /** Workflow definition in Flow format */
-  definition: SpecWorkflowDefinition;
-  /** Current state (will need conversion from Flow format) */
-  currentState: any;
   /** Logger */
   logger: {
     info: (message: string, ...args: any[]) => void;
@@ -332,8 +270,6 @@ export interface WorkflowQueryOptions {
 
 /**
  * Workflow storage interface
- * Currently uses legacy WorkflowDefinition format internally.
- * Future versions will support SpecWorkflowDefinition (Flow) format.
  */
 export interface WorkflowStorage {
   /** Save a workflow definition */
@@ -344,45 +280,6 @@ export interface WorkflowStorage {
   
   /** List workflow definitions */
   listDefinitions(): Promise<WorkflowDefinition[]>;
-  
-  /** Save a workflow instance */
-  saveInstance(instance: WorkflowInstance): Promise<void>;
-  
-  /** Get a workflow instance */
-  getInstance(id: string): Promise<WorkflowInstance | null>;
-  
-  /** Update a workflow instance */
-  updateInstance(id: string, updates: Partial<WorkflowInstance>): Promise<void>;
-  
-  /** Query workflow instances */
-  queryInstances(options: WorkflowQueryOptions): Promise<WorkflowInstance[]>;
-  
-  /** Save a task */
-  saveTask(task: WorkflowTask): Promise<void>;
-  
-  /** Get a task */
-  getTask(id: string): Promise<WorkflowTask | null>;
-  
-  /** Get tasks for an instance */
-  getInstanceTasks(instanceId: string): Promise<WorkflowTask[]>;
-  
-  /** Update a task */
-  updateTask(id: string, updates: Partial<WorkflowTask>): Promise<void>;
-}
-
-/**
- * Spec-compliant workflow storage interface (future)
- * Will support Flow format from @objectstack/spec
- */
-export interface SpecWorkflowStorage {
-  /** Save a workflow definition in Flow format */
-  saveDefinition(definition: SpecWorkflowDefinition): Promise<void>;
-  
-  /** Get a workflow definition in Flow format */
-  getDefinition(id: string, version?: string): Promise<SpecWorkflowDefinition | null>;
-  
-  /** List workflow definitions in Flow format */
-  listDefinitions(): Promise<SpecWorkflowDefinition[]>;
   
   /** Save a workflow instance */
   saveInstance(instance: WorkflowInstance): Promise<void>;

@@ -1,61 +1,49 @@
 /**
  * Automation System Types
  * 
- * Type definitions aligned with @objectstack/spec/automation specification
+ * Type definitions for the automation system aligned with @objectstack/spec
  */
 
-// ============================================================================
-// Import and Re-export Spec-Compliant Types
-// ============================================================================
-
+// Import spec-compliant types from @objectstack/spec
 import type {
   WorkflowRule,
   WorkflowAction,
+  WorkflowTriggerType,
   TimeTrigger,
 } from '@objectstack/spec/automation';
 
-// Re-export spec types as primary types
+// Re-export spec types for convenience
 export type {
   WorkflowRule,
   WorkflowAction,
+  WorkflowTriggerType,
   TimeTrigger,
 };
 
 /**
- * Workflow trigger types from @objectstack/spec
- * Values: 'on_create' | 'on_update' | 'on_create_or_update' | 'on_delete' | 'schedule'
- */
-export type SpecWorkflowTriggerType = 
-  | 'on_create'
-  | 'on_update' 
-  | 'on_create_or_update'
-  | 'on_delete'
-  | 'schedule';
-
-// ============================================================================
-// Legacy Compatibility Types (for gradual migration)
-// ============================================================================
-
-/**
- * Trigger type enumeration (legacy)
- * @deprecated Use SpecWorkflowTriggerType for spec-compliant types
+ * Trigger type enumeration (legacy compatibility)
+ * @deprecated Use WorkflowTriggerType from @objectstack/spec instead
  */
 export type TriggerType = 
-  | SpecWorkflowTriggerType
-  | 'object.create' 
-  | 'object.update' 
-  | 'object.delete' 
-  | 'scheduled' 
-  | 'webhook';
+  | 'object.create'    // Object created
+  | 'object.update'    // Object updated
+  | 'object.delete'    // Object deleted
+  | 'scheduled'        // Scheduled (cron)
+  | 'webhook';         // Webhook triggered
 
 /**
- * Action type enumeration (legacy)
- * @deprecated Extract type from WorkflowAction instead
+ * Action type enumeration (legacy compatibility)
+ * @deprecated Use WorkflowAction discriminated union from @objectstack/spec instead
  */
-export type ActionType = WorkflowAction['type'];
+export type ActionType = 
+  | 'update_field'     // Update a field (now 'field_update' in spec)
+  | 'create_record'    // Create a new record
+  | 'send_email'       // Send an email (now 'email_alert' in spec)
+  | 'http_request'     // Make HTTP request (now 'http_call' in spec)
+  | 'execute_script';  // Execute a script (now 'custom_script' in spec)
 
 /**
- * Formula field type (legacy - keep for formula engine)
+ * Formula field type
  */
 export type FormulaType = 
   | 'calculated'       // Runtime calculated
@@ -69,13 +57,59 @@ export type RollupOperation = 'SUM' | 'COUNT' | 'AVG' | 'MIN' | 'MAX';
 
 /**
  * Automation rule status
- * @deprecated WorkflowRule in spec uses 'active' boolean instead
  */
-export type AutomationRuleStatus = 'active' | 'inactive' | 'error';
+export type AutomationRuleStatus = 
+  | 'active'           // Rule is active
+  | 'inactive'         // Rule is inactive
+  | 'error';           // Rule has errors
 
-// ============================================================================
-// Legacy Action Configs (backward compatibility)
-// ============================================================================
+/**
+ * Object trigger configuration
+ */
+export interface ObjectTriggerConfig {
+  /** Trigger type */
+  type: 'object.create' | 'object.update' | 'object.delete';
+  /** Object name to monitor */
+  objectName: string;
+  /** Field conditions (for update triggers) */
+  conditions?: TriggerCondition[];
+  /** Fields to monitor for changes (for update triggers) */
+  fields?: string[];
+}
+
+/**
+ * Scheduled trigger configuration
+ */
+export interface ScheduledTriggerConfig {
+  /** Trigger type */
+  type: 'scheduled';
+  /** Cron expression */
+  cronExpression: string;
+  /** Timezone */
+  timezone?: string;
+}
+
+/**
+ * Webhook trigger configuration
+ */
+export interface WebhookTriggerConfig {
+  /** Trigger type */
+  type: 'webhook';
+  /** Webhook path */
+  path: string;
+  /** HTTP method */
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  /** Authentication required */
+  authRequired?: boolean;
+}
+
+/**
+ * Trigger configuration (union type)
+ */
+export type TriggerConfig = 
+  | ObjectTriggerConfig 
+  | ScheduledTriggerConfig 
+  | WebhookTriggerConfig;
 
 /**
  * Trigger condition
@@ -90,74 +124,50 @@ export interface TriggerCondition {
 }
 
 /**
- * Object trigger configuration (legacy)
- */
-export interface ObjectTriggerConfig {
-  type: 'object.create' | 'object.update' | 'object.delete';
-  objectName: string;
-  conditions?: TriggerCondition[];
-  fields?: string[];
-}
-
-/**
- * Scheduled trigger configuration (legacy)
- */
-export interface ScheduledTriggerConfig {
-  type: 'scheduled';
-  cronExpression: string;
-  timezone?: string;
-}
-
-/**
- * Webhook trigger configuration (legacy)
- */
-export interface WebhookTriggerConfig {
-  type: 'webhook';
-  path: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  authRequired?: boolean;
-}
-
-/**
- * Trigger configuration (union type)
- */
-export type TriggerConfig = 
-  | ObjectTriggerConfig 
-  | ScheduledTriggerConfig 
-  | WebhookTriggerConfig;
-
-/**
- * Update field action configuration (legacy)
- * @deprecated Use field_update from WorkflowAction in spec
+ * Update field action configuration
  */
 export interface UpdateFieldActionConfig {
+  /** Action type */
   type: 'update_field';
+  /** Object name */
   objectName: string;
+  /** Record ID (can be template) */
   recordId: string;
+  /** Field updates */
   fields: Record<string, any>;
 }
 
 /**
- * Create record action configuration (legacy)
+ * Create record action configuration
  */
 export interface CreateRecordActionConfig {
+  /** Action type */
   type: 'create_record';
+  /** Object name */
   objectName: string;
+  /** Field values */
   fields: Record<string, any>;
 }
 
 /**
- * Send email action configuration (legacy)
- * @deprecated Use email_alert from WorkflowAction in spec
+ * Send email action configuration
  */
 export interface SendEmailActionConfig {
+  /** Action type */
   type: 'send_email';
+  /** Recipient email(s) */
   to: string | string[];
+  /** CC email(s) */
   cc?: string | string[];
+  /** BCC email(s) */
   bcc?: string | string[];
+  /** Email subject */
   subject: string;
+  /** Email body */
   body: string;
+  /** Is HTML body */
   isHtml?: boolean;
+  /** Attachments */
   attachments?: EmailAttachment[];
 }
 
@@ -165,37 +175,48 @@ export interface SendEmailActionConfig {
  * Email attachment
  */
 export interface EmailAttachment {
+  /** Filename */
   filename: string;
+  /** Content (base64 or buffer) */
   content: string | Buffer;
+  /** Content type */
   contentType?: string;
 }
 
 /**
- * HTTP request action configuration (legacy)
- * @deprecated Use http_call from WorkflowAction in spec
+ * HTTP request action configuration
  */
 export interface HttpRequestActionConfig {
+  /** Action type */
   type: 'http_request';
+  /** URL */
   url: string;
+  /** HTTP method */
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  /** Headers */
   headers?: Record<string, string>;
+  /** Request body */
   body?: any;
+  /** Timeout in milliseconds */
   timeout?: number;
 }
 
 /**
- * Execute script action configuration (legacy)
- * @deprecated Use custom_script from WorkflowAction in spec
+ * Execute script action configuration
  */
 export interface ExecuteScriptActionConfig {
+  /** Action type */
   type: 'execute_script';
+  /** Script code */
   script: string;
+  /** Script language */
   language?: 'javascript' | 'typescript';
+  /** Script timeout in milliseconds */
   timeout?: number;
 }
 
 /**
- * Action configuration (union type) - legacy
+ * Action configuration (union type)
  */
 export type ActionConfig = 
   | UpdateFieldActionConfig 
@@ -204,61 +225,42 @@ export type ActionConfig =
   | HttpRequestActionConfig 
   | ExecuteScriptActionConfig;
 
-// ============================================================================
-// Automation Rule (legacy - for backward compatibility)
-// ============================================================================
-
 /**
- * Automation rule (legacy format)
- * @deprecated Use WorkflowRule from @objectstack/spec instead
+ * Automation rule
  */
 export interface AutomationRule {
-  id: string;
-  name: string;
-  description?: string;
-  status: AutomationRuleStatus;
-  trigger: TriggerConfig;
-  actions: ActionConfig[];
-  priority?: number;
-  createdAt: Date;
-  updatedAt?: Date;
-  lastExecutedAt?: Date;
-  executionCount?: number;
-  error?: string;
-}
-
-// ============================================================================
-// Spec-Compliant Automation Rule (new format)
-// ============================================================================
-
-/**
- * Spec-compliant automation rule with metadata
- */
-export interface SpecAutomationRule extends WorkflowRule {
   /** Unique rule ID */
-  id?: string;
+  id: string;
+  /** Rule name */
+  name: string;
+  /** Rule description */
+  description?: string;
+  /** Rule status */
+  status: AutomationRuleStatus;
+  /** Trigger configuration */
+  trigger: TriggerConfig;
+  /** Actions to execute */
+  actions: ActionConfig[];
+  /** Rule priority (higher = runs first) */
+  priority?: number;
   /** Created timestamp */
-  createdAt?: Date;
+  createdAt: Date;
   /** Updated timestamp */
   updatedAt?: Date;
   /** Last executed timestamp */
   lastExecutedAt?: Date;
   /** Execution count */
   executionCount?: number;
-  /** Error message if not active */
+  /** Error message if status is error */
   error?: string;
 }
-
-// ============================================================================
-// Execution Context
-// ============================================================================
 
 /**
  * Automation execution context
  */
 export interface AutomationContext {
-  /** Rule being executed (can be legacy or spec format) */
-  rule: AutomationRule | SpecAutomationRule;
+  /** Rule being executed */
+  rule: AutomationRule;
   /** Trigger data */
   triggerData: any;
   /** Logger */
@@ -270,18 +272,19 @@ export interface AutomationContext {
   };
 }
 
-// ============================================================================
-// Formula Fields (not part of spec, specific to this implementation)
-// ============================================================================
-
 /**
  * Formula field definition
  */
 export interface FormulaField {
+  /** Field name */
   name: string;
+  /** Object name */
   objectName: string;
+  /** Formula type */
   type: FormulaType;
+  /** Formula configuration */
   config: FormulaConfig;
+  /** Created timestamp */
   createdAt: Date;
 }
 
@@ -289,8 +292,11 @@ export interface FormulaField {
  * Calculated formula configuration
  */
 export interface CalculatedFormulaConfig {
+  /** Formula type */
   type: 'calculated';
+  /** Formula expression */
   expression: string;
+  /** Return type */
   returnType: 'string' | 'number' | 'boolean' | 'date';
 }
 
@@ -298,11 +304,17 @@ export interface CalculatedFormulaConfig {
  * Rollup formula configuration
  */
 export interface RollupFormulaConfig {
+  /** Formula type */
   type: 'rollup';
+  /** Related object name */
   relatedObject: string;
+  /** Relationship field */
   relationshipField: string;
+  /** Field to aggregate */
   aggregateField: string;
+  /** Rollup operation */
   operation: RollupOperation;
+  /** Filter conditions */
   conditions?: TriggerCondition[];
 }
 
@@ -310,10 +322,15 @@ export interface RollupFormulaConfig {
  * Auto-number formula configuration
  */
 export interface AutoNumberFormulaConfig {
+  /** Formula type */
   type: 'autonumber';
+  /** Prefix */
   prefix?: string;
+  /** Suffix */
   suffix?: string;
+  /** Starting number */
   startingNumber?: number;
+  /** Number of digits */
   digits?: number;
 }
 
@@ -325,31 +342,21 @@ export type FormulaConfig =
   | RollupFormulaConfig 
   | AutoNumberFormulaConfig;
 
-// ============================================================================
-// Storage Interface
-// ============================================================================
-
 /**
  * Automation storage interface
- * Supports both legacy and spec-compliant formats
  */
 export interface AutomationStorage {
   /** Save an automation rule */
-  saveRule(rule: AutomationRule | SpecAutomationRule): Promise<void>;
+  saveRule(rule: AutomationRule): Promise<void>;
   
   /** Get an automation rule */
-  getRule(id: string): Promise<(AutomationRule | SpecAutomationRule) | null>;
+  getRule(id: string): Promise<AutomationRule | null>;
   
   /** List automation rules */
-  listRules(filter?: { 
-    status?: AutomationRuleStatus; 
-    triggerType?: TriggerType;
-    active?: boolean;
-    objectName?: string;
-  }): Promise<(AutomationRule | SpecAutomationRule)[]>;
+  listRules(filter?: { status?: AutomationRuleStatus; triggerType?: TriggerType }): Promise<AutomationRule[]>;
   
   /** Update an automation rule */
-  updateRule(id: string, updates: Partial<AutomationRule | SpecAutomationRule>): Promise<void>;
+  updateRule(id: string, updates: Partial<AutomationRule>): Promise<void>;
   
   /** Delete an automation rule */
   deleteRule(id: string): Promise<void>;
@@ -366,10 +373,6 @@ export interface AutomationStorage {
   /** Delete a formula field */
   deleteFormula(objectName: string, fieldName: string): Promise<void>;
 }
-
-// ============================================================================
-// Plugin Configuration
-// ============================================================================
 
 /**
  * Automation plugin configuration
@@ -395,11 +398,17 @@ export interface AutomationPluginConfig {
  * Email configuration
  */
 export interface EmailConfig {
+  /** SMTP host */
   host: string;
+  /** SMTP port */
   port: number;
+  /** Use secure connection */
   secure?: boolean;
+  /** SMTP username */
   username?: string;
+  /** SMTP password */
   password?: string;
+  /** Default from address */
   from: string;
 }
 
@@ -407,10 +416,16 @@ export interface EmailConfig {
  * Automation execution result
  */
 export interface AutomationExecutionResult {
+  /** Rule ID */
   ruleId: string;
+  /** Execution success */
   success: boolean;
+  /** Execution timestamp */
   executedAt: Date;
+  /** Actions executed */
   actionsExecuted: number;
+  /** Error message if failed */
   error?: string;
+  /** Execution results per action */
   results?: any[];
 }
