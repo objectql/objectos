@@ -1,0 +1,58 @@
+# External System Integration
+# Demonstrates connector actions and HTTP calls
+
+name: salesforce_slack_integration
+objectName: account
+triggerType: on_create_or_update
+criteria: "revenue > 50000"
+
+actions:
+  # Sync to Salesforce
+  - name: sync_to_salesforce
+    type: connector_action
+    connectorId: salesforce
+    actionId: upsert_account
+    input:
+      name: "{{name}}"
+      industry: "{{industry}}"
+      website: "{{website}}"
+      billing_address: "{{address}}"
+      phone: "{{phone}}"
+      annual_revenue: "{{revenue}}"
+  
+  # Notify Slack channel
+  - name: notify_slack
+    type: connector_action
+    connectorId: slack
+    actionId: send_message
+    input:
+      channel: "#sales-updates"
+      text: "Account updated: {{name}}"
+      blocks:
+        - type: section
+          text:
+            type: mrkdwn
+            text: "*Account:* {{name}}\n*Industry:* {{industry}}\n*Revenue:* ${{revenue}}"
+  
+  # Send to analytics platform
+  - name: track_in_analytics
+    type: http_call
+    url: "https://analytics.company.com/api/track"
+    method: POST
+    headers:
+      X-API-Key: "{{ENV.ANALYTICS_KEY}}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "event": "account_updated",
+        "timestamp": "{{NOW()}}",
+        "properties": {
+          "account_id": "{{_id}}",
+          "name": "{{name}}",
+          "industry": "{{industry}}",
+          "revenue": {{revenue}}
+        }
+      }
+
+active: true
+reevaluateOnChange: true

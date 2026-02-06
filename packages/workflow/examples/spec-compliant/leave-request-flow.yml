@@ -1,0 +1,156 @@
+# Spec-Compliant Flow Example
+# This follows the @objectstack/spec Flow schema
+
+name: leave_request_approval
+label: Leave Request Approval Process
+description: Multi-level approval for leave requests
+type: record_change
+status: active
+version: 1
+
+# Flow variables (inputs/outputs)
+variables:
+  - name: request_id
+    type: text
+    isInput: true
+  - name: employee_id
+    type: text
+    isInput: true
+  - name: days_count
+    type: number
+    isInput: true
+  - name: start_date
+    type: date
+    isInput: true
+  - name: manager_id
+    type: text
+    isInput: true
+  - name: approval_status
+    type: text
+    isOutput: true
+
+# Visual flow nodes
+nodes:
+  - id: start
+    type: start
+    label: Submit Leave Request
+    position:
+      x: 100
+      y: 100
+
+  - id: check_days
+    type: decision
+    label: Check Duration
+    description: Auto-approve for 1-3 days, manager approval for 4-14 days
+    condition: "{{days_count}} <= 3"
+    position:
+      x: 300
+      y: 100
+
+  - id: auto_approve
+    type: assignment
+    label: Auto Approve
+    config:
+      assignToField: system
+      status: auto_approved
+    position:
+      x: 500
+      y: 50
+
+  - id: manager_approval
+    type: assignment
+    label: Manager Approval Required
+    description: Assign to direct manager for approval
+    config:
+      assignToField: "{{manager_id}}"
+    position:
+      x: 500
+      y: 150
+
+  - id: check_extended
+    type: decision
+    label: Extended Leave?
+    condition: "{{days_count}} > 14"
+    position:
+      x: 700
+      y: 150
+
+  - id: director_approval
+    type: assignment
+    label: Director Approval
+    description: Escalate to director for extended leave
+    config:
+      assignToField: "{{manager.manager_id}}"
+    position:
+      x: 900
+      y: 200
+
+  - id: approved
+    type: end
+    label: Approved
+    position:
+      x: 1100
+      y: 100
+
+  - id: rejected
+    type: end
+    label: Rejected
+    position:
+      x: 1100
+      y: 250
+
+# Flow connections
+edges:
+  - id: e1
+    source: start
+    target: check_days
+    label: Submit
+
+  - id: e2
+    source: check_days
+    target: auto_approve
+    condition: "true"
+    label: "≤ 3 days"
+
+  - id: e3
+    source: check_days
+    target: manager_approval
+    condition: "false"
+    label: "> 3 days"
+
+  - id: e4
+    source: auto_approve
+    target: approved
+    label: Complete
+
+  - id: e5
+    source: manager_approval
+    target: check_extended
+    label: Approved
+
+  - id: e6
+    source: manager_approval
+    target: rejected
+    label: Rejected
+
+  - id: e7
+    source: check_extended
+    target: approved
+    condition: "false"
+    label: "≤ 14 days"
+
+  - id: e8
+    source: check_extended
+    target: director_approval
+    condition: "true"
+    label: "> 14 days"
+
+  - id: e9
+    source: director_approval
+    target: approved
+    label: Approved
+
+  - id: e10
+    source: director_approval
+    target: rejected
+    label: Rejected

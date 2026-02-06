@@ -24,7 +24,7 @@ export const StandardActions = {
              message = 'Workflow Action Triggered';
         }
 
-        const msg = message.replace(/\{\{\s*(\w+)\s*\}\}/g, (_: string, key: string) => context.getData(key) || '');
+        const msg = message.replace(/\{\{\s*(\w+)\s*\}\}/g, (_: string, key: string) => String(context.getData(key) || ''));
         context.logger.info(`[Workflow Action] ${msg}`);
     },
 

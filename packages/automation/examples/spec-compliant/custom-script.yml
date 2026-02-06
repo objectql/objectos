@@ -1,0 +1,71 @@
+# Custom Script Example
+# Demonstrates JavaScript execution for complex logic
+
+name: opportunity_scoring
+objectName: opportunity
+triggerType: on_update
+criteria: "ISCHANGED(amount) OR ISCHANGED(stage)"
+
+actions:
+  # Calculate deal score with custom script
+  - name: calculate_score
+    type: custom_script
+    language: javascript
+    timeout: 5000
+    code: |
+      // Calculate opportunity score based on multiple factors
+      const amount = ctx.context.amount || 0;
+      const stage = ctx.context.stage || 'new';
+      const age = (Date.now() - new Date(ctx.context.created_at)) / (1000 * 60 * 60 * 24);
+      
+      let score = 0;
+      
+      // Amount score (0-40 points)
+      if (amount > 1000000) score += 40;
+      else if (amount > 500000) score += 30;
+      else if (amount > 100000) score += 20;
+      else if (amount > 50000) score += 10;
+      
+      // Stage score (0-30 points)
+      const stageScores = {
+        'prospecting': 5,
+        'qualification': 10,
+        'proposal': 20,
+        'negotiation': 25,
+        'closed_won': 30
+      };
+      score += stageScores[stage] || 0;
+      
+      // Age penalty (lose 1 point per week after 4 weeks)
+      if (age > 28) {
+        score -= Math.floor((age - 28) / 7);
+      }
+      
+      // Velocity bonus (if progressing quickly)
+      if (stage === 'negotiation' && age < 14) {
+        score += 15;
+      }
+      
+      // Ensure score is between 0-100
+      score = Math.max(0, Math.min(100, score));
+      
+      ctx.logger.info(`Calculated opportunity score: ${score}`);
+      
+      return { score, calculated_at: new Date() };
+    context:
+      record_id: "{{_id}}"
+  
+  # Update the score field
+  - name: update_score_field
+    type: field_update
+    field: deal_score
+    value: "{{SCRIPT_RESULT.score}}"
+  
+  # Alert if high-value deal
+  - name: alert_if_high_value
+    type: email_alert
+    template: high_value_deal
+    recipients:
+      - sales-vp@company.com
+
+active: true
