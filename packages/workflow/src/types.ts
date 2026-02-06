@@ -230,15 +230,15 @@ export interface WorkflowContext {
   };
   /** Logger */
   logger: {
-    info: (message: string, ...args: any[]) => void;
-    warn: (message: string, ...args: any[]) => void;
-    error: (message: string, ...args: any[]) => void;
-    debug: (message: string, ...args: any[]) => void;
+    info: (message: string, ...args: unknown[]) => void;
+    warn: (message: string, ...args: unknown[]) => void;
+    error: (message: string, ...args: unknown[]) => void;
+    debug: (message: string, ...args: unknown[]) => void;
   };
   /** Get workflow data */
-  getData: <T = any>(key?: string) => T;
+  getData: <T = unknown>(key?: string) => T;
   /** Set workflow data */
-  setData: (key: string, value: any) => void;
+  setData: (key: string, value: unknown) => void;
 }
 
 /**
@@ -249,19 +249,19 @@ export interface SpecWorkflowContext {
   instance: WorkflowInstance;
   /** Workflow definition in Flow format */
   definition: SpecWorkflowDefinition;
-  /** Current state (will need conversion from Flow format) */
-  currentState: any;
+  /** Current state (FlowNode in execution) */
+  currentState: unknown;  // Will be FlowNode once conversion utilities are implemented
   /** Logger */
   logger: {
-    info: (message: string, ...args: any[]) => void;
-    warn: (message: string, ...args: any[]) => void;
-    error: (message: string, ...args: any[]) => void;
-    debug: (message: string, ...args: any[]) => void;
+    info: (message: string, ...args: unknown[]) => void;
+    warn: (message: string, ...args: unknown[]) => void;
+    error: (message: string, ...args: unknown[]) => void;
+    debug: (message: string, ...args: unknown[]) => void;
   };
   /** Get workflow data */
-  getData: <T = any>(key?: string) => T;
+  getData: <T = unknown>(key?: string) => T;
   /** Set workflow data */
-  setData: (key: string, value: any) => void;
+  setData: (key: string, value: unknown) => void;
 }
 
 /**

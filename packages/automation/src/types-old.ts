@@ -1,7 +1,10 @@
 /**
- * Automation System Types
+ * Automation System Types - LEGACY VERSION
  * 
- * Type definitions for the automation system aligned with @objectstack/spec
+ * This file preserves the original type definitions for backward compatibility.
+ * For new code, use the types from ./types.ts which are aligned with @objectstack/spec.
+ * 
+ * @deprecated This is the legacy types file. Import from ./types.ts instead.
  */
 
 // Import spec-compliant types from @objectstack/spec

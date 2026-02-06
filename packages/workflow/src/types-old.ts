@@ -1,7 +1,10 @@
 /**
- * Workflow System Types
+ * Workflow System Types - LEGACY VERSION
  * 
- * Type definitions for the workflow and state machine system
+ * This file preserves the original type definitions for backward compatibility.
+ * For new code, use the types from ./types.ts which are aligned with @objectstack/spec.
+ * 
+ * @deprecated This is the legacy types file. Import from ./types.ts instead.
  */
 
 /**
