@@ -61,8 +61,7 @@ export class BetterAuthPlugin implements Plugin {
             this.handler = toNodeHandler(this.authInstance);
 
             // Register the plugin as a service
-            // Register as 'auth' to provide the standard Auth interface
-            context.registerService('auth', this);
+            // Only register as 'better-auth' since 'auth' is auto-registered by ObjectQL
             context.registerService('better-auth', this);
 
             // Register route handler through a hook or service

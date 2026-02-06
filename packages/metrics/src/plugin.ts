@@ -64,16 +64,6 @@ export class MetricsPlugin implements Plugin {
      * Initialize plugin - Register services and subscribe to events
      */
     init = async (context: PluginContext): Promise<void> => {
-        // [Hotfix] Alias objectql to data/metadata
-        try {
-             // Use 'any' to bypass strict service type checks if needed
-             const objectql = context.getService('objectql');
-             if (objectql) {
-                 context.registerService('data', objectql);
-                 context.registerService('metadata', objectql);
-             }
-        } catch (e) { console.warn('Alias error', e); }
-
         this.context = context;
 
         // Register metrics service
