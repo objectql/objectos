@@ -24,6 +24,23 @@ This package aligns with the automation specification from [@objectstack/spec](h
 - ✅ **History**: Complete audit trail of state changes and approver comments
 - ✅ **Timeouts**: "Escalate if stuck in 'Pending' for > 3 days"
 
+## Examples
+
+See [examples/spec-compliant/](./examples/spec-compliant/) for spec-compliant Flow format examples:
+
+- **leave-request-flow.yml** - Multi-level leave approval with auto-approval
+- **order-fulfillment-flow.yml** - E-commerce order processing with inventory
+- **multi-approval-flow.yml** - Expense approval with threshold-based routing
+
+See [examples/](./examples/) for legacy state machine format examples:
+
+- **approval-workflow.yaml** - Document approval process
+- **sequential-workflow.yaml** - Order fulfillment steps
+- **conditional-workflow.yaml** - Conditional branching
+- **parallel-workflow.yaml** - Parallel execution paths
+
+Both formats are fully supported.
+
 ## Usage (YAML - Legacy Format)
 
 ```yaml

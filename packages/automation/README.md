@@ -35,6 +35,17 @@ This package implements the automation specification from [@objectstack/spec](ht
   
 - ✅ **Formulas**: Spreadsheet-like formula engine for calculated fields
 
+## Examples
+
+See [examples/spec-compliant/](./examples/spec-compliant/) for complete working examples:
+
+- **big-deal-notification.yml** - High-value opportunity alerts with time-based follow-ups
+- **lead-nurture.yml** - 14-day automated lead nurture campaign
+- **connector-integration.yml** - Salesforce and Slack integration
+- **custom-script.yml** - Advanced opportunity scoring with JavaScript
+
+Each example demonstrates different aspects of the spec-compliant WorkflowRule format.
+
 ## Usage (Spec-Compliant Format)
 
 ```yaml

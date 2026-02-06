@@ -1,0 +1,104 @@
+# Lead Auto-Assignment and Nurture Campaign
+# Demonstrates field updates, task creation, and time-based triggers
+
+name: lead_auto_assign_nurture
+objectName: lead
+triggerType: on_create
+criteria: "source == 'website' AND status == 'new'"
+
+# Immediate actions when lead is created
+actions:
+  # Assign to sales rep based on territory
+  - name: assign_to_rep
+    type: field_update
+    field: owner_id
+    value: "{{LOOKUP('user', 'territory', territory, '_id')}}"
+  
+  # Send welcome email to lead
+  - name: send_welcome
+    type: email_alert
+    template: lead_welcome
+    recipients:
+      - "{{email}}"
+  
+  # Notify assigned rep
+  - name: notify_rep
+    type: email_alert
+    template: new_lead_assignment
+    recipients:
+      - "{{owner.email}}"
+  
+  # Create first contact task
+  - name: create_contact_task
+    type: task_creation
+    taskObject: task
+    subject: "Contact new lead: {{name}}"
+    description: "Lead source: {{source}}\nCompany: {{company}}"
+    assignedTo: "{{owner_id}}"
+    dueDate: "{{TODAY() + 1}}"
+    priority: high
+
+# Nurture sequence with time-based triggers
+timeTriggers:
+  # Day 2: Educational content
+  - timeLength: 2
+    timeUnit: days
+    offsetDirection: after
+    offsetFrom: trigger_date
+    actions:
+      - name: send_educational_content
+        type: email_alert
+        template: educational_email_1
+        recipients:
+          - "{{email}}"
+  
+  # Day 5: Case study
+  - timeLength: 5
+    timeUnit: days
+    offsetDirection: after
+    offsetFrom: trigger_date
+    actions:
+      - name: send_case_study
+        type: email_alert
+        template: case_study_email
+        recipients:
+          - "{{email}}"
+  
+  # Day 7: Check-in reminder for rep
+  - timeLength: 7
+    timeUnit: days
+    offsetDirection: after
+    offsetFrom: trigger_date
+    actions:
+      - name: create_checkin_task
+        type: task_creation
+        taskObject: task
+        subject: "Check in with lead: {{name}}"
+        assignedTo: "{{owner_id}}"
+        dueDate: "{{TODAY()}}"
+      
+      - name: send_reminder_notification
+        type: push_notification
+        title: "Lead Follow-up Reminder"
+        body: "Time to check in with {{name}}"
+        recipients:
+          - "{{owner_id}}"
+  
+  # Day 14: Mark as cold if no engagement
+  - timeLength: 14
+    timeUnit: days
+    offsetDirection: after
+    offsetFrom: trigger_date
+    actions:
+      - name: final_attempt_email
+        type: email_alert
+        template: final_attempt
+        recipients:
+          - "{{email}}"
+      
+      - name: update_status_if_no_response
+        type: field_update
+        field: status
+        value: cold
+
+active: true
