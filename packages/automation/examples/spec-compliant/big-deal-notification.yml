@@ -1,0 +1,48 @@
+# Spec-Compliant Automation Rule Example
+# This follows the @objectstack/spec WorkflowRule schema
+
+name: big_deal_notification
+objectName: opportunity
+triggerType: on_create
+criteria: "amount > 100000 AND stage == 'new'"
+
+# Immediate actions
+actions:
+  # Email alert to manager
+  - name: notify_sales_manager
+    type: email_alert
+    template: big_deal_alert
+    recipients:
+      - sales-manager@company.com
+  
+  # Update field to mark as high priority
+  - name: mark_high_priority
+    type: field_update
+    field: priority
+    value: high
+  
+  # Create a task for follow-up
+  - name: create_follow_up_task
+    type: task_creation
+    taskObject: task
+    subject: "Follow up on big deal"
+    assignedTo: "{{owner_id}}"
+    dueDate: "{{NOW() + 1}}"
+    priority: high
+
+# Time-based triggers (delayed actions)
+timeTriggers:
+  # Reminder after 1 day
+  - timeLength: 1
+    timeUnit: days
+    offsetDirection: after
+    offsetFrom: trigger_date
+    actions:
+      - name: reminder_email
+        type: email_alert
+        template: contact_reminder
+        recipients:
+          - "{{owner.email}}"
+
+active: true
+reevaluateOnChange: true
