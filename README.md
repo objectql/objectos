@@ -4,7 +4,7 @@
 
 State. Identity. Synchronization. Orchestration. Admin Console.
 
-*Built on [ObjectQL](https://github.com/objectql/objectql) & [ObjectStack](https://objectstack.ai).*
+*Built on [ObjectQL](https://github.com/objectstack-ai/objectql) & [ObjectStack](https://objectstack.ai).*
 
 [![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-Hono%20%7C%20React%20%7C%20TypeScript-blue.svg)](#-tech-stack)
@@ -17,8 +17,8 @@ State. Identity. Synchronization. Orchestration. Admin Console.
 
 | Layer | Repo | Responsibility |
 |---|---|---|
-| **ObjectQL** | [objectql/objectql](https://github.com/objectql/objectql) | Data — metadata, drivers, queries |
-| **ObjectUI** | [objectql/objectui](https://github.com/objectql/objectui) | Views — amis-like control library |
+| **ObjectQL** | [objectql/objectql](https://github.com/objectstack-ai/objectql) | Data — metadata, drivers, queries |
+| **ObjectUI** | [objectql/objectui](https://github.com/objectstack-ai/objectui) | Views — amis-like control library |
 | **ObjectOS** | this repo | **State, Identity, Sync, Orchestration, Admin Console** |
 
 ObjectOS acts as the "Kernel" that boots up, loads drivers (ObjectQL) and applications (Plugins), then governs every request through Authentication, Authorization, and Audit.
@@ -222,6 +222,6 @@ pnpm start
 
 Part of the **ObjectStack Ecosystem**
 
-[ObjectQL (Data)](https://github.com/objectql/objectql) · **ObjectOS (System)** · [ObjectUI (View)](https://github.com/objectql/objectui)
+[ObjectQL (Data)](https://github.com/objectstack-ai/objectql) · **ObjectOS (System)** · [ObjectUI (View)](https://github.com/objectstack-ai/objectui)
 
 </div>

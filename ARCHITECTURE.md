@@ -46,7 +46,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
   - `API.*` - Endpoint contracts
 
 ### ObjectQL Repository (Data Layer Implementation)
-- **Location**: https://github.com/objectql/objectql
+- **Location**: https://github.com/objectstack-ai/objectql
 - **Purpose**: Defines the metadata standard and provides core implementations
 - **Key Packages**:
   - `@objectql/core` - Metadata parser, AST builder, query compiler

@@ -85,9 +85,9 @@ ObjectOS aims to be the **world's leading enterprise management software runtime
 
 | Layer | Repository | Responsibility |
 |-------|-----------|---------------|
-| **Data** | [ObjectQL](https://github.com/objectql/objectql) | Defines "what data is" — objects, fields, relationships, drivers |
+| **Data** | [ObjectQL](https://github.com/objectstack-ai/objectql) | Defines "what data is" — objects, fields, relationships, drivers |
 | **Runtime** | ObjectOS (this repo) | Defines "how business runs" — security, processes, automation |
-| **Views** | [ObjectUI](https://github.com/objectql/objectui) | Defines "how UI presents" — components, layouts, interactions |
+| **Views** | [ObjectUI](https://github.com/objectstack-ai/objectui) | Defines "how UI presents" — components, layouts, interactions |
 
 ### Protocol Foundation
 
@@ -750,7 +750,7 @@ states:
 
 - **Repository**: https://github.com/objectql/objectos
 - **Spec Protocol**: https://github.com/objectstack-ai/spec
-- **ObjectQL**: https://github.com/objectql/objectql
+- **ObjectQL**: https://github.com/objectstack-ai/objectql
 - **Issues**: https://github.com/objectql/objectos/issues
 - **Discussions**: https://github.com/objectql/objectos/discussions
 
@@ -948,8 +948,8 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 
 - **Repository**: https://github.com/objectql/objectos
 - **Spec Protocol**: https://github.com/objectstack-ai/spec
-- **ObjectQL**: https://github.com/objectql/objectql
-- **ObjectUI**: https://github.com/objectql/objectui
+- **ObjectQL**: https://github.com/objectstack-ai/objectql
+- **ObjectUI**: https://github.com/objectstack-ai/objectui
 - **Issues**: https://github.com/objectql/objectos/issues
 - **Discussions**: https://github.com/objectql/objectos/discussions
 

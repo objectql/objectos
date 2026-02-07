@@ -6,7 +6,7 @@ Thank you for your interest in contributing to ObjectOS! This guide will help yo
 
 ObjectOS is the **runtime engine** that executes metadata defined in the ObjectQL format. It's part of a two-repository ecosystem:
 
-- **[objectql/objectql](https://github.com/objectql/objectql)**: The protocol definition and core drivers
+- **[objectql/objectql](https://github.com/objectstack-ai/objectql)**: The protocol definition and core drivers
 - **objectql/objectos** (this repo): The runtime implementation
 
 ## Project Structure

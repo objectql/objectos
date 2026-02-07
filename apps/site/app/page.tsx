@@ -31,7 +31,7 @@ export default function HomePage() {
             </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Instant Backend. Security Kernel. Workflow Automation. 
-              Built on <Link href="https://github.com/objectql/objectql" className="text-primary hover:underline">ObjectQL</Link> & NestJS.
+              Built on <Link href="https://github.com/objectstack-ai/objectql" className="text-primary hover:underline">ObjectQL</Link> & NestJS.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link
