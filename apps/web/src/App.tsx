@@ -10,6 +10,9 @@ const SignUpPage = lazy(() => import('./pages/sign-up'));
 const ForgotPasswordPage = lazy(() => import('./pages/forgot-password'));
 const DashboardPage = lazy(() => import('./pages/dashboard'));
 const CreateOrganizationPage = lazy(() => import('./pages/organization/create'));
+const MembersPage = lazy(() => import('./pages/organization/members'));
+const InvitationsPage = lazy(() => import('./pages/organization/invitations'));
+const OrganizationSettingsPage = lazy(() => import('./pages/organization/settings'));
 
 export function App() {
   const fallback = (
@@ -32,6 +35,9 @@ export function App() {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/organization/create" element={<CreateOrganizationPage />} />
+          <Route path="/organization/members" element={<MembersPage />} />
+          <Route path="/organization/invitations" element={<InvitationsPage />} />
+          <Route path="/organization/settings" element={<OrganizationSettingsPage />} />
         </Route>
       </Route>
 

@@ -12,7 +12,11 @@ import { organizationClient } from "better-auth/client/plugins";
  */
 export const authClient = createAuthClient({
   baseURL: `${window.location.origin}/api/v1/auth`,
-  plugins: [organizationClient()],
+  plugins: [
+    organizationClient({
+      teams: { enabled: true },
+    }),
+  ],
 });
 
 export const {

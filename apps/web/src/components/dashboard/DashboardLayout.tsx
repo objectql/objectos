@@ -1,5 +1,11 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Blocks, LayoutDashboard, Users, Settings } from 'lucide-react';
+import {
+  Blocks,
+  LayoutDashboard,
+  Users,
+  Mail,
+  Building2,
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -22,8 +28,12 @@ import { TeamSwitcher } from '@/components/dashboard/TeamSwitcher';
 
 const navMain = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { title: 'Teams', href: '/dashboard/teams', icon: Users },
-  { title: 'Settings', href: '/dashboard/settings', icon: Settings },
+];
+
+const navOrganization = [
+  { title: 'Members', href: '/organization/members', icon: Users },
+  { title: 'Invitations', href: '/organization/invitations', icon: Mail },
+  { title: 'Settings', href: '/organization/settings', icon: Building2 },
 ];
 
 export function DashboardLayout() {
@@ -42,6 +52,28 @@ export function DashboardLayout() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navMain.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      tooltip={item.title}
+                    >
+                      <Link to={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Organization</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navOrganization.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
