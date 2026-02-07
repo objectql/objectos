@@ -24,13 +24,33 @@
 
 // Export types
 export type {
+    // Actions
     PermissionAction,
-    ActionPermission,
-    ObjectPermissions,
-    FieldPermission,
+    ExtendedPermissionAction,
+    // Profile
+    Profile,
+    LoginHourRestriction,
+    IpRange,
+    // Role
+    Role,
+    // Permission Set
     PermissionSet,
+    PermissionSetAssignment,
+    // Object & Field Permissions
+    ObjectPermission,
+    FieldPermission,
+    // Organization-Wide Defaults
+    OrgAccessLevel,
+    OrganizationDefault,
+    // Sharing Rules
+    SharingRuleType,
+    SharingAccessLevel,
+    SharingTargetType,
+    SharingRule,
+    // Runtime
     PermissionContext,
     PermissionCheckResult,
+    // Plugin Config
     PermissionPluginConfig,
 } from './types.js';
 
@@ -63,3 +83,16 @@ export {
     loadPermissionSetFromFile,
     loadPermissionSetFromYAML,
 } from './loader.js';
+
+// Export system object definitions
+export {
+    ProfileObject,
+    PermissionSetObject,
+    PermissionSetAssignmentObject,
+    ObjectPermissionObject,
+    FieldPermissionObject,
+    RoleObject,
+    OrganizationDefaultObject,
+    SharingRuleObject,
+    PermissionObjects,
+} from './objects/index.js';
