@@ -12,7 +12,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import { getBetterAuth, resetAuthInstance, BetterAuthConfig } from './auth-client.js';
+import { getBetterAuth, resetAuthInstance, type BetterAuthConfig } from './auth-client.js';
 import * as Objects from './objects/index.js';
 
 /**
@@ -44,7 +44,12 @@ export class BetterAuthPlugin implements Plugin {
     }
 
     /**
-     * Initialize plugin - Initialize Better-Auth and register routes
+     * Initialize plugin - Initialize Better-Auth and register as 'auth' service
+     *
+     * The ObjectStack HttpDispatcher routes `ALL /api/v1/auth/*` to whatever
+     * service is registered under CoreServiceName 'auth'.  It calls
+     *   `authService.handler(request: Request): Promise<Response>`
+     * so we expose a thin fetch-style handler wrapping better-auth.
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
@@ -52,26 +57,19 @@ export class BetterAuthPlugin implements Plugin {
         context.logger.info('[Better-Auth Plugin] Initializing...');
 
         try {
-            // Initialize Better-Auth
+            // Initialize Better-Auth with correct basePath for /api/v1/auth/*
             this.authInstance = await getBetterAuth(this.config);
 
-            // Register authentication routes
-            // Better-Auth provides a Node.js handler that we need to mount
-            const { toNodeHandler } = await import('better-auth/node');
-            this.handler = toNodeHandler(this.authInstance);
+            // Expose a Web-standard fetch handler (Request → Response)
+            // HttpDispatcher calls: authService.handler(context.request)
+            this.handler = async (request: Request): Promise<Response> => {
+                return this.authInstance.handler(request);
+            };
 
-            // Register the plugin as a service
-            // Only register as 'better-auth' since 'auth' is auto-registered by ObjectQL
+            // Register as 'auth' — the name HttpDispatcher.handleAuth() looks up
+            context.registerService('auth', this);
+            // Keep legacy alias for backward compatibility
             context.registerService('better-auth', this);
-
-            // Register route handler through a hook or service
-            // The kernel should provide a way to register routes
-            // For now, we'll use a hook to expose the handler
-            context.hook('http.beforeStart', (routeData: any) => {
-                if (routeData?.path === '/api/auth/*') {
-                    // Store or use handler as needed
-                }
-            });
 
             // Emit plugin initialized event
             await context.trigger('plugin.initialized', {
@@ -111,15 +109,14 @@ export class BetterAuthPlugin implements Plugin {
     }
 
     /**
-     * Get the Better-Auth handler for route registration
+     * Get the Better-Auth fetch-style handler.
+     * Returns (request: Request) => Promise<Response>
      */
-    async getHandler(): Promise<any> {
+    getHandler(): (request: Request) => Promise<Response> {
         if (!this.authInstance) {
             throw new Error('Better-Auth not initialized');
         }
-
-        const { toNodeHandler } = await import('better-auth/node');
-        return toNodeHandler(this.authInstance);
+        return (request: Request) => this.authInstance.handler(request);
     }
 
     /**
