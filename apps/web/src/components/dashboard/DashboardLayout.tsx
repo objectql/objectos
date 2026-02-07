@@ -31,6 +31,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
 import { TeamSwitcher } from '@/components/dashboard/TeamSwitcher';
+import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 
 const navMain = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -62,7 +63,7 @@ export function DashboardLayout() {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <TeamSwitcher />
+          <AppSwitcher />
         </SidebarHeader>
 
         <SidebarContent>
@@ -156,7 +157,10 @@ export function DashboardLayout() {
         </SidebarContent>
 
         <SidebarFooter>
-          <NavUser />
+          <div className="grid gap-2">
+            <TeamSwitcher />
+            <NavUser />
+          </div>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

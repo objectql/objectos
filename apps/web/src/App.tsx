@@ -22,6 +22,7 @@ const SSOSettingsPage = lazy(() => import('./pages/settings/sso'));
 const AdminOrganizationsPage = lazy(() => import('./pages/admin/organizations'));
 const AdminPermissionsPage = lazy(() => import('./pages/admin/permissions'));
 const AdminPackagesPage = lazy(() => import('./pages/admin/packages'));
+const BusinessAppPage = lazy(() => import('./pages/apps/app'));
 
 export function App() {
   const fallback = (
@@ -56,6 +57,7 @@ export function App() {
           <Route path="/admin/organizations" element={<AdminOrganizationsPage />} />
           <Route path="/admin/permissions" element={<AdminPermissionsPage />} />
           <Route path="/admin/packages" element={<AdminPackagesPage />} />
+          <Route path="/apps/:appId" element={<BusinessAppPage />} />
         </Route>
       </Route>
 
