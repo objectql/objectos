@@ -25,6 +25,6 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@objectql/core": "^4.1.0"
+    "@objectql/core": "^4.2.0"
   }
 }
