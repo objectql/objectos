@@ -1,260 +1,227 @@
 # ObjectOS
 
+**The Business Operating System.**
 
-  **The Enterprise Low-Code Runtime Engine.**
-  
-  Instant Backend. Security Kernel. Workflow Automation.
-  
-  *Built on [ObjectQL](https://github.com/objectql/objectql) & [NestJS](https://nestjs.com/).*
+State. Identity. Synchronization. Orchestration. Admin Console.
 
-  [![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
-  [![Stack](https://img.shields.io/badge/stack-Node.js%20%7C%20NestJS-E0234E.svg)](https://nestjs.com/)
+*Built on [ObjectQL](https://github.com/objectql/objectql) & [ObjectStack](https://objectstack.ai).*
 
----
-
-## 🏢 Introduction
-
-**ObjectOS** is a production-ready, metadata-driven runtime platform. 
-
-While **ObjectQL** defines *how data looks*, **ObjectOS** defines *how business runs*. It acts as the "Operating System" for your enterprise data, instantly turning static YAML schemas into secure, scalable, and compliant APIs.
-
-**The Role of ObjectOS:**
-* **The Enforcer:** Intercepts every request to enforce RBAC (Role-Based Access Control) and Record-Level Security (RLS).
-* **The Server:** Automatically serves REST, GraphQL, and JSON-RPC APIs for **[Object UI](https://github.com/objectql/objectui)**.
-* **The Automator:** Runs server-side triggers, workflows, and scheduled jobs.
+[![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
+[![Stack](https://img.shields.io/badge/stack-Hono%20%7C%20React%20%7C%20TypeScript-blue.svg)](#-tech-stack)
 
 ---
 
-## 🚀 Key Features
+## Introduction
 
-### 🛡️ Enterprise Security Kernel
-ObjectOS doesn't just read data; it protects it.
-* **Authentication:** Integrated OIDC, SAML, and LDAP support (via Better-Auth).
-* **Fine-Grained Permission:** Field-level and record-level sharing rules defined in YAML.
-* **Audit Logging:** Built-in tracking of who did what and when.
+**ObjectOS** is the system layer of the ObjectStack ecosystem.
 
-### 🔌 Instant API Gateway
-Stop writing boilerplate controllers.
-* **Auto-generated REST API:** `GET /api/v1/data/{object}` works out-of-the-box.
-* **Auto-generated GraphQL:** Instant schema stitching based on your ObjectQL definitions.
-* **Metadata API:** Serves UI configuration to frontend clients like Object UI.
+| Layer | Repo | Responsibility |
+|---|---|---|
+| **ObjectQL** | [objectql/objectql](https://github.com/objectql/objectql) | Data — metadata, drivers, queries |
+| **ObjectUI** | [objectql/objectui](https://github.com/objectql/objectui) | Views — amis-like control library |
+| **ObjectOS** | this repo | **State, Identity, Sync, Orchestration, Admin Console** |
 
-### ⚙️ Workflow & Automation
-* **Triggers:** Run code `beforeInsert`, `afterUpdate`, `beforeDelete`.
-* **Flow Engine:** Visual workflow execution (compatible with BPMN-style logic).
-* **Job Queue:** Background task processing based on Redis.
+ObjectOS acts as the "Kernel" that boots up, loads drivers (ObjectQL) and applications (Plugins), then governs every request through Authentication, Authorization, and Audit.
 
 ---
 
-## 📦 Architecture
+## Key Features
 
-ObjectOS is built as a modular Monorepo using **NestJS** and follows the **@objectstack/spec** protocol.
+- **Identity & Auth** — BetterAuth integration, SSO, 2FA, multi-tenant organization management
+- **RBAC Engine** — Object/Field/Record-level security with permission sets
+- **Audit Logging** — CRUD event capture, field-level history, IP/UA/session tracking
+- **Workflow Engine** — State machines, BPMN-Lite approval processes
+- **Automation Triggers** — WorkflowRule, 7 action types, formula engine, queue with retry
+- **Background Jobs** — Multi-priority queues, cron scheduling, concurrency control
+- **Notifications** — Email/SMS/Push/Webhook with Handlebars templates
+- **Realtime** — WebSocket server, subscribe/unsubscribe, presence
+- **Cache** — LRU + Redis, TTL, namespace isolation
+- **KV Storage** — Memory/Redis/SQLite backends
+- **Metrics** — Counter/Gauge/Histogram, Prometheus export
+- **i18n** — Multi-locale, interpolation, pluralization
+- **Offline Sync** — SQLite WASM, OPFS, Service Worker (browser package)
 
-### Micro-Kernel Architecture
+---
 
-ObjectOS implements a **micro-kernel plugin architecture** where core functionality is minimal and all features are loaded as plugins:
+## Tech Stack
+
+### Server (ObjectStack Kernel)
+
+- **Runtime:** Node.js (LTS)
+- **Language:** TypeScript 5.0+ (Strict)
+- **HTTP Server:** Hono + `@hono/node-server` (via `objectstack serve`)
+- **Architecture:** Modular Monolith / Micro-kernel
+- **APIs:** REST `/api/v1/*` · GraphQL `/api/v1/graphql` · WebSocket
+
+### Admin Console (`apps/web`)
+
+- **Bundler:** Vite 6
+- **Framework:** React 19
+- **Routing:** React Router 7
+- **Styling:** Tailwind CSS 4 + shadcn/ui
+- **Auth Client:** better-auth/react → `/api/v1/auth`
+
+### Documentation (`apps/site`)
+
+- **Framework:** Next.js 16 + Fumadocs (MDX)
+- **Output:** Static export
+
+---
+
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│               @objectstack/runtime (Core)                │
-│  • Plugin Lifecycle Manager (init/start/destroy)        │
-│  • Service Registry (DI Container)                      │
-│  • Event Bus (Hook System)                              │
-│  • Dependency Resolver (Topological Sort)               │
-└──────────────┬──────────────────────────────────────────┘
-               │
-       ┌───────┴────────┬────────────┬──────────┐
-       │                │            │          │
-  ┌────▼─────┐   ┌─────▼─────┐  ┌──▼───┐  ┌───▼────┐
-  │ ObjectQL │   │  Driver   │  │Server│  │ Custom │
-  │  Plugin  │   │  Plugin   │  │Plugin│  │ Plugin │
-  └──────────┘   └───────────┘  └──────┘  └────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                   objectstack serve (:3000)                  │
+│                                                              │
+│  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌─────────────┐  │
+│  │  Hono    │ │ BetterAuth │ │ ObjectQL │ │  Plugins    │  │
+│  │  Router  │ │ /api/v1/   │ │  Driver  │ │  (13 svcs)  │  │
+│  └────┬─────┘ └──────┬─────┘ └────┬─────┘ └──────┬──────┘  │
+│       └──────────────┴────────────┴──────────────┘          │
+│                                                              │
+│  Static Mounts:                                              │
+│    /console/*  → apps/web/dist   (Vite SPA)                │
+│    /docs/*     → apps/site/out   (Static HTML)              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-See [@objectstack/runtime](packages/runtime) for details on the plugin system.
+### Three-Layer UI Architecture
 
-### Protocol Compliance
+```
+ObjectUI (Controls)  →  apps/web (App Shell)  →  ObjectStack Hono (API)
+     npm import              HTTP / WebSocket        Kernel + Plugins
+```
 
-ObjectOS adheres to the [@objectstack/spec](https://github.com/objectstack-ai/spec) protocol, which defines:
-- **Kernel Protocol**: Plugin lifecycle, manifest structure, and context interfaces
-- **Data Protocol**: Object schemas, field types, queries, and hooks
-- **System Protocol**: Audit logging, events, and job scheduling
-- **UI Protocol**: App configurations, views, and dashboards
-
-This ensures interoperability across the ObjectStack ecosystem (ObjectQL, ObjectOS, ObjectUI).
-
-| Package | Role | Description |
-| :--- | :--- | :--- |
-| **`@objectstack/runtime`** | **The Kernel** | Micro-kernel with plugin lifecycle and service registry. |
-| **`@objectos/plugin-server`** | **The Gateway** | NestJS HTTP server as a runtime plugin. |
-| **`@objectos/plugin-better-auth`** | **Auth** | Authentication strategies (Local, OAuth2, Enterprise SSO). |
-| **`@objectos/plugin-audit-log`** | **Audit** | Comprehensive audit logging and field history tracking. |
-| **`@objectos/plugin-storage`** | **Storage** | Plugin-isolated KV storage (Memory, SQLite, Redis). |
-| **`@objectos/plugin-metrics`** | **Monitoring** | System metrics collection with Prometheus export. |
-| **`@objectos/plugin-cache`** | **Cache** | Cache abstraction layer (LRU, Redis). |
-| **`@objectos/plugin-i18n`** | **i18n** | Internationalization with multi-locale support. |
-| **`@objectos/plugin-notification`** | **Notifications** | Multi-channel notifications (Email, SMS, Push, Webhook). |
-| **`@objectos/presets`** | **Config** | Standard system objects (`_users`, `_roles`, `_audit_log`). |
-| **`@objectos/kernel`** | **DEPRECATED** | ⚠️ Use `@objectstack/runtime` instead |
-| **`@objectos/server`** | **DEPRECATED** | ⚠️ Use `@objectos/plugin-server` instead |
+- **ObjectUI** = Control Library (Form, Grid, Chart, Kanban — amis-like)
+- **apps/web** = App Shell (routes, layout, auth, navigation)
+- **ObjectStack** = API Server (data, auth, permissions, workflow)
 
 ---
 
-## ⚡ Getting Started
+## Monorepo Structure
+
+### Kernel Packages
+
+| Package | Role |
+|---|---|
+| `@objectos/auth` | Identity — BetterAuth, SSO, 2FA, Sessions |
+| `@objectos/permissions` | Authorization — RBAC, Permission Sets |
+| `@objectos/audit` | Compliance — CRUD events, field history |
+| `@objectos/workflow` | Flow — FSM engine, approval processes |
+| `@objectos/automation` | Triggers — WorkflowRule, action types |
+| `@objectos/jobs` | Background — queues, cron, retry |
+| `@objectos/notification` | Outbound — Email/SMS/Push/Webhook |
+| `@objectos/realtime` | Sync — WebSocket, presence |
+| `@objectos/cache` | Performance — LRU + Redis |
+| `@objectos/storage` | Persistence — KV (Memory/Redis/SQLite) |
+| `@objectos/metrics` | Observability — Prometheus export |
+| `@objectos/i18n` | Localization — multi-locale |
+| `@objectos/browser` | Offline — SQLite WASM, OPFS |
+
+### Application Packages
+
+| Package | Role | Stack |
+|---|---|---|
+| `apps/web` | Admin Console | Vite + React 19 + React Router 7 |
+| `apps/site` | Documentation | Next.js 16 + Fumadocs |
+
+---
+
+## Getting Started
 
 ### Prerequisites
-* Node.js 18+
-* PostgreSQL or MongoDB
-* Redis (for Queues/Caching)
+
+- Node.js 22+
+- pnpm 9+
+- PostgreSQL or MongoDB (optional — SQLite by default)
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/objectstack-ai/objectos.git
-
-# Install dependencies
+git clone https://github.com/objectql/objectos.git
+cd objectos
 pnpm install
-
-# Configure environment
-cp .env.example .env
-
 ```
 
-### Running the Server
-
-ObjectOS runs as a standard NestJS application.
+### Development
 
 ```bash
-# Start in development mode
+# Start API server (:3000) + Admin Console (:3001) together
 pnpm dev
 
-# The API is now available at http://localhost:3000
-# The Metadata API is at http://localhost:3000/api/v1/metadata
+# Start everything including docs site
+pnpm dev:all
+```
 
+The Admin Console is available at **http://localhost:3001/console/**
+with API proxy to ObjectStack at `:3000`.
+
+### All Commands
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | API `:3000` + Web `:3001` (daily development) |
+| `pnpm dev:all` | API + Web + Site (full stack) |
+| `pnpm start` | Production — single process with static mounts |
+| `pnpm build` | Build all packages (Turborepo) |
+| `pnpm test` | Run all tests |
+| `pnpm lint` | Lint all packages |
+| `pnpm type-check` | TypeScript check all packages |
+| `pnpm objectstack:serve` | API server only |
+| `pnpm web:dev` | Admin Console only |
+| `pnpm web:build` | Build Admin Console |
+| `pnpm site:dev` | Documentation site only |
+| `pnpm site:build` | Build documentation |
+
+### Production
+
+```bash
+# Build frontend assets
+pnpm web:build
+pnpm site:build
+
+# Start single-process server
+# Serves API + /console (SPA) + /docs (static)
+pnpm start
 ```
 
 ---
 
-## 🧩 Usage Example
+## Documentation
 
-ObjectOS is designed to be injected into your application.
+- [Architecture Guide](./ARCHITECTURE.md)
+- [Development Plan](./DEVELOPMENT_PLAN.md)
+- [Contributing Guide](./CONTRIBUTING.md)
 
-```typescript
-// main.ts (Your NestJS App)
-import { NestFactory } from '@nestjs/core';
-import { ObjectOSModule } from '@objectos/server';
-import { SqlDriver } from '@objectql/driver-sql';
+### Spec & Guides (docs site)
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  // Initialize ObjectOS
-  await app.get(ObjectOSModule).boot({
-    // 1. Define Data Source (ObjectQL Driver)
-    driver: new SqlDriver({
-      connection: process.env.DATABASE_URL
-    }),
-    
-    // 2. Load Plugins
-    plugins: [
-      AuthPlugin({ secret: '...' }),
-      WorkflowPlugin()
-    ],
-    
-    // 3. Load Metadata
-    metadata: ['./src/objects/*.yml']
-  });
-
-  await app.listen(3000);
-}
-bootstrap();
-
-```
+- [Platform Architecture](./docs/guide/architecture.md)
+- [Data Modeling](./docs/guide/data-modeling.md)
+- [Plugin Development](./docs/guide/plugin-development.md)
+- [Security Guide](./docs/guide/security-guide.md)
+- [HTTP Protocol](./docs/spec/http-protocol.md)
+- [Metadata Format](./docs/spec/metadata-format.md)
+- [Query Language](./docs/spec/query-language.md)
 
 ---
 
-## 📋 Documentation & Development
+## License & Commercial Usage
 
-### 🆕 **NEW: Complete Development Documentation (2026)** 📖
+**ObjectOS is open-source software licensed under the [GNU Affero General Public License v3.0 (AGPLv3)](LICENSE).**
 
-**Comprehensive bilingual guides (中文/English) for building world-class enterprise software:**
+- ✅ **Free for internal use** within your organization
+- ✅ **Free for open source** AGPL-licensed projects
+- ⚠️ **Copyleft** — SaaS usage requires open-sourcing under AGPL or purchasing a commercial license
 
-#### 📚 Core Documentation
-- **[📑 Documentation Index](./OBJECTOS_DOCUMENTATION_INDEX.md)** - 📍 **START HERE** - Complete documentation navigation
-- **[📋 Development Master Plan](./OBJECTOS_DEVELOPMENT_MASTER_PLAN.md)** - 22-week implementation roadmap
-- **[🏗️ Architecture Design](./OBJECTOS_ARCHITECTURE_DESIGN.md)** - Deep dive into microkernel architecture
-- **[🔌 Plugin System Specification](./OBJECTOS_PLUGIN_SPECIFICATION.md)** - Complete plugin development guide
-- **[🔗 Integration Guide](./OBJECTOS_INTEGRATION_GUIDE.md)** - Integrating ObjectQL and ObjectUI
-- **[🚀 Deployment Guide](./OBJECTOS_DEPLOYMENT_GUIDE.md)** - Production deployment and operations
-
-#### 🎯 Quick Navigation
-- **For Product Managers**: Start with [Development Master Plan](./OBJECTOS_DEVELOPMENT_MASTER_PLAN.md)
-- **For Architects**: Read [Architecture Design](./OBJECTOS_ARCHITECTURE_DESIGN.md)
-- **For Developers**: Follow [Plugin Specification](./OBJECTOS_PLUGIN_SPECIFICATION.md)
-- **For DevOps**: Refer to [Deployment Guide](./OBJECTOS_DEPLOYMENT_GUIDE.md)
-
----
-
-### 📘 Spec System Development
-
-**Implementation plan based on @objectstack/spec protocol:**
-
-- **[📑 Spec Documentation Index](./SPEC_SYSTEM_INDEX.md)** - Central hub for all spec system docs
-- **[📘 Spec Development Plan](./SPEC_SYSTEM_DEVELOPMENT_PLAN.md)** - Complete 16-week technical plan
-- **[⚡ Quick Reference](./SPEC_SYSTEM_QUICK_REFERENCE.md)** - Quick start guide and cheat sheet
-- **[🏗️ Architecture Comparison](./ARCHITECTURE_COMPARISON.md)** - Kernel vs Runtime visual guide
-- **[🗺️ Implementation Roadmap](./IMPLEMENTATION_ROADMAP.md)** - Bilingual roadmap (中文/English)
-
-### 📚 Additional Documentation
-
-- **[Phase 3 Implementation Summary](./PHASE_3_IMPLEMENTATION_SUMMARY.md)** - Complete summary of 5 system plugins implementation
-- **[Long-term Roadmap](./ROADMAP.md)** - Strategic vision through 2026 and beyond
-- **[Architecture Guide](./ARCHITECTURE.md)** - Deep dive into system design
-- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to ObjectOS
-
-### 📚 Upgrade Guides
-
-Detailed migration guides for upgrading ObjectStack dependencies:
-
-- **[ObjectStack 0.9.1 Upgrade (中文)](./OBJECTSTACK_0.9.1_UPGRADE_CN.md)** - Latest upgrade guide (Chinese)
-- **[ObjectStack 0.9.1 Upgrade](./OBJECTSTACK_0.9.1_UPGRADE.md)** - Latest upgrade guide (English)
-- **[ObjectStack 0.8.0 Upgrade Guide](./OBJECTSTACK_0.8.0_UPGRADE.md)** - Zod v4, TypeScript fixes
-- **[ObjectStack 0.7.2 Upgrade Guide](./OBJECTSTACK_0.7.2_UPGRADE.md)** - CLI integration and ES module fixes
-
-**Key 2026 Goals:**
-- 🔐 Production-grade permission system (Object/Field/Record-level)
-- 🪝 Complete lifecycle hooks system
-- 🔗 Full relationship support (Lookup, Master-Detail, Many-to-Many)
-- 🧪 Test coverage (90% Kernel, 80% Server, 70% UI)
-- 🎯 100% @objectstack/spec protocol compliance
-- 🌐 Comprehensive bilingual documentation
-
----
-
-## ⚖️ License & Commercial Usage
-
-**ObjectOS is open-source software licensed under the [GNU Affero General Public License v3.0 (AGPLv3)](https://www.google.com/search?q=AGPLv3).**
-
-### What this means:
-
-* ✅ **Free for internal use:** You can use ObjectOS internally within your company for free.
-* ✅ **Free for open source:** You can use ObjectOS in AGPL-licensed open-source projects.
-* ⚠️ **Copyleft:** If you modify ObjectOS or link it into your application and convey it to users (e.g., as a SaaS), you **must** open-source your entire application under AGPL.
-
-### Commercial License
-
-If you wish to build proprietary/closed-source SaaS applications using ObjectOS, or cannot comply with the AGPL, you must purchase a **Commercial License**.
-
-👉 Contact us for Enterprise Licensing: [GitHub Issues](https://github.com/objectstack-ai/objectos/issues)
+**Commercial License:** [Contact us](https://github.com/objectql/objectos/issues)
 
 ---
 
 <div align="center">
-<sub>Part of the <b>Object Ecosystem</b>.</sub>
 
+Part of the **ObjectStack Ecosystem**
 
+[ObjectQL (Data)](https://github.com/objectql/objectql) · **ObjectOS (System)** · [ObjectUI (View)](https://github.com/objectql/objectui)
 
-
-<sub><a href="https://github.com/objectql/objectql">ObjectQL (Data)</a> • <b>ObjectOS (System)</b> • <a href="https://github.com/objectql/objectui">Object UI (View)</a></sub>
 </div>
