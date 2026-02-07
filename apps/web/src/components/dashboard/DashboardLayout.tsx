@@ -8,6 +8,7 @@ import {
   UsersRound,
   Settings,
   Shield,
+  KeyRound,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const navOrganization = [
 const navSettings = [
   { title: 'Account', href: '/settings/account', icon: Settings },
   { title: 'Security', href: '/settings/security', icon: Shield },
+  { title: 'Single Sign-On', href: '/settings/sso', icon: KeyRound },
 ];
 
 export function DashboardLayout() {
