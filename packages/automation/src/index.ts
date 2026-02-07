@@ -16,6 +16,10 @@ export { ActionExecutor } from './actions.js';
 export { FormulaEngine } from './formulas.js';
 export { InMemoryAutomationStorage } from './storage.js';
 
+// Sandbox
+export { executeSandboxed, validateScript } from './sandbox.js';
+export type { SandboxConfig, SandboxResult } from './sandbox.js';
+
 // Types
 export type {
     TriggerType,
