@@ -16,10 +16,11 @@
     ]
   },
   "scripts": {
-    "build": "turbo run build",
+    "dev": "concurrently -n api,web -c blue,green \"pnpm objectstack:serve\" \"pnpm web:dev\"",
+    "dev:all": "concurrently -n api,web,site -c blue,green,yellow \"pnpm objectstack:serve\" \"pnpm web:dev\" \"pnpm site:dev\"",
     "start": "pnpm objectstack:serve",
+    "build": "turbo run build",
     "test": "turbo run test",
-    "dev": "turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
     "type-check": "turbo run type-check --continue",
@@ -27,13 +28,13 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && changeset publish",
-    "site:dev": "pnpm --filter @objectos/site dev",
-    "site:build": "pnpm --filter @objectos/site build",
-    "site:preview": "pnpm --filter @objectos/site start",
+    "objectstack:serve": "objectstack serve",
     "web:dev": "pnpm --filter @objectos/web dev",
     "web:build": "pnpm --filter @objectos/web build",
-    "web:start": "pnpm --filter @objectos/web start",
-    "objectstack:serve": "objectstack serve"
+    "web:preview": "pnpm --filter @objectos/web preview",
+    "site:dev": "pnpm --filter @objectos/site dev",
+    "site:build": "pnpm --filter @objectos/site build",
+    "site:preview": "pnpm --filter @objectos/site start"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
