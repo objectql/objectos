@@ -17,6 +17,10 @@ import type {
     Job,
     JobQueryOptions,
     JobQueueStats,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { InMemoryJobStorage } from './storage.js';
 import { JobQueue } from './queue.js';
@@ -41,6 +45,7 @@ export class JobsPlugin implements Plugin {
     private queue: JobQueue;
     private scheduler: JobScheduler;
     private context?: PluginContext;
+    private startedAt?: number;
 
     constructor(config: JobPluginConfig = {}) {
         this.config = {
@@ -77,6 +82,7 @@ export class JobsPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Update loggers
         (this.queue as any).logger = context.logger;
@@ -195,6 +201,46 @@ export class JobsPlugin implements Plugin {
      */
     async getStats(): Promise<JobQueueStats> {
         return this.queue.getStats();
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        let stats: JobQueueStats | undefined;
+        try { stats = await this.queue.getStats(); } catch { /* ignore */ }
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'job-queue', status, message: stats ? `Queue: ${stats.pending || 0} pending, ${stats.active || 0} active` : 'Job queue active', latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['jobs'],
+                emits: ['job.enqueued', 'job.scheduled', 'job.cancelled', 'job.trigger'],
+                listens: ['data.create'],
+                routes: [],
+                objects: [],
+            },
+            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['jobs'] };
     }
 
     /**

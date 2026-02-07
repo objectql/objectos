@@ -1,4 +1,5 @@
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { WebSocketServer, WebSocket } from 'ws';
 import { randomUUID } from 'crypto';
 
@@ -70,6 +71,7 @@ interface ClientState {
 export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugin => {
   let wss: WebSocketServer;
   const clientStates = new Map<WebSocket, ClientState>();
+  let startedAt: number | undefined;
 
   // Helper: Simple Wildcard Matcher (e.g. "user.*" matches "user.created")
   const matchPattern = (pattern: string, event: string): boolean => {
@@ -112,6 +114,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
     
     async init(ctx: PluginContext) {
       ctx.logger.info('[Realtime] Initializing WebSocket Server...');
+      startedAt = Date.now();
 
       // 1. Register the service so Adapters can find us
       ctx.registerService('websocket-server', {
@@ -322,6 +325,36 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
         wss.clients.forEach(client => client.close());
         wss.close();
       }
-    }
-  };
+    },
+
+    async healthCheck(): Promise<PluginHealthReport> {
+      const clientCount = wss ? wss.clients.size : 0;
+      const status = wss ? 'healthy' : 'unhealthy';
+      return {
+        pluginName: '@objectos/realtime',
+        pluginVersion: '0.1.0',
+        status,
+        uptime: startedAt ? Date.now() - startedAt : 0,
+        checks: [{ name: 'websocket-server', status, message: `${clientCount} connected clients`, latency: 0, timestamp: new Date().toISOString() }],
+        timestamp: new Date().toISOString(),
+      };
+    },
+
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+      return {
+        capabilities: {
+          services: ['websocket-server'],
+          emits: [],
+          listens: [],
+          routes: ['/ws'],
+          objects: [],
+        },
+        security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
+      };
+    },
+
+    getStartupResult(): PluginStartupResult {
+      return { pluginName: '@objectos/realtime', success: !!wss, duration: 0, servicesRegistered: ['websocket-server'] };
+    },
+  } as Plugin;
 };

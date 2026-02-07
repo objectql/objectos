@@ -21,6 +21,10 @@ import type {
     AuditTrailEntry,
     FieldChange,
     AuditQueryOptions,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { InMemoryAuditStorage } from './storage.js';
 
@@ -36,6 +40,7 @@ export class AuditLogPlugin implements Plugin {
     private config: AuditLogConfig;
     private storage: any;
     private context?: PluginContext;
+    private startedAt?: number;
 
     constructor(config: AuditLogConfig = {}) {
         this.config = {
@@ -54,6 +59,7 @@ export class AuditLogPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Register audit log service
         context.registerService('audit-log', this);
@@ -282,6 +288,44 @@ export class AuditLogPlugin implements Plugin {
      */
     private generateId(): string {
         return `audit_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'audit-storage', status, message: this.config.enabled ? 'Audit logging active' : 'Audit logging disabled', latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['audit-log'],
+                emits: ['audit.event.recorded'],
+                listens: ['data.create', 'data.update', 'data.delete', 'data.find', 'job.enqueued', 'job.started', 'job.completed', 'job.failed', 'job.retried', 'job.cancelled', 'job.scheduled'],
+                routes: [],
+                objects: [],
+            },
+            security: { requiredPermissions: ['admin'], handlesSensitiveData: true, makesExternalCalls: false },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['audit-log'] };
     }
 
     /**
