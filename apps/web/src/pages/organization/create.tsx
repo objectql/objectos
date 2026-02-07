@@ -21,7 +21,7 @@ export default function CreateOrganizationPage() {
 
     try {
       await organization.create({ name, slug });
-      navigate('/dashboard');
+      navigate('/settings');
     } catch (err: any) {
       console.error(err);
       setError(err?.message || 'Failed to create organization');

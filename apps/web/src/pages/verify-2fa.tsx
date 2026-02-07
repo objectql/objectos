@@ -24,7 +24,7 @@ export default function Verify2FAPage() {
         await twoFactor.verifyBackupCode(
           { code },
           {
-            onSuccess: () => navigate('/dashboard'),
+            onSuccess: () => navigate('/settings'),
             onError: (ctx) => {
               setError(ctx.error.message || 'Invalid backup code');
               setLoading(false);
@@ -35,7 +35,7 @@ export default function Verify2FAPage() {
         await twoFactor.verifyTotp(
           { code },
           {
-            onSuccess: () => navigate('/dashboard'),
+            onSuccess: () => navigate('/settings'),
             onError: (ctx) => {
               setError(ctx.error.message || 'Invalid verification code');
               setLoading(false);

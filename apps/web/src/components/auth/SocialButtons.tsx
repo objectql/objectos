@@ -122,13 +122,13 @@ export function SocialButtons() {
       if (meta?.social) {
         await signIn.social({
           provider: providerId as any,
-          callbackURL: '/dashboard',
+          callbackURL: '/settings',
         });
       } else {
         // Enterprise SSO via genericOAuth
         await (signIn as any).oauth2({
           providerId,
-          callbackURL: '/dashboard',
+          callbackURL: '/settings',
         });
       }
     } catch (error) {

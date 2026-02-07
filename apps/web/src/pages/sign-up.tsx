@@ -27,7 +27,7 @@ export default function SignUpPage() {
         { name, email, password },
         {
           onSuccess: () => {
-            navigate('/dashboard');
+            navigate('/settings');
           },
           onError: (ctx) => {
             setError(ctx.error.message || 'Failed to sign up');

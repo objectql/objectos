@@ -29,7 +29,7 @@ export default function SignInPage() {
             if (ctx.data?.twoFactorRedirect) {
               navigate('/verify-2fa');
             } else {
-              navigate('/dashboard');
+              navigate('/settings');
             }
           },
           onError: (ctx) => {

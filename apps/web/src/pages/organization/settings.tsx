@@ -60,7 +60,7 @@ export default function OrganizationSettingsPage() {
     setDeleting(true);
     try {
       await organization.delete({ organizationId: activeOrg.id });
-      navigate('/dashboard');
+      navigate('/settings');
     } catch (err: any) {
       setError(err?.message || 'Failed to delete organization');
       setDeleting(false);
