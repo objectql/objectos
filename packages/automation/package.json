@@ -11,8 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.0.11",
-    "@objectstack/spec": "1.0.11",
+    "@objectstack/runtime": "^1.1.0",
+    "@objectstack/spec": "1.1.0",
     "cron-parser": "^4.9.0"
   },
   "devDependencies": {
