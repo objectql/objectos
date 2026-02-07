@@ -7,7 +7,6 @@ State. Identity. Synchronization. Orchestration. Admin Console.
 *Built on [ObjectQL](https://github.com/objectstack-ai/objectql) & [ObjectStack](https://objectstack.ai).*
 
 [![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
-[![Stack](https://img.shields.io/badge/stack-Hono%20%7C%20React%20%7C%20TypeScript-blue.svg)](#-tech-stack)
 
 ---
 
