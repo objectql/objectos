@@ -293,13 +293,17 @@ Output: `apps/web/dist/`
 
 ### Build Documentation Site
 
-Build the documentation site (Next.js):
+Build the documentation site (Next.js 16 + Fumadocs):
 
 ```bash
 pnpm site:build
 ```
 
 Output: `apps/site/out/`
+
+**Note:** The repository has two documentation systems:
+- `apps/site/` - Main documentation site (Next.js + Fumadocs) - builds to `out/`
+- `docs/` - VitePress guides (legacy) - not built for production
 
 ## Testing Commands
 
@@ -383,7 +387,9 @@ This runs a single-process server that:
 - Serves the Admin Console at `http://localhost:5320/console/`
 - Serves the documentation at `http://localhost:5320/docs/`
 
-All static assets are served from the built `dist/` and `out/` directories.
+All static assets are served from the built `dist/` and `out/` directories via static mounts configured in `objectstack.config.ts`.
+
+**Note:** In production, everything runs on a single port (5320). The development setup uses two ports (5320 for API, 5321 for Vite dev server) to enable hot-reload for the frontend.
 
 ## Configuration
 
