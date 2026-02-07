@@ -9,7 +9,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { BrowserRuntimeConfig } from './types/index.js';
+import type { BrowserRuntimeConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types/index.js';
 import { SQLiteWASMDriver } from './database/sqlite-wasm-driver.js';
 import { OPFSStorageBackend } from './storage/opfs-storage.js';
 import { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager.js';
@@ -30,6 +30,7 @@ export class BrowserRuntimePlugin implements Plugin {
   private storage?: OPFSStorageBackend;
   private serviceWorker?: ServiceWorkerManager;
   private worker?: WorkerManager;
+  private startedAt?: number;
 
   constructor(config: BrowserRuntimeConfig = {}) {
     this.config = {
@@ -62,6 +63,7 @@ export class BrowserRuntimePlugin implements Plugin {
    */
   async init(context: PluginContext): Promise<void> {
     this.context = context;
+    this.startedAt = Date.now();
 
     try {
       // Check browser compatibility
@@ -123,6 +125,42 @@ export class BrowserRuntimePlugin implements Plugin {
     }
 
     this.context?.logger.info('[BrowserRuntime] Stopped');
+  }
+
+  /**
+   * Health check
+   */
+  async healthCheck(): Promise<PluginHealthReport> {
+    const isDbReady = !!this.database;
+    const status = isDbReady ? 'healthy' : 'unhealthy';
+    return {
+      pluginName: this.name,
+      pluginVersion: this.version,
+      status,
+      uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+      checks: [
+        { name: 'browser-database', status: isDbReady ? 'healthy' : 'unhealthy', message: isDbReady ? 'SQLite WASM ready' : 'Database not initialized', latency: 0, timestamp: new Date().toISOString() },
+        { name: 'browser-storage', status: this.storage ? 'healthy' : 'degraded', message: this.storage ? 'OPFS ready' : 'Storage not initialized', latency: 0, timestamp: new Date().toISOString() },
+      ],
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Capability manifest
+   */
+  getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+    return {
+      capabilities: { services: ['browser-database', 'browser-storage', 'browser-service-worker', 'browser-worker'], emits: [], listens: [], routes: ['/api/graphql', '/api/data/*'], objects: [] },
+      security: { requiredPermissions: [], handlesSensitiveData: true, makesExternalCalls: false },
+    };
+  }
+
+  /**
+   * Startup result
+   */
+  getStartupResult(): PluginStartupResult {
+    return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['browser-database', 'browser-storage', 'browser-service-worker', 'browser-worker'] };
   }
 
   /**

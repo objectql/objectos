@@ -20,7 +20,11 @@ import type {
   SmsOptions,
   PushOptions,
   WebhookOptions,
-  TemplateData
+  TemplateData,
+  PluginHealthReport,
+  PluginCapabilityManifest,
+  PluginSecurityManifest,
+  PluginStartupResult,
 } from './types.js';
 import { NotificationChannel } from './types.js';
 import { TemplateEngine } from './template-engine.js';
@@ -43,6 +47,7 @@ export class NotificationPlugin implements Plugin {
   private context?: PluginContext;
   private templateEngine: TemplateEngine;
   private queue?: NotificationQueue;
+  private startedAt?: number;
   
   private emailChannel?: EmailChannel;
   private smsChannel?: SmsChannel;
@@ -101,6 +106,7 @@ export class NotificationPlugin implements Plugin {
    */
   init = async (context: PluginContext): Promise<void> => {
     this.context = context;
+    this.startedAt = Date.now();
     
     // Register notification service
     context.registerService('notification', {
@@ -114,6 +120,43 @@ export class NotificationPlugin implements Plugin {
     });
 
     context.logger.info('[NotificationPlugin] Initialized successfully');
+  }
+
+  /**
+   * Health check
+   */
+  async healthCheck(): Promise<PluginHealthReport> {
+    const channels: string[] = [];
+    if (this.emailChannel) channels.push('email');
+    if (this.smsChannel) channels.push('sms');
+    if (this.pushChannel) channels.push('push');
+    if (this.webhookChannel) channels.push('webhook');
+    const status = channels.length > 0 ? 'healthy' : 'degraded';
+    return {
+      pluginName: this.name,
+      pluginVersion: this.version,
+      status,
+      uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+      checks: [{ name: 'notification-channels', status, message: `Active channels: ${channels.join(', ') || 'none'}`, latency: 0, timestamp: new Date().toISOString() }],
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Capability manifest
+   */
+  getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+    return {
+      capabilities: { services: ['notification'], emits: [], listens: [], routes: [], objects: [] },
+      security: { requiredPermissions: [], handlesSensitiveData: true, makesExternalCalls: true, allowedDomains: ['*'] },
+    };
+  }
+
+  /**
+   * Startup result
+   */
+  getStartupResult(): PluginStartupResult {
+    return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['notification'] };
   }
 
   /**

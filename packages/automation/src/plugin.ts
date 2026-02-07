@@ -15,6 +15,10 @@ import type {
     AutomationRule,
     FormulaField,
     AutomationExecutionResult,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { InMemoryAutomationStorage } from './storage.js';
 import { TriggerEngine } from './triggers.js';
@@ -38,6 +42,7 @@ export class AutomationPlugin implements Plugin {
     private formulaEngine: FormulaEngine;
     private jobQueue: Queue; // Job Queue
     private context?: PluginContext;
+    private startedAt?: number;
 
     constructor(config: AutomationPluginConfig = {}) {
         this.config = {
@@ -73,6 +78,7 @@ export class AutomationPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Update loggers
         (this.triggerEngine as any).logger = context.logger;
@@ -435,6 +441,50 @@ export class AutomationPlugin implements Plugin {
 
     getFormulaEngine(): FormulaEngine {
         return this.formulaEngine;
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'automation-engine', status, message: this.config.enabled ? 'Automation engine active' : 'Automation disabled', latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['automation'],
+                emits: ['automation.trigger.fired', 'automation.action.executed', 'automation.rule.executed', 'automation.rule.failed', 'automation.formula.calculated'],
+                listens: ['data.afterCreate', 'data.afterUpdate', 'data.afterDelete'],
+                routes: [],
+                objects: [],
+            },
+            security: {
+                requiredPermissions: [],
+                handlesSensitiveData: false,
+                makesExternalCalls: !!this.config.enableHttp,
+                executesUserScripts: !!this.config.enableScriptExecution,
+                sandboxConfig: { timeout: this.config.maxExecutionTime || 30000, maxMemory: 128 * 1024 * 1024 },
+            },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['automation'] };
     }
 
     /**

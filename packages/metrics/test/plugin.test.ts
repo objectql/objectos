@@ -705,3 +705,162 @@ describe('Prometheus Export', () => {
         expect(parsed?.value).toBe(3.14);
     });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: MetricsPlugin;
+    let context: PluginContext;
+
+    beforeEach(async () => {
+        plugin = new MetricsPlugin();
+        context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return healthy status when enabled', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/metrics');
+            expect(report.pluginVersion).toBe('0.1.0');
+            expect(report.status).toBe('healthy');
+            expect(report.uptime).toBeGreaterThanOrEqual(0);
+            expect(report.checks).toHaveLength(1);
+            expect(report.checks[0].name).toBe('metrics-collection');
+            expect(report.checks[0].status).toBe('healthy');
+            expect(report.timestamp).toBeDefined();
+        });
+
+        it('should return degraded status when disabled', async () => {
+            const disabledPlugin = new MetricsPlugin({ enabled: false });
+            const ctx = createMockContext();
+            await disabledPlugin.init(ctx);
+            const report = await disabledPlugin.healthCheck();
+            expect(report.status).toBe('degraded');
+            await disabledPlugin.destroy();
+        });
+
+        it('should include metric counts in check message', async () => {
+            plugin.incrementCounter('test_counter');
+            plugin.setGauge('test_gauge', 42);
+            const report = await plugin.healthCheck();
+            expect(report.checks[0].message).toContain('1 counters');
+            expect(report.checks[0].message).toContain('1 gauges');
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should return capability and security manifests', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities).toBeDefined();
+            expect(manifest.security).toBeDefined();
+            expect(manifest.capabilities.services).toContain('metrics');
+            expect(manifest.security.handlesSensitiveData).toBe(false);
+            expect(manifest.security.makesExternalCalls).toBe(false);
+        });
+
+        it('should list kernel hooks in listens', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.listens).toContain('plugin.load.start');
+            expect(manifest.capabilities.listens).toContain('service.call');
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result after init', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/metrics');
+            expect(result.success).toBe(true);
+            expect(result.servicesRegistered).toContain('metrics');
+        });
+    });
+});
+
+// ─── Health Aggregator Tests ───────────────────────────────────────────────────
+
+import { aggregateHealth, isSystemOperational } from '../src/health.js';
+import type { PluginHealthReport } from '../src/types.js';
+
+describe('Health Aggregator', () => {
+    const makeReport = (name: string, status: 'healthy' | 'degraded' | 'unhealthy'): PluginHealthReport => ({
+        pluginName: name,
+        pluginVersion: '0.1.0',
+        status,
+        uptime: 1000,
+        checks: [{ name: 'test', status, timestamp: new Date().toISOString() }],
+        timestamp: new Date().toISOString(),
+    });
+
+    describe('aggregateHealth()', () => {
+        it('should report healthy when all plugins are healthy', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'healthy'),
+                makeReport('@objectos/storage', 'healthy'),
+            ];
+
+            const system = aggregateHealth(reports, Date.now() - 60000);
+            expect(system.status).toBe('healthy');
+            expect(system.totalPlugins).toBe(3);
+            expect(system.healthyPlugins).toBe(3);
+            expect(system.degradedPlugins).toBe(0);
+            expect(system.unhealthyPlugins).toBe(0);
+        });
+
+        it('should report degraded when any plugin is degraded', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'degraded'),
+            ];
+
+            const system = aggregateHealth(reports);
+            expect(system.status).toBe('degraded');
+            expect(system.degradedPlugins).toBe(1);
+        });
+
+        it('should report unhealthy when any plugin is unhealthy', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'degraded'),
+                makeReport('@objectos/auth', 'unhealthy'),
+            ];
+
+            const system = aggregateHealth(reports);
+            expect(system.status).toBe('unhealthy');
+            expect(system.unhealthyPlugins).toBe(1);
+        });
+
+        it('should include memory and node version', () => {
+            const system = aggregateHealth([makeReport('@objectos/metrics', 'healthy')]);
+            expect(system.nodeVersion).toBeDefined();
+            expect(system.memory).toBeDefined();
+            expect(system.memory!.heapUsed).toBeGreaterThan(0);
+        });
+
+        it('should track uptime', () => {
+            const system = aggregateHealth([], Date.now() - 5000);
+            expect(system.uptime).toBeGreaterThanOrEqual(4000);
+        });
+    });
+
+    describe('isSystemOperational()', () => {
+        it('should return true for healthy system', () => {
+            const system = aggregateHealth([makeReport('test', 'healthy')]);
+            expect(isSystemOperational(system)).toBe(true);
+        });
+
+        it('should return true for degraded system', () => {
+            const system = aggregateHealth([makeReport('test', 'degraded')]);
+            expect(isSystemOperational(system)).toBe(true);
+        });
+
+        it('should return false for unhealthy system', () => {
+            const system = aggregateHealth([makeReport('test', 'unhealthy')]);
+            expect(isSystemOperational(system)).toBe(false);
+        });
+    });
+});

@@ -287,3 +287,50 @@ describe('Cache Plugin', () => {
         });
     });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: CachePlugin;
+    let context: PluginContext;
+
+    beforeEach(async () => {
+        plugin = new CachePlugin();
+        const mock = createMockContext();
+        context = mock.context;
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return healthy status for operational backend', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/cache');
+            expect(report.pluginVersion).toBe('0.1.0');
+            expect(report.status).toBe('healthy');
+            expect(report.uptime).toBeGreaterThanOrEqual(0);
+            expect(report.checks).toHaveLength(1);
+            expect(report.checks[0].name).toBe('cache-backend');
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should return capability and security manifests', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.services).toContain('cache');
+            expect(manifest.security.handlesSensitiveData).toBe(false);
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/cache');
+            expect(result.success).toBe(true);
+            expect(result.servicesRegistered).toContain('cache');
+        });
+    });
+});

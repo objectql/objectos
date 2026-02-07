@@ -14,7 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { CacheBackend, CacheConfig, CacheStats } from './types.js';
+import type { CacheBackend, CacheConfig, CacheStats, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { LruCacheBackend } from './lru-backend.js';
 import { RedisCacheBackend } from './redis-backend.js';
 
@@ -78,6 +78,7 @@ export class CachePlugin implements Plugin {
     private context?: PluginContext;
     private scopedInstances: Map<string, ScopedCache> = new Map();
     private enableStats: boolean;
+    private startedAt?: number;
 
     constructor(config: CacheConfig = {}) {
         this.enableStats = config.enableStats ?? true;
@@ -96,6 +97,7 @@ export class CachePlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Register cache service
         context.registerService('cache', this);
@@ -163,6 +165,49 @@ export class CachePlugin implements Plugin {
             return undefined;
         }
         return this.backend.getStats?.();
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
+        let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
+        let message = 'Cache backend operational';
+        try {
+            await this.backend.set('__health_check__', 'ok', 5);
+            const val = await this.backend.get('__health_check__');
+            if (val !== 'ok') { checkStatus = 'degraded'; message = 'Cache read/write mismatch'; }
+            await this.backend.delete('__health_check__');
+        } catch {
+            checkStatus = 'unhealthy';
+            message = 'Cache backend unreachable';
+        }
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status: checkStatus,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'cache-backend', status: checkStatus, message, latency: Date.now() - start, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: { services: ['cache'], emits: [], listens: [], routes: [], objects: [] },
+            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: this.backend instanceof RedisCacheBackend },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['cache'] };
     }
 
     /**

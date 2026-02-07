@@ -21,6 +21,10 @@ import type {
     PermissionPluginConfig,
     PermissionContext,
     PermissionAction,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { InMemoryPermissionStorage, PermissionStorage } from './storage.js';
 import { PermissionEngine } from './engine.js';
@@ -39,6 +43,7 @@ export class PermissionsPlugin implements Plugin {
     private storage: PermissionStorage;
     private engine: PermissionEngine;
     private context?: PluginContext;
+    private startedAt?: number;
 
     constructor(config: PermissionPluginConfig = {}) {
         this.config = {
@@ -61,6 +66,7 @@ export class PermissionsPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Load permission sets from YAML files
         await this.loadPermissionSets();
@@ -226,6 +232,44 @@ export class PermissionsPlugin implements Plugin {
         this.engine.clearCache();
         await this.loadPermissionSets();
         this.context?.logger.info('[Permissions Plugin] Permissions reloaded');
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'permissions-engine', status, message: this.config.enabled ? 'Permission engine active' : 'Permissions disabled', latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['permissions'],
+                emits: [],
+                listens: ['data.beforeCreate', 'data.beforeUpdate', 'data.beforeDelete', 'data.beforeFind'],
+                routes: [],
+                objects: [],
+            },
+            security: { requiredPermissions: ['admin'], handlesSensitiveData: true, makesExternalCalls: false },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['permissions'] };
     }
 
     /**

@@ -27,6 +27,9 @@ export {
 // Parser
 export { parseWorkflowYAML, validateWorkflowDefinition } from './parser.js';
 
+// Flow conversion utilities
+export { legacyToFlow, flowToLegacy, validateFlow } from './flow-converter.js';
+
 // Types
 export type {
     WorkflowStatus,

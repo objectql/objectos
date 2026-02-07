@@ -151,6 +151,28 @@ export interface AuditLogConfig {
     retentionDays?: number;
     /** Custom storage implementation */
     storage?: AuditStorage;
+    /** Retention policy configuration */
+    retention?: AuditRetentionPolicy;
+}
+
+/**
+ * Audit retention policy configuration
+ */
+export interface AuditRetentionPolicy {
+    /** Whether automatic retention cleanup is enabled */
+    enabled?: boolean;
+    /** Default retention period in days */
+    defaultRetentionDays?: number;
+    /** Per-event-type retention overrides (eventType → days) */
+    eventRetention?: Record<string, number>;
+    /** Archive strategy before deletion */
+    archiveStrategy?: 'none' | 'compress' | 'export';
+    /** Archive destination path (when archiveStrategy is 'export') */
+    archivePath?: string;
+    /** Cleanup schedule as cron expression */
+    cleanupSchedule?: string;
+    /** Maximum number of records to delete per cleanup run */
+    batchSize?: number;
 }
 
 /**
@@ -160,3 +182,91 @@ export type {
     AuditEvent,
     AuditEventType,
 } from '@objectstack/spec/system';
+
+// ─── Kernel Compliance Types ───────────────────────────────────────────────────
+
+/** Plugin health status */
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+
+/** Health check result for a single check */
+export interface HealthCheckResult {
+  name: string;
+  status: HealthStatus;
+  message?: string;
+  latency?: number;
+  timestamp: string;
+  metadata?: Record<string, unknown>;
+}
+
+/** Aggregate health report for a plugin */
+export interface PluginHealthReport {
+  pluginName: string;
+  pluginVersion: string;
+  status: HealthStatus;
+  uptime: number;
+  checks: HealthCheckResult[];
+  timestamp: string;
+}
+
+/** Plugin capability declaration */
+export interface PluginCapabilityManifest {
+  services?: string[];
+  emits?: string[];
+  listens?: string[];
+  routes?: string[];
+  objects?: string[];
+}
+
+/** Plugin security manifest */
+export interface PluginSecurityManifest {
+  requiredPermissions?: string[];
+  handlesSensitiveData?: boolean;
+  makesExternalCalls?: boolean;
+  allowedDomains?: string[];
+  executesUserScripts?: boolean;
+  sandboxConfig?: {
+    timeout?: number;
+    maxMemory?: number;
+    allowedModules?: string[];
+  };
+}
+
+/** Plugin startup result */
+export interface PluginStartupResult {
+  pluginName: string;
+  success: boolean;
+  duration: number;
+  servicesRegistered: string[];
+  warnings?: string[];
+  errors?: string[];
+}
+
+/** Event bus configuration */
+export interface EventBusConfig {
+  persistence?: {
+    enabled: boolean;
+    storage?: 'memory' | 'redis' | 'sqlite';
+    maxEvents?: number;
+    ttl?: number;
+  };
+  retry?: {
+    enabled: boolean;
+    maxRetries?: number;
+    backoffMs?: number;
+    backoffMultiplier?: number;
+  };
+  deadLetterQueue?: {
+    enabled: boolean;
+    maxSize?: number;
+    storage?: 'memory' | 'redis' | 'sqlite';
+  };
+  webhooks?: {
+    enabled: boolean;
+    endpoints?: Array<{
+      url: string;
+      events: string[];
+      secret?: string;
+      timeout?: number;
+    }>;
+  };
+}

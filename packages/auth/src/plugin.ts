@@ -13,6 +13,7 @@
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
 import { getBetterAuth, resetAuthInstance, getEnabledProviders, type BetterAuthConfig } from './auth-client.js';
+import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import * as Objects from './objects/index.js';
 
 /**
@@ -38,6 +39,7 @@ export class BetterAuthPlugin implements Plugin {
     private context?: PluginContext;
     private authInstance?: any;
     public handler?: any;
+    private startedAt?: number;
 
     constructor(config: BetterAuthPluginOptions = {}) {
         this.config = config;
@@ -53,6 +55,7 @@ export class BetterAuthPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         context.logger.info('[Better-Auth Plugin] Initializing...');
 
@@ -183,6 +186,53 @@ export class BetterAuthPlugin implements Plugin {
             throw new Error('Better-Auth not initialized');
         }
         return (request: Request) => this.authInstance.handler(request);
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
+        const isInitialized = !!this.authInstance;
+        const status = isInitialized ? 'healthy' : 'unhealthy';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [
+                { name: 'auth-instance', status, message: isInitialized ? 'Better-Auth instance active' : 'Auth not initialized', latency: Date.now() - start, timestamp: new Date().toISOString() },
+            ],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['auth', 'better-auth'],
+                emits: ['plugin.initialized', 'plugin.destroyed', 'auth.ready'],
+                listens: [],
+                routes: ['/api/v1/auth/*'],
+                objects: Object.keys(Objects),
+            },
+            security: {
+                requiredPermissions: [],
+                handlesSensitiveData: true,
+                makesExternalCalls: true,
+                allowedDomains: ['*.google.com', '*.github.com', '*.microsoft.com'],
+            },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.authInstance, duration: 0, servicesRegistered: ['auth', 'better-auth'] };
     }
 
     /**

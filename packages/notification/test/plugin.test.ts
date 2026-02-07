@@ -480,3 +480,44 @@ describe('NotificationPlugin', () => {
     });
   });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: NotificationPlugin;
+
+    beforeEach(async () => {
+        plugin = new NotificationPlugin();
+        const context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return health report', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/notification');
+            expect(report.checks[0].name).toBe('notification-channels');
+            expect(report.timestamp).toBeDefined();
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should declare notification service', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.services).toContain('notification');
+            expect(manifest.security.makesExternalCalls).toBe(true);
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/notification');
+            expect(result.success).toBe(true);
+        });
+    });
+});

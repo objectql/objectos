@@ -13,6 +13,10 @@ import type { Plugin, PluginContext } from '@objectstack/runtime';
 import type {
     WorkflowPluginConfig,
     WorkflowDefinition,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { InMemoryWorkflowStorage } from './storage.js';
 import { ObjectQLWorkflowStorage } from './objectql-storage.js';
@@ -37,6 +41,7 @@ export class WorkflowPlugin implements Plugin {
     private api: WorkflowAPI;
     private context?: PluginContext;
     private logger: any = console; // Fallback logger before initialization
+    private startedAt?: number;
 
     constructor(config: WorkflowPluginConfig = {}) {
         this.config = {
@@ -58,6 +63,7 @@ export class WorkflowPlugin implements Plugin {
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.logger = context.logger;
+        this.startedAt = Date.now();
 
         // Upgrade storage to ObjectQL if not explicitly provided
         // We do this in init because we need the context
@@ -230,6 +236,44 @@ export class WorkflowPlugin implements Plugin {
      */
     getEngine(): WorkflowEngine {
         return this.engine;
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'workflow-engine', status, message: this.config.enabled ? 'Workflow engine active' : 'Workflows disabled', latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['workflow'],
+                emits: ['workflow.trigger'],
+                listens: ['data.afterCreate', 'data.afterUpdate', 'workflow.trigger'],
+                routes: [],
+                objects: [],
+            },
+            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['workflow'] };
     }
 
     /**

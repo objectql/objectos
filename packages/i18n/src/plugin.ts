@@ -24,7 +24,11 @@ import type {
     InterpolationOptions,
     TranslationResult,
     NumberFormatOptions,
-    DateFormatOptions
+    DateFormatOptions,
+    PluginHealthReport,
+    PluginCapabilityManifest,
+    PluginSecurityManifest,
+    PluginStartupResult,
 } from './types.js';
 import { interpolate, pluralize, processDirectives, formatNumber, formatDate } from './interpolation.js';
 
@@ -46,6 +50,7 @@ export class I18nPlugin implements Plugin {
     private onMissingTranslation?: (key: string, locale: string) => string;
     private interpolationDelimiters: { start: string; end: string };
     private yamlEnabled: boolean;
+    private startedAt?: number;
 
     constructor(config: I18nConfig = { defaultLocale: 'en' }) {
         this.defaultLocale = config.defaultLocale;
@@ -70,6 +75,7 @@ export class I18nPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Register i18n service
         context.registerService('i18n', this);
@@ -224,6 +230,38 @@ export class I18nPlugin implements Plugin {
      */
     formatDate(value: Date, options?: DateFormatOptions): string {
         return formatDate(value, this.currentLocale, options);
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const locales = this.getLoadedLocales();
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status: 'healthy',
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'i18n-translations', status: 'healthy', message: `${locales.length} locales loaded (current: ${this.currentLocale})`, latency: 0, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: { services: ['i18n'], emits: [], listens: [], routes: [], objects: [] },
+            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['i18n'] };
     }
 
     /**

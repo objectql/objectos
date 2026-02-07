@@ -81,6 +81,15 @@ export {
 } from './prometheus.js';
 
 export {
+    aggregateHealth,
+    isSystemOperational,
+} from './health.js';
+
+export type {
+    SystemHealthReport,
+} from './health.js';
+
+export {
     MetricType,
 } from './types.js';
 

@@ -12,7 +12,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { MetricsConfig, Labels, Metric } from './types.js';
+import type { MetricsConfig, Labels, Metric, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { MetricType } from './types.js';
 import { CounterCollector, GaugeCollector, HistogramCollector } from './collectors.js';
 import { exportPrometheus } from './prometheus.js';
@@ -48,6 +48,7 @@ export class MetricsPlugin implements Plugin {
     private gauges = new Map<MetricKey, GaugeCollector>();
     private histograms = new Map<MetricKey, HistogramCollector>();
     private context?: PluginContext;
+    private startedAt?: number;
 
     constructor(config: MetricsConfig = {}) {
         this.config = {
@@ -65,6 +66,7 @@ export class MetricsPlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Register metrics service
         context.registerService('metrics', this);
@@ -327,6 +329,62 @@ export class MetricsPlugin implements Plugin {
         this.counters.get(key)?.reset();
         this.gauges.get(key)?.reset();
         this.histograms.get(key)?.reset();
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
+        const status = this.config.enabled ? 'healthy' : 'degraded';
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [
+                {
+                    name: 'metrics-collection',
+                    status,
+                    message: `${this.counters.size} counters, ${this.gauges.size} gauges, ${this.histograms.size} histograms`,
+                    latency: Date.now() - start,
+                    timestamp: new Date().toISOString(),
+                },
+            ],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: {
+                services: ['metrics'],
+                emits: [],
+                listens: ['plugin.load.start', 'plugin.load.end', 'plugin.enable.start', 'plugin.enable.end', 'service.call', 'hook.execute.start', 'hook.execute.end'],
+                routes: ['/api/v1/metrics'],
+                objects: [],
+            },
+            security: {
+                requiredPermissions: [],
+                handlesSensitiveData: false,
+                makesExternalCalls: false,
+            },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return {
+            pluginName: this.name,
+            success: !!this.context,
+            duration: 0,
+            servicesRegistered: ['metrics'],
+        };
     }
 
     /**

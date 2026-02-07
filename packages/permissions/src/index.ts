@@ -69,6 +69,14 @@ export type {
     PermissionEngineConfig,
 } from './engine.js';
 
+// Export sharing rules engine
+export {
+    SharingRuleEngine,
+} from './sharing-rules.js';
+export type {
+    SharingRuleResult,
+} from './sharing-rules.js';
+
 // Export storage
 export {
     InMemoryPermissionStorage,

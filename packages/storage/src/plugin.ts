@@ -14,7 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { StorageBackend, StorageConfig } from './types.js';
+import type { StorageBackend, StorageConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { MemoryStorageBackend } from './memory-backend.js';
 import { SqliteStorageBackend } from './sqlite-backend.js';
 import { RedisStorageBackend } from './redis-backend.js';
@@ -75,6 +75,7 @@ export class StoragePlugin implements Plugin {
     private backend: StorageBackend;
     private context?: PluginContext;
     private scopedInstances: Map<string, ScopedStorage> = new Map();
+    private startedAt?: number;
 
     constructor(config: StorageConfig = {}) {
         // Initialize backend
@@ -91,6 +92,7 @@ export class StoragePlugin implements Plugin {
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
+        this.startedAt = Date.now();
 
         // Register storage service
         context.registerService('storage', this);
@@ -148,6 +150,49 @@ export class StoragePlugin implements Plugin {
 
     async clear(): Promise<void> {
         return this.backend.clear();
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
+        let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
+        let message = 'Storage backend operational';
+        try {
+            await this.backend.set('__health_check__', 'ok', 5);
+            const val = await this.backend.get('__health_check__');
+            if (val !== 'ok') { checkStatus = 'degraded'; message = 'Storage read/write mismatch'; }
+            await this.backend.delete('__health_check__');
+        } catch {
+            checkStatus = 'unhealthy';
+            message = 'Storage backend unreachable';
+        }
+        return {
+            pluginName: this.name,
+            pluginVersion: this.version,
+            status: checkStatus,
+            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            checks: [{ name: 'storage-backend', status: checkStatus, message, latency: Date.now() - start, timestamp: new Date().toISOString() }],
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    /**
+     * Capability manifest
+     */
+    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+        return {
+            capabilities: { services: ['storage'], emits: [], listens: [], routes: [], objects: [] },
+            security: { requiredPermissions: [], handlesSensitiveData: true, makesExternalCalls: this.backend instanceof RedisStorageBackend },
+        };
+    }
+
+    /**
+     * Startup result
+     */
+    getStartupResult(): PluginStartupResult {
+        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['storage'] };
     }
 
     /**
