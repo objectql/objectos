@@ -12,6 +12,9 @@ import {
   UsersRound,
   ClipboardList,
   LayoutDashboard,
+  Briefcase,
+  BarChart3,
+  Bell,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -52,6 +55,10 @@ const navSecurity = [
 
 const navSystem = [
   { title: 'Packages', href: '/settings/packages', icon: Package },
+  { title: 'Plugins', href: '/settings/plugins', icon: Blocks },
+  { title: 'Jobs', href: '/settings/jobs', icon: Briefcase },
+  { title: 'Metrics', href: '/settings/metrics', icon: BarChart3 },
+  { title: 'Notifications', href: '/settings/notifications', icon: Bell },
 ];
 
 const navAccount = [

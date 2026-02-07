@@ -26,6 +26,10 @@ const AuditPage = lazy(() => import('./pages/settings/audit'));
 const PackagesPage = lazy(() => import('./pages/settings/packages'));
 const AccountSettingsPage = lazy(() => import('./pages/settings/account'));
 const SecuritySettingsPage = lazy(() => import('./pages/settings/security'));
+const JobsPage = lazy(() => import('./pages/settings/jobs'));
+const PluginsPage = lazy(() => import('./pages/settings/plugins'));
+const MetricsPage = lazy(() => import('./pages/settings/metrics'));
+const NotificationsPage = lazy(() => import('./pages/settings/notifications'));
 
 // ── Business Apps ─────────────────────────────────────────────
 const BusinessAppPage = lazy(() => import('./pages/apps/app'));
@@ -66,6 +70,10 @@ export function App() {
               <Route path="/settings/sso" element={<SSOSettingsPage />} />
               <Route path="/settings/audit" element={<AuditPage />} />
               <Route path="/settings/packages" element={<PackagesPage />} />
+              <Route path="/settings/jobs" element={<JobsPage />} />
+              <Route path="/settings/plugins" element={<PluginsPage />} />
+              <Route path="/settings/metrics" element={<MetricsPage />} />
+              <Route path="/settings/notifications" element={<NotificationsPage />} />
               <Route path="/settings/account" element={<AccountSettingsPage />} />
               <Route path="/settings/security" element={<SecuritySettingsPage />} />
             </Route>
