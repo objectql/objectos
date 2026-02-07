@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   SidebarMenu,
@@ -19,10 +20,14 @@ import {
 } from '@/components/ui/sidebar';
 import { mockApps } from '@/lib/app-registry';
 
-export function AppSwitcher() {
+interface AppSwitcherProps {
+  /** "sidebar" = full sidebar header style, "topbar" = compact button for top bar */
+  variant?: 'sidebar' | 'topbar';
+}
+
+function useAppSwitcherState() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { isMobile } = useSidebar();
   const [query, setQuery] = useState('');
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -59,6 +64,29 @@ export function AppSwitcher() {
     (app) => app.category === 'custom' && !app.pinned,
   );
 
+  return {
+    navigate,
+    query,
+    setQuery,
+    displayName,
+    filteredApps,
+    pinnedApps,
+    systemApps,
+    businessApps,
+    customApps,
+  };
+}
+
+function AppDropdownBody({
+  query,
+  setQuery,
+  navigate,
+  pinnedApps,
+  systemApps,
+  businessApps,
+  customApps,
+  filteredApps,
+}: ReturnType<typeof useAppSwitcherState>) {
   const renderAppItem = (app: (typeof mockApps)[number]) => (
     <DropdownMenuItem
       key={app.id}
@@ -83,6 +111,106 @@ export function AppSwitcher() {
   );
 
   return (
+    <>
+      <DropdownMenuLabel className="text-xs text-muted-foreground">
+        Search
+      </DropdownMenuLabel>
+      <DropdownMenuItem
+        className="p-2"
+        onSelect={(event) => event.preventDefault()}
+      >
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search apps"
+          onKeyDown={(event) => event.stopPropagation()}
+        />
+      </DropdownMenuItem>
+
+      <div className="max-h-[50vh] overflow-auto">
+        {pinnedApps.length > 0 && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              Pinned
+            </DropdownMenuLabel>
+            {pinnedApps.map(renderAppItem)}
+          </>
+        )}
+
+        {systemApps.length > 0 && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              System
+            </DropdownMenuLabel>
+            {systemApps.map(renderAppItem)}
+          </>
+        )}
+
+        {businessApps.length > 0 && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              Business
+            </DropdownMenuLabel>
+            {businessApps.map(renderAppItem)}
+          </>
+        )}
+
+        {customApps.length > 0 && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              Custom
+            </DropdownMenuLabel>
+            {customApps.map(renderAppItem)}
+          </>
+        )}
+
+        {filteredApps.length === 0 && (
+          <div className="px-3 py-2 text-xs text-muted-foreground">
+            No apps match your search.
+          </div>
+        )}
+      </div>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel className="text-xs text-muted-foreground">
+        Administration
+      </DropdownMenuLabel>
+      <DropdownMenuItem
+        className="gap-2 p-2 text-muted-foreground"
+        onClick={() => navigate('/settings/packages')}
+      >
+        <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+          <Package className="size-3" />
+        </div>
+        Manage packages
+      </DropdownMenuItem>
+    </>
+  );
+}
+
+export function AppSwitcher({ variant = 'sidebar' }: AppSwitcherProps) {
+  const state = useAppSwitcherState();
+
+  if (variant === 'topbar') {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="gap-2">
+            <Grid3X3 className="size-4" />
+            <span className="hidden sm:inline">{state.displayName}</span>
+            <ChevronDown className="size-4 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-64 rounded-lg">
+          <AppDropdownBody {...state} />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  // Default: sidebar variant
+  const { isMobile } = useSidebar();
+
+  return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -95,7 +223,7 @@ export function AppSwitcher() {
                 <Grid3X3 className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{displayName}</span>
+                <span className="truncate font-medium">{state.displayName}</span>
                 <span className="truncate text-xs text-muted-foreground">
                   Business Apps
                 </span>
@@ -109,77 +237,7 @@ export function AppSwitcher() {
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Search
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              className="p-2"
-              onSelect={(event) => event.preventDefault()}
-            >
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search apps"
-                onKeyDown={(event) => event.stopPropagation()}
-              />
-            </DropdownMenuItem>
-
-            <div className="max-h-[50vh] overflow-auto">
-              {pinnedApps.length > 0 && (
-                <>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    Pinned
-                  </DropdownMenuLabel>
-                  {pinnedApps.map(renderAppItem)}
-                </>
-              )}
-
-              {systemApps.length > 0 && (
-                <>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    System
-                  </DropdownMenuLabel>
-                  {systemApps.map(renderAppItem)}
-                </>
-              )}
-
-              {businessApps.length > 0 && (
-                <>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    Business
-                  </DropdownMenuLabel>
-                  {businessApps.map(renderAppItem)}
-                </>
-              )}
-
-              {customApps.length > 0 && (
-                <>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    Custom
-                  </DropdownMenuLabel>
-                  {customApps.map(renderAppItem)}
-                </>
-              )}
-
-              {filteredApps.length === 0 && (
-                <div className="px-3 py-2 text-xs text-muted-foreground">
-                  No apps match your search.
-                </div>
-              )}
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Administration
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              className="gap-2 p-2 text-muted-foreground"
-              onClick={() => navigate('/settings/packages')}
-            >
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Package className="size-3" />
-              </div>
-              Manage packages
-            </DropdownMenuItem>
+            <AppDropdownBody {...state} />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

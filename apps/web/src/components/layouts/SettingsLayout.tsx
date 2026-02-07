@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
+import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 
 const navOverview = [
   { title: 'Overview', href: '/settings', icon: LayoutDashboard },
@@ -92,23 +93,7 @@ export function SettingsLayout() {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild>
-                <Link to="/settings">
-                  <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <Settings className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Settings</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      Admin Console
-                    </span>
-                  </div>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <AppSwitcher />
         </SidebarHeader>
 
         <SidebarContent>
