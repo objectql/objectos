@@ -9,6 +9,8 @@ import {
   Settings,
   Shield,
   KeyRound,
+  Package,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -45,6 +47,12 @@ const navSettings = [
   { title: 'Account', href: '/settings/account', icon: Settings },
   { title: 'Security', href: '/settings/security', icon: Shield },
   { title: 'Single Sign-On', href: '/settings/sso', icon: KeyRound },
+];
+
+const navAdmin = [
+  { title: 'Organizations', href: '/admin/organizations', icon: Building2 },
+  { title: 'Permissions', href: '/admin/permissions', icon: ShieldCheck },
+  { title: 'Packages', href: '/admin/packages', icon: Package },
 ];
 
 export function DashboardLayout() {
@@ -107,6 +115,28 @@ export function DashboardLayout() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navSettings.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      tooltip={item.title}
+                    >
+                      <Link to={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Administration</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navAdmin.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild

@@ -19,6 +19,9 @@ const TeamsPage = lazy(() => import('./pages/organization/teams'));
 const AccountSettingsPage = lazy(() => import('./pages/settings/account'));
 const SecuritySettingsPage = lazy(() => import('./pages/settings/security'));
 const SSOSettingsPage = lazy(() => import('./pages/settings/sso'));
+const AdminOrganizationsPage = lazy(() => import('./pages/admin/organizations'));
+const AdminPermissionsPage = lazy(() => import('./pages/admin/permissions'));
+const AdminPackagesPage = lazy(() => import('./pages/admin/packages'));
 
 export function App() {
   const fallback = (
@@ -50,6 +53,9 @@ export function App() {
           <Route path="/settings/account" element={<AccountSettingsPage />} />
           <Route path="/settings/security" element={<SecuritySettingsPage />} />
           <Route path="/settings/sso" element={<SSOSettingsPage />} />
+          <Route path="/admin/organizations" element={<AdminOrganizationsPage />} />
+          <Route path="/admin/permissions" element={<AdminPermissionsPage />} />
+          <Route path="/admin/packages" element={<AdminPackagesPage />} />
         </Route>
       </Route>
 
