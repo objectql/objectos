@@ -14,6 +14,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import SignInPage from '@/pages/sign-in';
 
+// Mock fetch for SocialButtons provider discovery
+globalThis.fetch = vi.fn(() =>
+  Promise.resolve({ json: () => Promise.resolve({ providers: [] }) } as Response),
+);
+
 // Mock auth-client
 const mockSignInEmail = vi.fn();
 
@@ -35,7 +40,8 @@ function renderSignIn() {
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<div data-testid="sign-up-page" />} />
         <Route path="/forgot-password" element={<div data-testid="forgot-password-page" />} />
-        <Route path="/dashboard" element={<div data-testid="dashboard-page" />} />
+        <Route path="/settings" element={<div data-testid="settings-page" />} />
+        <Route path="/verify-2fa" element={<div data-testid="verify-2fa-page" />} />
       </Routes>
     </MemoryRouter>,
   );

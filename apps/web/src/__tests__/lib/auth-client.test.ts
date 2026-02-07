@@ -32,6 +32,7 @@ vi.mock('better-auth/react', () => ({
 vi.mock('better-auth/client/plugins', () => ({
   organizationClient: mockOrganizationClient,
   twoFactorClient: mockTwoFactorClient,
+  genericOAuthClient: vi.fn(() => ({ id: 'generic-oauth' })),
 }));
 
 describe('auth-client', () => {
