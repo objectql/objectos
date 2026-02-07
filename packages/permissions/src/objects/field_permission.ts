@@ -2,12 +2,15 @@
  * Field Permission Object
  *
  * Controls visibility and editability of specific fields,
- * scoped to a specific profile or permission set.
+ * scoped to a permission set (or profile).
+ *
+ * Aligned with @objectstack/spec Security.FieldPermissionSchema:
+ *   readable, editable
  *
  * Permission matrix:
- *   read=false, update=false → Hidden
- *   read=true,  update=false → Read-Only
- *   read=true,  update=true  → Editable
+ *   readable=false, editable=false → Hidden
+ *   readable=true,  editable=false → Read-Only
+ *   readable=true,  editable=true  → Editable
  *
  * @see https://protocol.objectstack.ai/docs/guides/security#field-level-security
  */
@@ -18,27 +21,15 @@ export const FieldPermissionObject = ObjectSchema.create({
   label: 'Field Permission',
   pluralLabel: 'Field Permissions',
   icon: 'columns',
-  description: 'Controls visibility and editability of specific fields, scoped to a profile or permission set.',
+  description: 'Controls visibility and editability of specific fields, scoped to a permission set.',
   isSystem: true,
 
   fields: {
     // ── Parent context ──────────────────────────────────────────────────────
-    parent_type: Field.select(
-      [
-        { label: 'Profile', value: 'profile' },
-        { label: 'Permission Set', value: 'permission_set' },
-      ],
-      {
-        label: 'Parent Type',
-        required: true,
-      },
-    ),
-
-    parent_id: Field.text({
-      label: 'Parent ID',
+    permission_set: Field.lookup('permission_set', {
+      label: 'Permission Set',
       required: true,
-      index: true,
-      description: 'ID of the parent Profile or Permission Set',
+      description: 'The parent permission set (profile or add-on)',
     }),
 
     // ── Target field ────────────────────────────────────────────────────────
@@ -56,24 +47,24 @@ export const FieldPermissionObject = ObjectSchema.create({
       description: "The API name of the field, e.g. 'annual_revenue'",
     }),
 
-    // ── Permission levels ───────────────────────────────────────────────────
+    // ── Permission levels (spec: readable / editable) ───────────────────────
     readable: Field.boolean({
       label: 'Readable',
       defaultValue: true,
       description: 'Whether the field is visible',
     }),
 
-    updatable: Field.boolean({
-      label: 'Updatable',
+    editable: Field.boolean({
+      label: 'Editable',
       defaultValue: false,
       description: 'Whether the field is editable (requires readable=true)',
     }),
   },
 
   indexes: [
-    { fields: ['parent_type', 'parent_id', 'object_name', 'field_name'], unique: true },
+    { fields: ['permission_set', 'object_name', 'field_name'], unique: true },
     { fields: ['object_name', 'field_name'], unique: false },
-    { fields: ['parent_id'], unique: false },
+    { fields: ['permission_set'], unique: false },
   ],
 
   enable: {
@@ -85,11 +76,11 @@ export const FieldPermissionObject = ObjectSchema.create({
 
   validations: [
     {
-      name: 'updatable_requires_readable',
+      name: 'editable_requires_readable',
       type: 'script',
       severity: 'error',
-      message: 'Updatable requires Readable to be enabled',
-      condition: 'updatable === true && readable !== true',
+      message: 'Editable requires Readable to be enabled',
+      condition: 'editable === true && readable !== true',
     },
   ],
 });

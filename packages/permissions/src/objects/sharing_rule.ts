@@ -2,12 +2,16 @@
  * Sharing Rule Object
  *
  * Sharing rules extend access beyond the role hierarchy.
- * They can share records based on ownership, field criteria, or geographic territory.
+ *
+ * Aligned with @objectstack/spec Security.SharingRuleSchema:
+ *   Discriminated union: OwnerSharingRuleSchema | CriteriaSharingRuleSchema
+ *   - type: 'owner' | 'criteria'
+ *   - SharingLevel: 'read' | 'edit' | 'full'
+ *   - ShareRecipientType: 'user' | 'group' | 'role' | 'role_and_subordinates' | 'guest'
  *
  * Rule types:
- *   owner_based     → Share based on record owner's role/group
- *   criteria_based  → Share records matching field criteria
- *   territory_based → Share based on geographic territory
+ *   owner    → Share based on record owner's role/group
+ *   criteria → Share records matching a condition expression
  *
  * @see https://protocol.objectstack.ai/docs/guides/security#sharing-rules
  */
@@ -18,13 +22,14 @@ export const SharingRuleObject = ObjectSchema.create({
   label: 'Sharing Rule',
   pluralLabel: 'Sharing Rules',
   icon: 'share-2',
-  description: 'Sharing rules extend access beyond the role hierarchy based on ownership, criteria, or territory.',
+  description: 'Sharing rules extend access beyond the role hierarchy based on ownership or criteria.',
   isSystem: true,
 
   titleFormat: '{label}',
-  compactLayout: ['name', 'object_name', 'type', 'access_level'],
+  compactLayout: ['name', 'object', 'type', 'access_level'],
 
   fields: {
+    // ── Identity (spec: name / label / description) ─────────────────────────
     name: Field.text({
       label: 'Rule Name',
       required: true,
@@ -35,7 +40,6 @@ export const SharingRuleObject = ObjectSchema.create({
 
     label: Field.text({
       label: 'Display Name',
-      required: true,
       maxLength: 255,
     }),
 
@@ -44,25 +48,26 @@ export const SharingRuleObject = ObjectSchema.create({
       maxLength: 1000,
     }),
 
-    object_name: Field.text({
-      label: 'Object Name',
+    // ── Target object (spec: object) ────────────────────────────────────────
+    object: Field.text({
+      label: 'Object',
       required: true,
       index: true,
       maxLength: 80,
       description: 'The API name of the object this rule applies to',
     }),
 
-    is_active: Field.boolean({
+    // ── Active flag (spec: active) ──────────────────────────────────────────
+    active: Field.boolean({
       label: 'Active',
       defaultValue: true,
     }),
 
-    // ── Rule type ───────────────────────────────────────────────────────────
+    // ── Rule type (spec: type: 'owner' | 'criteria') ────────────────────────
     type: Field.select(
       [
-        { label: 'Owner-Based', value: 'owner_based' },
-        { label: 'Criteria-Based', value: 'criteria_based' },
-        { label: 'Territory-Based', value: 'territory_based' },
+        { label: 'Owner', value: 'owner' },
+        { label: 'Criteria', value: 'criteria' },
       ],
       {
         label: 'Rule Type',
@@ -70,39 +75,40 @@ export const SharingRuleObject = ObjectSchema.create({
       },
     ),
 
-    // ── Owner-Based fields ──────────────────────────────────────────────────
+    // ── Owner-Based: who owns the records (spec: ownedBy: { type, value }) ──
     owned_by_type: Field.select(
       [
+        { label: 'User', value: 'user' },
+        { label: 'Group', value: 'group' },
         { label: 'Role', value: 'role' },
         { label: 'Role and Subordinates', value: 'role_and_subordinates' },
-        { label: 'Group', value: 'group' },
+        { label: 'Guest', value: 'guest' },
       ],
       {
         label: 'Owned By Type',
-        description: 'For owner-based rules: the type of owner group',
+        description: 'For owner-based rules: the recipient type of the record owner',
       },
     ),
 
-    owned_by_values: {
-      type: 'json' as const,
-      label: 'Owned By Values',
-      description: "Array of role names or group IDs, e.g. ['sales_rep']",
-    },
+    owned_by_value: Field.text({
+      label: 'Owned By Value',
+      description: 'The role name, group ID, or user ID of the owner group',
+    }),
 
-    // ── Criteria-Based fields ───────────────────────────────────────────────
-    criteria: {
-      type: 'json' as const,
-      label: 'Criteria',
-      description: "Filter criteria for criteria-based rules, e.g. { type: { $eq: 'customer' }, is_active: { $eq: true } }",
-    },
+    // ── Criteria-Based: condition expression (spec: condition) ───────────────
+    condition: Field.text({
+      label: 'Condition',
+      description: "Expression for criteria-based rules, e.g. \"type = 'customer' AND is_active = true\"",
+    }),
 
-    // ── Shared With ─────────────────────────────────────────────────────────
+    // ── Shared With (spec: sharedWith: { type, value }) ─────────────────────
     shared_with_type: Field.select(
       [
+        { label: 'User', value: 'user' },
+        { label: 'Group', value: 'group' },
         { label: 'Role', value: 'role' },
         { label: 'Role and Subordinates', value: 'role_and_subordinates' },
-        { label: 'Group', value: 'group' },
-        { label: 'Territory', value: 'territory' },
+        { label: 'Guest', value: 'guest' },
       ],
       {
         label: 'Shared With Type',
@@ -110,17 +116,18 @@ export const SharingRuleObject = ObjectSchema.create({
       },
     ),
 
-    shared_with_values: {
-      type: 'json' as const,
-      label: 'Shared With Values',
-      description: 'Array of role names, group IDs, or territory names',
-    },
+    shared_with_value: Field.text({
+      label: 'Shared With Value',
+      required: true,
+      description: 'The role name, group ID, or user ID to share with',
+    }),
 
-    // ── Access level ────────────────────────────────────────────────────────
+    // ── Access level (spec: accessLevel: 'read' | 'edit' | 'full') ──────────
     access_level: Field.select(
       [
-        { label: 'Read Only', value: 'read_only', default: true },
-        { label: 'Read/Write', value: 'read_write' },
+        { label: 'Read', value: 'read', default: true },
+        { label: 'Edit', value: 'edit' },
+        { label: 'Full', value: 'full' },
       ],
       {
         label: 'Access Level',
@@ -128,11 +135,11 @@ export const SharingRuleObject = ObjectSchema.create({
       },
     ),
 
-    // ── Cascade sharing ─────────────────────────────────────────────────────
+    // ── ObjectOS extensions (not in spec) ───────────────────────────────────
     include_related_objects: {
       type: 'json' as const,
       label: 'Include Related Objects',
-      description: 'Array of { object_name, access_level } to cascade sharing to child objects',
+      description: 'Array of { object, access_level } to cascade sharing to child objects',
     },
 
     priority: Field.number({
@@ -144,10 +151,10 @@ export const SharingRuleObject = ObjectSchema.create({
 
   indexes: [
     { fields: ['name'], unique: true },
-    { fields: ['object_name'], unique: false },
+    { fields: ['object'], unique: false },
     { fields: ['type'], unique: false },
-    { fields: ['is_active'], unique: false },
-    { fields: ['object_name', 'is_active'], unique: false },
+    { fields: ['active'], unique: false },
+    { fields: ['object', 'active'], unique: false },
   ],
 
   enable: {

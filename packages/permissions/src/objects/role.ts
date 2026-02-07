@@ -4,6 +4,9 @@
  * Roles control record-level access through a hierarchy.
  * Users higher in the hierarchy can see records owned by their subordinates.
  *
+ * Aligned with @objectstack/spec Security.RoleSchema:
+ *   name, label, parent, description
+ *
  * @see https://protocol.objectstack.ai/docs/guides/security#role-hierarchy
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
@@ -17,9 +20,10 @@ export const RoleObject = ObjectSchema.create({
   isSystem: true,
 
   titleFormat: '{label}',
-  compactLayout: ['name', 'label', 'parent_role'],
+  compactLayout: ['name', 'label', 'parent'],
 
   fields: {
+    // ── Identity (spec: name / label / description) ─────────────────────────
     name: Field.text({
       label: 'Role Name',
       required: true,
@@ -40,11 +44,13 @@ export const RoleObject = ObjectSchema.create({
       maxLength: 1000,
     }),
 
-    parent_role: Field.lookup('role', {
+    // ── Hierarchy (spec: parent) ────────────────────────────────────────────
+    parent: Field.lookup('role', {
       label: 'Parent Role',
       description: 'Parent role in the hierarchy. Null for top-level roles.',
     }),
 
+    // ── ObjectOS extensions (computed hierarchy helpers) ────────────────────
     hierarchy_path: Field.text({
       label: 'Hierarchy Path',
       readonly: true,
@@ -81,7 +87,7 @@ export const RoleObject = ObjectSchema.create({
 
   indexes: [
     { fields: ['name'], unique: true },
-    { fields: ['parent_role'], unique: false },
+    { fields: ['parent'], unique: false },
     { fields: ['hierarchy_path'], unique: false },
     { fields: ['is_active'], unique: false },
   ],
