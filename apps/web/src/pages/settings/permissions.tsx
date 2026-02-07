@@ -2,13 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-export default function AdminPermissionsPage() {
+export default function PermissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Permissions and RBAC</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Permissions & RBAC</h2>
         <p className="text-muted-foreground">
-          Manage roles, permission sets, and object-level policies.
+          Manage roles, permission sets, and object-level access policies.
         </p>
       </div>
 

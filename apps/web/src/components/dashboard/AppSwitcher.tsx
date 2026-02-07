@@ -32,6 +32,9 @@ export function AppSwitcher() {
       const [, , appId] = pathname.split('/');
       return mockApps.find((app) => app.id === appId);
     }
+    if (pathname.startsWith('/settings')) {
+      return mockApps.find((app) => app.id === 'console');
+    }
     return mockApps.find((app) => app.id === 'console');
   }, [pathname]);
 
@@ -170,7 +173,7 @@ export function AppSwitcher() {
             </DropdownMenuLabel>
             <DropdownMenuItem
               className="gap-2 p-2 text-muted-foreground"
-              onClick={() => navigate('/admin/packages')}
+              onClick={() => navigate('/settings/packages')}
             >
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Package className="size-3" />

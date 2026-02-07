@@ -30,7 +30,6 @@ import {
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
-import { TeamSwitcher } from '@/components/dashboard/TeamSwitcher';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 
 const navMain = [

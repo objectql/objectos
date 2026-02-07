@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-export default function AdminPackagesPage() {
+export default function PackagesPage() {
   return (
     <div className="space-y-6">
       <div>

@@ -13,7 +13,7 @@ export const mockApps: AppRegistryEntry[] = [
     id: 'console',
     name: 'Console',
     description: 'System administration and settings.',
-    href: '/dashboard',
+    href: '/settings',
     category: 'system',
     status: 'active',
     pinned: true,
