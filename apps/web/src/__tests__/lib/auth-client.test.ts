@@ -37,7 +37,7 @@ describe('auth-client', () => {
 
     expect(mockCreateAuthClient).toHaveBeenCalledTimes(1);
     const config = mockCreateAuthClient.mock.calls[0]?.[0] as Record<string, unknown>;
-    expect(config.baseURL).toBe('http://localhost:3001/api/v1/auth');
+    expect(config.baseURL).toBe('http://localhost:5321/api/v1/auth');
   });
 
   it('should include organizationClient plugin', async () => {

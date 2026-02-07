@@ -5,10 +5,10 @@ import '@testing-library/jest-dom/vitest';
 Object.defineProperty(window, 'location', {
   value: {
     ...window.location,
-    origin: 'http://localhost:3001',
-    href: 'http://localhost:3001/',
+    origin: 'http://localhost:5321',
+    href: 'http://localhost:5321/',
     hostname: 'localhost',
-    port: '3001',
+    port: '5321',
     protocol: 'http:',
     pathname: '/',
   },

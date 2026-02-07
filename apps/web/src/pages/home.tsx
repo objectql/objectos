@@ -13,7 +13,7 @@ const features = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-muted/50 to-muted">
+    <div className="flex min-h-svh flex-col items-center justify-center bg-background">
       <div className="max-w-2xl mx-auto px-4 text-center">
         <div className="flex items-center justify-center mb-6">
           <div className="size-12 rounded-xl bg-primary flex items-center justify-center">

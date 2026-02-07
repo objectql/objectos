@@ -132,15 +132,12 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
         // basePath must match the ObjectStack Hono route: /api/v1/auth/*
         authInstance = betterAuth({
             database: database,
-            baseURL: config.baseURL || process.env.BETTER_AUTH_URL || "http://localhost:3000",
+            baseURL: config.baseURL || process.env.BETTER_AUTH_URL || "http://localhost:5320",
             basePath: '/api/v1/auth',
             trustedOrigins: config.trustedOrigins || [
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://[::1]:3000",
-                "http://[::1]:3001",
-                "http://[::1]:5173"
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://[::1]:*"
             ],
             emailAndPassword: {
                 enabled: true

@@ -69,7 +69,7 @@ export default {
    * Server configuration
    */
   server: {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 5320,
     /**
      * Static mounts for production single-process deployment.
      * - /console/* → apps/web/dist (Vite SPA)
@@ -80,7 +80,7 @@ export default {
       { root: './apps/site/out', path: '/docs', rewrite: true },
     ],
     cors: {
-      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3001', 'http://localhost:3000'],
+      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5321', 'http://localhost:5320'],
       credentials: true,
     }
   },

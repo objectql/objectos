@@ -28,7 +28,7 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && changeset publish",
-    "objectstack:serve": "objectstack serve",
+    "objectstack:serve": "objectstack serve --port 5320",
     "web:dev": "pnpm --filter @objectos/web dev",
     "web:build": "pnpm --filter @objectos/web build",
     "web:preview": "pnpm --filter @objectos/web preview",

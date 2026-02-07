@@ -13,8 +13,8 @@ const CreateOrganizationPage = lazy(() => import('./pages/organization/create'))
 
 export function App() {
   const fallback = (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+    <div className="flex min-h-svh items-center justify-center">
+      <div className="animate-spin rounded-full size-8 border-2 border-muted border-t-primary" />
     </div>
   );
 

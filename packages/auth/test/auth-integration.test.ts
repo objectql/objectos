@@ -67,7 +67,7 @@ describe('BetterAuthPlugin Integration', () => {
     beforeAll(async () => {
         plugin = new BetterAuthPlugin({
             databaseUrl: 'sqlite::memory:',
-            baseURL: 'http://localhost:3000',
+            baseURL: 'http://localhost:5320',
         });
         ctx = createMockContext();
         await plugin.init(ctx as any);
@@ -108,7 +108,7 @@ describe('BetterAuthPlugin Integration', () => {
 
     describe('Handler — fetch-style (Request → Response)', () => {
         it('should accept a Request and return a Response', async () => {
-            const request = new Request('http://localhost:3000/api/v1/auth/ok');
+            const request = new Request('http://localhost:5320/api/v1/auth/ok');
             const response = await plugin.handler!(request);
 
             expect(response).toBeInstanceOf(Response);
@@ -128,7 +128,7 @@ describe('BetterAuthPlugin Integration', () => {
     describe('POST /api/v1/auth/sign-up/email', () => {
         it('should create a new user and return user + session', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-up/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-up/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -151,7 +151,7 @@ describe('BetterAuthPlugin Integration', () => {
 
         it('should reject duplicate email', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-up/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-up/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -173,7 +173,7 @@ describe('BetterAuthPlugin Integration', () => {
 
         it('second user should get "user" role', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-up/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-up/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -197,7 +197,7 @@ describe('BetterAuthPlugin Integration', () => {
     describe('POST /api/v1/auth/sign-in/email', () => {
         it('should sign in an existing user', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-in/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-in/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -217,7 +217,7 @@ describe('BetterAuthPlugin Integration', () => {
 
         it('should reject wrong password', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-in/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-in/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -237,7 +237,7 @@ describe('BetterAuthPlugin Integration', () => {
 
         it('should reject non-existent email', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-in/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-in/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -263,7 +263,7 @@ describe('BetterAuthPlugin Integration', () => {
     describe('GET /api/v1/auth/get-session', () => {
         it('should return 401 or null without auth cookie', async () => {
             const response = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/get-session'),
+                new Request('http://localhost:5320/api/v1/auth/get-session'),
             );
             expect(response).toBeInstanceOf(Response);
         });
@@ -271,7 +271,7 @@ describe('BetterAuthPlugin Integration', () => {
         it('should return session with valid auth cookie', async () => {
             // Sign in to get a session cookie
             const signInRes = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/sign-in/email', {
+                new Request('http://localhost:5320/api/v1/auth/sign-in/email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -287,7 +287,7 @@ describe('BetterAuthPlugin Integration', () => {
             if (!setCookie) return;
 
             const sessionRes = await plugin.handler!(
-                new Request('http://localhost:3000/api/v1/auth/get-session', {
+                new Request('http://localhost:5320/api/v1/auth/get-session', {
                     headers: { Cookie: setCookie.split(',')[0] },
                 }),
             );

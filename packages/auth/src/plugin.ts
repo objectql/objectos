@@ -60,16 +60,28 @@ export class BetterAuthPlugin implements Plugin {
             // Initialize Better-Auth with correct basePath for /api/v1/auth/*
             this.authInstance = await getBetterAuth(this.config);
 
+            // Run database migrations to ensure auth tables exist
+            try {
+                const authCtx = await this.authInstance.$context;
+                await authCtx.runMigrations();
+                context.logger.info('[Better-Auth Plugin] Database migrations completed');
+            } catch (migrationError: any) {
+                context.logger.warn(`[Better-Auth Plugin] Migration warning: ${migrationError?.message || migrationError}`);
+            }
+
             // Expose a Web-standard fetch handler (Request → Response)
             // HttpDispatcher calls: authService.handler(context.request)
             this.handler = async (request: Request): Promise<Response> => {
                 return this.authInstance.handler(request);
             };
 
-            // Register as 'auth' — the name HttpDispatcher.handleAuth() looks up
-            context.registerService('auth', this);
-            // Keep legacy alias for backward compatibility
-            context.registerService('better-auth', this);
+            // Register as 'auth' — the name HttpDispatcher.handleAuth() looks up.
+            // The kernel (or another plugin like ObjectQL App) may have already
+            // registered a stub 'auth' service.  Since the public Kernel API
+            // does not expose replaceService(), we override via the services Map
+            // when necessary.
+            this.overrideOrRegister(context, 'auth', this);
+            this.overrideOrRegister(context, 'better-auth', this);
 
             // Emit plugin initialized event
             await context.trigger('plugin.initialized', {
@@ -87,10 +99,35 @@ export class BetterAuthPlugin implements Plugin {
     }
 
     /**
-     * Start plugin - Can be minimal for auth plugin
+     * Start plugin - Mount better-auth handler on the Hono app
+     *
+     * The default createHonoApp auth route calls `c.req.parseBody()` which
+     * consumes the Request body before passing `c.req.raw` to our handler.
+     * better-auth needs to read the body itself (JSON), which fails with
+     * "Body is unusable: Body has already been read".
+     *
+     * To fix this we mount a middleware on the raw Hono app that intercepts
+     * /api/v1/auth/* BEFORE the standard route, passing a fresh Request
+     * to better-auth directly.
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Better-Auth Plugin] Starting...');
+
+        // Mount better-auth directly on Hono (bypasses body-consuming parseBody)
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp && this.authInstance) {
+                // Intercept all auth requests before the default dispatcher route
+                rawApp.all('/api/v1/auth/*', async (c: any) => {
+                    const response = await this.authInstance.handler(c.req.raw);
+                    return response;
+                });
+                context.logger.info('[Better-Auth Plugin] Mounted auth handler on Hono app');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Better-Auth Plugin] Could not mount on Hono: ${e?.message}`);
+        }
 
         // Emit authentication ready event
         await context.trigger('auth.ready', {
@@ -106,6 +143,30 @@ export class BetterAuthPlugin implements Plugin {
      */
     getAuthInstance(): any {
         return this.authInstance;
+    }
+
+    /**
+     * Register a service, overriding any existing stub.
+     *
+     * The ObjectStack kernel throws on duplicate registerService() calls.
+     * The ObjectQL App plugin (or others) may pre-register an 'auth' stub
+     * before BetterAuthPlugin.init() runs.  We detect that case and
+     * replace the stub via the kernel's internal services Map so the
+     * real better-auth handler takes precedence.
+     */
+    private overrideOrRegister(context: PluginContext, name: string, service: any): void {
+        try {
+            context.registerService(name, service);
+        } catch {
+            // Service already exists — replace it on kernel.services Map
+            const kernel = context.getKernel() as any;
+            if (kernel?.services instanceof Map) {
+                kernel.services.set(name, service);
+                context.logger.info(`[Better-Auth Plugin] Replaced existing '${name}' service`);
+            } else {
+                context.logger.warn(`[Better-Auth Plugin] Could not replace service '${name}'`);
+            }
+        }
     }
 
     /**

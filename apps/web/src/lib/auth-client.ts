@@ -4,7 +4,7 @@ import { organizationClient } from "better-auth/client/plugins";
 /**
  * Auth client configured to use ObjectStack Hono server.
  *
- * - In dev: Vite proxy forwards /api/v1 → http://localhost:3000
+ * - In dev: Vite proxy forwards /api/v1 → http://localhost:5320
  * - In prod: Same origin via staticMount (single-process)
  *
  * better-auth requires an absolute URL with protocol.
