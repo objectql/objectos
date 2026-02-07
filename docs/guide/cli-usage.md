@@ -159,6 +159,28 @@ Create a new application:
 pnpm generate:app crm
 ```
 
+### Create Plugin
+
+Create a new plugin from template:
+
+```bash
+pnpm create:plugin my-plugin
+```
+
+This scaffolds a complete plugin structure with:
+- Plugin manifest
+- Service definitions
+- Tests
+- Documentation
+
+### Create Example
+
+Create a new example application from template:
+
+```bash
+pnpm create:example demo-crm
+```
+
 ### Interactive Generation
 
 Use the generic generate command for an interactive prompt:
@@ -227,6 +249,27 @@ This displays:
 - Number of plugins loaded
 - Configuration metadata
 - Load time
+
+### Check Environment Health
+
+Run a health check on your development environment:
+
+```bash
+pnpm objectstack:doctor
+```
+
+This verifies:
+- Node.js version
+- Package manager (pnpm/npm/yarn)
+- TypeScript installation
+- Dependencies installation
+- Git configuration
+
+Use verbose mode for detailed fix suggestions:
+
+```bash
+pnpm objectstack:doctor --verbose
+```
 
 ## Build Commands
 

@@ -185,6 +185,7 @@ with API proxy to ObjectStack at `:5320`.
 | `pnpm objectstack:validate` | Validate configuration against protocol |
 | `pnpm objectstack:compile` | Compile configuration to JSON artifact |
 | `pnpm objectstack:info` | Display metadata summary |
+| `pnpm objectstack:doctor` | Check development environment health |
 
 #### Code Generation Commands
 
@@ -198,6 +199,8 @@ with API proxy to ObjectStack at `:5320`.
 | `pnpm generate:agent <name>` | Generate a new AI agent |
 | `pnpm generate:dashboard <name>` | Generate a new dashboard |
 | `pnpm generate:app <name>` | Generate a new application |
+| `pnpm create:plugin <name>` | Create a new plugin from template |
+| `pnpm create:example <name>` | Create a new example from template |
 
 #### App-Specific Commands
 
