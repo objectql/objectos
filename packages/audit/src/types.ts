@@ -151,6 +151,28 @@ export interface AuditLogConfig {
     retentionDays?: number;
     /** Custom storage implementation */
     storage?: AuditStorage;
+    /** Retention policy configuration */
+    retention?: AuditRetentionPolicy;
+}
+
+/**
+ * Audit retention policy configuration
+ */
+export interface AuditRetentionPolicy {
+    /** Whether automatic retention cleanup is enabled */
+    enabled?: boolean;
+    /** Default retention period in days */
+    defaultRetentionDays?: number;
+    /** Per-event-type retention overrides (eventType → days) */
+    eventRetention?: Record<string, number>;
+    /** Archive strategy before deletion */
+    archiveStrategy?: 'none' | 'compress' | 'export';
+    /** Archive destination path (when archiveStrategy is 'export') */
+    archivePath?: string;
+    /** Cleanup schedule as cron expression */
+    cleanupSchedule?: string;
+    /** Maximum number of records to delete per cleanup run */
+    batchSize?: number;
 }
 
 /**
