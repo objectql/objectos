@@ -105,6 +105,10 @@ pnpm run build
 pnpm run dev
 ```
 
+The server will start on `http://localhost:5320` (API) and the Admin Console on `http://localhost:5321/console/`.
+
+> **Next:** See the [CLI Usage Guide](./cli-usage.md) for all available commands and code generation tools.
+
 ### Option 2: Use as Dependencies
 
 ```bash

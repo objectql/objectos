@@ -34,6 +34,7 @@ export default defineConfig({
           text: 'Getting Started',
           items: [
             { text: 'Introduction', link: '/guide/' },
+            { text: 'CLI Usage', link: '/guide/cli-usage' },
             { text: 'Data Modeling', link: '/guide/data-modeling' },
             { text: 'Security Guide', link: '/guide/security-guide' }
           ]

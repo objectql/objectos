@@ -72,7 +72,7 @@ ObjectOS acts as the "Kernel" that boots up, loads drivers (ObjectQL) and applic
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   objectstack serve (:3000)                  │
+│                   objectstack serve (:5320)                  │
 │                                                              │
 │  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌─────────────┐  │
 │  │  Hono    │ │ BetterAuth │ │ ObjectQL │ │  Plugins    │  │
@@ -147,29 +147,66 @@ pnpm install
 ### Development
 
 ```bash
-# Start API server (:3000) + Admin Console (:3001) together
+# Start API server (:5320) + Admin Console (:5321) together
 pnpm dev
 
 # Start everything including docs site
 pnpm dev:all
+
+# Or use ObjectStack CLI directly
+pnpm objectstack:serve    # API server only
+pnpm objectstack:studio   # API + Console UI together
 ```
 
-The Admin Console is available at **http://localhost:3001/console/**
-with API proxy to ObjectStack at `:3000`.
+The Admin Console is available at **http://localhost:5321/console/**
+with API proxy to ObjectStack at `:5320`.
 
 ### All Commands
 
+#### Development Commands
+
 | Command | Description |
 |---|---|
-| `pnpm dev` | API `:3000` + Web `:3001` (daily development) |
+| `pnpm dev` | API `:5320` + Web `:5321` (daily development) |
 | `pnpm dev:all` | API + Web + Site (full stack) |
 | `pnpm start` | Production — single process with static mounts |
 | `pnpm build` | Build all packages (Turborepo) |
 | `pnpm test` | Run all tests |
 | `pnpm lint` | Lint all packages |
 | `pnpm type-check` | TypeScript check all packages |
-| `pnpm objectstack:serve` | API server only |
-| `pnpm web:dev` | Admin Console only |
+
+#### ObjectStack CLI Commands
+
+| Command | Description |
+|---|---|
+| `pnpm objectstack:serve` | Start ObjectStack server (port 5320) |
+| `pnpm objectstack:dev` | Start dev mode with hot-reload |
+| `pnpm objectstack:studio` | Launch Console UI with dev server |
+| `pnpm objectstack:validate` | Validate configuration against protocol |
+| `pnpm objectstack:compile` | Compile configuration to JSON artifact |
+| `pnpm objectstack:info` | Display metadata summary |
+| `pnpm objectstack:doctor` | Check development environment health |
+
+#### Code Generation Commands
+
+| Command | Description |
+|---|---|
+| `pnpm generate` | Generate metadata files (interactive) |
+| `pnpm generate:object <name>` | Generate a new object schema |
+| `pnpm generate:flow <name>` | Generate a new workflow/flow |
+| `pnpm generate:view <name>` | Generate a new view definition |
+| `pnpm generate:action <name>` | Generate a new action |
+| `pnpm generate:agent <name>` | Generate a new AI agent |
+| `pnpm generate:dashboard <name>` | Generate a new dashboard |
+| `pnpm generate:app <name>` | Generate a new application |
+| `pnpm create:plugin <name>` | Create a new plugin from template |
+| `pnpm create:example <name>` | Create a new example from template |
+
+#### App-Specific Commands
+
+| Command | Description |
+|---|---|
+| `pnpm web:dev` | Admin Console only (port 5321) |
 | `pnpm web:build` | Build Admin Console |
 | `pnpm site:dev` | Documentation site only |
 | `pnpm site:build` | Build documentation |
