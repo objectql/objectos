@@ -1,5 +1,6 @@
 import { useSession } from '@/lib/auth-client';
 import { Navigate, Outlet } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 /**
  * Protects routes that require authentication.
@@ -10,8 +11,8 @@ export function ProtectedRoute() {
 
   if (isPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
     );
   }

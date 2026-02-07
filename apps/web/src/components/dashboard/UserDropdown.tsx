@@ -1,6 +1,10 @@
 import { useSession, signOut } from '@/lib/auth-client';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Settings, LogOut } from 'lucide-react';
 
 export function UserDropdown() {
   const { data: session } = useSession();
@@ -25,41 +29,52 @@ export function UserDropdown() {
 
   if (!session) return null;
 
+  const initials = session.user.name?.charAt(0) || session.user.email?.charAt(0) || '?';
+
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-8 rounded-full"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 focus:outline-none"
       >
-        <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-semibold">
-          {session.user.name?.charAt(0) || session.user.email?.charAt(0)}
-        </div>
-      </button>
+        <Avatar className="size-8">
+          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+        </Avatar>
+      </Button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 py-1 z-50">
-          <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-              {session.user.name}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {session.user.email}
-            </p>
+        <div className="absolute right-0 mt-2 w-56 rounded-md border bg-popover text-popover-foreground shadow-md z-50">
+          <div className="p-3">
+            <p className="text-sm font-medium truncate">{session.user.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
           </div>
 
-          <button
-            onClick={() => navigate('/dashboard/settings')}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            Profile Settings
-          </button>
+          <Separator />
 
-          <button
-            onClick={handleSignOut}
-            className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            Sign Out
-          </button>
+          <div className="p-1">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/dashboard/settings');
+              }}
+              className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
+            >
+              <Settings className="size-4" />
+              Profile Settings
+            </button>
+
+            <Separator className="my-1" />
+
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-destructive outline-none transition-colors hover:bg-destructive/10 cursor-pointer"
+            >
+              <LogOut className="size-4" />
+              Sign Out
+            </button>
+          </div>
         </div>
       )}
     </div>

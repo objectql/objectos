@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { AuthLayout } from '@/components/auth/AuthLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Loader2, CheckCircle2 } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -37,45 +41,37 @@ export default function ForgotPasswordPage() {
       }}
     >
       {success ? (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-8 rounded-lg text-center">
-          <svg className="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <h3 className="text-lg font-medium mb-2">Check your email</h3>
-          <p className="text-sm">
+        <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-4 py-8 text-center">
+          <CheckCircle2 className="size-12 text-green-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">Check your email</h3>
+          <p className="text-sm text-muted-foreground">
             We sent a password reset link to <span className="font-semibold">{email}</span>.
           </p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Email Address
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address</Label>
+            <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
               placeholder="you@example.com"
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-500/30"
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="size-4 animate-spin" />}
             {loading ? 'Sending...' : 'Send Reset Link'}
-          </button>
+          </Button>
         </form>
       )}
     </AuthLayout>
