@@ -377,3 +377,44 @@ describe('I18nPlugin', () => {
         });
     });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: I18nPlugin;
+
+    beforeEach(async () => {
+        plugin = new I18nPlugin({ defaultLocale: 'en', translations: { en: { hello: 'Hello' } } });
+        const context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return healthy with loaded locales', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/i18n');
+            expect(report.status).toBe('healthy');
+            expect(report.checks[0].message).toContain('1 locales loaded');
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should declare i18n service', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.services).toContain('i18n');
+            expect(manifest.security.handlesSensitiveData).toBe(false);
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/i18n');
+            expect(result.success).toBe(true);
+        });
+    });
+});

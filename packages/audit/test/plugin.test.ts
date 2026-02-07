@@ -400,3 +400,54 @@ describe('Audit Log Plugin', () => {
         });
     });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: AuditLogPlugin;
+
+    beforeEach(async () => {
+        plugin = new AuditLogPlugin();
+        const mock = createMockContext();
+        await plugin.init(mock.context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return healthy status when enabled', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/audit');
+            expect(report.status).toBe('healthy');
+            expect(report.checks[0].name).toBe('audit-storage');
+        });
+
+        it('should return degraded when disabled', async () => {
+            const disabledPlugin = new AuditLogPlugin({ enabled: false });
+            const mock = createMockContext();
+            await disabledPlugin.init(mock.context);
+            const report = await disabledPlugin.healthCheck();
+            expect(report.status).toBe('degraded');
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should declare audit services and events', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.services).toContain('audit-log');
+            expect(manifest.capabilities.emits).toContain('audit.event.recorded');
+            expect(manifest.capabilities.listens).toContain('data.create');
+            expect(manifest.security.handlesSensitiveData).toBe(true);
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/audit');
+            expect(result.success).toBe(true);
+        });
+    });
+});

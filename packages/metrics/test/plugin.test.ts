@@ -705,3 +705,77 @@ describe('Prometheus Export', () => {
         expect(parsed?.value).toBe(3.14);
     });
 });
+
+// ─── Kernel Compliance Tests ───────────────────────────────────────────────────
+
+describe('Kernel Compliance', () => {
+    let plugin: MetricsPlugin;
+    let context: PluginContext;
+
+    beforeEach(async () => {
+        plugin = new MetricsPlugin();
+        context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('healthCheck()', () => {
+        it('should return healthy status when enabled', async () => {
+            const report = await plugin.healthCheck();
+            expect(report.pluginName).toBe('@objectos/metrics');
+            expect(report.pluginVersion).toBe('0.1.0');
+            expect(report.status).toBe('healthy');
+            expect(report.uptime).toBeGreaterThanOrEqual(0);
+            expect(report.checks).toHaveLength(1);
+            expect(report.checks[0].name).toBe('metrics-collection');
+            expect(report.checks[0].status).toBe('healthy');
+            expect(report.timestamp).toBeDefined();
+        });
+
+        it('should return degraded status when disabled', async () => {
+            const disabledPlugin = new MetricsPlugin({ enabled: false });
+            const ctx = createMockContext();
+            await disabledPlugin.init(ctx);
+            const report = await disabledPlugin.healthCheck();
+            expect(report.status).toBe('degraded');
+            await disabledPlugin.destroy();
+        });
+
+        it('should include metric counts in check message', async () => {
+            plugin.incrementCounter('test_counter');
+            plugin.setGauge('test_gauge', 42);
+            const report = await plugin.healthCheck();
+            expect(report.checks[0].message).toContain('1 counters');
+            expect(report.checks[0].message).toContain('1 gauges');
+        });
+    });
+
+    describe('getManifest()', () => {
+        it('should return capability and security manifests', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities).toBeDefined();
+            expect(manifest.security).toBeDefined();
+            expect(manifest.capabilities.services).toContain('metrics');
+            expect(manifest.security.handlesSensitiveData).toBe(false);
+            expect(manifest.security.makesExternalCalls).toBe(false);
+        });
+
+        it('should list kernel hooks in listens', () => {
+            const manifest = plugin.getManifest();
+            expect(manifest.capabilities.listens).toContain('plugin.load.start');
+            expect(manifest.capabilities.listens).toContain('service.call');
+        });
+    });
+
+    describe('getStartupResult()', () => {
+        it('should return successful startup result after init', () => {
+            const result = plugin.getStartupResult();
+            expect(result.pluginName).toBe('@objectos/metrics');
+            expect(result.success).toBe(true);
+            expect(result.servicesRegistered).toContain('metrics');
+        });
+    });
+});
