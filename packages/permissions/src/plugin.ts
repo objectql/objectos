@@ -89,6 +89,88 @@ export class PermissionsPlugin implements Plugin {
         // Permissions plugin is stateless and doesn't need special startup
         // All permission checking is done on-demand via hooks
         
+        // Register HTTP routes for Permissions API
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                // GET /api/v1/permissions/sets - List all permission sets
+                rawApp.get('/api/v1/permissions/sets', async (c: any) => {
+                    try {
+                        const sets = await this.storage.getAllPermissionSets();
+                        return c.json({ success: true, data: sets });
+                    } catch (error: any) {
+                        context.logger.error('[Permissions API] List error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/permissions/sets/:name - Get permission set by name
+                rawApp.get('/api/v1/permissions/sets/:name', async (c: any) => {
+                    try {
+                        const name = c.req.param('name');
+                        const set = await this.storage.getPermissionSet(name);
+                        if (!set) {
+                            return c.json({ success: false, error: 'Permission set not found' }, 404);
+                        }
+                        return c.json({ success: true, data: set });
+                    } catch (error: any) {
+                        context.logger.error('[Permissions API] Get error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/permissions/object/:objectName - Get permissions for object
+                rawApp.get('/api/v1/permissions/object/:objectName', async (c: any) => {
+                    try {
+                        const objectName = c.req.param('objectName');
+                        const set = await this.storage.getPermissionSetForObject(objectName);
+                        if (!set) {
+                            return c.json({ success: false, error: 'No permissions found for object' }, 404);
+                        }
+                        return c.json({ success: true, data: set });
+                    } catch (error: any) {
+                        context.logger.error('[Permissions API] Get object permissions error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // POST /api/v1/permissions/check - Check permission
+                rawApp.post('/api/v1/permissions/check', async (c: any) => {
+                    try {
+                        const body = await c.req.json();
+                        const { userId, profileName, roleName, objectName, action, recordId } = body;
+                        
+                        if (!userId || !profileName || !objectName || !action) {
+                            return c.json({ success: false, error: 'Missing required fields' }, 400);
+                        }
+
+                        const permissionContext = {
+                            userId,
+                            profileName,
+                            roleName,
+                            permissionSetNames: body.permissionSetNames || [],
+                        };
+
+                        const hasPermission = await this.engine.checkPermission(
+                            permissionContext,
+                            objectName,
+                            action as any
+                        );
+
+                        return c.json({ success: true, data: { hasPermission } });
+                    } catch (error: any) {
+                        context.logger.error('[Permissions API] Check error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                context.logger.info('[Permissions Plugin] HTTP routes registered');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Permissions Plugin] Could not register HTTP routes: ${e?.message}`);
+        }
+        
         context.logger.info('[Permissions Plugin] Started successfully');
     }
 

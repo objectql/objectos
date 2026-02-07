@@ -215,7 +215,7 @@ export class JobsPlugin implements Plugin {
             pluginVersion: this.version,
             status,
             uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'job-queue', status, message: stats ? `Queue: ${stats.pending || 0} pending, ${stats.active || 0} active` : 'Job queue active', latency: 0, timestamp: new Date().toISOString() }],
+            checks: [{ name: 'job-queue', status, message: stats ? `Queue: ${stats.pending || 0} pending, ${stats.running || 0} running` : 'Job queue active', latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
         };
     }
@@ -248,6 +248,99 @@ export class JobsPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         this.scheduler.start();
+        
+        // Register HTTP routes for Jobs API
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                // GET /api/v1/jobs - Query jobs
+                rawApp.get('/api/v1/jobs', async (c: any) => {
+                    try {
+                        const query = c.req.query();
+                        const options: JobQueryOptions = {
+                            status: query.status as any,
+                            name: query.name,
+                            limit: query.limit ? parseInt(query.limit) : undefined,
+                            skip: query.skip ? parseInt(query.skip) : undefined,
+                        };
+                        const jobs = await this.queryJobs(options);
+                        return c.json({ success: true, data: jobs });
+                    } catch (error: any) {
+                        context.logger.error('[Jobs API] Query error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/jobs/stats - Get queue statistics
+                rawApp.get('/api/v1/jobs/stats', async (c: any) => {
+                    try {
+                        const stats = await this.getStats();
+                        return c.json({ success: true, data: stats });
+                    } catch (error: any) {
+                        context.logger.error('[Jobs API] Stats error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/jobs/:id - Get job by ID
+                rawApp.get('/api/v1/jobs/:id', async (c: any) => {
+                    try {
+                        const id = c.req.param('id');
+                        const job = await this.getJob(id);
+                        if (!job) {
+                            return c.json({ success: false, error: 'Job not found' }, 404);
+                        }
+                        return c.json({ success: true, data: job });
+                    } catch (error: any) {
+                        context.logger.error('[Jobs API] Get job error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // POST /api/v1/jobs/:id/retry - Retry failed job
+                rawApp.post('/api/v1/jobs/:id/retry', async (c: any) => {
+                    try {
+                        const id = c.req.param('id');
+                        const job = await this.getJob(id);
+                        if (!job) {
+                            return c.json({ success: false, error: 'Job not found' }, 404);
+                        }
+                        if (job.status !== 'failed') {
+                            return c.json({ success: false, error: 'Only failed jobs can be retried' }, 400);
+                        }
+                        // Re-enqueue the job
+                        const retriedJob = await this.enqueue({
+                            id: `${job.id}_retry_${Date.now()}`,
+                            name: job.name,
+                            data: job.data,
+                            priority: job.priority,
+                        });
+                        return c.json({ success: true, data: retriedJob });
+                    } catch (error: any) {
+                        context.logger.error('[Jobs API] Retry error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // POST /api/v1/jobs/:id/cancel - Cancel job
+                rawApp.post('/api/v1/jobs/:id/cancel', async (c: any) => {
+                    try {
+                        const id = c.req.param('id');
+                        await this.cancel(id);
+                        return c.json({ success: true, message: 'Job cancelled' });
+                    } catch (error: any) {
+                        context.logger.error('[Jobs API] Cancel error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                context.logger.info('[Jobs Plugin] HTTP routes registered');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Jobs Plugin] Could not register HTTP routes: ${e?.message}`);
+        }
+        
         context.logger.info('[Jobs Plugin] Started');
     }
 

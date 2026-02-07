@@ -75,6 +75,67 @@ export class AuditLogPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Audit Log] Starting...');
+        
+        // Register HTTP routes for Audit API
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                // GET /api/v1/audit/events - Query audit events
+                rawApp.get('/api/v1/audit/events', async (c: any) => {
+                    try {
+                        const query = c.req.query();
+                        const options: AuditQueryOptions = {
+                            objectName: query.objectName,
+                            recordId: query.recordId,
+                            userId: query.userId,
+                            eventType: query.eventType as AuditEventType,
+                            startDate: query.startDate,
+                            endDate: query.endDate,
+                            limit: query.limit ? parseInt(query.limit) : undefined,
+                            offset: query.offset ? parseInt(query.offset) : undefined,
+                        };
+                        const events = await this.queryEvents(options);
+                        return c.json({ success: true, data: events });
+                    } catch (error: any) {
+                        context.logger.error('[Audit API] Query error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/audit/trail/:objectName/:recordId - Get audit trail
+                rawApp.get('/api/v1/audit/trail/:objectName/:recordId', async (c: any) => {
+                    try {
+                        const objectName = c.req.param('objectName');
+                        const recordId = c.req.param('recordId');
+                        const trail = await this.getAuditTrail(objectName, recordId);
+                        return c.json({ success: true, data: trail });
+                    } catch (error: any) {
+                        context.logger.error('[Audit API] Trail error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/audit/field-history/:objectName/:recordId/:fieldName - Get field history
+                rawApp.get('/api/v1/audit/field-history/:objectName/:recordId/:fieldName', async (c: any) => {
+                    try {
+                        const objectName = c.req.param('objectName');
+                        const recordId = c.req.param('recordId');
+                        const fieldName = c.req.param('fieldName');
+                        const history = await this.getFieldHistory(objectName, recordId, fieldName);
+                        return c.json({ success: true, data: history });
+                    } catch (error: any) {
+                        context.logger.error('[Audit API] Field history error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                context.logger.info('[Audit Log] HTTP routes registered');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Audit Log] Could not register HTTP routes: ${e?.message}`);
+        }
+        
         context.logger.info('[Audit Log] Started successfully');
     }
 
