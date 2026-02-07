@@ -89,3 +89,61 @@ export interface EventBusConfig {
     }>;
   };
 }
+
+// ─── Realtime Protocol Types ───────────────────────────────────────────────────
+
+/** WebSocket authentication configuration */
+export interface WebSocketAuthConfig {
+  /** Whether authentication is required for WebSocket connections */
+  required?: boolean;
+  /** Auth token header name (for upgrade request) */
+  tokenHeader?: string;
+  /** Auth token query parameter name */
+  tokenQueryParam?: string;
+  /** Token validation strategy */
+  strategy?: 'jwt' | 'session' | 'custom';
+  /** Custom token validator function */
+  validator?: (token: string) => Promise<WebSocketAuthResult>;
+}
+
+/** WebSocket authentication result */
+export interface WebSocketAuthResult {
+  /** Whether authentication succeeded */
+  authenticated: boolean;
+  /** Authenticated user ID */
+  userId?: string;
+  /** User's tenant/organization ID */
+  tenantId?: string;
+  /** User's roles */
+  roles?: string[];
+  /** Error message if authentication failed */
+  error?: string;
+}
+
+/** WebSocket tenant scoping configuration */
+export interface WebSocketTenantConfig {
+  /** Whether tenant isolation is enabled */
+  enabled?: boolean;
+  /** Strategy for tenant identification */
+  strategy?: 'header' | 'subdomain' | 'token-claim';
+  /** Header name for tenant ID */
+  headerName?: string;
+}
+
+/** Enhanced realtime plugin options with auth and tenant support */
+export interface RealtimePluginConfig {
+  /** WebSocket server port */
+  port?: number;
+  /** WebSocket server path */
+  path?: string;
+  /** Authentication configuration */
+  auth?: WebSocketAuthConfig;
+  /** Tenant scoping configuration */
+  tenant?: WebSocketTenantConfig;
+  /** Maximum message size in bytes */
+  maxMessageSize?: number;
+  /** Heartbeat interval in milliseconds */
+  heartbeatInterval?: number;
+  /** Maximum connections per tenant */
+  maxConnectionsPerTenant?: number;
+}

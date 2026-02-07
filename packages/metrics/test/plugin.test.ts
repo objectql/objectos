@@ -779,3 +779,88 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Health Aggregator Tests ───────────────────────────────────────────────────
+
+import { aggregateHealth, isSystemOperational } from '../src/health.js';
+import type { PluginHealthReport } from '../src/types.js';
+
+describe('Health Aggregator', () => {
+    const makeReport = (name: string, status: 'healthy' | 'degraded' | 'unhealthy'): PluginHealthReport => ({
+        pluginName: name,
+        pluginVersion: '0.1.0',
+        status,
+        uptime: 1000,
+        checks: [{ name: 'test', status, timestamp: new Date().toISOString() }],
+        timestamp: new Date().toISOString(),
+    });
+
+    describe('aggregateHealth()', () => {
+        it('should report healthy when all plugins are healthy', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'healthy'),
+                makeReport('@objectos/storage', 'healthy'),
+            ];
+
+            const system = aggregateHealth(reports, Date.now() - 60000);
+            expect(system.status).toBe('healthy');
+            expect(system.totalPlugins).toBe(3);
+            expect(system.healthyPlugins).toBe(3);
+            expect(system.degradedPlugins).toBe(0);
+            expect(system.unhealthyPlugins).toBe(0);
+        });
+
+        it('should report degraded when any plugin is degraded', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'degraded'),
+            ];
+
+            const system = aggregateHealth(reports);
+            expect(system.status).toBe('degraded');
+            expect(system.degradedPlugins).toBe(1);
+        });
+
+        it('should report unhealthy when any plugin is unhealthy', () => {
+            const reports = [
+                makeReport('@objectos/metrics', 'healthy'),
+                makeReport('@objectos/cache', 'degraded'),
+                makeReport('@objectos/auth', 'unhealthy'),
+            ];
+
+            const system = aggregateHealth(reports);
+            expect(system.status).toBe('unhealthy');
+            expect(system.unhealthyPlugins).toBe(1);
+        });
+
+        it('should include memory and node version', () => {
+            const system = aggregateHealth([makeReport('@objectos/metrics', 'healthy')]);
+            expect(system.nodeVersion).toBeDefined();
+            expect(system.memory).toBeDefined();
+            expect(system.memory!.heapUsed).toBeGreaterThan(0);
+        });
+
+        it('should track uptime', () => {
+            const system = aggregateHealth([], Date.now() - 5000);
+            expect(system.uptime).toBeGreaterThanOrEqual(4000);
+        });
+    });
+
+    describe('isSystemOperational()', () => {
+        it('should return true for healthy system', () => {
+            const system = aggregateHealth([makeReport('test', 'healthy')]);
+            expect(isSystemOperational(system)).toBe(true);
+        });
+
+        it('should return true for degraded system', () => {
+            const system = aggregateHealth([makeReport('test', 'degraded')]);
+            expect(isSystemOperational(system)).toBe(true);
+        });
+
+        it('should return false for unhealthy system', () => {
+            const system = aggregateHealth([makeReport('test', 'unhealthy')]);
+            expect(isSystemOperational(system)).toBe(false);
+        });
+    });
+});
