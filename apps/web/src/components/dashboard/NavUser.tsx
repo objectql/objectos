@@ -1,9 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import { signOut, useSession } from '@/lib/auth-client';
+import {
+  signOut,
+  useSession,
+  organization,
+  useActiveOrganization,
+  useListOrganizations,
+} from '@/lib/auth-client';
 import {
   BadgeCheck,
+  Building2,
+  Check,
   ChevronsUpDown,
   LogOut,
+  Plus,
   Shield,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -25,6 +34,8 @@ import {
 
 export function NavUser() {
   const { data: session } = useSession();
+  const { data: activeOrg } = useActiveOrganization();
+  const { data: organizations } = useListOrganizations();
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
 
@@ -36,6 +47,12 @@ export function NavUser() {
   const handleSignOut = async () => {
     await signOut();
     navigate('/sign-in');
+  };
+
+  const handleSwitchOrg = async (orgId: string) => {
+    if (orgId === activeOrg?.id) return;
+    await organization.setActive({ organizationId: orgId });
+    window.location.reload();
   };
 
 
@@ -76,6 +93,32 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {organizations && organizations.length > 0 && (
+              <>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Organizations
+                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  {organizations.map((org) => (
+                    <DropdownMenuItem
+                      key={org.id}
+                      onClick={() => handleSwitchOrg(org.id)}
+                    >
+                      <Building2 className="size-4" />
+                      <span className="flex-1 truncate">{org.name}</span>
+                      {activeOrg?.id === org.id && (
+                        <Check className="size-4 text-muted-foreground" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuItem onClick={() => navigate('/settings/organization/create')}>
+                    <Plus className="size-4" />
+                    Add organization
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => navigate('/settings/account')}>
                 <BadgeCheck />

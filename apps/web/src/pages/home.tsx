@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useSession } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Blocks, ShieldCheck, Users, GitBranch, Lock, Mail } from 'lucide-react';
+import { Blocks, ShieldCheck, Users, GitBranch, Lock, Mail, Loader2 } from 'lucide-react';
 
 const features = [
   { icon: Mail, label: 'Email & Password Authentication' },
@@ -12,6 +13,21 @@ const features = [
 ];
 
 export default function HomePage() {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-svh items-center justify-center bg-background">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Already logged in → go straight to settings
+  if (session?.user) {
+    return <Navigate to="/settings" replace />;
+  }
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-background">
       <div className="max-w-2xl mx-auto px-4 text-center">
