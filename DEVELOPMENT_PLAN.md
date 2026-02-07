@@ -371,6 +371,26 @@ This roadmap is derived from **@objectstack/spec** requirements (kernel, system,
 | `@objectos/automation` | Script/action sandboxing flagged | `PluginSecurityManifest` expectations |
 | Runtime (external) | Capability/security manifests not enforced | Kernel protocol compliance |
 
+### 6.4 v1.0 Spec Checklist by Package
+
+**Legend**: ✅ Implemented · 🟡 Partial · 🔲 Missing
+
+| Package | Spec Areas | Status | v1.0 Target |
+|---------|-----------|:---:|-------------|
+| `@objectos/audit` | `AuditConfig`, `AuditEvent`, `AuditRetentionPolicy` | 🟡 | Full event type coverage + retention policy |
+| `@objectos/auth` | Identity schemas, `SessionPolicy`, `PasswordPolicy` | 🟡 | Enforced policies + session lifecycle hooks |
+| `@objectos/automation` | `WorkflowRule`, action schemas, sandbox policy | 🟡 | Native spec validation + sandboxed execution |
+| `@objectos/workflow` | `Flow`, `FlowNode`, `FlowEdge`, approvals | 🟡 | Native Flow execution + conversion utilities |
+| `@objectos/permissions` | `PermissionSet`, `SharingRule`, `RLSConfig` | 🟡 | Sharing rules + full RLS alignment |
+| `@objectos/realtime` | WebSocket API + awareness schemas | 🔲 | Protocol-compliant server + tests |
+| `@objectos/metrics` | Metrics schemas | ✅ | Export endpoint + labels parity |
+| `@objectos/storage` | Storage schemas | ✅ | No change |
+| `@objectos/cache` | Cache schemas | ✅ | No change |
+| `@objectos/notification` | Notification schemas | ✅ | Channel policy alignment |
+| `@objectos/jobs` | Job + schedule schemas | ✅ | Add DLQ visibility |
+| `@objectos/i18n` | Translation schemas | ✅ | No change |
+| `@objectos/browser` | Local-first + sync schemas | 🟡 | Align conflict resolution to spec |
+
 ---
 
 ## 7. Spec Compliance Status

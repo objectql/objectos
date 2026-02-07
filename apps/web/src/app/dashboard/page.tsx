@@ -1,9 +1,48 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const [serverUserEmail, setServerUserEmail] = useState<string | null>(null);
+  const [serverCheckError, setServerCheckError] = useState<string | null>(null);
+  const [serverChecking, setServerChecking] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const verify = async () => {
+      setServerChecking(true);
+      setServerCheckError(null);
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.error || "Server verification failed");
+        }
+        const data = await res.json();
+        if (isMounted) {
+          setServerUserEmail(data?.user?.email || null);
+        }
+      } catch (e) {
+        if (isMounted) {
+          setServerCheckError(e instanceof Error ? e.message : "Server verification failed");
+        }
+      } finally {
+        if (isMounted) {
+          setServerChecking(false);
+        }
+      }
+    };
+
+    if (session?.user) {
+      verify();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session?.user]);
   
   if (!session?.user) return null;
 
@@ -75,6 +114,23 @@ export default function DashboardPage() {
                 <span className="font-medium">Role:</span> {user.role || "Member"}
               </p>
             </div>
+          </div>
+
+          <div className="mt-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4">
+            <h3 className="font-semibold text-emerald-900 dark:text-emerald-200 mb-2">
+              Server Verification
+            </h3>
+            {serverChecking && (
+              <p className="text-sm text-emerald-800 dark:text-emerald-300">Checking session on server...</p>
+            )}
+            {!serverChecking && serverCheckError && (
+              <p className="text-sm text-red-700 dark:text-red-300">{serverCheckError}</p>
+            )}
+            {!serverChecking && !serverCheckError && (
+              <p className="text-sm text-emerald-800 dark:text-emerald-300">
+                Verified via /api/me. User: {serverUserEmail || "Unknown"}
+              </p>
+            )}
           </div>
         </div>
     </>
