@@ -86,7 +86,6 @@ export {
 
 // Export system object definitions
 export {
-    ProfileObject,
     PermissionSetObject,
     PermissionSetAssignmentObject,
     ObjectPermissionObject,

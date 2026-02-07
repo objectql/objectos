@@ -1,10 +1,18 @@
 /**
  * Permission System Object Definitions
  *
- * System-level objects that manage the ObjectOS security model:
+ * System-level objects that manage the ObjectOS security model,
+ * aligned with @objectstack/spec Security module.
+ *
+ * Spec alignment:
+ *   Security.PermissionSetSchema   → permission_set (is_profile flag unifies Profile + PermissionSet)
+ *   Security.ObjectPermissionSchema → object_permission (child of permission_set)
+ *   Security.FieldPermissionSchema  → field_permission (child of permission_set)
+ *   Security.RoleSchema             → role (hierarchy)
+ *   Security.SharingRuleSchema      → sharing_rule (owner / criteria)
  *
  *   ┌─────────────────────────────────────┐
- *   │   Profile / Permission Set          │ ← Object + Field permissions
+ *   │   Permission Set (is_profile flag)  │ ← Object + Field permissions
  *   ├─────────────────────────────────────┤
  *   │   Role Hierarchy                    │ ← Record-level access (vertical)
  *   ├─────────────────────────────────────┤
@@ -16,7 +24,6 @@
  * @see https://protocol.objectstack.ai/docs/guides/security
  */
 
-export { ProfileObject } from './profile.js';
 export { PermissionSetObject } from './permission_set.js';
 export { PermissionSetAssignmentObject } from './permission_set_assignment.js';
 export { ObjectPermissionObject } from './object_permission.js';
@@ -27,7 +34,6 @@ export { SharingRuleObject } from './sharing_rule.js';
 
 // ── Convenience aggregate ──────────────────────────────────────────────────────
 
-import { ProfileObject } from './profile.js';
 import { PermissionSetObject } from './permission_set.js';
 import { PermissionSetAssignmentObject } from './permission_set_assignment.js';
 import { ObjectPermissionObject } from './object_permission.js';
@@ -47,7 +53,6 @@ import { SharingRuleObject } from './sharing_rule.js';
  * ```
  */
 export const PermissionObjects = [
-  ProfileObject,
   PermissionSetObject,
   PermissionSetAssignmentObject,
   ObjectPermissionObject,
