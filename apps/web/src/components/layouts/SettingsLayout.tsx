@@ -32,6 +32,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
+import { OrgSwitcher } from '@/components/dashboard/OrgSwitcher';
 
 const navOverview = [
   { title: 'Overview', href: '/settings', icon: LayoutDashboard },
@@ -94,6 +95,7 @@ export function SettingsLayout() {
       <Sidebar>
         <SidebarHeader>
           <AppSwitcher />
+          <OrgSwitcher />
         </SidebarHeader>
 
         <SidebarContent>

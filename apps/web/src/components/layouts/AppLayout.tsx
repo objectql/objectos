@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
+import { OrgSwitcher } from '@/components/dashboard/OrgSwitcher';
 import { NavUser } from '@/components/dashboard/NavUser';
 import { getAppById } from '@/lib/app-registry';
 
@@ -38,6 +39,7 @@ export function AppLayout() {
       <Sidebar>
         <SidebarHeader>
           <AppSwitcher />
+          <OrgSwitcher />
         </SidebarHeader>
 
         <SidebarContent>

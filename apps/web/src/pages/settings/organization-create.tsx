@@ -19,14 +19,19 @@ export default function CreateOrganizationPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      await organization.create({ name, slug });
-      navigate('/settings/organization');
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.message || 'Failed to create organization');
+    const { data, error: apiError } = await organization.create({ name, slug });
+
+    if (apiError) {
+      setError(apiError.message || 'Failed to create organization');
       setLoading(false);
+      return;
     }
+
+    // Set the newly created org as active, then navigate
+    if (data?.id) {
+      await organization.setActive({ organizationId: data.id });
+    }
+    navigate('/settings/organization');
   };
 
   return (

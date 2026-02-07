@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { RequireOrgAdmin } from './components/auth/RequireOrgAdmin';
 import { SettingsLayout } from './components/layouts/SettingsLayout';
 import { AppLayout } from './components/layouts/AppLayout';
 
@@ -50,20 +51,24 @@ export function App() {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
 
-          {/* ── Admin Console (/settings/*) ── */}
-          <Route element={<SettingsLayout />}>
-            <Route path="/settings" element={<SettingsOverviewPage />} />
-            <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
-            <Route path="/settings/organization/create" element={<CreateOrganizationPage />} />
-            <Route path="/settings/members" element={<MembersPage />} />
-            <Route path="/settings/teams" element={<TeamsPage />} />
-            <Route path="/settings/invitations" element={<InvitationsPage />} />
-            <Route path="/settings/permissions" element={<PermissionsPage />} />
-            <Route path="/settings/sso" element={<SSOSettingsPage />} />
-            <Route path="/settings/audit" element={<AuditPage />} />
-            <Route path="/settings/packages" element={<PackagesPage />} />
-            <Route path="/settings/account" element={<AccountSettingsPage />} />
-            <Route path="/settings/security" element={<SecuritySettingsPage />} />
+          {/* ── Create Org (accessible to any authenticated user) ── */}
+          <Route path="/settings/organization/create" element={<CreateOrganizationPage />} />
+
+          {/* ── Admin Console (/settings/*) — owner / admin only ── */}
+          <Route element={<RequireOrgAdmin />}>
+            <Route element={<SettingsLayout />}>
+              <Route path="/settings" element={<SettingsOverviewPage />} />
+              <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
+              <Route path="/settings/members" element={<MembersPage />} />
+              <Route path="/settings/teams" element={<TeamsPage />} />
+              <Route path="/settings/invitations" element={<InvitationsPage />} />
+              <Route path="/settings/permissions" element={<PermissionsPage />} />
+              <Route path="/settings/sso" element={<SSOSettingsPage />} />
+              <Route path="/settings/audit" element={<AuditPage />} />
+              <Route path="/settings/packages" element={<PackagesPage />} />
+              <Route path="/settings/account" element={<AccountSettingsPage />} />
+              <Route path="/settings/security" element={<SecuritySettingsPage />} />
+            </Route>
           </Route>
 
           {/* ── Business Apps (/apps/:appId/*) ── */}
