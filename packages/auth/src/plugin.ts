@@ -12,7 +12,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import { getBetterAuth, resetAuthInstance, type BetterAuthConfig } from './auth-client.js';
+import { getBetterAuth, resetAuthInstance, getEnabledProviders, type BetterAuthConfig } from './auth-client.js';
 import * as Objects from './objects/index.js';
 
 /**
@@ -118,6 +118,11 @@ export class BetterAuthPlugin implements Plugin {
             const httpServer = context.getService('http.server') as any;
             const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
             if (rawApp && this.authInstance) {
+                // Public endpoint: list enabled OAuth/SSO providers (no auth required)
+                rawApp.get('/api/v1/auth/providers', (c: any) => {
+                    return c.json({ providers: getEnabledProviders() });
+                });
+
                 // Intercept all auth requests before the default dispatcher route
                 rawApp.all('/api/v1/auth/*', async (c: any) => {
                     const response = await this.authInstance.handler(c.req.raw);
@@ -223,4 +228,4 @@ export function getBetterAuthAPI(kernel: any): BetterAuthPlugin | null {
  * Export helper function to get auth instance
  * This can be used by other plugins or modules
  */
-export { getBetterAuth, BetterAuthConfig } from './auth-client.js';
+export { getBetterAuth, getEnabledProviders, BetterAuthConfig } from './auth-client.js';

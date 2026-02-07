@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import { organizationClient, twoFactorClient } from "better-auth/client/plugins";
+import { organizationClient, twoFactorClient, genericOAuthClient } from "better-auth/client/plugins";
 
 /**
  * Auth client configured to use ObjectStack Hono server.
@@ -17,6 +17,7 @@ export const authClient = createAuthClient({
       teams: { enabled: true },
     }),
     twoFactorClient(),
+    genericOAuthClient(),
   ],
 });
 
