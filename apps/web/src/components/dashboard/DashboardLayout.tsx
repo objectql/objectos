@@ -5,6 +5,9 @@ import {
   Users,
   Mail,
   Building2,
+  UsersRound,
+  Settings,
+  Shield,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -32,8 +35,14 @@ const navMain = [
 
 const navOrganization = [
   { title: 'Members', href: '/organization/members', icon: Users },
+  { title: 'Teams', href: '/organization/teams', icon: UsersRound },
   { title: 'Invitations', href: '/organization/invitations', icon: Mail },
   { title: 'Settings', href: '/organization/settings', icon: Building2 },
+];
+
+const navSettings = [
+  { title: 'Account', href: '/settings/account', icon: Settings },
+  { title: 'Security', href: '/settings/security', icon: Shield },
 ];
 
 export function DashboardLayout() {
@@ -74,6 +83,28 @@ export function DashboardLayout() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navOrganization.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      tooltip={item.title}
+                    >
+                      <Link to={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navSettings.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild

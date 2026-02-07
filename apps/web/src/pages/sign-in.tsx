@@ -25,8 +25,12 @@ export default function SignInPage() {
       await signIn.email(
         { email, password },
         {
-          onSuccess: () => {
-            navigate('/dashboard');
+          onSuccess: (ctx) => {
+            if (ctx.data?.twoFactorRedirect) {
+              navigate('/verify-2fa');
+            } else {
+              navigate('/dashboard');
+            }
           },
           onError: (ctx) => {
             setError(ctx.error.message || 'Failed to sign in');

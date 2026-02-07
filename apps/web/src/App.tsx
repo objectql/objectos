@@ -8,11 +8,16 @@ const HomePage = lazy(() => import('./pages/home'));
 const SignInPage = lazy(() => import('./pages/sign-in'));
 const SignUpPage = lazy(() => import('./pages/sign-up'));
 const ForgotPasswordPage = lazy(() => import('./pages/forgot-password'));
+const ResetPasswordPage = lazy(() => import('./pages/reset-password'));
+const Verify2FAPage = lazy(() => import('./pages/verify-2fa'));
 const DashboardPage = lazy(() => import('./pages/dashboard'));
 const CreateOrganizationPage = lazy(() => import('./pages/organization/create'));
 const MembersPage = lazy(() => import('./pages/organization/members'));
 const InvitationsPage = lazy(() => import('./pages/organization/invitations'));
 const OrganizationSettingsPage = lazy(() => import('./pages/organization/settings'));
+const TeamsPage = lazy(() => import('./pages/organization/teams'));
+const AccountSettingsPage = lazy(() => import('./pages/settings/account'));
+const SecuritySettingsPage = lazy(() => import('./pages/settings/security'));
 
 export function App() {
   const fallback = (
@@ -29,6 +34,8 @@ export function App() {
       <Route path="/sign-in" element={<SignInPage />} />
       <Route path="/sign-up" element={<SignUpPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/verify-2fa" element={<Verify2FAPage />} />
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
@@ -38,6 +45,9 @@ export function App() {
           <Route path="/organization/members" element={<MembersPage />} />
           <Route path="/organization/invitations" element={<InvitationsPage />} />
           <Route path="/organization/settings" element={<OrganizationSettingsPage />} />
+          <Route path="/organization/teams" element={<TeamsPage />} />
+          <Route path="/settings/account" element={<AccountSettingsPage />} />
+          <Route path="/settings/security" element={<SecuritySettingsPage />} />
         </Route>
       </Route>
 

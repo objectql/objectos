@@ -4,6 +4,7 @@ import {
   BadgeCheck,
   ChevronsUpDown,
   LogOut,
+  Shield,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -75,9 +76,13 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
+              <DropdownMenuItem onClick={() => navigate('/settings/account')}>
                 <BadgeCheck />
                 Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings/security')}>
+                <Shield />
+                Security
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
