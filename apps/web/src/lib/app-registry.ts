@@ -3,7 +3,9 @@ export type AppRegistryEntry = {
   name: string;
   description: string;
   href: string;
+  category: 'system' | 'business' | 'custom';
   status: 'active' | 'paused';
+  pinned?: boolean;
 };
 
 export const mockApps: AppRegistryEntry[] = [
@@ -12,20 +14,25 @@ export const mockApps: AppRegistryEntry[] = [
     name: 'Console',
     description: 'System administration and settings.',
     href: '/dashboard',
+    category: 'system',
     status: 'active',
+    pinned: true,
   },
   {
     id: 'crm',
     name: 'CRM',
     description: 'Leads, accounts, and pipeline management.',
     href: '/apps/crm',
+    category: 'business',
     status: 'active',
+    pinned: true,
   },
   {
     id: 'hrm',
     name: 'HRM',
     description: 'People, teams, and HR workflows.',
     href: '/apps/hrm',
+    category: 'business',
     status: 'active',
   },
   {
@@ -33,7 +40,16 @@ export const mockApps: AppRegistryEntry[] = [
     name: 'Finance',
     description: 'Billing, invoices, and approvals.',
     href: '/apps/finance',
+    category: 'business',
     status: 'paused',
+  },
+  {
+    id: 'custom-ops',
+    name: 'Ops Suite',
+    description: 'Custom operational workflows for your team.',
+    href: '/apps/custom-ops',
+    category: 'custom',
+    status: 'active',
   },
 ];
 
