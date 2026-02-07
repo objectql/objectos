@@ -1,6 +1,9 @@
-import { Link, useLocation, Outlet } from 'react-router-dom';
-import { OrganizationSwitcher } from './OrganizationSwitcher';
-import { UserDropdown } from './UserDropdown';
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { OrganizationSwitcher } from "./OrganizationSwitcher";
+import { UserDropdown } from "./UserDropdown";
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: (
@@ -21,8 +24,8 @@ const navigation = [
   )},
 ];
 
-export function DashboardLayout() {
-  const { pathname } = useLocation();
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -31,22 +34,22 @@ export function DashboardLayout() {
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start">
-              <Link to="/dashboard" className="flex items-center md:mr-24">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                </div>
+              <Link href="/dashboard" className="flex items-center md:mr-24">
+                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
                 <span className="self-center text-xl font-bold sm:text-2xl whitespace-nowrap dark:text-white">
                   ObjectOS
                 </span>
               </Link>
             </div>
-
+            
             <div className="flex items-center gap-4">
-              <OrganizationSwitcher />
-              <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />
-              <UserDropdown />
+               <OrganizationSwitcher />
+               <div className="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
+               <UserDropdown />
             </div>
           </div>
         </div>
@@ -61,28 +64,28 @@ export function DashboardLayout() {
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <li key={item.name}>
-                  <Link
-                    to={item.href}
-                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${isActive ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
-                  >
-                    <span className={`text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white ${isActive ? 'text-blue-600 dark:text-blue-500' : ''}`}>
-                      {item.icon}
-                    </span>
-                    <span className="ml-3">{item.name}</span>
-                  </Link>
-                </li>
-              );
+                const isActive = pathname === item.href;
+                return (
+                    <li key={item.name}>
+                        <Link 
+                            href={item.href}
+                            className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${isActive ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                        >
+                            <span className={`text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white ${isActive ? 'text-blue-600 dark:text-blue-500' : ''}`}>
+                                {item.icon}
+                            </span>
+                            <span className="ml-3">{item.name}</span>
+                        </Link>
+                    </li>
+                );
             })}
           </ul>
         </div>
       </aside>
 
-      {/* Main Content — Outlet replaces {children} */}
+      {/* Main Content */}
       <div className="p-4 sm:ml-64 pt-20">
-        <Outlet />
+        {children}
       </div>
     </div>
   );

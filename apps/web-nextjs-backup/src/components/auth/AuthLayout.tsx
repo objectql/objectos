@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from "next/link";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export function AuthLayout({ children, title, subtitle, image, alternativeLink }
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">ObjectOS</span>
             </div>
-
+            
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
               {title}
             </h2>
@@ -45,7 +45,7 @@ export function AuthLayout({ children, title, subtitle, image, alternativeLink }
           {alternativeLink && (
             <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
               {alternativeLink.text}{" "}
-              <Link to={alternativeLink.href} className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+              <Link href={alternativeLink.href} className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
                 {alternativeLink.linkText}
               </Link>
             </p>
@@ -56,32 +56,33 @@ export function AuthLayout({ children, title, subtitle, image, alternativeLink }
       {/* Right side - hero */}
       <div className="hidden lg:block relative flex-1 bg-gray-50 dark:bg-gray-800">
         {image ? (
-          <div className="absolute inset-0">
-            <img src={image} alt="" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-blue-900/20 mix-blend-multiply" />
-          </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center p-20">
-            <div className="space-y-8 max-w-lg text-center">
-              <div className="rounded-2xl bg-white dark:bg-gray-700 shadow-2xl overflow-hidden p-2 border border-gray-200 dark:border-gray-600 rotate-2 hover:rotate-0 transition-transform duration-500">
-                <div className="aspect-[4/3] bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white text-opacity-50 text-6xl">
-                  <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  The Business Operating System
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Manage your organization's data, workflows, and identity in one unified platform.
-                </p>
-              </div>
+            <div className="absolute inset-0">
+                <img src={image} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-blue-900/20 mix-blend-multiply" />
             </div>
-          </div>
+        ) : (
+            <div className="absolute inset-0 flex items-center justify-center p-20">
+            <div className="space-y-8 max-w-lg text-center">
+                <div className="rounded-2xl bg-white dark:bg-gray-700 shadow-2xl overflow-hidden p-2 border border-gray-200 dark:border-gray-600 rotate-2 hover:rotate-0 transition-transform duration-500">
+                    <div className="aspect-[4/3] bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white text-opacity-50 text-6xl">
+                        <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z" />
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        The Business Operating System
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                        Manage your organization's data, workflows, and identity in one unified platform.
+                    </p>
+                </div>
+            </div>
+            </div>
         )}
       </div>
     </div>
   );
 }
+

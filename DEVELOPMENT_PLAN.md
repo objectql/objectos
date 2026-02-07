@@ -1,8 +1,8 @@
 # ObjectOS Development Plan
 
-> **Version**: 2.0.0
+> **Version**: 3.0.0
 > **Date**: February 7, 2026
-> **Status**: System Integration Phase — 13/13 Plugins Implemented
+> **Status**: Frontend Migration + v1.0 Sprint — 13/13 Plugins Implemented
 
 ---
 
@@ -19,6 +19,8 @@
 9. [Deployment Architecture](#9-deployment-architecture)
 10. [Ecosystem Integration](#10-ecosystem-integration)
 11. [Open Items & Next Steps](#11-open-items--next-steps)
+12. [Frontend Architecture Decision](#12-frontend-architecture-decision)
+13. [Detailed Roadmap: Frontend + Server Integration](#13-detailed-roadmap-frontend--server-integration)
 
 ---
 
@@ -34,7 +36,9 @@
 | **Spec Compliance** | ✅ 100% — All packages pass `@objectstack/spec` audit |
 | **Test Files** | 39 across 12 packages |
 | **Build System** | Turborepo + PNPM workspaces + tsup |
-| **Applications** | 2 (Documentation Site + Web Console) |
+| **Server Runtime** | @objectstack/cli Hono server (objectstack serve) |
+| **Applications** | 2 (Documentation Site + Admin Console) |
+| **Frontend Decision** | ✅ Migrate `apps/web` from Next.js → Vite SPA |
 
 ### Key Milestones Completed
 
@@ -245,8 +249,8 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 | App | Description | Framework | Status |
 |-----|-------------|-----------|:---:|
-| **@objectos/site** | Official documentation & marketing site | Next.js 16 + Fumadocs (MDX) | 🟢 Active |
-| **@objectos/web** | Admin console with auth flows & record management | Next.js 15 + Tailwind CSS | 🟢 Active |
+| **@objectos/site** | Official documentation & marketing site | Next.js 16 + Fumadocs (MDX, static export) | 🟢 Active |
+| **@objectos/web** | Admin console — Auth, Dashboard, Organization, System management | **Vite + React 19 + React Router** (migrating from Next.js) | 🟡 Migrating |
 
 ### External Dependencies
 
@@ -497,22 +501,47 @@ node scripts/audit-spec-compliance.mjs
 ### Development Environment
 
 ```
-┌─────────────────┐
-│ ObjectUI (Vite) │ :5173
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ ObjectOS Server │ :3000
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ PostgreSQL      │ :5432
-└─────────────────┘
+┌──────────────────────┐      ┌──────────────────────┐
+│ Vite Dev (apps/web)  │      │ Fumadocs (apps/site) │
+│ :3001                │      │ :3002                │
+└──────────┬───────────┘      └──────────┬───────────┘
+           │ proxy /api/v1               │
+           ▼                             │
+┌──────────────────────┐                 │
+│ ObjectStack Hono     │◀────────────────┘
+│ :3000                │
+│ ├── /api/v1/*        │
+│ ├── /.well-known     │
+│ └── Kernel + Plugins │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ PostgreSQL / SQLite   │
+└──────────────────────┘
 ```
 
-### Production Environment
+### Production Environment (Single-Process)
+
+```
+┌─────────────────────────────────────────┐
+│         ObjectStack Hono (:3000)        │
+│  ├── /api/v1/*    → Kernel API          │
+│  ├── /console/*   → apps/web/dist/      │
+│  ├── /docs/*      → apps/site/out/      │
+│  └── /.well-known → Discovery           │
+└────────────────────┬────────────────────┘
+                     │
+         ┌───────────┴───────────┐
+         ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐
+│ PostgreSQL      │     │ Redis           │
+│ (Primary +      │     │ (Cache + Queue) │
+│  Standby)       │     │                 │
+└─────────────────┘     └─────────────────┘
+```
+
+### Scaled Production
 
 ```
 ┌─────────────────────────┐
@@ -571,22 +600,56 @@ const objectql = createObjectQL({
 await objectql.loadMetadata('./objects/**/*.yml');
 ```
 
-### With ObjectUI (View Layer)
+### With ObjectUI (View Layer — Separate Repository)
 
-ObjectOS exposes a **Metadata API** that ObjectUI consumes to dynamically render forms, grids, and dashboards:
+ObjectUI (`github.com/objectql/objectui`) is an **independent control library** — similar to amis — that provides metadata-driven UI components:
+
+- **Schema Renderer**: Dynamically renders Forms, Grids, Charts from ObjectStack UI protocol
+- **Plugin UI Loader**: Module Federation for plugin-contributed UI components
+- **Offline Sync**: Integrates with `@objectos/browser` for local-first data
+
+ObjectOS exposes a **Metadata API** that ObjectUI consumes:
 
 ```
-GET /api/metadata/objects/contacts → ObjectUI <ObjectGrid objectName="contacts" />
-GET /api/metadata/objects/contacts → ObjectUI <ObjectForm objectName="contacts" />
+GET /api/v1/meta/objects/contacts → ObjectUI <ObjectGrid objectName="contacts" />
+GET /api/v1/meta/objects/contacts → ObjectUI <ObjectForm objectName="contacts" />
+```
+
+### With apps/web (Admin Console — This Repository)
+
+`apps/web` is the **App Shell** that assembles everything for end users:
+
+```
+apps/web (Vite SPA)
+  ├── App Shell: Login, Navigation, Layout, Routing
+  ├── System Admin Pages: Users, Roles, Plugins, Audit Logs
+  ├── imports ObjectUI controls for business data rendering
+  └── All API calls → ObjectStack Hono /api/v1/*
+```
+
+### Server: ObjectStack Hono
+
+The HTTP server is provided by `@objectstack/cli` via `objectstack serve`:
+
+```
+objectstack serve (Hono + @hono/node-server)
+  ├── /api/v1/auth/*        → BetterAuth (Identity)
+  ├── /api/v1/data/*        → ObjectQL CRUD (Data)
+  ├── /api/v1/graphql       → GraphQL endpoint
+  ├── /api/v1/meta/*        → Metadata CRUD
+  ├── /api/v1/analytics/*   → Analytics queries
+  ├── /api/v1/storage/*     → File storage
+  ├── /api/v1/automation/*  → Automation triggers
+  ├── /.well-known/objectstack → Discovery
+  └── Static mounts: /console/* (web), /docs/* (site)
 ```
 
 ### Framework Adapters
 
 | Adapter | Purpose |
 |---------|---------|
-| `@objectstack/nestjs` | NestJS module integration |
-| `@objectstack/hono` | Hono framework adapter |
-| `@objectstack/nextjs` | Next.js API route integration |
+| `@objectstack/hono` | **Primary** — Hono framework adapter (used by `objectstack serve`) |
+| `@objectstack/nestjs` | NestJS module integration (legacy) |
 
 ### Plugin Manifest Pattern
 
@@ -688,6 +751,205 @@ states:
 - **Repository**: https://github.com/objectql/objectos
 - **Spec Protocol**: https://github.com/objectstack-ai/spec
 - **ObjectQL**: https://github.com/objectql/objectql
+- **Issues**: https://github.com/objectql/objectos/issues
+- **Discussions**: https://github.com/objectql/objectos/discussions
+
+---
+
+## 12. Frontend Architecture Decision
+
+### ADR-001: Migrate apps/web from Next.js to Vite SPA
+
+**Date**: February 7, 2026
+**Status**: Accepted
+
+#### Context
+
+`apps/web` was initially built with Next.js 15. Evaluation revealed:
+
+1. **No SSR need** — All pages (sign-in, sign-up, dashboard, organization) are client-rendered forms/data views behind a login wall.
+2. **Duplicate Auth instance** — Next.js API Routes (`/api/auth/[...all]`) created a separate BetterAuth + SQLite instance, isolated from the ObjectStack Kernel's `BetterAuthPlugin`.
+3. **Port conflict** — Next.js and `objectstack serve` both default to port 3000.
+4. **Architecture violation** — Next.js API Routes tempt developers to embed backend logic in the frontend, violating the Kernel/Plugin separation principle.
+5. **ObjectUI is separate** — Business UI components (Schema Renderer, Plugin UI Loader) live in the `objectui` repository as a standalone control library (amis-like). `apps/web` is the App Shell that assembles them.
+
+#### Decision
+
+**Replace Next.js with Vite + React + React Router for `apps/web`.**
+
+Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
+
+#### Consequences
+
+| Aspect | Impact |
+|--------|--------|
+| **Dev startup** | 3-5s → <1s |
+| **Dependencies** | ~180MB → ~40MB (node_modules) |
+| **API Routes** | Eliminated — impossible to create backend code in frontend |
+| **Auth** | Single source: ObjectStack Kernel `BetterAuthPlugin` |
+| **Production deploy** | Single process: `objectstack serve` with staticMount |
+| **SSR capability** | Removed (not needed for admin console) |
+| **ObjectUI integration** | Simpler — direct `import()` or Module Federation in Vite |
+
+#### Tech Stack
+
+| Layer | Technology | Rationale |
+|-------|-----------|-----------|
+| **Bundler** | Vite | Fast HMR, native ESM, proxy config |
+| **Framework** | React 19 | Ecosystem, ObjectUI compatibility |
+| **Routing** | React Router 7 | Lightweight, well-known, sufficient for admin console |
+| **Styling** | Tailwind CSS 4 + shadcn/ui | Already in use, design system |
+| **Data Fetching** | TanStack Query | Caching, optimistic updates, deduplication |
+| **Auth Client** | better-auth/react | Direct from ObjectStack `/api/v1/auth` |
+| **State** | Zustand (when needed) | Lightweight, no boilerplate |
+
+### Three-Layer UI Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ObjectUI (Separate Repo: github.com/objectql/objectui)     │
+│  ├── Schema Renderer  → JSON → React Components             │
+│  ├── Control Library   → Form, Grid, Chart, Kanban, ...     │
+│  └── Plugin UI Loader → Module Federation for plugin UIs    │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ npm dependency / dynamic import
+┌──────────────────────────┴──────────────────────────────────┐
+│  apps/web (Admin Console — THIS REPO)                        │
+│  ├── App Shell: Auth, Navigation, Layout, Error Boundaries  │
+│  ├── System Pages: Users, Roles, Plugins, Audit, Metrics    │
+│  ├── Business Pages: Assembles ObjectUI components          │
+│  │   └── <SchemaRenderer object="contacts" view="grid" />   │
+│  └── API Client: TanStack Query → /api/v1/*                 │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP / WebSocket
+┌──────────────────────────┴──────────────────────────────────┐
+│  ObjectStack Hono Server (:3000)                             │
+│  ├── /api/v1/auth/*     → BetterAuth (Identity)             │
+│  ├── /api/v1/data/*     → ObjectQL (CRUD)                   │
+│  ├── /api/v1/meta/*     → Metadata (Object schemas, views)  │
+│  ├── /api/v1/graphql    → GraphQL                           │
+│  ├── /console/*         → Static (apps/web/dist in prod)    │
+│  └── /docs/*            → Static (apps/site/out in prod)    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 13. Detailed Roadmap: Frontend + Server Integration
+
+### Phase 0 — Vite Migration (1–2 days)
+
+**Goal**: Replace Next.js with Vite in `apps/web`, uniform all API calls to ObjectStack.
+
+| # | Task | Details |
+|---|------|---------|
+| 0.1 | Initialize Vite + React project | `apps/web/` — vite.config.ts, index.html, tsconfig |
+| 0.2 | Configure dev proxy | `/api/v1` → `http://localhost:3000` |
+| 0.3 | Install shadcn/ui + Tailwind | Same design system, port existing styles |
+| 0.4 | Migrate auth-client.ts | Point to `/api/v1/auth`, remove `better-sqlite3` dep |
+| 0.5 | Migrate pages to React Router | sign-in, sign-up, dashboard, organization/create, forgot-password |
+| 0.6 | Delete Next.js artifacts | next.config.ts, api/ routes, auth-server.ts, postcss next config |
+| 0.7 | Update monorepo scripts | `web:dev`, `web:build` in root package.json |
+| 0.8 | Configure objectstack.config.ts | Add `staticMounts` for `/console/*` → `apps/web/dist/` |
+
+**Exit Criteria**: `pnpm web:dev` starts Vite on :3001, all auth flows work against `objectstack serve` on :3000.
+
+### Phase 1 — Admin Console Foundation (1 week)
+
+**Goal**: Build the core admin shell with navigation, protected routes, and system pages.
+
+| # | Task | Details |
+|---|------|---------|
+| 1.1 | Implement App Shell | Sidebar navigation, topbar with user menu, breadcrumbs |
+| 1.2 | Protected route wrapper | Redirect to `/sign-in` if no session, role-based guards |
+| 1.3 | Dashboard page | Session info, system health summary (from `/api/v1/meta`) |
+| 1.4 | Users management | List/create/edit users (CRUD via `/api/v1/data/user`) |
+| 1.5 | Organization management | List/switch/create orgs (existing functionality, improved) |
+| 1.6 | TanStack Query setup | API client wrapper, query keys convention, error handling |
+
+### Phase 2 — System Administration Pages (2 weeks)
+
+**Goal**: Expose all ObjectOS Kernel capabilities through the admin UI.
+
+| # | Task | Details |
+|---|------|---------|
+| 2.1 | Roles & Permissions UI | View/edit Permission Sets, Object Permissions, Field-level Security |
+| 2.2 | Audit Log Viewer | Filterable table of audit events, user/object/action filters |
+| 2.3 | Plugin Management | List loaded plugins, health status, enable/disable (future) |
+| 2.4 | Workflow Designer (basic) | View workflow definitions, state transitions, run history |
+| 2.5 | Automation Rules | List/create/edit automation rules, trigger type selection |
+| 2.6 | Jobs Monitor | Active/completed/failed jobs, retry actions |
+| 2.7 | Metrics Dashboard | System metrics display (from `@objectos/metrics` export) |
+| 2.8 | Notification Settings | Channel configuration (email/SMS/webhook templates) |
+
+### Phase 3 — ObjectUI Integration (2 weeks)
+
+**Goal**: Wire up ObjectUI component library for metadata-driven business UIs.
+
+| # | Task | Details |
+|---|------|---------|
+| 3.1 | Install `@objectui/core` | Add as dependency, configure provider |
+| 3.2 | Metadata-driven routing | Dynamic routes: `/app/:objectName` → fetch schema → render |
+| 3.3 | Schema Renderer integration | `<SchemaRenderer object="contacts" view="grid" />` |
+| 3.4 | Form Renderer integration | `<SchemaRenderer object="contacts" view="form" recordId={id} />` |
+| 3.5 | Plugin UI slots | Define extension points where plugin UIs can be injected |
+| 3.6 | View configuration | Support ObjectStack UI protocol for custom views/dashboards |
+
+### Phase 4 — Production Readiness (1 week)
+
+**Goal**: Single-process production deployment, optimized build.
+
+| # | Task | Details |
+|---|------|---------|
+| 4.1 | Vite build optimization | Code splitting, lazy routes, asset hashing |
+| 4.2 | objectstack.config.ts staticMounts | `/console/*` → `apps/web/dist/`, `/docs/*` → `apps/site/out/` |
+| 4.3 | Default UI redirect | `/` → `/console/` in ObjectStack server |
+| 4.4 | Environment configuration | `.env` for API URL, basePath, feature flags |
+| 4.5 | Docker build pipeline | Multi-stage: build web → build site → copy to server image |
+| 4.6 | E2E smoke tests | Playwright: login flow, dashboard load, CRUD operations |
+
+### Phase 5 — Advanced Features (Ongoing)
+
+| # | Task | Details |
+|---|------|---------|
+| 5.1 | Real-time updates | WebSocket integration via `@objectos/realtime` |
+| 5.2 | i18n support | Integrate `@objectos/i18n` for multi-locale admin UI |
+| 5.3 | Theme system | Dark/light mode, custom branding per organization |
+| 5.4 | Keyboard shortcuts | Command palette (Cmd+K) for power users |
+| 5.5 | Offline support | Service Worker + `@objectos/browser` for offline admin access |
+| 5.6 | Module Federation | Dynamic loading of plugin UIs from CDN/external bundles |
+
+### Updated Master Timeline
+
+| Phase | Duration | Dependencies | Deliverables |
+|-------|:---:|-------------|-------------|
+| **Phase 0**: Vite Migration | 1–2 days | None | Working Vite SPA, auth against ObjectStack |
+| **Phase A**: Kernel Compliance | 2 weeks | None | Plugin manifests, health checks, event bus |
+| **Phase 1**: Admin Console Foundation | 1 week | Phase 0 | App shell, protected routes, dashboard |
+| **Phase B**: Security & Audit | 2–3 weeks | Phase A | Sharing rules, policies |
+| **Phase 2**: System Admin Pages | 2 weeks | Phase 1 | Full admin CRUD for all subsystems |
+| **Phase C**: Workflow & Automation | 2–3 weeks | Phase B | Native Flow execution |
+| **Phase 3**: ObjectUI Integration | 2 weeks | Phase 2, ObjectUI repo | Metadata-driven business UI |
+| **Phase D**: Realtime Protocol | 2 weeks | Phase C | WebSocket compliance |
+| **Phase 4**: Production Readiness | 1 week | Phase 3 | Single-process deploy, Docker |
+| **Phase E**: Ops Readiness | 2 weeks | Phase D | Metrics, logging, integration tests |
+| **Phase F**: Release Candidate | 1–2 weeks | Phase E | v1.0.0 tag |
+| **Total to v1.0** | **~16–20 weeks** | | **ObjectOS v1.0 + Admin Console** |
+
+---
+
+## Licensing
+
+- **Core Runtime**: AGPL-3.0
+- **Plugins**: AGPL-3.0
+- **Documentation**: CC BY-SA 4.0
+
+## Links
+
+- **Repository**: https://github.com/objectql/objectos
+- **Spec Protocol**: https://github.com/objectstack-ai/spec
+- **ObjectQL**: https://github.com/objectql/objectql
+- **ObjectUI**: https://github.com/objectql/objectui
 - **Issues**: https://github.com/objectql/objectos/issues
 - **Discussions**: https://github.com/objectql/objectos/discussions
 

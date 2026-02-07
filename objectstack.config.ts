@@ -70,8 +70,17 @@ export default {
    */
   server: {
     port: process.env.PORT || 3000,
+    /**
+     * Static mounts for production single-process deployment.
+     * - /console/* → apps/web/dist (Vite SPA)
+     * - /docs/*    → apps/site/out (Next.js static export)
+     */
+    staticMounts: [
+      { root: './apps/web/dist', path: '/console', spa: true, rewrite: true },
+      { root: './apps/site/out', path: '/docs', rewrite: true },
+    ],
     cors: {
-      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
+      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3001', 'http://localhost:3000'],
       credentials: true,
     }
   },
