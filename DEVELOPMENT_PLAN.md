@@ -258,137 +258,118 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 ---
 
-## 6. Development Roadmap
+## 6. Spec-Driven Roadmap to v1.0 (Baseline Release)
 
-### ✅ Phase 1: Core Infrastructure (Completed)
+This roadmap is derived from **@objectstack/spec** requirements (kernel, system, security, automation, data, UI, API) and a deep scan of current package implementations.
 
-**Deliverables**: Microkernel + standard plugin architecture
+### 6.1 v1.0 Release Criteria (Must-Have)
 
-| Task | Status |
-|------|:---:|
-| `@objectstack/runtime` — complete plugin lifecycle (onInstall/onEnable/onLoad/onDisable/onUninstall) | ✅ |
-| Dependency resolution with topological sorting | ✅ |
-| Plugin-isolated storage | ✅ |
-| Hot reload support (dev mode) | ✅ |
-| Standard PluginManifest with Zod validation | ✅ |
-| Plugin version compatibility checking | ✅ |
-| Core plugin migration from legacy kernel | ✅ |
+**Kernel & Plugin Contract**
+- Plugin capability and security manifests aligned to spec: `PluginCapabilityManifest`, `PluginSecurityManifest`.
+- Kernel context populated per spec: `KernelContext`.
+- Health checks and startup reporting: `PluginHealthCheck`, `PluginHealthReport`, `PluginStartupResult`.
+- Event bus configuration compliance: `EventBusConfig` (persistence, retries, DLQ, webhooks).
 
-### ✅ Phase 2: Enterprise Features (Completed)
+**Security & Identity**
+- Permissions align to spec: `PermissionSet`, `ObjectPermission`, `FieldPermission`, `RLSConfig`, `SharingRule`.
+- Audit policy coverage for spec event types: `AuditConfig`.
+- Session and password policies aligned to spec: `SessionPolicy`, `PasswordPolicy`.
 
-**Deliverables**: Permissions + Workflow + Automation
+**Automation & Workflow**
+- Native execution of spec `WorkflowRule` and `Flow` formats (not only compatibility).
+- Action execution sandbox policy (spec security expectations).
 
-| Task | Status |
-|------|:---:|
-| **Permission System** | |
-| Object-level permissions (CRUD) | ✅ |
-| Field-level permissions (visibility/editability) | ✅ |
-| Record-level security (RLS) | ✅ |
-| Permission Sets with filter merging | ✅ |
-| Permission caching optimization | ✅ |
-| Sharing Rules | 🔲 Planned |
-| **Workflow Engine** | |
-| Finite State Machine (FSM) engine | ✅ |
-| YAML/JSON workflow definitions with loader | ✅ |
-| State transition validation | ✅ |
-| Workflow hooks (on_enter, on_exit) | ✅ |
-| Workflow history tracking (persisted instances) | ✅ |
-| Standard action library (log, sendEmail, webhook) | ✅ |
-| Auto-triggers (listen to data events → workflow.trigger) | ✅ |
-| Approval process support | ✅ |
-| Spec-compliant Flow/FlowNode/FlowEdge format | ✅ |
-| Visual workflow editor (ObjectUI) | 🔲 Planned |
-| **Automation System** | |
-| Trigger framework (event-driven evaluation) | ✅ |
-| Scheduled jobs (Cron via cron-parser) | ✅ |
-| In-memory job queue with retry & exponential backoff | ✅ |
-| Job monitoring via automation_log object | ✅ |
-| 7 spec-compliant action types | ✅ |
-| Formula engine | ✅ |
+**Realtime & API**
+- WebSocket protocol compliance (subscribe/unsubscribe/ack/presence) with auth + tenant scoping.
+- Metadata + data APIs aligned to spec HTTP protocol conventions.
 
-### ✅ Phase 2.5: System Infrastructure Plugins (Completed)
+**Operational Readiness**
+- Structured logging, basic metrics export, and audit retention.
+- Integration tests across core paths (auth → permissions → data → audit).
 
-| Plugin | Key Capabilities | Status |
-|--------|-----------------|:---:|
-| **Audit** | CRUD capture, field history, IP/UA/session metadata | ✅ |
-| **Auth** | Better-Auth, Social Login, 2FA, multi-tenant orgs | ✅ |
-| **Browser** | SQLite WASM, OPFS, Service Worker, offline-first | ✅ |
-| **Cache** | LRU + Redis, TTL, namespaces, statistics | ✅ |
-| **i18n** | Multi-locale, interpolation, plurals, date/number | ✅ |
-| **Jobs** | Priority queues, Cron, retry, concurrency, sandbox | ✅ |
-| **Metrics** | Counter/Gauge/Histogram, Prometheus export | ✅ |
-| **Notification** | Email/SMS/Push/Webhook, templates, preferences | ✅ |
-| **Storage** | Memory/Redis/SQLite KV, namespaces, streaming | ✅ |
+### 6.2 Roadmap Phases
 
-### 🔄 Phase 3: System Integration & Validation (Current Focus)
+#### Phase A — Kernel Compliance Baseline (2 weeks)
 
-**Goal**: Connect independent plugins into a cohesive operating system
+**Goal**: Align runtime with kernel protocol schemas.
 
-| Task | Status | Priority |
-|------|:---:|:---:|
-| Hook standard — `data.create/update/delete` events flow through kernel | ✅ | — |
-| Security aspect — permission checks injected before data operations | ✅ | — |
-| **Realtime package — expand beyond minimal implementation** | 🟡 | 🔴 High |
-| Add README, tests, and proper WebSocket channel management to `@objectos/realtime` | 🔲 | 🔴 High |
-| `apps/web` console — integrate Workflow management UI | 🔲 | 🟡 Medium |
-| `apps/web` console — integrate Permission configuration UI | 🔲 | 🟡 Medium |
-| End-to-end integration tests across plugin boundaries | 🔲 | 🔴 High |
-| Spec migration utilities (`convertToFlow`, `convertFromFlow`) | 🔲 | 🟡 Medium |
+| Task | Scope | Spec Reference |
+|------|------|---------------|
+| Define plugin capability manifests | All plugins | `PluginCapabilityManifest` |
+| Define plugin security manifests | All plugins | `PluginSecurityManifest` |
+| Kernel context and startup reporting | Runtime | `KernelContext`, `PluginStartupResult` |
+| Plugin health checks | Runtime + Plugins | `PluginHealthCheck`, `PluginHealthReport` |
+| Event bus config and persistence | Runtime | `EventBusConfig` |
+| Webhook event forwarding | Runtime | `EventBusConfig.webhooks` |
 
-### 🔲 Phase 4: Multi-Tenancy & Security Hardening
+#### Phase B — Security & Audit Parity (2–3 weeks)
 
-**Goal**: Production SaaS readiness
+**Goal**: Match security and audit schemas for a minimal enterprise-ready release.
 
-| Task | Status | Duration |
-|------|:---:|:---:|
-| Tenant isolation strategy (Schema-level vs. Row-level) | 🔲 | 1 week |
-| Tenant context injection into all plugin operations | 🔲 | 1 week |
-| Cross-tenant data isolation verification | 🔲 | 3 days |
-| Tenant quota management | 🔲 | 3 days |
-| Tenant migration tooling | 🔲 | 3 days |
-| OWASP Top 10 security audit | 🔲 | 3 days |
-| SQL injection protection (parameterized queries) | 🔲 | 2 days |
-| XSS protection (input validation + output encoding) | 🔲 | 2 days |
-| CSRF token implementation | 🔲 | 1 day |
-| Rate limiting (per-tenant, per-endpoint) | 🔲 | 2 days |
+| Task | Package(s) | Spec Reference |
+|------|------------|---------------|
+| Implement Sharing Rules (criteria/owner-based) | `@objectos/permissions` | `SharingRule`, `OwnerSharingRule`, `CriteriaSharingRule` |
+| Map RLS policies to spec model | `@objectos/permissions` | `RLSConfig`, `RowLevelSecurityPolicy` |
+| Add password/session policies | `@objectos/auth` | `PasswordPolicy`, `SessionPolicy` |
+| Align audit event coverage | `@objectos/audit` | `AuditConfig` |
+| Add audit retention strategy | `@objectos/audit` | `AuditRetentionPolicy` |
 
-### 🔲 Phase 5: Observability
+#### Phase C — Workflow & Automation Native Spec Execution (2–3 weeks)
 
-**Goal**: Production monitoring and debugging
+**Goal**: Execute spec formats as first-class runtime, not just compatibility.
 
-| Task | Status | Duration |
-|------|:---:|:---:|
-| Prometheus metrics export endpoint (leverage `@objectos/metrics`) | 🔲 | 2 days |
-| System metrics collectors (CPU, memory, event loop) | 🔲 | 2 days |
-| Business metrics (request volume, error rate, P95 latency) | 🔲 | 2 days |
-| Custom metrics API for plugins | 🔲 | 2 days |
-| Structured logging with Winston/Pino | 🔲 | 2 days |
-| Distributed tracing with OpenTelemetry | 🔲 | 3 days |
-| Log aggregation configuration (ELK/Loki) | 🔲 | 2 days |
-| Error tracking integration (Sentry) | 🔲 | 1 day |
+| Task | Package(s) | Spec Reference |
+|------|------------|---------------|
+| Native Flow execution engine | `@objectos/workflow` | `Flow`, `FlowNode`, `FlowEdge` |
+| Conversion utilities (legacy ↔ spec) | `@objectos/workflow` | `Flow` / legacy FSM |
+| Spec validation on load | `@objectos/automation`, `@objectos/workflow` | `WorkflowRule`, `Flow` |
+| Action execution sandbox | `@objectos/automation` | `PluginSecurityManifest` |
 
-### 🔲 Phase 6: Developer Experience
+#### Phase D — Realtime Protocol Compliance (2 weeks)
 
-**Goal**: Lower learning curve, improve development velocity
+**Goal**: Reach WebSocket protocol compatibility with auth + tenant-aware events.
 
-| Task | Status | Duration |
-|------|:---:|:---:|
-| **CLI Tools** | | |
-| `objectos init` — project scaffolding | 🔲 | 2 days |
-| `objectos plugin:create` — plugin generator | 🔲 | 2 days |
-| `objectos migrate` — migration tooling | 🔲 | 2 days |
-| `objectos dev` — development server with hot reload | 🔲 | 1 day |
-| **VS Code Extension** | | |
-| YAML syntax highlighting for `.object.yml` | 🔲 | 2 days |
-| Object definition auto-completion | 🔲 | 2 days |
-| Field type validation & IntelliSense | 🔲 | 2 days |
-| Workflow visualization preview | 🔲 | 3 days |
-| **Documentation** | | |
-| Quick start tutorial | 🔲 | 2 days |
-| Complete API reference | 🔲 | 3 days |
-| Plugin development tutorial (step-by-step) | 🔲 | 2 days |
-| Best practice cookbook | 🔲 | 2 days |
-| FAQ & troubleshooting guide | 🔲 | 1 day |
+| Task | Package(s) | Spec Reference |
+|------|------------|---------------|
+| WebSocket protocol compliance (subscribe/unsubscribe/ack) | `@objectos/realtime` | WebSocket API spec |
+| Presence and awareness updates | `@objectos/realtime` | Awareness schemas |
+| Auth + tenant scoping | `@objectos/auth`, `@objectos/realtime` | Identity + Security |
+| Event bus integration | Runtime + Realtime | `EventBusConfig` |
+| Tests + README coverage | `@objectos/realtime` | Quality baseline |
+
+#### Phase E — Operational Readiness (2 weeks)
+
+**Goal**: Minimum observability and reliability for a v1.0 launch.
+
+| Task | Package(s) | Spec Reference |
+|------|------------|---------------|
+| Metrics export endpoint | `@objectos/metrics`, server adapter | Metrics schemas |
+| Structured logging policy | Runtime + server | Logging schemas |
+| Audit log query API standardization | `@objectos/audit` | Audit schemas |
+| Integration test suite | All core packages | Spec-driven test cases |
+
+#### Phase F — Release Candidate (1–2 weeks)
+
+**Goal**: Stabilize and ship the baseline v1.0.
+
+| Task | Scope | Exit Criteria |
+|------|------|---------------|
+| Security review | Platform | No critical findings |
+| Performance baseline | Runtime + server | P95 < 100ms on CRUD |
+| Documentation updates | Docs + site | Spec-aligned guides |
+| Versioning and release | Monorepo | Tagged v1.0.0 |
+
+### 6.3 Package-Level Spec Gaps (from code scan)
+
+| Package | Observed Gap | Spec Impact |
+|---------|--------------|------------|
+| `@objectos/realtime` | Minimal implementation, no tests | WebSocket protocol + awareness missing |
+| `@objectos/permissions` | Sharing Rules not implemented | `SharingRule` schema not satisfied |
+| `@objectos/auth` | No password/session policy wiring | `PasswordPolicy`, `SessionPolicy` |
+| `@objectos/audit` | Limited event coverage and retention | `AuditConfig`, `AuditRetentionPolicy` |
+| `@objectos/workflow` | Spec Flow not executed natively | `Flow` execution requirement |
+| `@objectos/automation` | Script/action sandboxing flagged | `PluginSecurityManifest` expectations |
+| Runtime (external) | Capability/security manifests not enforced | Kernel protocol compliance |
 
 ---
 
@@ -629,51 +610,50 @@ states:
 
 ---
 
-## 11. Open Items & Next Steps
+## 11. Open Items & Next Steps (v1.0 Baseline)
 
-### 🔴 High Priority
+### 🔴 Immediate (Release Blockers)
 
-| # | Item | Package | Description |
-|---|------|---------|-------------|
-| 1 | **Realtime package expansion** | `@objectos/realtime` | Only 2 source files, no tests, no README. Needs full WebSocket channel management, presence, and pub/sub. |
-| 2 | **Cross-plugin integration tests** | All | End-to-end tests verifying plugin interactions (e.g., auth → permissions → audit pipeline). |
-| 3 | **Sharing Rules** | `@objectos/permissions` | Object sharing rules not yet implemented. |
+| # | Item | Owner | Spec Reference | Notes |
+|---|------|-------|----------------|------|
+| 1 | Plugin capability + security manifests | Runtime + All plugins | `PluginCapabilityManifest`, `PluginSecurityManifest` | Define and validate in build/test |
+| 2 | Event bus persistence + retries + DLQ | Runtime | `EventBusConfig` | Required for reliable automation/audit |
+| 3 | WebSocket protocol compliance | `@objectos/realtime` | WebSocket API spec | Add auth, tenant scoping, tests |
+| 4 | Sharing Rules | `@objectos/permissions` | `SharingRule` | Required for enterprise security parity |
+| 5 | Integration test suite | All core packages | Spec-driven cases | Auth → Permissions → Data → Audit |
 
-### 🟡 Medium Priority
+### 🟡 Near-Term (Release Candidate)
 
-| # | Item | Package | Description |
-|---|------|---------|-------------|
-| 4 | Web console — Workflow management | `apps/web` | UI for workflow definition, monitoring, and instance management. |
-| 5 | Web console — Permission configuration | `apps/web` | UI for configuring roles, permission sets, and sharing rules. |
-| 6 | Spec migration utilities | `@objectos/workflow` | `convertToFlow()` and `convertFromFlow()` conversion functions. |
-| 7 | Visual workflow editor | `@objectos/workflow` + ObjectUI | Drag-and-drop workflow designer integrated with ObjectUI. |
-| 8 | Job monitoring dashboard | `@objectos/automation` | UI task for monitoring automation jobs and their status. |
+| # | Item | Owner | Spec Reference | Notes |
+|---|------|-------|----------------|------|
+| 6 | Health checks + startup reporting | Runtime + Plugins | `PluginHealthCheck`, `PluginStartupResult` | Required for ops readiness |
+| 7 | Audit retention + policy coverage | `@objectos/audit` | `AuditConfig`, `AuditRetentionPolicy` | Align to event coverage list |
+| 8 | Password + session policies | `@objectos/auth` | `PasswordPolicy`, `SessionPolicy` | Enforce security baseline |
+| 9 | Native Flow execution | `@objectos/workflow` | `Flow` | Remove reliance on legacy FSM path |
+| 10 | Action execution sandbox | `@objectos/automation` | `PluginSecurityManifest` | Restrict scripts + resource access |
 
-### 🟢 Future Phases (Post v1.0)
+### 🟢 Post v1.0 (Optional Enhancements)
 
-| # | Phase | Items |
-|---|-------|-------|
-| 9 | Multi-Tenancy | Tenant isolation, context injection, quotas, migration tools |
-| 10 | Observability | Prometheus endpoint, OpenTelemetry tracing, structured logging, Sentry |
-| 11 | CLI Tools | `objectos init`, `objectos plugin:create`, `objectos migrate`, `objectos dev` |
-| 12 | VS Code Extension | YAML highlighting, auto-completion, field type checking, workflow visualization |
-| 13 | Documentation | Quick start, API reference, plugin tutorials, best practices, FAQ |
-| 14 | Enterprise SSO | SAML 2.0, LDAP integration |
-| 15 | Advanced Queries | Aggregations, GROUP BY, subqueries, full-text search |
-| 16 | Data Relationships | Lookup fields, master-detail, many-to-many, circular dependency detection |
+| # | Area | Items |
+|---|------|-------|
+| 11 | Multi-Tenancy | Tenant isolation, quotas, migration tooling |
+| 12 | Observability | OpenTelemetry tracing, log aggregation, Sentry |
+| 13 | Developer Tools | CLI, VS Code extension, advanced docs |
+| 14 | Identity | SCIM endpoints + provisioning models |
+| 15 | Data & Query | Relationship expansion, advanced query operators |
+| 16 | UI | Visual workflow editor + admin UI configuration |
 
-### Timeline Summary
+### Updated Timeline Summary (v1.0 Baseline)
 
 | Phase | Duration | Status | Deliverables |
 |-------|:---:|:---:|-------------|
-| **Phase 1**: Core Infrastructure | 4 weeks | ✅ Complete | Microkernel + standard plugins |
-| **Phase 2**: Enterprise Features | 6 weeks | ✅ Complete | Permissions + workflow + automation |
-| **Phase 2.5**: System Plugins | 4 weeks | ✅ Complete | All 13 plugins implemented |
-| **Phase 3**: Integration & Validation | 3 weeks | 🔄 In Progress | Cross-plugin integration, realtime expansion |
-| **Phase 4**: Multi-Tenancy & Security | 3 weeks | 🔲 Planned | Tenant isolation + OWASP hardening |
-| **Phase 5**: Observability | 2 weeks | 🔲 Planned | Monitoring + logging + tracing |
-| **Phase 6**: Developer Experience | 3 weeks | 🔲 Planned | CLI + VS Code extension + docs |
-| **Total to v1.0** | **~25 weeks** | | **Production-ready ObjectOS v1.0** |
+| **Phase A**: Kernel Compliance | 2 weeks | 🔄 Planned | Manifests + health + event bus |
+| **Phase B**: Security & Audit | 2–3 weeks | 🔲 Planned | Sharing rules + policy alignment |
+| **Phase C**: Automation & Workflow | 2–3 weeks | 🔲 Planned | Native Flow + sandbox |
+| **Phase D**: Realtime | 2 weeks | 🔲 Planned | WebSocket protocol compliance |
+| **Phase E**: Ops Readiness | 2 weeks | 🔲 Planned | Metrics + logging + tests |
+| **Phase F**: Release Candidate | 1–2 weeks | 🔲 Planned | Performance + docs + tag |
+| **Total to v1.0** | **~11–14 weeks** | | **Baseline ObjectOS v1.0** |
 
 ---
 
