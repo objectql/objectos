@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useSession, signOut } from '@/lib/auth-client';
+import { signOut, useSession } from '@/lib/auth-client';
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -37,6 +37,7 @@ export function NavUser() {
     await signOut();
     navigate('/sign-in');
   };
+
 
   return (
     <SidebarMenu>

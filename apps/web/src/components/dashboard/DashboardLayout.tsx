@@ -157,10 +157,7 @@ export function DashboardLayout() {
         </SidebarContent>
 
         <SidebarFooter>
-          <div className="grid gap-2">
-            <TeamSwitcher />
-            <NavUser />
-          </div>
+          <NavUser />
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

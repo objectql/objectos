@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { organization, useActiveOrganization } from '@/lib/auth-client';
+import {
+  organization,
+  useActiveOrganization,
+  useListOrganizations,
+} from '@/lib/auth-client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +14,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function OrganizationSettingsPage() {
   const { data: activeOrg } = useActiveOrganization();
+  const { data: organizations, isPending: orgsPending } = useListOrganizations();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -83,6 +88,44 @@ export default function OrganizationSettingsPage() {
           Manage settings for {activeOrg.name}.
         </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Organization Switcher</CardTitle>
+          <CardDescription>
+            Select an organization to manage its settings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {orgsPending && (
+            <div className="text-sm text-muted-foreground">Loading organizations…</div>
+          )}
+          {!orgsPending &&
+            organizations?.map((orgItem) => (
+              <button
+                key={orgItem.id}
+                type="button"
+                onClick={() => organization.setActive({ organizationId: orgItem.id })}
+                className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition hover:bg-muted"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 items-center justify-center rounded-md border bg-background text-xs font-semibold">
+                    {orgItem.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="font-medium">{orgItem.name}</span>
+                </div>
+                {activeOrg.id === orgItem.id && (
+                  <span className="text-xs text-muted-foreground">Active</span>
+                )}
+              </button>
+            ))}
+          <div>
+            <Button variant="outline" onClick={() => navigate('/organization/create')}>
+              Add organization
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* General Settings */}
       <Card>
