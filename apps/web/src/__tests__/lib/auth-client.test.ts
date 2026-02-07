@@ -17,11 +17,13 @@ const mockClient = {
   organization: {},
   useListOrganizations: vi.fn(),
   useActiveOrganization: vi.fn(),
+  twoFactor: {},
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockCreateAuthClient = vi.fn((() => mockClient) as any);
 const mockOrganizationClient = vi.fn(() => ({ id: 'organization' }));
+const mockTwoFactorClient = vi.fn(() => ({ id: 'two-factor' }));
 
 vi.mock('better-auth/react', () => ({
   createAuthClient: mockCreateAuthClient,
@@ -29,6 +31,7 @@ vi.mock('better-auth/react', () => ({
 
 vi.mock('better-auth/client/plugins', () => ({
   organizationClient: mockOrganizationClient,
+  twoFactorClient: mockTwoFactorClient,
 }));
 
 describe('auth-client', () => {
@@ -40,11 +43,12 @@ describe('auth-client', () => {
     expect(config.baseURL).toBe('http://localhost:5321/api/v1/auth');
   });
 
-  it('should include organizationClient plugin', async () => {
+  it('should include organizationClient and twoFactorClient plugins', async () => {
     // Module is cached — createAuthClient was called once during first import
     const config = mockCreateAuthClient.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(config?.plugins).toBeDefined();
     expect(config?.plugins).toContainEqual({ id: 'organization' });
+    expect(config?.plugins).toContainEqual({ id: 'two-factor' });
   });
 
   it('should export signIn, signUp, signOut, useSession', async () => {
@@ -62,6 +66,12 @@ describe('auth-client', () => {
     expect(mod.organization).toBeDefined();
     expect(mod.useListOrganizations).toBeDefined();
     expect(mod.useActiveOrganization).toBeDefined();
+  });
+
+  it('should export twoFactor', async () => {
+    const mod = await import('@/lib/auth-client');
+
+    expect(mod.twoFactor).toBeDefined();
   });
 
   it('should export the authClient instance', async () => {

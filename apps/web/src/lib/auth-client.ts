@@ -29,6 +29,4 @@ export const {
   useListOrganizations,
   useActiveOrganization,
   twoFactor,
-  useListSessions,
-  useListDeviceSessions,
 } = authClient;

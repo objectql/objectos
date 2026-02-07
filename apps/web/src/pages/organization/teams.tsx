@@ -82,7 +82,7 @@ export default function TeamsPage() {
     if (!orgId) return;
     setLoading(true);
     try {
-      const res = await organization.listTeams({ organizationId: orgId });
+      const res = await organization.listTeams({ query: { organizationId: orgId } });
       setTeams((res.data as Team[]) || []);
     } catch {
       setError('Failed to load teams');
@@ -116,7 +116,7 @@ export default function TeamsPage() {
 
   const handleDeleteTeam = async (teamId: string) => {
     try {
-      await organization.removeTeam({ teamId, organizationId: orgId });
+      await organization.removeTeam({ teamId, organizationId: orgId } as any);
       await loadTeams();
       if (selectedTeam?.id === teamId) {
         setSelectedTeam(null);
@@ -131,8 +131,8 @@ export default function TeamsPage() {
     setSelectedTeam(team);
     setLoadingMembers(true);
     try {
-      const res = await organization.listTeamMembers({ teamId: team.id });
-      setTeamMembers((res.data as TeamMember[]) || []);
+      const res = await organization.listTeamMembers({ query: { teamId: team.id } });
+      setTeamMembers((res.data || []) as unknown as TeamMember[]);
     } catch {
       setTeamMembers([]);
     } finally {
@@ -147,8 +147,7 @@ export default function TeamsPage() {
     try {
       await organization.addTeamMember({
         teamId: selectedTeam.id,
-        userId: addMemberEmail.trim(), // better-auth accepts userId
-        organizationId: orgId,
+        userId: addMemberEmail.trim(),
       });
       setAddMemberEmail('');
       await loadTeamMembers(selectedTeam);
@@ -164,8 +163,7 @@ export default function TeamsPage() {
     try {
       await organization.removeTeamMember({
         teamId: selectedTeam.id,
-        memberId,
-        organizationId: orgId,
+        userId: memberId as unknown,
       });
       await loadTeamMembers(selectedTeam);
     } catch {
