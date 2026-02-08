@@ -219,7 +219,7 @@ export async function executeSandboxedWithPolicy(
     if (warnings.length > 0) {
         return {
             success: false,
-            error: `Script validation failed: ${warnings[0]}`,
+            error: `Script validation failed: ${warnings[0]}${warnings.length > 1 ? ` (${warnings.length} issues found)` : ''}`,
             duration: 0,
             logs: warnings,
         };

@@ -75,14 +75,24 @@ export interface FlowExecutionResult {
 }
 
 /**
+ * Logger interface for FlowEngine
+ */
+interface FlowLogger {
+    info: (msg: string, ...args: unknown[]) => void;
+    warn: (msg: string, ...args: unknown[]) => void;
+    error: (msg: string, ...args: unknown[]) => void;
+    debug: (msg: string, ...args: unknown[]) => void;
+}
+
+/**
  * Flow Engine — executes spec-compliant Flow graphs natively
  */
 export class FlowEngine {
     private handlers: Map<string, FlowNodeHandler> = new Map();
-    private logger: any;
+    private logger: FlowLogger;
     private maxNodes: number;
 
-    constructor(options?: { logger?: any; maxNodes?: number }) {
+    constructor(options?: { logger?: FlowLogger; maxNodes?: number }) {
         this.logger = options?.logger || console;
         this.maxNodes = options?.maxNodes || 500;
 
@@ -102,7 +112,7 @@ export class FlowEngine {
      */
     createInstance(
         flow: Flow,
-        data: Record<string, any> = {},
+        data: Record<string, unknown> = {},
         startedBy?: string,
     ): WorkflowInstance {
         const startNode = flow.nodes.find(n => n.type === 'start');
@@ -355,17 +365,13 @@ export class FlowEngine {
         // Wait node — no-op in synchronous execution
         this.handlers.set('wait', async () => ({ success: true }));
 
-        // Script node — executes config.script if provided
+        // Script node — basic handler (production deployments should register
+        // a custom handler that delegates to @objectos/automation executeSandboxedWithPolicy)
         this.handlers.set('script', async (node, ctx) => {
             const script = node.config?.script as string | undefined;
             if (!script) return { success: true };
-            try {
-                const fn = new Function('variables', 'logger', script);
-                const result = await Promise.resolve(fn(ctx.variables, ctx.logger));
-                return { success: true, output: typeof result === 'object' && result !== null ? result : {} };
-            } catch (err) {
-                return { success: false, error: err instanceof Error ? err.message : String(err) };
-            }
+            ctx.logger.warn('Default script handler used — register a sandboxed handler for production');
+            return { success: true };
         });
     }
 }
