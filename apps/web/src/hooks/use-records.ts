@@ -5,7 +5,7 @@
  * Falls back to mock data when the server is unreachable.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RecordData, RecordListResponse } from '@/types/metadata';
 import { objectStackClient } from '@/lib/api';
 import { getMockRecords, getMockRecord } from '@/lib/mock-data';
@@ -67,5 +67,67 @@ export function useRecord({ objectName, recordId }: UseRecordOptions) {
       return getMockRecord(objectName, recordId);
     },
     enabled: !!objectName && !!recordId,
+  });
+}
+
+// ── Create record ───────────────────────────────────────────────
+
+interface UseCreateRecordOptions {
+  objectName: string;
+}
+
+export function useCreateRecord({ objectName }: UseCreateRecordOptions) {
+  const queryClient = useQueryClient();
+
+  return useMutation<RecordData, Error, Partial<RecordData>>({
+    mutationFn: async (data) => {
+      const result = await objectStackClient.data.create(objectName, data);
+      return (result?.record ?? data) as RecordData;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
+    },
+  });
+}
+
+// ── Update record ───────────────────────────────────────────────
+
+interface UseUpdateRecordOptions {
+  objectName: string;
+  recordId: string;
+}
+
+export function useUpdateRecord({ objectName, recordId }: UseUpdateRecordOptions) {
+  const queryClient = useQueryClient();
+
+  return useMutation<RecordData, Error, Partial<RecordData>>({
+    mutationFn: async (data) => {
+      const result = await objectStackClient.data.update(objectName, recordId, data);
+      return (result?.record ?? data) as RecordData;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
+      void queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
+    },
+  });
+}
+
+// ── Delete record ───────────────────────────────────────────────
+
+interface UseDeleteRecordOptions {
+  objectName: string;
+}
+
+export function useDeleteRecord({ objectName }: UseDeleteRecordOptions) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: async (recordId) => {
+      await objectStackClient.data.delete(objectName, recordId);
+    },
+    onSuccess: (_data, recordId) => {
+      void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
+      void queryClient.removeQueries({ queryKey: ['record', objectName, recordId] });
+    },
   });
 }

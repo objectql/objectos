@@ -63,3 +63,34 @@ export function useObjectDefinition(objectName: string | undefined) {
     enabled: !!objectName,
   });
 }
+
+/**
+ * Fetch all ObjectDefinition entries that belong to a given app.
+ * Resolves each object name listed in `AppDefinition.objects` into its full definition.
+ */
+export function useAppObjects(appId: string | undefined) {
+  const appQuery = useAppDefinition(appId);
+
+  return useQuery<ObjectDefinition[]>({
+    queryKey: ['metadata', 'appObjects', appId],
+    queryFn: async () => {
+      const objectNames = appQuery.data?.objects ?? [];
+      const results: ObjectDefinition[] = [];
+      for (const name of objectNames) {
+        try {
+          const result = await objectStackClient.meta.getObject(name);
+          if (result) {
+            results.push(result as ObjectDefinition);
+            continue;
+          }
+        } catch {
+          // Server unreachable — use mock data
+        }
+        const mock = getMockObjectDefinition(name);
+        if (mock) results.push(mock);
+      }
+      return results;
+    },
+    enabled: !!appId && !!appQuery.data,
+  });
+}
