@@ -84,6 +84,125 @@ export class MetricsPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[Metrics] Starting...');
+        
+        // Register HTTP routes for Metrics API
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                // GET /api/v1/metrics - Get all metrics
+                rawApp.get('/api/v1/metrics', async (c: any) => {
+                    try {
+                        const metrics = this.getMetrics();
+                        return c.json({ success: true, data: metrics });
+                    } catch (error: any) {
+                        context.logger.error('[Metrics API] Get metrics error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/metrics/prometheus - Prometheus format export
+                rawApp.get('/api/v1/metrics/prometheus', async (c: any) => {
+                    try {
+                        const prometheusText = this.exportPrometheus();
+                        return c.text(prometheusText);
+                    } catch (error: any) {
+                        context.logger.error('[Metrics API] Prometheus export error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/metrics/type/:type - Get metrics by type
+                rawApp.get('/api/v1/metrics/type/:type', async (c: any) => {
+                    try {
+                        const type = c.req.param('type');
+                        const metrics = this.getMetricsByType(type as any);
+                        return c.json({ success: true, data: metrics });
+                    } catch (error: any) {
+                        context.logger.error('[Metrics API] Get metrics by type error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // GET /api/v1/admin/plugins - List all loaded plugins with health status
+                rawApp.get('/api/v1/admin/plugins', async (c: any) => {
+                    try {
+                        // Get all registered services (plugins register themselves as services)
+                        const plugins: any[] = [];
+                        
+                        // Try to get plugin information from the kernel context
+                        // This is a workaround since we don't have direct access to the kernel's plugin list
+                        const knownPlugins = [
+                            '@objectos/metrics',
+                            '@objectos/cache',
+                            '@objectos/storage',
+                            '@objectos/auth',
+                            '@objectos/permissions',
+                            '@objectos/audit',
+                            '@objectos/workflow',
+                            '@objectos/automation',
+                            '@objectos/jobs',
+                            '@objectos/notification',
+                            '@objectos/i18n',
+                            '@objectos/realtime',
+                        ];
+
+                        for (const pluginName of knownPlugins) {
+                            try {
+                                // Try to get the service
+                                const serviceName = pluginName.replace('@objectos/', '');
+                                const service = context.getService(serviceName) as any;
+                                
+                                if (service) {
+                                    let health: any = { status: 'unknown' };
+                                    let manifest: any = {};
+                                    
+                                    // Try to get health check
+                                    if (typeof service.healthCheck === 'function') {
+                                        try {
+                                            health = await service.healthCheck();
+                                        } catch (e) {
+                                            health = { status: 'error', error: String(e) };
+                                        }
+                                    }
+                                    
+                                    // Try to get manifest
+                                    if (typeof service.getManifest === 'function') {
+                                        try {
+                                            manifest = service.getManifest();
+                                        } catch (e) {
+                                            manifest = { error: String(e) };
+                                        }
+                                    }
+                                    
+                                    plugins.push({
+                                        name: service.name || pluginName,
+                                        version: service.version || '0.1.0',
+                                        status: health.status || 'unknown',
+                                        uptime: health.uptime || 0,
+                                        health,
+                                        manifest,
+                                    });
+                                }
+                            } catch (e) {
+                                // Plugin not loaded or service not available
+                                context.logger.debug(`[Admin API] Plugin ${pluginName} not found: ${e}`);
+                            }
+                        }
+                        
+                        return c.json({ success: true, data: plugins });
+                    } catch (error: any) {
+                        context.logger.error('[Admin API] List plugins error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                context.logger.info('[Metrics] HTTP routes registered');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Metrics] Could not register HTTP routes: ${e?.message}`);
+        }
+        
         context.logger.info('[Metrics] Started successfully');
     }
 

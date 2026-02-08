@@ -123,6 +123,95 @@ export class NotificationPlugin implements Plugin {
   }
 
   /**
+   * Plugin lifecycle: Start
+   */
+  async start(context: PluginContext): Promise<void> {
+    context.logger.info('[NotificationPlugin] Starting...');
+    
+    // Register HTTP routes for Notification API
+    try {
+      const httpServer = context.getService('http.server') as any;
+      const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+      if (rawApp) {
+        // GET /api/v1/notifications/channels - List configured channels
+        rawApp.get('/api/v1/notifications/channels', async (c: any) => {
+          try {
+            const channels: any[] = [];
+            if (this.emailChannel) {
+              channels.push({ 
+                name: 'email', 
+                type: NotificationChannel.Email,
+                enabled: true,
+                config: { 
+                  from: this.config.email?.from,
+                  host: this.config.email?.host ? 'configured' : 'not configured'
+                }
+              });
+            }
+            if (this.smsChannel) {
+              channels.push({ 
+                name: 'sms', 
+                type: NotificationChannel.SMS,
+                enabled: true,
+                config: { provider: this.config.sms?.provider || 'default' }
+              });
+            }
+            if (this.pushChannel) {
+              channels.push({ 
+                name: 'push', 
+                type: NotificationChannel.Push,
+                enabled: true,
+                config: { provider: this.config.push?.provider || 'default' }
+              });
+            }
+            if (this.webhookChannel) {
+              channels.push({ 
+                name: 'webhook', 
+                type: NotificationChannel.Webhook,
+                enabled: true,
+                config: {}
+              });
+            }
+            return c.json({ success: true, data: channels });
+          } catch (error: any) {
+            context.logger.error('[Notification API] Channels error:', error);
+            return c.json({ success: false, error: error.message }, 500);
+          }
+        });
+
+        // GET /api/v1/notifications/queue/status - Get queue status
+        rawApp.get('/api/v1/notifications/queue/status', async (c: any) => {
+          try {
+            const status = this.getQueueStatus();
+            return c.json({ success: true, data: status });
+          } catch (error: any) {
+            context.logger.error('[Notification API] Queue status error:', error);
+            return c.json({ success: false, error: error.message }, 500);
+          }
+        });
+
+        // POST /api/v1/notifications/send - Send notification
+        rawApp.post('/api/v1/notifications/send', async (c: any) => {
+          try {
+            const request = await c.req.json();
+            const result = await this.send(request);
+            return c.json({ success: true, data: result });
+          } catch (error: any) {
+            context.logger.error('[Notification API] Send error:', error);
+            return c.json({ success: false, error: error.message }, 500);
+          }
+        });
+
+        context.logger.info('[NotificationPlugin] HTTP routes registered');
+      }
+    } catch (e: any) {
+      context.logger.warn(`[NotificationPlugin] Could not register HTTP routes: ${e?.message}`);
+    }
+    
+    context.logger.info('[NotificationPlugin] Started successfully');
+  }
+
+  /**
    * Health check
    */
   async healthCheck(): Promise<PluginHealthReport> {
