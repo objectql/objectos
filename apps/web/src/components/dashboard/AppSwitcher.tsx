@@ -18,7 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { mockApps } from '@/lib/app-registry';
+import { useAppList } from '@/hooks/use-metadata';
+import { consoleApp, mockApps, toRegistryEntry } from '@/lib/app-registry';
+import type { AppRegistryEntry } from '@/lib/app-registry';
 
 interface AppSwitcherProps {
   /** "sidebar" = full sidebar header style, "topbar" = compact button for top bar */
@@ -29,29 +31,37 @@ function useAppSwitcherState() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [query, setQuery] = useState('');
+  const { data: remoteApps } = useAppList();
+
+  // Build the app list: Console (always) + remote apps converted to registry entries.
+  // Falls back to mockApps when the server is unreachable (useAppList returns mockAppDefinitions).
+  const apps: AppRegistryEntry[] = useMemo(() => {
+    if (!remoteApps || remoteApps.length === 0) return mockApps;
+    return [consoleApp, ...remoteApps.map(toRegistryEntry)];
+  }, [remoteApps]);
 
   const normalizedQuery = query.trim().toLowerCase();
 
   const activeApp = useMemo(() => {
     if (pathname.startsWith('/apps/')) {
       const [, , appId] = pathname.split('/');
-      return mockApps.find((app) => app.id === appId);
+      return apps.find((app) => app.id === appId);
     }
     if (pathname.startsWith('/settings')) {
-      return mockApps.find((app) => app.id === 'console');
+      return apps.find((app) => app.id === 'console');
     }
-    return mockApps.find((app) => app.id === 'console');
-  }, [pathname]);
+    return apps.find((app) => app.id === 'console');
+  }, [pathname, apps]);
 
   const displayName = activeApp?.name ?? 'Console';
 
   const filteredApps = useMemo(() => {
-    if (!normalizedQuery) return mockApps;
-    return mockApps.filter((app) => {
+    if (!normalizedQuery) return apps;
+    return apps.filter((app) => {
       const haystack = `${app.name} ${app.description}`.toLowerCase();
       return haystack.includes(normalizedQuery);
     });
-  }, [normalizedQuery]);
+  }, [normalizedQuery, apps]);
 
   const pinnedApps = filteredApps.filter((app) => app.pinned);
   const systemApps = filteredApps.filter(
@@ -87,7 +97,7 @@ function AppDropdownBody({
   customApps,
   filteredApps,
 }: ReturnType<typeof useAppSwitcherState>) {
-  const renderAppItem = (app: (typeof mockApps)[number]) => (
+  const renderAppItem = (app: AppRegistryEntry) => (
     <DropdownMenuItem
       key={app.id}
       className="flex items-start gap-2"

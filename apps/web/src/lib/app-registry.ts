@@ -1,3 +1,5 @@
+import type { AppDefinition } from '@/types/metadata';
+
 export type AppRegistryEntry = {
   id: string;
   name: string;
@@ -8,16 +10,39 @@ export type AppRegistryEntry = {
   pinned?: boolean;
 };
 
+/**
+ * Convert an AppDefinition (from remote metadata API) to an AppRegistryEntry
+ * used by the AppSwitcher UI.
+ */
+export function toRegistryEntry(app: AppDefinition): AppRegistryEntry {
+  return {
+    id: app.name,
+    name: app.label || app.name,
+    description: app.description || '',
+    href: `/apps/${app.name}`,
+    category: 'business',
+    status: app.active !== false ? 'active' : 'paused',
+  };
+}
+
+/**
+ * Static Console entry — always present regardless of remote data.
+ */
+export const consoleApp: AppRegistryEntry = {
+  id: 'console',
+  name: 'Console',
+  description: 'System administration and settings.',
+  href: '/settings',
+  category: 'system',
+  status: 'active',
+  pinned: true,
+};
+
+/**
+ * Fallback mock apps used when the server is unreachable.
+ */
 export const mockApps: AppRegistryEntry[] = [
-  {
-    id: 'console',
-    name: 'Console',
-    description: 'System administration and settings.',
-    href: '/settings',
-    category: 'system',
-    status: 'active',
-    pinned: true,
-  },
+  consoleApp,
   {
     id: 'crm',
     name: 'CRM',
