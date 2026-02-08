@@ -1,5 +1,6 @@
 /**
- * Object Record Page — displays a single record's fields.
+ * Object Record Page — displays a single record's fields,
+ * workflow status, approval actions, and activity timeline.
  *
  * Route: /apps/:appId/:objectName/:recordId
  */
@@ -8,7 +9,11 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useRecord } from '@/hooks/use-records';
+import { useWorkflowStatus, useActivities } from '@/hooks/use-workflow';
 import { FieldRenderer } from '@/components/records/FieldRenderer';
+import { WorkflowStatusBadge } from '@/components/workflow/WorkflowStatusBadge';
+import { ApprovalActions } from '@/components/workflow/ApprovalActions';
+import { ActivityTimeline } from '@/components/workflow/ActivityTimeline';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +24,8 @@ export default function ObjectRecordPage() {
 
   const { data: objectDef, isLoading: metaLoading } = useObjectDefinition(objectName);
   const { data: record, isLoading: dataLoading } = useRecord({ objectName, recordId });
+  const { data: workflowStatus } = useWorkflowStatus(recordId);
+  const { data: activities } = useActivities(recordId);
 
   const isLoading = metaLoading || dataLoading;
 
@@ -56,9 +63,14 @@ export default function ObjectRecordPage() {
   const editableFields = allFields.filter((f) => !f.readonly);
   const readonlyFields = allFields.filter((f) => f.readonly);
 
+  const handleTransition = (transition: { name: string }) => {
+    // TODO: Call real API to execute workflow transition
+    console.info(`Executing transition: ${transition.name} on record ${recordId}`);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Back link + title */}
+      {/* Back link + title + workflow status */}
       <div>
         <Button variant="ghost" size="sm" className="mb-2" asChild>
           <Link to={`/apps/${appId}/${objectName}`}>
@@ -66,9 +78,17 @@ export default function ObjectRecordPage() {
             {objectDef.pluralLabel ?? objectDef.label ?? objectName}
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
+          {workflowStatus && <WorkflowStatusBadge status={workflowStatus} />}
+        </div>
         <p className="text-muted-foreground">{objectDef.label ?? objectName} Detail</p>
       </div>
+
+      {/* Approval actions */}
+      {workflowStatus && workflowStatus.availableTransitions.length > 0 && (
+        <ApprovalActions status={workflowStatus} onTransition={handleTransition} />
+      )}
 
       {/* Field card */}
       <Card>
@@ -108,6 +128,11 @@ export default function ObjectRecordPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Activity timeline */}
+      {activities && activities.length > 0 && (
+        <ActivityTimeline activities={activities} maxItems={10} />
+      )}
     </div>
   );
 }
