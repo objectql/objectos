@@ -9,6 +9,7 @@
  */
 import { handle } from '@hono/node-server/vercel';
 import { cors } from 'hono/cors';
+import { secureHeaders } from 'hono/secure-headers';
 
 /* ------------------------------------------------------------------ */
 /*  Bootstrap (runs once per cold-start)                               */
@@ -35,6 +36,31 @@ async function bootstrapKernel(): Promise<void> {
         credentials: true,
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization'],
+      }),
+    );
+
+    // OWASP-compliant security headers (A05:2021 – Security Misconfiguration)
+    honoApp.use(
+      '/api/v1/*',
+      secureHeaders({
+        contentSecurityPolicy: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+        },
+        // crossOriginEmbedderPolicy is disabled because API responses may be
+        // consumed by cross-origin SPAs (Admin Console, ObjectUI) that load
+        // resources from CDNs.  COEP: require-corp would break those requests.
+        crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: 'same-origin',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        xContentTypeOptions: 'nosniff',
+        xFrameOptions: 'DENY',
       }),
     );
 

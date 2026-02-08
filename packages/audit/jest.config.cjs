@@ -4,6 +4,7 @@ module.exports = {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^@objectos/permissions$': '<rootDir>/../permissions/dist/index.cjs',
   },
   transform: {
     '^.+\\.ts$': [

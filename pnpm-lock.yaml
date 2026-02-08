@@ -294,6 +294,9 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
     devDependencies:
+      '@objectos/permissions':
+        specifier: workspace:^
+        version: link:../permissions
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
