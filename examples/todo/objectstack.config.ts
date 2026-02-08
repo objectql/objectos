@@ -1,0 +1,48 @@
+import { defineStack } from '@objectstack/spec';
+
+// ─── Barrel Imports (one per metadata type) ─────────────────────────
+import * as objects from './src/objects';
+import * as actions from './src/actions';
+import * as dashboards from './src/dashboards';
+import * as reports from './src/reports';
+import * as flows from './src/flows';
+import * as apps from './src/apps';
+
+export default defineStack({
+  manifest: {
+    id: 'com.example.todo',
+    namespace: 'todo',
+    version: '2.0.0',
+    type: 'app',
+    name: 'Todo Manager',
+    description: 'A comprehensive Todo app demonstrating ObjectStack Protocol features including automation, dashboards, and reports',
+  },
+
+  // Seed Data (top-level, registered as metadata)
+  data: [
+    {
+      object: 'task',
+      mode: 'upsert' as const,
+      externalId: 'subject',
+      records: [
+        { subject: 'Learn ObjectStack', status: 'completed', priority: 'high', category: 'Work' },
+        { subject: 'Build a cool app', status: 'in_progress', priority: 'normal', category: 'Work', due_date: new Date(Date.now() + 86400000 * 3) },
+        { subject: 'Review PR #102', status: 'completed', priority: 'high', category: 'Work' },
+        { subject: 'Write Documentation', status: 'not_started', priority: 'normal', category: 'Work', due_date: new Date(Date.now() + 86400000) },
+        { subject: 'Fix Server bug', status: 'waiting', priority: 'urgent', category: 'Work' },
+        { subject: 'Buy groceries', status: 'not_started', priority: 'low', category: 'Shopping', due_date: new Date() },
+        { subject: 'Schedule dentist appointment', status: 'not_started', priority: 'normal', category: 'Health', due_date: new Date(Date.now() + 86400000 * 7) },
+        { subject: 'Pay utility bills', status: 'not_started', priority: 'high', category: 'Finance', due_date: new Date(Date.now() + 86400000 * 2) },
+      ]
+    }
+  ],
+
+  // Auto-collected from barrel index files via Object.values()
+  objects: Object.values(objects),
+  actions: Object.values(actions),
+  dashboards: Object.values(dashboards),
+  reports: Object.values(reports),
+  flows: Object.values(flows) as any,
+  apps: Object.values(apps),
+});
+

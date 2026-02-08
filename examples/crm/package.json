@@ -1,0 +1,26 @@
+{
+  "name": "@example/crm",
+  "version": "1.1.0",
+  "description": "Example CRM implementation using ObjectStack Protocol",
+  "private": true,
+  "main": "./objectstack.config.ts",
+  "types": "./objectstack.config.ts",
+  "exports": {
+    ".": "./objectstack.config.ts",
+    "./objectstack.config": "./objectstack.config.ts"
+  },
+  "scripts": {
+    "dev": "objectstack dev",
+    "start": "objectstack serve",
+    "build": "objectstack compile",
+    "typecheck": "tsc --noEmit",
+    "test": "objectstack test"
+  },
+  "dependencies": {
+    "@objectstack/spec": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@objectstack/cli": "workspace:*"
+  }
+}

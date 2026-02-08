@@ -1,0 +1,301 @@
+# @objectstack/example-todo
+
+## 0.9.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@1.0.12
+  - @objectstack/client@1.0.12
+  - @objectstack/runtime@1.0.12
+  - @objectstack/objectql@1.0.12
+  - @objectstack/driver-memory@1.0.12
+
+## 0.9.14
+
+### Patch Changes
+
+- @objectstack/client@1.0.11
+- @objectstack/spec@1.0.11
+- @objectstack/objectql@1.0.11
+- @objectstack/runtime@1.0.11
+- @objectstack/driver-memory@1.0.11
+
+## 0.9.13
+
+### Patch Changes
+
+- @objectstack/client@1.0.10
+- @objectstack/objectql@1.0.10
+- @objectstack/driver-memory@1.0.10
+- @objectstack/runtime@1.0.10
+- @objectstack/spec@1.0.10
+
+## 0.9.12
+
+### Patch Changes
+
+- Updated dependencies [b9f8c68]
+  - @objectstack/objectql@1.0.9
+  - @objectstack/client@1.0.9
+  - @objectstack/spec@1.0.9
+  - @objectstack/runtime@1.0.9
+  - @objectstack/driver-memory@1.0.9
+
+## 0.9.11
+
+### Patch Changes
+
+- @objectstack/client@1.0.8
+- @objectstack/spec@1.0.8
+- @objectstack/objectql@1.0.8
+- @objectstack/runtime@1.0.8
+- @objectstack/driver-memory@1.0.8
+
+## 0.9.10
+
+### Patch Changes
+
+- Updated dependencies [ebdf787]
+  - @objectstack/runtime@1.0.7
+  - @objectstack/client@1.0.7
+  - @objectstack/spec@1.0.7
+  - @objectstack/objectql@1.0.7
+  - @objectstack/driver-memory@1.0.7
+
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies [a7f7b9d]
+  - @objectstack/spec@1.0.6
+  - @objectstack/client@1.0.6
+  - @objectstack/objectql@1.0.6
+  - @objectstack/driver-memory@1.0.6
+  - @objectstack/runtime@1.0.6
+
+## 0.9.8
+
+### Patch Changes
+
+- Updated dependencies [b1d24bd]
+- Updated dependencies [877b864]
+  - @objectstack/objectql@1.0.5
+  - @objectstack/runtime@1.0.5
+  - @objectstack/driver-memory@1.0.5
+  - @objectstack/client@1.0.5
+  - @objectstack/spec@1.0.5
+
+## 0.9.7
+
+### Patch Changes
+
+- Updated dependencies [5d13533]
+  - @objectstack/objectql@1.0.4
+  - @objectstack/spec@1.0.4
+  - @objectstack/client@1.0.4
+  - @objectstack/runtime@1.0.4
+  - @objectstack/driver-memory@1.0.4
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies [fb2eabd]
+- Updated dependencies [22a48f0]
+  - @objectstack/runtime@1.0.3
+  - @objectstack/objectql@1.0.3
+  - @objectstack/client@1.0.3
+  - @objectstack/driver-memory@1.0.3
+  - @objectstack/spec@1.0.3
+
+## 0.9.5
+
+### Patch Changes
+
+- Updated dependencies [a0a6c85]
+- Updated dependencies [109fc5b]
+  - @objectstack/spec@1.0.2
+  - @objectstack/client@1.0.2
+  - @objectstack/objectql@1.0.2
+  - @objectstack/runtime@1.0.2
+  - @objectstack/driver-memory@1.0.2
+
+## 0.9.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/runtime@1.0.1
+  - @objectstack/spec@1.0.1
+  - @objectstack/client@1.0.1
+  - @objectstack/objectql@1.0.1
+  - @objectstack/driver-memory@1.0.1
+
+## 0.9.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@1.0.0
+  - @objectstack/runtime@1.0.0
+  - @objectstack/objectql@1.0.0
+  - @objectstack/client@1.0.0
+  - @objectstack/driver-memory@1.0.0
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.9.2
+  - @objectstack/client@0.9.2
+  - @objectstack/objectql@0.9.2
+  - @objectstack/driver-memory@0.9.2
+  - @objectstack/runtime@0.9.2
+
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.9.1
+  - @objectstack/client@0.9.1
+  - @objectstack/objectql@0.9.1
+  - @objectstack/runtime@0.9.1
+  - @objectstack/driver-memory@0.9.1
+
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies [555e6a7]
+  - @objectstack/spec@0.8.2
+  - @objectstack/client@0.8.2
+
+## 0.7.4
+
+### Patch Changes
+
+- @objectstack/spec@0.8.1
+- @objectstack/client@0.8.1
+
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@1.0.0
+  - @objectstack/client@1.0.0
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [fb41cc0]
+  - @objectstack/spec@0.7.2
+  - @objectstack/client@0.7.2
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.7.1
+  - @objectstack/client@0.7.1
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.6.1
+  - @objectstack/client@0.6.1
+
+## 0.6.0
+
+### Minor Changes
+
+- b2df5f7: Unified version bump to 0.5.0
+
+  - Standardized all package versions to 0.5.0 across the monorepo
+  - Fixed driver-memory package.json paths for proper module resolution
+  - Ensured all packages are in sync for the 0.5.0 release
+
+### Patch Changes
+
+- Updated dependencies [b2df5f7]
+  - @objectstack/spec@0.6.0
+  - @objectstack/client@0.6.0
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.4.2
+  - @objectstack/client@0.4.2
+
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.4.1
+  - @objectstack/client@0.4.1
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.3.3
+  - @objectstack/client@0.3.3
+
+## 1.0.6
+
+### Patch Changes
+
+- Patch release for maintenance and stability improvements
+- Updated dependencies
+  - @objectstack/client@0.3.2
+  - @objectstack/spec@0.3.2
+
+## 1.0.5
+
+### Patch Changes
+
+- @objectstack/spec@0.3.1
+- @objectstack/client@0.3.1
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@1.0.0
+  - @objectstack/client@1.0.0
+
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.3.0
+  - @objectstack/client@0.2.1
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.2.0
+  - @objectstack/client@0.2.0
+
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @objectstack/spec@0.1.2
+  - @objectstack/client@0.1.1
