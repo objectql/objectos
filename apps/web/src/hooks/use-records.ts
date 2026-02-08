@@ -107,7 +107,7 @@ export function useCreateRecord({ objectName }: UseCreateRecordOptions) {
       const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
       queryClient.setQueriesData<RecordListResponse>(
         { queryKey: ['records', objectName] },
-        (old) => old ? { ...old, records: [...old.records, { id: `optimistic-${Date.now()}`, ...newData } as RecordData], total: old.total + 1 } : old,
+        (old) => old ? { ...old, records: [...old.records, { id: crypto.randomUUID(), ...newData } as RecordData], total: old.total + 1 } : old,
       );
       return { previous };
     },
@@ -181,7 +181,12 @@ export function useDeleteRecord({ objectName }: UseDeleteRecordOptions) {
       const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
       queryClient.setQueriesData<RecordListResponse>(
         { queryKey: ['records', objectName] },
-        (old) => old ? { ...old, records: old.records.filter((r) => String(r.id) !== recordId), total: Math.max(0, old.total - 1) } : old,
+        (old) => {
+          if (!old) return old;
+          const filtered = old.records.filter((r) => String(r.id) !== recordId);
+          const removed = filtered.length < old.records.length;
+          return { ...old, records: filtered, total: removed ? Math.max(0, old.total - 1) : old.total };
+        },
       );
       return { previous };
     },

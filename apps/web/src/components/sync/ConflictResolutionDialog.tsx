@@ -54,8 +54,12 @@ export function ConflictResolutionDialog({
             <thead>
               <tr className="border-b bg-muted/50">
                 <th className="px-3 py-2 text-left font-medium" scope="col">Field</th>
-                <th className="px-3 py-2 text-left font-medium" scope="col">Local</th>
-                <th className="px-3 py-2 text-left font-medium" scope="col">Server</th>
+                <th className="px-3 py-2 text-left font-medium" scope="col">
+                  <span className="mr-1">◀</span> Local
+                </th>
+                <th className="px-3 py-2 text-left font-medium" scope="col">
+                  Server <span className="ml-1">▶</span>
+                </th>
               </tr>
             </thead>
             <tbody>

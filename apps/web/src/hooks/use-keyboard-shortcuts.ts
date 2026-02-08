@@ -47,12 +47,15 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
       const shiftMatch = shortcut.shift ? event.shiftKey : !event.shiftKey;
       const altMatch = shortcut.alt ? event.altKey : !event.altKey;
 
-      if (
-        event.key.toLowerCase() === shortcut.key.toLowerCase() &&
-        ctrlMatch &&
-        shiftMatch &&
-        altMatch
-      ) {
+      // Compare key with case sensitivity: use event.key directly for
+      // special keys (length > 1) or shifted characters (e.g. '?').
+      // For single alpha characters, compare case-insensitively.
+      const keyMatches =
+        shortcut.key.length === 1 && /[a-zA-Z]/.test(shortcut.key)
+          ? event.key.toLowerCase() === shortcut.key.toLowerCase()
+          : event.key === shortcut.key;
+
+      if (keyMatches && ctrlMatch && shiftMatch && altMatch) {
         if (!shortcut.allowInInput && isInputFocused()) continue;
 
         event.preventDefault();
