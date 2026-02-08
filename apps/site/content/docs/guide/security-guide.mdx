@@ -6,19 +6,20 @@ Security is a fundamental concern in ObjectOS. This guide covers authentication,
 
 ## Security Architecture
 
-ObjectOS implements a multi-layered security model:
+ObjectOS implements a multi-layered security model aligned with [OWASP Top 10](https://owasp.org/www-project-top-ten/) recommendations:
 
-1. **Authentication**: Verify user identity
-2. **Authorization**: Control access to objects and records
-3. **Field-Level Security**: Control access to specific fields
-4. **Record-Level Security**: Filter records based on ownership/sharing
-5. **Audit Logging**: Track all data changes
+1. **Authentication** (`@objectos/auth`): Verify user identity via Better-Auth
+2. **Authorization** (`@objectos/permissions`): Object, field, and record-level access control
+3. **Field-Level Security**: Control access to specific fields via permission sets
+4. **Record-Level Security**: Filter records via SharingRuleEngine and RLSEvaluator
+5. **Audit Logging** (`@objectos/audit`): Track all data changes with 34+ event types
+6. **Security Headers**: OWASP-compliant HTTP headers via Hono `secureHeaders` middleware
 
 ## Authentication
 
 ### Using Better-Auth
 
-ObjectOS uses [Better-Auth](https://better-auth.com) for authentication, supporting multiple strategies:
+ObjectOS uses [Better-Auth](https://better-auth.com) via the `@objectos/auth` plugin (`BetterAuthPlugin`), supporting multiple strategies:
 
 - Local (email/password)
 - OAuth 2.0 (Google, GitHub, Microsoft)
@@ -28,35 +29,42 @@ ObjectOS uses [Better-Auth](https://better-auth.com) for authentication, support
 
 ### Setup Authentication
 
+Authentication is configured as a plugin in `objectstack.config.ts`:
+
 ```typescript
-import { ObjectOS } from '@objectos/kernel';
-import { AuthPlugin } from '@objectos/plugin-auth';
+import { BetterAuthPlugin } from '@objectos/auth';
 
-const kernel = new ObjectOS();
-
-// Configure auth plugin
-kernel.use(AuthPlugin({
-  providers: {
-    local: {
-      enabled: true
-    },
-    google: {
-      enabled: true,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    }
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: '7d'
-  }
-}));
+export default {
+  plugins: [
+    new BetterAuthPlugin({
+      // Optional security policies
+      securityPolicies: {
+        password: { minLength: 12, maxLength: 128 },
+        session: { expiresIn: '7d', updateAge: '1d' },
+      },
+    }),
+    // ... other plugins
+  ],
+};
 ```
 
 ### Login Endpoint
 
+All auth routes are under `/api/v1/auth/*`:
+
 ```bash
-POST /api/auth/login
+POST /api/v1/auth/sign-up/email
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+```bash
+POST /api/v1/auth/sign-in/email
 Content-Type: application/json
 
 {
@@ -65,76 +73,78 @@ Content-Type: application/json
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "user": {
-    "id": "user_123",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "roles": ["sales"]
-  }
-}
-```
+### Session Management
 
-### Using Tokens
+Better-Auth manages sessions via HTTP-only cookies. The Admin Console (`apps/web`) uses `better-auth/react` for session handling:
 
-Include the token in all authenticated requests:
+```typescript
+import { createAuthClient } from "better-auth/react";
 
-```bash
-GET /api/data/contacts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+export const authClient = createAuthClient({
+  baseURL: "/api/v1/auth",
+});
 ```
 
 ## Authorization
 
 ### Object-Level Permissions
 
-Control CRUD access to entire objects using permission sets:
+Control CRUD access to entire objects using YAML permission sets loaded by `@objectos/permissions`:
 
 ```yaml
-# objects/contacts.object.yml
-name: contacts
-label: Contact
-
-permission_set:
-  allowRead: true                    # Everyone can read
-  allowCreate: ['sales', 'admin']    # Only sales and admin can create
-  allowEdit: ['sales', 'admin']      # Only sales and admin can edit
-  allowDelete: ['admin']             # Only admin can delete
+# permissions/contacts.permission.yml
+name: contact-permissions
+objectName: contacts
+profiles:
+  admin:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: true
+  sales:
+    allowRead: true
+    allowCreate: true
+    allowEdit: true
+    allowDelete: false
+  guest:
+    allowRead: true
+    allowCreate: false
+    allowEdit: false
+    allowDelete: false
 ```
-
-**Permission Values:**
-- `true`: Everyone has permission
-- `false`: No one has permission (system only)
-- `['role1', 'role2']`: Only specified roles have permission
 
 ### Permission Checking
 
-ObjectOS automatically checks permissions on all operations:
+ObjectOS automatically checks permissions on all data operations via kernel hooks (`data.beforeCreate`, `data.beforeUpdate`, `data.beforeDelete`, `data.beforeFind`):
 
 ```typescript
-// User without 'sales' or 'admin' role tries to create contact
-await kernel.insert('contacts', { ... });
-// Throws: PermissionDeniedError: Insufficient permissions to create contacts
+// The PermissionsPlugin hooks into data.before* events automatically
+// A user without the required profile will receive a 403 error:
+// Error: Permission denied for delete on contacts (code: PERMISSION_DENIED)
 ```
 
-### Custom Permission Checks
+### Programmatic Permission Checks
 
-Check permissions programmatically:
+Use the REST API to check permissions:
 
-```typescript
-kernel.on('beforeInsert', async (ctx) => {
-  // Custom permission logic
-  if (ctx.objectName === 'opportunities' && ctx.data.amount > 100000) {
-    // Large opportunities require special approval
-    if (!ctx.user.roles.includes('senior_sales')) {
-      throw new Error('Large opportunities require senior sales approval');
-    }
-  }
-});
+```bash
+POST /api/v1/permissions/check
+Content-Type: application/json
+
+{
+  "userId": "user_123",
+  "profileName": "sales",
+  "objectName": "contacts",
+  "action": "delete"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": { "hasPermission": false }
+}
 ```
 
 ## Field-Level Security
@@ -163,53 +173,42 @@ fields:
 
 ## Record-Level Security (RLS)
 
-Filter records based on ownership or custom criteria:
+The `@objectos/permissions` plugin provides `RLSEvaluator` and `SharingRuleEngine` for record-level security:
 
-### Ownership-Based Access
+### Organization-Wide Defaults
 
-```typescript
-kernel.on('beforeFind', async (ctx) => {
-  // Non-admin users can only see their own records
-  if (ctx.objectName === 'opportunities' && !ctx.user.roles.includes('admin')) {
-    ctx.filters = ctx.filters || {};
-    ctx.filters.owner = ctx.user.id;
-  }
-});
-```
-
-### Team-Based Access
+Define default access levels per object:
 
 ```typescript
-kernel.on('beforeFind', async (ctx) => {
-  if (ctx.objectName === 'accounts') {
-    // Users can see accounts owned by their team
-    const userTeam = await kernel.findOne('users', ctx.user.id, {
-      fields: ['team_id']
-    });
-    
-    ctx.filters = ctx.filters || {};
-    ctx.filters.team_id = userTeam.team_id;
-  }
-});
+const rlsConfig = {
+  organizationWideDefaults: {
+    accounts: 'private',      // Only owner can see
+    contacts: 'publicRead',   // Everyone can read
+    opportunities: 'private',
+  },
+};
 ```
 
 ### Sharing Rules
 
-Define sharing rules in metadata:
+Define sharing rules in YAML metadata:
 
 ```yaml
-# objects/opportunities.object.yml
-sharing_rules:
+# permissions/opportunities.permission.yml
+sharingRules:
   - name: Team Access
+    type: criteria
     criteria:
-      team: current_user.team_id
-    access: read_write
-  
+      team: $currentUser.teamId
+    accessLevel: readWrite
+
   - name: Manager Access
-    criteria:
-      reports_to: current_user.id
-    access: read_only
+    type: owner
+    ownerField: reports_to
+    accessLevel: readOnly
 ```
+
+The `SharingRuleEngine` evaluates these rules during `data.beforeFind` to inject record-level filters automatically.
 
 ## Roles and Profiles
 
@@ -324,61 +323,50 @@ kernel.on('beforeInsert', async (ctx) => {
 
 ## Audit Logging
 
-Enable audit logging to track all changes:
+The `@objectos/audit` plugin (`AuditLogPlugin`) automatically records all data operations and 34+ event types:
 
-```yaml
-# objects/contacts.object.yml
-name: contacts
-enable_audit: true
-```
-
-### Audit Log Structure
-
-```yaml
-# objects/_audit_log.object.yml (system object)
-name: _audit_log
-system: true
-
-fields:
-  action:
-    type: select
-    options: [create, update, delete]
-  
-  object:
-    type: text
-  
-  record_id:
-    type: text
-  
-  user_id:
-    type: lookup
-    reference_to: users
-  
-  old_values:
-    type: json
-  
-  new_values:
-    type: json
-  
-  timestamp:
-    type: datetime
-  
-  ip_address:
-    type: text
-```
-
-### Querying Audit Logs
+### Configuration
 
 ```typescript
-// Get all changes to a record
-const logs = await kernel.find('_audit_log', {
-  filters: {
-    object: 'contacts',
-    record_id: 'contact_123'
+import { AuditLogPlugin } from '@objectos/audit';
+
+new AuditLogPlugin({
+  enabled: true,
+  trackFieldChanges: true,
+  excludedFields: ['password', 'token', 'secret'],
+  retention: {
+    enabled: true,
+    defaultRetentionDays: 90,
   },
-  sort: [{ field: 'timestamp', order: 'desc' }]
 });
 ```
+
+### Querying Audit Events
+
+```bash
+GET /api/v1/audit/events?objectName=contacts&userId=user_123
+```
+
+### Audit Trail for a Record
+
+```bash
+GET /api/v1/audit/trail/contacts/contact_123
+```
+
+### Field History
+
+```bash
+GET /api/v1/audit/field-history/contacts/contact_123/status
+```
+
+### Event Types Covered
+
+- **Data events**: `data.create`, `data.update`, `data.delete`, `data.read`
+- **Auth events**: `auth.login`, `auth.logout`, `auth.login_failed`, `auth.session_created`, `auth.password_changed`, etc.
+- **Authorization events**: `authz.role_assigned`, `authz.permission_granted`, `authz.role_created`, etc.
+- **System events**: `system.config_changed`, `system.plugin_installed`, etc.
+- **Security events**: `security.access_denied`, `security.suspicious_activity`, etc.
+- **Job events**: `job.enqueued`, `job.completed`, `job.failed`, etc.
 
 ## Rate Limiting
 
@@ -396,22 +384,23 @@ kernel.use(RateLimitPlugin({
 
 ## CORS Configuration
 
-Configure Cross-Origin Resource Sharing:
+CORS is configured in `objectstack.config.ts`:
 
 ```typescript
-// packages/server/src/main.ts
-const app = await NestFactory.create(AppModule);
-
-app.enableCors({
-  origin: [
-    'http://localhost:5173',      // Development
-    'https://app.example.com'     // Production
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-});
+export default {
+  server: {
+    cors: {
+      origin: process.env.CORS_ORIGINS?.split(',') || [
+        'http://localhost:5321',
+        'http://localhost:5320',
+      ],
+      credentials: true,
+    },
+  },
+};
 ```
+
+For the Vercel serverless deployment, CORS is applied via Hono middleware in `api/index.ts`.
 
 ## API Key Authentication
 
@@ -435,27 +424,43 @@ GET /api/data/contacts
 X-API-Key: your-api-key-here
 ```
 
-## Security Headers
+## Security Headers (OWASP Compliance)
 
-Set security headers in production:
+ObjectOS uses Hono's built-in `secureHeaders` middleware for OWASP-compliant security headers:
 
 ```typescript
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
+import { secureHeaders } from 'hono/secure-headers';
+
+honoApp.use(
+  '/api/v1/*',
+  secureHeaders({
+    contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"]
-    }
-  },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}));
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+    },
+    crossOriginResourcePolicy: 'same-origin',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    xContentTypeOptions: 'nosniff',
+    xFrameOptions: 'DENY',
+  }),
+);
 ```
+
+### Response Headers Applied
+
+| Header | Value | OWASP Reference |
+|--------|-------|-----------------|
+| `Content-Security-Policy` | `default-src 'self'; ...` | A05:2021 – Security Misconfiguration |
+| `X-Frame-Options` | `DENY` | Clickjacking protection |
+| `X-Content-Type-Options` | `nosniff` | MIME-type sniffing prevention |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Information leakage prevention |
+| `Cross-Origin-Resource-Policy` | `same-origin` | Cross-origin isolation |
 
 ## Encryption
 
@@ -505,28 +510,24 @@ const secret = process.env.JWT_SECRET;
 
 ### Development
 
-- [ ] Use environment variables for secrets
-- [ ] Enable strict TypeScript mode
-- [ ] Validate all user input
-- [ ] Sanitize HTML content
-- [ ] Use parameterized queries (automatic with drivers)
-- [ ] Implement proper error handling
-- [ ] Don't expose stack traces to clients
+- [x] Use environment variables for secrets
+- [x] Enable strict TypeScript mode
+- [x] Validate all user input
+- [x] Use parameterized queries (automatic with ObjectQL drivers)
+- [x] Implement proper error handling
+- [x] Don't expose stack traces to clients
 
 ### Production
 
+- [x] Set OWASP security headers (`secureHeaders` middleware)
+- [x] Configure CORS with explicit origin allowlist
+- [x] Enable audit logging (34+ event types)
+- [x] Implement session management (Better-Auth cookies)
 - [ ] Use HTTPS only
-- [ ] Set security headers (helmet)
 - [ ] Enable rate limiting
-- [ ] Configure CORS properly
-- [ ] Enable audit logging
-- [ ] Use strong JWT secrets
-- [ ] Implement session timeout
 - [ ] Regular security audits
 - [ ] Keep dependencies updated
 - [ ] Enable database encryption at rest
-- [ ] Use VPC/private networks
-- [ ] Implement IP whitelisting (if needed)
 
 ## Common Security Patterns
 
@@ -568,31 +569,44 @@ kernel.use(SessionPlugin({
 
 ## Testing Security
 
-Test security in your test suite:
+ObjectOS includes a full Auth → Permissions → Data → Audit integration test suite:
 
 ```typescript
-describe('Security', () => {
-  it('should deny access without authentication', async () => {
-    await expect(
-      kernel.find('contacts', {}, null)  // No user context
-    ).rejects.toThrow('Authentication required');
+// packages/audit/test/integration.test.ts
+describe('Integration: Auth → Permissions → Data → Audit', () => {
+  it('should trace a full CRUD lifecycle in audit', async () => {
+    // 1. Login event → recorded in audit
+    await triggerHook(hooks, 'auth.login', {
+      userId: 'user-1', userName: 'Alice', ipAddress: '10.0.0.1',
+    });
+
+    // 2. Permission check → passes via data.beforeCreate hook
+    await triggerHook(hooks, 'data.beforeCreate', {
+      objectName: 'orders', userId: 'user-1', userProfiles: ['admin'],
+    });
+
+    // 3. Data operation → recorded in audit with field changes
+    await triggerHook(hooks, 'data.create', {
+      objectName: 'orders', recordId: 'ord-1', userId: 'user-1',
+    });
+
+    // 4. Verify complete audit trail
+    const trail = await audit.getAuditTrail('orders', 'ord-1');
+    expect(trail.length).toBeGreaterThan(0);
   });
-  
-  it('should deny create without permission', async () => {
-    const guestUser = { id: '1', roles: ['guest'] };
-    
-    await expect(
-      kernel.insert('contacts', { email: 'test@test.com' }, guestUser)
-    ).rejects.toThrow('Insufficient permissions');
-  });
-  
-  it('should filter records by ownership', async () => {
-    const user = { id: 'user_1', roles: ['sales'] };
-    
-    const results = await kernel.find('opportunities', {}, user);
-    
-    // All results should belong to user
-    expect(results.every(r => r.owner === user.id)).toBe(true);
+});
+```
+
+### Performance Baseline
+
+All CRUD operations are benchmarked to meet P95 &lt; 100 ms:
+
+```typescript
+// packages/audit/test/performance.test.ts
+describe('Performance Baseline', () => {
+  it('data.create pipeline P95 should be < 100 ms', async () => {
+    // Runs 100 iterations through Permission + Audit pipeline
+    // Measures and asserts P95 latency
   });
 });
 ```

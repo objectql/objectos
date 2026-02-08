@@ -7,45 +7,41 @@ The ObjectOS Server exposes a RESTful HTTP API that provides complete CRUD opera
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:5320/api/v1
 ```
 
-For production deployments, replace with your actual domain.
+- **Development**: ObjectStack serves at port 5320 (`objectstack serve --port 5320`)
+- **Admin Console**: Vite dev server at port 5321, proxies `/api/v1` → `:5320`
+- **Production/Vercel**: Same-origin (`/api/v1`)
 
 ## Authentication
 
-### Header Format
+### Session-Based Auth (Better-Auth)
 
-All authenticated requests must include the Authorization header:
-
-```
-Authorization: Bearer <jwt_token>
-```
-
-### Getting a Token
-
-Obtain an authentication token through the auth endpoint:
+ObjectOS uses [Better-Auth](https://better-auth.com) for authentication with session cookies. All auth routes are under `/api/v1/auth/*`:
 
 ```bash
-POST /api/auth/login
+POST /api/v1/auth/sign-up/email
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+```bash
+POST /api/v1/auth/sign-in/email
 Content-Type: application/json
 
 {
   "email": "user@example.com",
-  "password": "password"
+  "password": "securepassword"
 }
 ```
 
-**Response:**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "user": {
-    "id": "user_123",
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
-}
+Sessions are managed via HTTP-only cookies (set by Better-Auth). No manual `Authorization` header is required for browser clients.
 ```
 
 ## Request Headers
@@ -163,7 +159,7 @@ POST /api/data/{object}/query
 
 **Example:**
 ```bash
-curl -X POST http://localhost:3000/api/data/contacts/query \
+curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
@@ -201,7 +197,7 @@ GET /api/data/{object}/{id}
 
 **Example:**
 ```bash
-curl -X GET http://localhost:3000/api/data/contacts/contact_123 \
+curl -X GET http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -242,7 +238,7 @@ POST /api/data/{object}
 
 **Example:**
 ```bash
-curl -X POST http://localhost:3000/api/data/contacts \
+curl -X POST http://localhost:5320/api/v1/data/contacts \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
@@ -287,7 +283,7 @@ PATCH /api/data/{object}/{id}
 
 **Example:**
 ```bash
-curl -X PATCH http://localhost:3000/api/data/contacts/contact_123 \
+curl -X PATCH http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
@@ -317,7 +313,7 @@ DELETE /api/data/{object}/{id}
 
 **Example:**
 ```bash
-curl -X DELETE http://localhost:3000/api/data/contacts/contact_123 \
+curl -X DELETE http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -444,7 +440,7 @@ GET /api/metadata
 See [Query Language Specification](./query-language.mdx) for complete filter syntax.
 
 ```bash
-curl -X POST http://localhost:3000/api/data/contacts/query \
+curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -H "Content-Type: application/json" \
   -d '{
     "filters": {
@@ -461,7 +457,7 @@ curl -X POST http://localhost:3000/api/data/contacts/query \
 Include related object data in a single request:
 
 ```bash
-curl -X POST http://localhost:3000/api/data/opportunities/query \
+curl -X POST http://localhost:5320/api/v1/data/opportunities/query \
   -H "Content-Type: application/json" \
   -d '{
     "include": ["account", "owner"],
@@ -495,15 +491,15 @@ Use `limit` and `skip` for pagination:
 
 ```bash
 # Page 1
-curl -X POST http://localhost:3000/api/data/contacts/query \
+curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -d '{ "limit": 20, "skip": 0 }'
 
 # Page 2
-curl -X POST http://localhost:3000/api/data/contacts/query \
+curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -d '{ "limit": 20, "skip": 20 }'
 
 # Page 3
-curl -X POST http://localhost:3000/api/data/contacts/query \
+curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -d '{ "limit": 20, "skip": 40 }'
 ```
 
@@ -601,30 +597,31 @@ X-RateLimit-Reset: 1642341600
 
 ## CORS
 
-Cross-Origin Resource Sharing (CORS) is enabled for the following origins:
+Cross-Origin Resource Sharing (CORS) is configured in `objectstack.config.ts`:
 
-- `http://localhost:5173` (development)
-- Configured production domains
+- `http://localhost:5321` (Vite dev server)
+- `http://localhost:5320` (ObjectStack server)
+- Additional origins via `CORS_ORIGINS` environment variable (CSV)
 
 ## WebSocket Protocol
 
-For real-time updates, ObjectOS supports WebSocket connections:
+ObjectOS provides real-time updates via `@objectos/realtime` WebSocket plugin:
 
 **Endpoint:**
 ```
-ws://localhost:3000/ws
+ws://localhost:5320/ws
 ```
 
-**Message Format:**
+**Subscribe to changes:**
 ```json
 {
   "type": "subscribe",
-  "object": "contacts",
+  "channel": "data.contacts",
   "filters": { "status": "active" }
 }
 ```
 
-> **Note**: WebSocket real-time functionality is planned for a future release.
+**Presence and awareness** (cursor tracking, collaborative editing) are supported via the awareness protocol. See the `@objectos/realtime` package for full documentation.
 
 ## API Versioning
 
