@@ -13,14 +13,15 @@
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
 import { getBetterAuth, resetAuthInstance, getEnabledProviders, type BetterAuthConfig } from './auth-client.js';
-import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
+import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, AuthSecurityPolicies } from './types.js';
 import * as Objects from './objects/index.js';
 
 /**
  * Plugin Configuration Options
  */
 export interface BetterAuthPluginOptions extends BetterAuthConfig {
-    // Additional plugin-specific options can be added here
+    /** Security policies for password and session management */
+    securityPolicies?: AuthSecurityPolicies;
 }
 
 /**
@@ -61,7 +62,16 @@ export class BetterAuthPlugin implements Plugin {
 
         try {
             // Initialize Better-Auth with correct basePath for /api/v1/auth/*
-            this.authInstance = await getBetterAuth(this.config);
+            // Wire session lifecycle hooks into the kernel event system
+            const pluginConfig = {
+                ...this.config,
+                onSessionEvent: async (event: string, data: Record<string, unknown>) => {
+                    if (this.context) {
+                        await this.context.trigger(event, data);
+                    }
+                },
+            };
+            this.authInstance = await getBetterAuth(pluginConfig);
 
             // Run database migrations to ensure auth tables exist
             try {
@@ -214,7 +224,10 @@ export class BetterAuthPlugin implements Plugin {
         return {
             capabilities: {
                 services: ['auth', 'better-auth'],
-                emits: ['plugin.initialized', 'plugin.destroyed', 'auth.ready'],
+                emits: [
+                    'plugin.initialized', 'plugin.destroyed', 'auth.ready',
+                    'auth.session_created',
+                ],
                 listens: [],
                 routes: ['/api/v1/auth/*'],
                 objects: Object.keys(Objects),

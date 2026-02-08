@@ -4,7 +4,7 @@
  * Type definitions for the audit logging system
  */
 
-import type { AuditEvent, AuditEventType } from '@objectstack/spec/system';
+import type { AuditEvent, AuditEventType, AuditConfig, AuditRetentionPolicy as SpecRetentionPolicy } from '@objectstack/spec/system';
 
 /**
  * Extended audit event types for job tracking
@@ -133,6 +133,9 @@ export interface AuditStorage {
     
     /** Get audit trail for a specific record */
     getAuditTrail(objectName: string, recordId: string): Promise<AuditTrailEntry[]>;
+
+    /** Delete events older than the given date, returns count of deleted events */
+    deleteExpiredEvents(before: string, eventType?: string): Promise<number>;
 }
 
 /**
@@ -176,11 +179,12 @@ export interface AuditRetentionPolicy {
 }
 
 /**
- * Export all types
+ * Export spec types
  */
 export type {
     AuditEvent,
     AuditEventType,
+    AuditConfig,
 } from '@objectstack/spec/system';
 
 // ─── Kernel Compliance Types ───────────────────────────────────────────────────

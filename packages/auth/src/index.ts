@@ -31,3 +31,11 @@ export {
 } from './plugin.js';
 
 export { resetAuthInstance } from './auth-client.js';
+
+export type {
+    PasswordPolicy,
+    SessionPolicy,
+    AuthSecurityPolicies,
+} from './types.js';
+
+export * as IdentitySchemas from './objects/index.js';

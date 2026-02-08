@@ -131,4 +131,18 @@ export class InMemoryAuditStorage implements AuditStorage {
     getEventCount(): number {
         return this.events.length;
     }
+
+    /**
+     * Delete events with timestamp before the given date
+     * Optionally filter by event type
+     */
+    async deleteExpiredEvents(before: string, eventType?: string): Promise<number> {
+        const initialCount = this.events.length;
+        this.events = this.events.filter(e => {
+            if (e.timestamp >= before) return true;
+            if (eventType && e.eventType !== eventType) return true;
+            return false;
+        });
+        return initialCount - this.events.length;
+    }
 }
