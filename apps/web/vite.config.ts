@@ -1,11 +1,23 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 
+const base = process.env.VERCEL ? '/' : '/console/';
+
+/** Replace %BASE_URL% placeholders inside index.html at build time. */
+function htmlBaseUrl(): Plugin {
+  return {
+    name: 'html-base-url',
+    transformIndexHtml(html) {
+      return html.replace(/%BASE_URL%/g, base);
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  base: '/console/',
+  plugins: [react(), tailwindcss(), htmlBaseUrl()],
+  base,
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
