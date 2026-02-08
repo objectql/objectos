@@ -14,10 +14,14 @@ const queryClient = new QueryClient({
   },
 });
 
+// BASE_URL is set by Vite based on the `base` config:
+// Vercel → "/" (stripped to ""), Local → "/console/" (stripped to "/console")
+const basename = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/+$/, '')}>
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </QueryClientProvider>

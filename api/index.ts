@@ -47,6 +47,9 @@ let bootstrapPromise: Promise<void> | null = null;
  * Minimal plugin that exposes our Hono app as the `http.server` service.
  * ObjectOS plugins call `context.getService('http.server').getRawApp()`
  * to register their HTTP routes.
+ *
+ * Only `getRawApp()` and `app` are used by ObjectOS plugins; the
+ * remaining stubs satisfy the IHttpServer shape expected by the kernel.
  */
 function createHttpServicePlugin(honoApp: Hono): Plugin {
   return {
@@ -72,7 +75,7 @@ function createHttpServicePlugin(honoApp: Hono): Plugin {
     },
     async start() {},
     async destroy() {},
-  } as unknown as Plugin;
+  } as Plugin;
 }
 
 async function bootstrapKernel(): Promise<void> {
