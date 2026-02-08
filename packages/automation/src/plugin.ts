@@ -475,7 +475,11 @@ export class AutomationPlugin implements Plugin {
                 handlesSensitiveData: false,
                 makesExternalCalls: !!this.config.enableHttp,
                 executesUserScripts: !!this.config.enableScriptExecution,
-                sandboxConfig: { timeout: this.config.maxExecutionTime || 30000, maxMemory: 128 * 1024 * 1024 },
+                sandboxConfig: {
+                    timeout: this.config.maxExecutionTime || 30000,
+                    maxMemory: 128 * 1024 * 1024,
+                    allowedModules: [],
+                },
             },
         };
     }

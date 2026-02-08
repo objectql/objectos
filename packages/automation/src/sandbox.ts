@@ -24,6 +24,23 @@ export interface SandboxConfig {
 }
 
 /**
+ * Sandbox policy — enforced by the plugin's security manifest.
+ * Defines the upper bounds for script execution.
+ */
+export interface SandboxPolicy {
+    /** Maximum timeout any script can use (ms) */
+    maxTimeout: number;
+    /** Maximum memory any script can use (bytes) */
+    maxMemory: number;
+    /** Allowed module whitelist */
+    allowedModules: string[];
+    /** Allowed external domains for HTTP calls within scripts */
+    allowedDomains: string[];
+    /** Whether script execution is enabled at all */
+    enabled: boolean;
+}
+
+/**
  * Sandbox execution result
  */
 export interface SandboxResult {
@@ -155,4 +172,58 @@ export function validateScript(script: string): string[] {
     }
 
     return warnings;
+}
+
+/**
+ * Default sandbox policy
+ */
+export const DEFAULT_SANDBOX_POLICY: SandboxPolicy = {
+    maxTimeout: 30000,
+    maxMemory: 128 * 1024 * 1024, // 128MB
+    allowedModules: [],
+    allowedDomains: [],
+    enabled: false,
+};
+
+/**
+ * Execute a script with policy enforcement
+ * 
+ * Enforces the sandbox policy's upper bounds before delegating to executeSandboxed.
+ * If the policy disables script execution, returns an error immediately.
+ */
+export async function executeSandboxedWithPolicy(
+    script: string,
+    variables: Record<string, unknown> = {},
+    config: SandboxConfig = {},
+    policy: SandboxPolicy = DEFAULT_SANDBOX_POLICY,
+): Promise<SandboxResult> {
+    if (!policy.enabled) {
+        return {
+            success: false,
+            error: 'Script execution is disabled by sandbox policy',
+            duration: 0,
+            logs: [],
+        };
+    }
+
+    // Clamp config values to policy upper bounds
+    const enforcedConfig: SandboxConfig = {
+        ...config,
+        timeout: Math.min(config.timeout ?? policy.maxTimeout, policy.maxTimeout),
+        maxMemory: Math.min(config.maxMemory ?? policy.maxMemory, policy.maxMemory),
+        allowedModules: policy.allowedModules,
+    };
+
+    // Pre-validate script
+    const warnings = validateScript(script);
+    if (warnings.length > 0) {
+        return {
+            success: false,
+            error: `Script validation failed: ${warnings[0]}${warnings.length > 1 ? ` (${warnings.length} issues found)` : ''}`,
+            duration: 0,
+            logs: warnings,
+        };
+    }
+
+    return executeSandboxed(script, variables, enforcedConfig);
 }

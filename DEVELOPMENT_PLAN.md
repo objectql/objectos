@@ -364,11 +364,11 @@ This roadmap is derived from **@objectstack/spec** requirements (kernel, system,
 | Package | Observed Gap | Spec Impact |
 |---------|--------------|------------|
 | `@objectos/realtime` | Minimal implementation, no tests | WebSocket protocol + awareness missing |
-| `@objectos/permissions` | Sharing Rules not implemented | `SharingRule` schema not satisfied |
+| ~~`@objectos/permissions`~~ | ~~Sharing Rules not implemented~~ | ✅ Resolved — `SharingRuleEngine` + `RLSEvaluator` + `RLSConfig` |
 | `@objectos/auth` | No password/session policy wiring | `PasswordPolicy`, `SessionPolicy` |
 | `@objectos/audit` | Limited event coverage and retention | `AuditConfig`, `AuditRetentionPolicy` |
-| `@objectos/workflow` | Spec Flow not executed natively | `Flow` execution requirement |
-| `@objectos/automation` | Script/action sandboxing flagged | `PluginSecurityManifest` expectations |
+| ~~`@objectos/workflow`~~ | ~~Spec Flow not executed natively~~ | ✅ Resolved — `FlowEngine` for native Flow execution |
+| ~~`@objectos/automation`~~ | ~~Script/action sandboxing flagged~~ | ✅ Resolved — `validateWorkflowRule()` + `executeSandboxedWithPolicy()` |
 | Runtime (external) | Capability/security manifests not enforced | Kernel protocol compliance |
 
 ### 6.4 v1.0 Spec Checklist by Package
@@ -379,9 +379,9 @@ This roadmap is derived from **@objectstack/spec** requirements (kernel, system,
 |---------|-----------|:---:|-------------|
 | `@objectos/audit` | `AuditConfig`, `AuditEvent`, `AuditRetentionPolicy` | 🟡 | Full event type coverage + retention policy |
 | `@objectos/auth` | Identity schemas, `SessionPolicy`, `PasswordPolicy` | 🟡 | Enforced policies + session lifecycle hooks |
-| `@objectos/automation` | `WorkflowRule`, action schemas, sandbox policy | 🟡 | Native spec validation + sandboxed execution |
-| `@objectos/workflow` | `Flow`, `FlowNode`, `FlowEdge`, approvals | 🟡 | Native Flow execution + conversion utilities |
-| `@objectos/permissions` | `PermissionSet`, `SharingRule`, `RLSConfig` | 🟡 | Sharing rules + full RLS alignment |
+| `@objectos/automation` | `WorkflowRule`, action schemas, sandbox policy | ✅ | Native spec validation + sandboxed execution |
+| `@objectos/workflow` | `Flow`, `FlowNode`, `FlowEdge`, approvals | ✅ | Native Flow execution + conversion utilities |
+| `@objectos/permissions` | `PermissionSet`, `SharingRule`, `RLSConfig` | ✅ | Sharing rules + full RLS alignment |
 | `@objectos/realtime` | WebSocket API + awareness schemas | 🔲 | Protocol-compliant server + tests |
 | `@objectos/metrics` | Metrics schemas | ✅ | Export endpoint + labels parity |
 | `@objectos/storage` | Storage schemas | ✅ | No change |
