@@ -75,21 +75,18 @@ export function useAppObjects(appId: string | undefined) {
     queryKey: ['metadata', 'appObjects', appId],
     queryFn: async () => {
       const objectNames = appQuery.data?.objects ?? [];
-      const results: ObjectDefinition[] = [];
-      for (const name of objectNames) {
-        try {
-          const result = await objectStackClient.meta.getObject(name);
-          if (result) {
-            results.push(result as ObjectDefinition);
-            continue;
-          }
-        } catch {
-          // Server unreachable — use mock data
-        }
-        const mock = getMockObjectDefinition(name);
-        if (mock) results.push(mock);
-      }
-      return results;
+      const settled = await Promise.allSettled(
+        objectNames.map((name) =>
+          objectStackClient.meta.getObject(name).then((r) =>
+            r ? (r as ObjectDefinition) : getMockObjectDefinition(name),
+          ).catch(() => getMockObjectDefinition(name)),
+        ),
+      );
+      return settled
+        .filter((r): r is PromiseFulfilledResult<ObjectDefinition | undefined> =>
+          r.status === 'fulfilled')
+        .map((r) => r.value)
+        .filter((v): v is ObjectDefinition => !!v);
     },
     enabled: !!appId && !!appQuery.data,
   });
