@@ -59,7 +59,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 - **Purpose**: Implements the runtime engine and plugin ecosystem
 - **Key Packages**:
   - `@objectstack/runtime` - Microkernel with plugin lifecycle management
-  - `@objectos/plugin-server` - NestJS HTTP server plugin
+  - `@objectstack/plugin-hono-server` - Hono HTTP server plugin
   - `@objectos/plugin-better-auth` - Authentication plugin
   - `@objectos/plugin-audit-log` - Audit logging plugin
   - `@objectos/kernel` - **DEPRECATED** (use @objectstack/runtime)
@@ -288,22 +288,27 @@ export class ObjectDataController {
 }
 ```
 
-### Why NestJS?
+### Why Hono?
 
-1. **Dependency Injection**: Built-in IoC container
-2. **Decorators**: Clean syntax for routes and guards
-3. **OpenAPI**: Automatic API documentation
-4. **Middleware**: Easy to add logging, rate limiting, etc.
+1. **Edge-Ready**: Works in Node.js, Cloudflare Workers, Vercel, Deno
+2. **Lightweight**: Minimal overhead, fast routing
+3. **Middleware**: Easy to add CORS, auth, logging, rate limiting
+4. **TypeScript-First**: Full type inference for routes and context
 
 ### REST API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/data/:object/query` | Query records |
-| POST | `/api/data/:object` | Create record |
-| PATCH | `/api/data/:object/:id` | Update record |
-| DELETE | `/api/data/:object/:id` | Delete record |
-| GET | `/api/metadata/:object` | Get object metadata |
+| POST | `/api/v1/data/:object/query` | Query records |
+| POST | `/api/v1/data/:object` | Create record |
+| PATCH | `/api/v1/data/:object/:id` | Update record |
+| DELETE | `/api/v1/data/:object/:id` | Delete record |
+| GET | `/api/v1/meta/:object` | Get object metadata |
+| ALL | `/api/v1/auth/*` | Authentication (BetterAuth) |
+| GET | `/api/v1/audit/events` | Audit log events |
+| GET | `/api/v1/jobs` | Job queue status |
+| GET | `/api/v1/metrics/prometheus` | Prometheus metrics |
+| GET | `/api/v1/permissions/sets` | Permission sets |
 
 ## Layer 5: UI Layer
 
@@ -359,12 +364,12 @@ class RedisDriver implements ObjectQLDriver {
 Let's trace a request to create a contact:
 
 ```
-1. Client sends POST /api/data/contacts
+1. Client sends POST /api/v1/data/contacts
    └─> Body: { first_name: "John", last_name: "Doe" }
 
-2. NestJS Controller receives request
-   └─> Extracts user from JWT
-   └─> Calls kernel.insert('contacts', data)
+2. Hono HTTP handler receives request
+   └─> Extracts user from session (BetterAuth)
+   └─> Calls kernel broker insert('contacts', data)
 
 3. Kernel processes the request
    └─> Loads contact metadata from registry
@@ -501,19 +506,24 @@ describe('Contact Management', () => {
 ### Development
 
 ```
-┌─────────────────┐
-│  Vite Dev Server │ :5173
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  NestJS Server   │ :3000
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  PostgreSQL      │ :5432
-└─────────────────┘
+┌──────────────────────┐      ┌──────────────────────┐
+│  Vite Dev (apps/web) │      │ Fumadocs (apps/site) │
+│  :5321               │      │ :3002                │
+└──────────┬───────────┘      └──────────┬───────────┘
+           │ proxy /api/v1               │
+           ▼                             │
+┌──────────────────────┐                 │
+│ ObjectStack Hono     │◀────────────────┘
+│ :5320                │
+│ ├── /api/v1/*        │
+│ ├── /.well-known     │
+│ └── Kernel + Plugins │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ PostgreSQL / SQLite   │
+└──────────────────────┘
 ```
 
 ### Production
