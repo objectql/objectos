@@ -19,7 +19,7 @@ export function useAppDefinition(appId: string | undefined) {
     queryFn: async () => {
       if (!appId) return undefined;
       try {
-        const result = await objectStackClient.meta.getItem('app', appId);
+        const result = await objectStackClient.meta.getItem('apps', appId);
         if (result) return result as AppDefinition;
       } catch {
         // Server unreachable — use mock data
@@ -35,7 +35,7 @@ export function useAppList() {
     queryKey: ['metadata', 'apps'],
     queryFn: async () => {
       try {
-        const result = await objectStackClient.meta.getItems('app');
+        const result = await objectStackClient.meta.getItems('apps');
         if (result?.items?.length) return result.items as AppDefinition[];
       } catch {
         // Server unreachable — use mock data

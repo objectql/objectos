@@ -10,11 +10,13 @@
 
 import { ObjectStackClient } from '@objectstack/client';
 
-const API_BASE = '/api/v1';
+const API_BASE = '';
 
 /**
  * Shared ObjectStackClient singleton for the frontend.
  *
+ * The SDK's routes are already absolute paths (e.g. /api/v1/meta, /api/v1/data),
+ * so baseUrl should be the origin (empty string for same-origin / Vite proxy).
  * - In dev, Vite proxies `/api/v1` → `http://localhost:5320`
  * - In production, the SPA is served from the same origin as the API
  */
