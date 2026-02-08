@@ -279,6 +279,36 @@ export interface SharingRule {
     }>;
 }
 
+// ─── RLS Configuration ─────────────────────────────────────────────────────────
+
+/**
+ * RLSConfig — record-level security configuration for a single object.
+ * Combines Organization-Wide Defaults with Sharing Rules to determine
+ * the effective record access for each user.
+ */
+export interface RLSConfig {
+    /** Object API name */
+    objectName: string;
+    /** Organization-wide defaults for this object */
+    orgDefault: OrganizationDefault;
+    /** Sharing rules that extend access beyond the defaults */
+    sharingRules: SharingRule[];
+}
+
+/**
+ * RLS evaluation result — the outcome of evaluating all RLS layers for a user + object
+ */
+export interface RLSEvaluationResult {
+    /** Whether the user has any record-level access */
+    hasAccess: boolean;
+    /** Effective access level */
+    accessLevel: 'none' | 'owner_only' | 'read_only' | 'read_write' | 'full';
+    /** Record-level filters to inject into queries */
+    filters: Record<string, any>;
+    /** Sharing rules that contributed to access */
+    appliedRules: string[];
+}
+
 // ─── Permission Context (runtime) ──────────────────────────────────────────────
 
 /**

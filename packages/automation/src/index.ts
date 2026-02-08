@@ -17,8 +17,12 @@ export { FormulaEngine } from './formulas.js';
 export { InMemoryAutomationStorage } from './storage.js';
 
 // Sandbox
-export { executeSandboxed, validateScript } from './sandbox.js';
-export type { SandboxConfig, SandboxResult } from './sandbox.js';
+export { executeSandboxed, validateScript, executeSandboxedWithPolicy, DEFAULT_SANDBOX_POLICY } from './sandbox.js';
+export type { SandboxConfig, SandboxResult, SandboxPolicy } from './sandbox.js';
+
+// Spec validation
+export { validateWorkflowRule, validateWorkflowAction } from './validation.js';
+export type { ValidationResult } from './validation.js';
 
 // Types
 export type {

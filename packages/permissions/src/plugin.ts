@@ -28,6 +28,8 @@ import type {
 } from './types.js';
 import { InMemoryPermissionStorage, PermissionStorage } from './storage.js';
 import { PermissionEngine } from './engine.js';
+import { SharingRuleEngine } from './sharing-rules.js';
+import { RLSEvaluator } from './rls-evaluator.js';
 import { loadPermissionSetsFromDirectory } from './loader.js';
 
 /**
@@ -42,6 +44,8 @@ export class PermissionsPlugin implements Plugin {
     private config: PermissionPluginConfig;
     private storage: PermissionStorage;
     private engine: PermissionEngine;
+    private sharingEngine: SharingRuleEngine;
+    private rlsEvaluator: RLSEvaluator;
     private context?: PluginContext;
     private startedAt?: number;
 
@@ -59,6 +63,8 @@ export class PermissionsPlugin implements Plugin {
             defaultDeny: this.config.defaultDeny,
             enableCache: this.config.cachePermissions,
         });
+        this.sharingEngine = new SharingRuleEngine();
+        this.rlsEvaluator = new RLSEvaluator(this.sharingEngine);
     }
 
     /**
@@ -307,6 +313,20 @@ export class PermissionsPlugin implements Plugin {
     }
 
     /**
+     * Get the sharing rule engine
+     */
+    getSharingEngine(): SharingRuleEngine {
+        return this.sharingEngine;
+    }
+
+    /**
+     * Get the RLS evaluator
+     */
+    getRLSEvaluator(): RLSEvaluator {
+        return this.rlsEvaluator;
+    }
+
+    /**
      * Reload permission sets from disk
      */
     async reloadPermissions(): Promise<void> {
@@ -359,6 +379,8 @@ export class PermissionsPlugin implements Plugin {
      */
     async destroy(): Promise<void> {
         this.engine.clearCache();
+        this.sharingEngine.clear();
+        this.rlsEvaluator.clear();
         await this.storage.clear();
         this.context?.logger.info('[Permissions Plugin] Destroyed');
     }

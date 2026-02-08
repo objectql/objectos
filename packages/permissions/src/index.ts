@@ -47,6 +47,9 @@ export type {
     SharingAccessLevel,
     SharingTargetType,
     SharingRule,
+    // RLS
+    RLSConfig,
+    RLSEvaluationResult,
     // Runtime
     PermissionContext,
     PermissionCheckResult,
@@ -76,6 +79,11 @@ export {
 export type {
     SharingRuleResult,
 } from './sharing-rules.js';
+
+// Export RLS evaluator
+export {
+    RLSEvaluator,
+} from './rls-evaluator.js';
 
 // Export storage
 export {
