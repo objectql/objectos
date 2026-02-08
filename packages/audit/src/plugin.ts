@@ -424,7 +424,9 @@ export class AuditLogPlugin implements Plugin {
     }
 
     /**
-     * Apply retention policy: delete expired events based on configured thresholds
+     * Apply retention policy: delete expired events based on configured thresholds.
+     * Per-event-type overrides are applied first, then default retention handles
+     * any remaining events not covered by specific overrides.
      */
     async applyRetentionPolicy(): Promise<number> {
         const retention = this.config.retention;
@@ -432,16 +434,18 @@ export class AuditLogPlugin implements Plugin {
 
         let totalDeleted = 0;
 
-        // Apply per-event-type retention overrides
+        // Apply per-event-type retention overrides first
+        const overriddenTypes = new Set<string>();
         if (retention.eventRetention) {
             for (const [eventType, days] of Object.entries(retention.eventRetention)) {
+                overriddenTypes.add(eventType);
                 const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
                 const deleted = await this.storage.deleteExpiredEvents(cutoff, eventType);
                 totalDeleted += deleted;
             }
         }
 
-        // Apply default retention
+        // Apply default retention only to event types not covered by overrides
         if (retention.defaultRetentionDays && retention.defaultRetentionDays > 0) {
             const cutoff = new Date(Date.now() - retention.defaultRetentionDays * 24 * 60 * 60 * 1000).toISOString();
             const deleted = await this.storage.deleteExpiredEvents(cutoff);
