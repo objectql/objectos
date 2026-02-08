@@ -147,3 +147,96 @@ export interface RealtimePluginConfig {
   /** Maximum connections per tenant */
   maxConnectionsPerTenant?: number;
 }
+
+// ─── Awareness Protocol Schemas ────────────────────────────────────────────────
+
+/** Cursor position within a document or field */
+export interface AwarenessCursor {
+  /** User who owns this cursor */
+  userId: string;
+  /** Object/record type being edited */
+  object?: string;
+  /** Record ID being edited */
+  recordId?: string;
+  /** Field name the cursor is in */
+  field?: string;
+  /** Character offset position */
+  offset?: number;
+  /** Line number (for multi-line fields) */
+  line?: number;
+  /** Column number (for multi-line fields) */
+  column?: number;
+}
+
+/** Text selection range within a document or field */
+export interface AwarenessSelection {
+  /** User who owns this selection */
+  userId: string;
+  /** Object/record type being edited */
+  object?: string;
+  /** Record ID being edited */
+  recordId?: string;
+  /** Field name the selection is in */
+  field?: string;
+  /** Selection start offset */
+  anchor: number;
+  /** Selection end offset */
+  head: number;
+}
+
+/** User presence state for awareness */
+export interface AwarenessPresence {
+  /** User identifier */
+  userId: string;
+  /** Display name for the user */
+  displayName?: string;
+  /** User's avatar URL */
+  avatarUrl?: string;
+  /** User's assigned color (for collaborative cursors) */
+  color?: string;
+  /** Current online status */
+  status: 'online' | 'offline' | 'away' | 'busy';
+  /** What the user is currently viewing or editing */
+  activeContext?: {
+    /** Object type the user is viewing */
+    object?: string;
+    /** Record ID the user is viewing */
+    recordId?: string;
+    /** View or page identifier */
+    view?: string;
+  };
+  /** Last activity timestamp (ISO 8601) */
+  lastActive: string;
+}
+
+/** Collaborative edit operation for awareness */
+export interface AwarenessEdit {
+  /** User performing the edit */
+  userId: string;
+  /** Object/record type being edited */
+  object: string;
+  /** Record ID being edited */
+  recordId: string;
+  /** Field being edited */
+  field: string;
+  /** Type of edit operation */
+  operation: 'insert' | 'delete' | 'replace';
+  /** Value or delta of the edit */
+  value?: unknown;
+  /** Edit position offset */
+  offset?: number;
+  /** Length of text being replaced/deleted */
+  length?: number;
+}
+
+/** Aggregated awareness state for a context (room/document) */
+export interface AwarenessState {
+  /** Context identifier (e.g., "record:Account:001") */
+  contextId: string;
+  /** All users present in this context */
+  users: AwarenessPresence[];
+  /** Active cursors in this context */
+  cursors: AwarenessCursor[];
+  /** Active selections in this context */
+  selections: AwarenessSelection[];
+}

@@ -4,4 +4,9 @@ export type {
     WebSocketAuthResult,
     WebSocketTenantConfig,
     RealtimePluginConfig,
+    AwarenessCursor,
+    AwarenessSelection,
+    AwarenessPresence,
+    AwarenessEdit,
+    AwarenessState,
 } from './types.js';
