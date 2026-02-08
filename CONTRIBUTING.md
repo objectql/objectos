@@ -7,7 +7,7 @@ Thank you for your interest in contributing to ObjectOS! This guide will help yo
 ObjectOS is the **runtime engine** that executes metadata defined in the ObjectQL format. It's part of a two-repository ecosystem:
 
 - **[objectql/objectql](https://github.com/objectstack-ai/objectql)**: The protocol definition and core drivers
-- **objectql/objectos** (this repo): The runtime implementation
+- **objectstack-ai/objectos** (this repo): The runtime implementation
 
 ## Project Structure
 
@@ -174,7 +174,7 @@ describe('ObjectOS.insert', () => {
 
 ```bash
 # Clone the repository
-git clone https://github.com/objectql/objectos.git
+git clone https://github.com/objectstack-ai/objectos.git
 cd objectos
 
 # Install dependencies
@@ -221,7 +221,7 @@ pnpm run lint  # (TODO: Add lint script)
 
 ### 1. Find an Issue
 
-- Check [GitHub Issues](https://github.com/objectql/objectos/issues)
+- Check [GitHub Issues](https://github.com/objectstack-ai/objectos/issues)
 - Look for labels: `good first issue`, `help wanted`
 - Comment on the issue to claim it
 

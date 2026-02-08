@@ -726,8 +726,8 @@ The `api/index.ts` serverless handler mirrors the CLI serve bootstrap:
 ### Prerequisites
 
 - Node.js 22+ (LTS)
-- PostgreSQL or MongoDB (production) / SQLite (development)
-- Redis (for distributed caching & job queues)
+- PostgreSQL 14+ or MongoDB 6+ (production) / SQLite 3.x (development)
+- Redis 7+ (for distributed caching & job queues, optional for single-node)
 - PNPM 9.x
 
 ---
@@ -750,7 +750,7 @@ await objectql.loadMetadata('./objects/**/*.yml');
 
 ### With ObjectUI (View Layer — Separate Repository)
 
-ObjectUI (`github.com/objectql/objectui`) is an **independent control library** — similar to amis — that provides metadata-driven UI components:
+ObjectUI (`github.com/objectstack-ai/objectui`) is an **independent control library** — similar to amis — that provides metadata-driven UI components:
 
 - **Schema Renderer**: Dynamically renders Forms, Grids, Charts from ObjectStack UI protocol
 - **Plugin UI Loader**: Module Federation for plugin-contributed UI components
@@ -973,7 +973,7 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  ObjectUI (Separate Repo: github.com/objectql/objectui)     │
+│  ObjectUI (Separate Repo: github.com/objectstack-ai/objectui)     │
 │  ├── Schema Renderer  → JSON → React Components             │
 │  ├── Control Library   → Form, Grid, Chart, Kanban, ...     │
 │  └── Plugin UI Loader → Module Federation for plugin UIs    │
