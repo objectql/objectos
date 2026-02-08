@@ -83,6 +83,13 @@ function p95(sorted: number[]): number {
     return sorted[Math.min(idx, sorted.length - 1)];
 }
 
+/** Retrieve the audit API or fail fast with a descriptive message */
+function getAuditAPI(kernel: any): AuditLogPlugin {
+    const api = getAuditLogAPI(kernel);
+    if (!api) throw new Error('AuditLogPlugin not registered on kernel');
+    return api;
+}
+
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const ITERATIONS = 100;
@@ -219,7 +226,7 @@ describe('Performance Baseline (P95 < 100 ms)', () => {
     // ── Read / query operations ────────────────────────────────────────────────
 
     it(`audit queryEvents P95 should be < ${P95_THRESHOLD_MS} ms (n=${ITERATIONS})`, async () => {
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const durations: number[] = [];
 
         for (let i = 0; i < ITERATIONS; i++) {
@@ -241,7 +248,7 @@ describe('Performance Baseline (P95 < 100 ms)', () => {
     });
 
     it(`audit getAuditTrail P95 should be < ${P95_THRESHOLD_MS} ms (n=${ITERATIONS})`, async () => {
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const durations: number[] = [];
 
         for (let i = 0; i < ITERATIONS; i++) {

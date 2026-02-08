@@ -53,6 +53,9 @@ async function bootstrapKernel(): Promise<void> {
           objectSrc: ["'none'"],
           frameAncestors: ["'none'"],
         },
+        // crossOriginEmbedderPolicy is disabled because API responses may be
+        // consumed by cross-origin SPAs (Admin Console, ObjectUI) that load
+        // resources from CDNs.  COEP: require-corp would break those requests.
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: 'same-origin',
         referrerPolicy: 'strict-origin-when-cross-origin',

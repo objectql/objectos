@@ -76,6 +76,13 @@ const triggerHook = async (
     }
 };
 
+/** Retrieve the audit API or fail fast with a descriptive message */
+function getAuditAPI(kernel: any): AuditLogPlugin {
+    const api = getAuditLogAPI(kernel);
+    if (!api) throw new Error('AuditLogPlugin not registered on kernel');
+    return api;
+}
+
 // ── Integration tests ──────────────────────────────────────────────────────────
 
 describe('Integration: Auth → Permissions → Data → Audit', () => {
@@ -114,7 +121,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             userAgent: 'test-agent',
         });
 
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const events = await audit.queryEvents({ userId: 'user-1' });
 
         expect(events.length).toBe(1);
@@ -129,7 +136,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             ipAddress: '192.168.1.100',
         });
 
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const events = await audit.queryEvents({});
         expect(events[0].success).toBe(false);
     });
@@ -155,7 +162,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             record: { id: 'acc-1', name: 'Acme Corp' },
         });
 
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const events = await audit.queryEvents({ objectName: 'accounts' });
         expect(events.length).toBe(1);
         expect(events[0].eventType).toBe('data.create');
@@ -183,7 +190,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             },
         });
 
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const trail = await audit.getAuditTrail('accounts', 'acc-1');
         expect(trail.length).toBe(1);
         expect(trail[0].eventType).toBe('data.update');
@@ -206,7 +213,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             userId: 'user-1',
         });
 
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
         const events = await audit.queryEvents({
             objectName: 'accounts',
             eventType: 'data.delete',
@@ -217,7 +224,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
     // ── Complete lifecycle: login → create → update → delete → audit ───────────
 
     it('should trace a full CRUD lifecycle in audit', async () => {
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
 
         // 1. Login
         await triggerHook(hooks, 'auth.login', {
@@ -292,7 +299,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
     // ── Permission denied → security event ─────────────────────────────────────
 
     it('should record security.access_denied when permission is denied', async () => {
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
 
         await triggerHook(hooks, 'security.access_denied', {
             userId: 'user-2',
@@ -310,7 +317,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
     // ── Authorization events → audit ───────────────────────────────────────────
 
     it('should record role assignment in audit trail', async () => {
-        const audit = getAuditLogAPI(kernel)!;
+        const audit = getAuditAPI(kernel);
 
         await triggerHook(hooks, 'authz.role_assigned', {
             userId: 'admin-1',
@@ -361,7 +368,7 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
             },
         });
 
-        const auditApi = getAuditLogAPI(mock2.kernel)!;
+        const auditApi = getAuditAPI(mock2.kernel);
         const trail = await auditApi.getAuditTrail('users', 'user-2');
         expect(trail.length).toBe(1);
         const fields = trail[0].changes!.map((c: any) => c.field);
