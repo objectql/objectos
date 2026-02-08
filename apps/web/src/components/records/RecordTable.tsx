@@ -15,7 +15,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { FieldRenderer } from './FieldRenderer';
-import type { ObjectDefinition, RecordData } from '@/types/metadata';
+import type { ObjectDefinition, RecordData, ResolvedField } from '@/types/metadata';
+import { resolveFields } from '@/types/metadata';
 
 interface RecordTableProps {
   objectDef: ObjectDefinition;
@@ -24,13 +25,19 @@ interface RecordTableProps {
 }
 
 export function RecordTable({ objectDef, records, basePath }: RecordTableProps) {
-  const columnNames =
-    objectDef.listFields ??
-    Object.keys(objectDef.fields).filter((k) => k !== 'id' && !objectDef.fields[k].readonly);
+  const allResolved = resolveFields(objectDef.fields, ['id']);
 
-  const columns = columnNames
-    .map((name) => ({ ...objectDef.fields[name], name }))
-    .filter((f) => f.type);
+  let columns: ResolvedField[];
+  if (objectDef.listFields) {
+    // Use specified list fields in order
+    const fieldMap = new Map(allResolved.map((f) => [f.name, f]));
+    columns = objectDef.listFields
+      .map((name) => fieldMap.get(name))
+      .filter((f): f is ResolvedField => !!f);
+  } else {
+    // Fallback: all non-readonly fields
+    columns = allResolved.filter((f) => !f.readonly);
+  }
 
   if (records.length === 0) {
     return (
@@ -49,7 +56,7 @@ export function RecordTable({ objectDef, records, basePath }: RecordTableProps) 
         <TableHeader>
           <TableRow>
             {columns.map((col) => (
-              <TableHead key={col.name}>{col.label ?? col.name}</TableHead>
+              <TableHead key={col.name}>{col.label}</TableHead>
             ))}
           </TableRow>
         </TableHeader>

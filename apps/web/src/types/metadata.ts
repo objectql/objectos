@@ -83,6 +83,32 @@ export interface FieldDefinition {
   formula?: string;
 }
 
+/**
+ * A FieldDefinition with its `name` guaranteed to be present.
+ * Use `resolveFields()` to convert raw object field entries.
+ */
+export interface ResolvedField extends FieldDefinition {
+  name: string;
+  label: string;
+}
+
+/**
+ * Resolve raw field entries from an ObjectDefinition, ensuring every
+ * field has a `name` (from the record key) and a `label` (fallback to name).
+ */
+export function resolveFields(
+  fields: Record<string, FieldDefinition>,
+  exclude?: string[],
+): ResolvedField[] {
+  return Object.entries(fields)
+    .filter(([key]) => !exclude?.includes(key))
+    .map(([key, f]) => ({
+      ...f,
+      name: f.name ?? key,
+      label: f.label ?? f.name ?? key,
+    }));
+}
+
 // ── Object Definition ───────────────────────────────────────────
 
 export interface ObjectDefinition {

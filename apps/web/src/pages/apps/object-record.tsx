@@ -12,6 +12,7 @@ import { FieldRenderer } from '@/components/records/FieldRenderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { resolveFields } from '@/types/metadata';
 
 export default function ObjectRecordPage() {
   const { appId, objectName, recordId } = useParams();
@@ -51,9 +52,7 @@ export default function ObjectRecordPage() {
   const recordTitle = String(record[primaryField] ?? record.id ?? 'Untitled');
 
   // Group fields: primary info fields vs metadata/readonly fields
-  const allFields = Object.entries(objectDef.fields)
-    .filter(([key]) => key !== 'id')
-    .map(([key, f]) => ({ ...f, name: f.name ?? key }));
+  const allFields = resolveFields(objectDef.fields, ['id']);
   const editableFields = allFields.filter((f) => !f.readonly);
   const readonlyFields = allFields.filter((f) => f.readonly);
 
@@ -81,10 +80,10 @@ export default function ObjectRecordPage() {
             {editableFields.map((field) => (
               <div key={field.name}>
                 <dt className="text-sm font-medium text-muted-foreground">
-                  {field.label ?? field.name}
+                  {field.label}
                 </dt>
                 <dd className="mt-1 text-sm">
-                  <FieldRenderer field={field} value={record[field.name!]} />
+                  <FieldRenderer field={field} value={record[field.name]} />
                 </dd>
               </div>
             ))}
@@ -97,10 +96,10 @@ export default function ObjectRecordPage() {
                 {readonlyFields.map((field) => (
                   <div key={field.name}>
                     <dt className="text-sm font-medium text-muted-foreground">
-                      {field.label ?? field.name}
+                      {field.label}
                     </dt>
                     <dd className="mt-1 text-sm">
-                      <FieldRenderer field={field} value={record[field.name!]} />
+                      <FieldRenderer field={field} value={record[field.name]} />
                     </dd>
                   </div>
                 ))}
