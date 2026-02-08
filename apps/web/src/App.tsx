@@ -33,6 +33,8 @@ const NotificationsPage = lazy(() => import('./pages/settings/notifications'));
 
 // ── Business Apps ─────────────────────────────────────────────
 const BusinessAppPage = lazy(() => import('./pages/apps/app'));
+const ObjectListPage = lazy(() => import('./pages/apps/object-list'));
+const ObjectRecordPage = lazy(() => import('./pages/apps/object-record'));
 
 export function App() {
   const fallback = (
@@ -82,6 +84,8 @@ export function App() {
           {/* ── Business Apps (/apps/:appId/*) ── */}
           <Route path="/apps/:appId" element={<AppLayout />}>
             <Route index element={<BusinessAppPage />} />
+            <Route path=":objectName" element={<ObjectListPage />} />
+            <Route path=":objectName/:recordId" element={<ObjectRecordPage />} />
           </Route>
 
         </Route>

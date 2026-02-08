@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams, Outlet } from 'react-router-dom';
-import { Blocks, LayoutDashboard } from 'lucide-react';
+import { Blocks, Database, LayoutDashboard } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -19,19 +19,21 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 import { NavUser } from '@/components/dashboard/NavUser';
-import { getAppById } from '@/lib/app-registry';
+import { useAppDefinition, useObjectDefinition } from '@/hooks/use-metadata';
+
+/** Helper: resolve an object name to its plural label for the sidebar. */
+function ObjectNavLabel({ objectName }: { objectName: string }) {
+  const { data: objectDef } = useObjectDefinition(objectName);
+  return <span>{objectDef?.pluralLabel ?? objectDef?.label ?? objectName}</span>;
+}
 
 export function AppLayout() {
   const { pathname } = useLocation();
   const { appId } = useParams();
 
-  const app = getAppById(appId);
-  const appName = app?.name ?? appId ?? 'App';
-
-  // TODO: In production, nav items come from ObjectUI metadata per app
-  const navItems = [
-    { title: 'Home', href: `/apps/${appId}`, icon: LayoutDashboard },
-  ];
+  const { data: appDef } = useAppDefinition(appId);
+  const appName = appDef?.label ?? appId ?? 'App';
+  const objectNames = appDef?.objects ?? [];
 
   return (
     <SidebarProvider>
@@ -45,20 +47,35 @@ export function AppLayout() {
             <SidebarGroupLabel>{appName}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {navItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      tooltip={item.title}
-                    >
-                      <Link to={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {/* App home link */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === `/apps/${appId}`}
+                    tooltip="Home"
+                  >
+                    <Link to={`/apps/${appId}`}>
+                      <LayoutDashboard />
+                      <span>Home</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                {/* Object links from metadata */}
+                {objectNames.map((objectName) => {
+                  const href = `/apps/${appId}/${objectName}`;
+                  const isActive = pathname.startsWith(href);
+                  return (
+                    <SidebarMenuItem key={objectName}>
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={objectName}>
+                        <Link to={href}>
+                          <Database />
+                          <ObjectNavLabel objectName={objectName} />
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

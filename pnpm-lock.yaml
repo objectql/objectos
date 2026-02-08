@@ -196,6 +196,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@objectstack/client':
+        specifier: 1.1.0
+        version: 1.1.0(pino@10.3.0)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2114,6 +2117,9 @@ packages:
     hasBin: true
     peerDependencies:
       '@objectstack/core': ^1.0.12
+
+  '@objectstack/client@1.1.0':
+    resolution: {integrity: sha512-QUERkbVeNc0olhHSaZHmeNAQetc4VhA4oFiS/kzbK8R30q5u3goDyzTLd/YaqOns2cNvAMWr+pLHfHlC8a1ePQ==}
 
   '@objectstack/core@1.1.0':
     resolution: {integrity: sha512-BabYj3iESh5t5Yw7pwcRE+2gHZU2jl78/Emx9frUnZ9exkRurxGEynLXVK4Us5UQgjNjVJzZILAQPO5syTD33A==}
@@ -8496,6 +8502,13 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - esbuild
+      - pino
+
+  '@objectstack/client@1.1.0(pino@10.3.0)':
+    dependencies:
+      '@objectstack/core': 1.1.0(pino@10.3.0)
+      '@objectstack/spec': 1.1.0
+    transitivePeerDependencies:
       - pino
 
   '@objectstack/core@1.1.0(pino@10.3.0)':
