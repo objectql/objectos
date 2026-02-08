@@ -20,7 +20,7 @@ function ObjectCard({ appId, objectName }: { appId: string; objectName: string }
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
             <Database className="size-4 text-muted-foreground" />
-            {objectDef.pluralLabel}
+            {objectDef.pluralLabel ?? objectDef.label ?? objectName}
           </CardTitle>
           <Badge variant="secondary">{result?.total ?? 0}</Badge>
         </div>
@@ -31,7 +31,7 @@ function ObjectCard({ appId, objectName }: { appId: string; objectName: string }
       <CardContent>
         <Button asChild variant="outline" size="sm">
           <Link to={`/apps/${appId}/${objectName}`}>
-            View {objectDef.pluralLabel.toLowerCase()}
+            View {(objectDef.pluralLabel ?? objectDef.label ?? objectName).toLowerCase()}
             <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>
@@ -66,16 +66,16 @@ export default function BusinessAppPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">{appDef.name}</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{appDef.label}</h2>
         <p className="text-muted-foreground">{appDef.description}</p>
-        {appDef.status === 'paused' && (
+        {appDef.active === false && (
           <Badge variant="outline" className="mt-2">Paused</Badge>
         )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {appDef.objects.map((objectName) => (
-          <ObjectCard key={objectName} appId={appDef.id} objectName={objectName} />
+        {(appDef.objects ?? []).map((objectName) => (
+          <ObjectCard key={objectName} appId={appDef.name} objectName={objectName} />
         ))}
       </div>
     </div>

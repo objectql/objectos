@@ -53,7 +53,7 @@ export default function ObjectListPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{objectDef.pluralLabel}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{objectDef.pluralLabel ?? objectDef.label ?? objectName}</h2>
           {objectDef.description && (
             <p className="text-muted-foreground">{objectDef.description}</p>
           )}

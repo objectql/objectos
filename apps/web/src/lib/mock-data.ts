@@ -17,44 +17,36 @@ import type {
 
 export const mockAppDefinitions: AppDefinition[] = [
   {
-    id: 'crm',
-    name: 'CRM',
+    name: 'crm',
+    label: 'CRM',
     description: 'Leads, accounts, and pipeline management.',
     icon: 'briefcase',
     objects: ['lead', 'account', 'opportunity', 'contact'],
-    defaultObject: 'lead',
-    status: 'active',
-    category: 'business',
+    active: true,
   },
   {
-    id: 'hrm',
-    name: 'HRM',
+    name: 'hrm',
+    label: 'HRM',
     description: 'People, teams, and HR workflows.',
     icon: 'users',
     objects: ['employee', 'department', 'leave_request'],
-    defaultObject: 'employee',
-    status: 'active',
-    category: 'business',
+    active: true,
   },
   {
-    id: 'finance',
-    name: 'Finance',
+    name: 'finance',
+    label: 'Finance',
     description: 'Billing, invoices, and approvals.',
     icon: 'dollar-sign',
     objects: ['invoice', 'payment'],
-    defaultObject: 'invoice',
-    status: 'paused',
-    category: 'business',
+    active: false,
   },
   {
-    id: 'custom-ops',
-    name: 'Ops Suite',
+    name: 'custom-ops',
+    label: 'Ops Suite',
     description: 'Custom operational workflows for your team.',
     icon: 'settings',
     objects: ['task', 'project'],
-    defaultObject: 'task',
-    status: 'active',
-    category: 'custom',
+    active: true,
   },
 ];
 
@@ -157,7 +149,7 @@ export const mockObjectDefinitions: Record<string, ObjectDefinition> = {
         defaultValue: 'prospecting',
       },
       close_date: { name: 'close_date', type: 'datetime', label: 'Close Date' },
-      account_id: { name: 'account_id', type: 'reference', label: 'Account', referenceTo: 'account' },
+      account_id: { name: 'account_id', type: 'lookup', label: 'Account', reference: 'account' },
       created_at: { name: 'created_at', type: 'datetime', label: 'Created', readonly: true },
     },
   },
@@ -175,7 +167,7 @@ export const mockObjectDefinitions: Record<string, ObjectDefinition> = {
       email: { name: 'email', type: 'email', label: 'Email', required: true },
       phone: { name: 'phone', type: 'phone', label: 'Phone' },
       title: { name: 'title', type: 'text', label: 'Job Title' },
-      account_id: { name: 'account_id', type: 'reference', label: 'Account', referenceTo: 'account' },
+      account_id: { name: 'account_id', type: 'lookup', label: 'Account', reference: 'account' },
       created_at: { name: 'created_at', type: 'datetime', label: 'Created', readonly: true },
     },
   },
@@ -313,7 +305,7 @@ export const mockObjectDefinitions: Record<string, ObjectDefinition> = {
         defaultValue: 'pending',
       },
       payment_date: { name: 'payment_date', type: 'datetime', label: 'Payment Date' },
-      invoice_id: { name: 'invoice_id', type: 'reference', label: 'Invoice', referenceTo: 'invoice' },
+      invoice_id: { name: 'invoice_id', type: 'lookup', label: 'Invoice', reference: 'invoice' },
       created_at: { name: 'created_at', type: 'datetime', label: 'Created', readonly: true },
     },
   },
@@ -447,7 +439,7 @@ export const mockRecords: Record<string, RecordData[]> = {
 // ── Lookup Helpers ──────────────────────────────────────────────
 
 export function getMockAppDefinition(appId: string): AppDefinition | undefined {
-  return mockAppDefinitions.find((a) => a.id === appId);
+  return mockAppDefinitions.find((a) => a.name === appId);
 }
 
 export function getMockObjectDefinition(objectName: string): ObjectDefinition | undefined {

@@ -1,12 +1,14 @@
 /**
  * TanStack Query hooks for fetching object and app metadata.
  *
- * Uses mock data in development. When the server metadata endpoints
- * are available, swap the queryFn to call `apiFetch` instead.
+ * Uses the official @objectstack/client SDK to fetch from the server.
+ * Falls back to mock data when the server is unreachable so the UI
+ * can be developed without a running backend.
  */
 
 import { useQuery } from '@tanstack/react-query';
 import type { AppDefinition, ObjectDefinition } from '@/types/metadata';
+import { objectStackClient } from '@/lib/api';
 import { getMockAppDefinition, getMockObjectDefinition, mockAppDefinitions } from '@/lib/mock-data';
 
 // ── App metadata ────────────────────────────────────────────────
@@ -14,9 +16,15 @@ import { getMockAppDefinition, getMockObjectDefinition, mockAppDefinitions } fro
 export function useAppDefinition(appId: string | undefined) {
   return useQuery<AppDefinition | undefined>({
     queryKey: ['metadata', 'app', appId],
-    queryFn: () => {
-      // TODO: replace with apiFetch<AppDefinition>(`/metadata/apps/${appId}`)
-      return Promise.resolve(appId ? getMockAppDefinition(appId) : undefined);
+    queryFn: async () => {
+      if (!appId) return undefined;
+      try {
+        const result = await objectStackClient.meta.getItem('app', appId);
+        if (result) return result as AppDefinition;
+      } catch {
+        // Server unreachable — use mock data
+      }
+      return getMockAppDefinition(appId);
     },
     enabled: !!appId,
   });
@@ -25,9 +33,14 @@ export function useAppDefinition(appId: string | undefined) {
 export function useAppList() {
   return useQuery<AppDefinition[]>({
     queryKey: ['metadata', 'apps'],
-    queryFn: () => {
-      // TODO: replace with apiFetch<AppDefinition[]>('/metadata/apps')
-      return Promise.resolve(mockAppDefinitions);
+    queryFn: async () => {
+      try {
+        const result = await objectStackClient.meta.getItems('app');
+        if (result?.items?.length) return result.items as AppDefinition[];
+      } catch {
+        // Server unreachable — use mock data
+      }
+      return mockAppDefinitions;
     },
   });
 }
@@ -37,9 +50,15 @@ export function useAppList() {
 export function useObjectDefinition(objectName: string | undefined) {
   return useQuery<ObjectDefinition | undefined>({
     queryKey: ['metadata', 'object', objectName],
-    queryFn: () => {
-      // TODO: replace with apiFetch<ObjectDefinition>(`/metadata/objects/${objectName}`)
-      return Promise.resolve(objectName ? getMockObjectDefinition(objectName) : undefined);
+    queryFn: async () => {
+      if (!objectName) return undefined;
+      try {
+        const result = await objectStackClient.meta.getObject(objectName);
+        if (result) return result as ObjectDefinition;
+      } catch {
+        // Server unreachable — use mock data
+      }
+      return getMockObjectDefinition(objectName);
     },
     enabled: !!objectName,
   });

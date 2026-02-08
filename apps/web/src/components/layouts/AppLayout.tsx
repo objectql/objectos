@@ -24,7 +24,7 @@ import { useAppDefinition, useObjectDefinition } from '@/hooks/use-metadata';
 /** Helper: resolve an object name to its plural label for the sidebar. */
 function ObjectNavLabel({ objectName }: { objectName: string }) {
   const { data: objectDef } = useObjectDefinition(objectName);
-  return <span>{objectDef?.pluralLabel ?? objectName}</span>;
+  return <span>{objectDef?.pluralLabel ?? objectDef?.label ?? objectName}</span>;
 }
 
 export function AppLayout() {
@@ -32,7 +32,7 @@ export function AppLayout() {
   const { appId } = useParams();
 
   const { data: appDef } = useAppDefinition(appId);
-  const appName = appDef?.name ?? appId ?? 'App';
+  const appName = appDef?.label ?? appId ?? 'App';
   const objectNames = appDef?.objects ?? [];
 
   return (

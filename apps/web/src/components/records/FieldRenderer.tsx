@@ -20,8 +20,10 @@ export function FieldRenderer({ field, value }: FieldRendererProps) {
 
   switch (field.type) {
     case 'boolean':
+    case 'toggle':
       return <span>{value ? 'Yes' : 'No'}</span>;
 
+    case 'date':
     case 'datetime': {
       const date = new Date(String(value));
       if (isNaN(date.getTime())) return <span>{String(value)}</span>;
@@ -52,12 +54,31 @@ export function FieldRenderer({ field, value }: FieldRendererProps) {
     case 'number':
       return <span>{new Intl.NumberFormat().format(Number(value))}</span>;
 
-    case 'select': {
+    case 'select':
+    case 'radio': {
       const option = field.options?.find((o) => o.value === value);
       return (
         <Badge variant="outline" className="font-normal">
           {option?.label ?? String(value)}
         </Badge>
+      );
+    }
+
+    case 'multiselect':
+    case 'checkboxes':
+    case 'tags': {
+      const values = Array.isArray(value) ? value : [value];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {values.map((v) => {
+            const opt = field.options?.find((o) => o.value === v);
+            return (
+              <Badge key={String(v)} variant="outline" className="font-normal">
+                {opt?.label ?? String(v)}
+              </Badge>
+            );
+          })}
+        </div>
       );
     }
 
@@ -93,10 +114,14 @@ export function FieldRenderer({ field, value }: FieldRendererProps) {
         </a>
       );
 
-    case 'reference':
+    case 'lookup':
+    case 'master_detail':
       return <span className="text-muted-foreground">{String(value)}</span>;
 
     case 'textarea':
+    case 'markdown':
+    case 'richtext':
+    case 'html':
       return (
         <span className="line-clamp-2" title={String(value)}>
           {String(value)}

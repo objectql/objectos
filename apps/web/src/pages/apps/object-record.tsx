@@ -51,7 +51,9 @@ export default function ObjectRecordPage() {
   const recordTitle = String(record[primaryField] ?? record.id ?? 'Untitled');
 
   // Group fields: primary info fields vs metadata/readonly fields
-  const allFields = Object.values(objectDef.fields).filter((f) => f.name !== 'id');
+  const allFields = Object.entries(objectDef.fields)
+    .filter(([key]) => key !== 'id')
+    .map(([key, f]) => ({ ...f, name: f.name ?? key }));
   const editableFields = allFields.filter((f) => !f.readonly);
   const readonlyFields = allFields.filter((f) => f.readonly);
 
@@ -62,11 +64,11 @@ export default function ObjectRecordPage() {
         <Button variant="ghost" size="sm" className="mb-2" asChild>
           <Link to={`/apps/${appId}/${objectName}`}>
             <ArrowLeft className="mr-2 size-4" />
-            {objectDef.pluralLabel}
+            {objectDef.pluralLabel ?? objectDef.label ?? objectName}
           </Link>
         </Button>
         <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
-        <p className="text-muted-foreground">{objectDef.label} Detail</p>
+        <p className="text-muted-foreground">{objectDef.label ?? objectName} Detail</p>
       </div>
 
       {/* Field card */}
@@ -79,10 +81,10 @@ export default function ObjectRecordPage() {
             {editableFields.map((field) => (
               <div key={field.name}>
                 <dt className="text-sm font-medium text-muted-foreground">
-                  {field.label}
+                  {field.label ?? field.name}
                 </dt>
                 <dd className="mt-1 text-sm">
-                  <FieldRenderer field={field} value={record[field.name]} />
+                  <FieldRenderer field={field} value={record[field.name!]} />
                 </dd>
               </div>
             ))}
@@ -95,10 +97,10 @@ export default function ObjectRecordPage() {
                 {readonlyFields.map((field) => (
                   <div key={field.name}>
                     <dt className="text-sm font-medium text-muted-foreground">
-                      {field.label}
+                      {field.label ?? field.name}
                     </dt>
                     <dd className="mt-1 text-sm">
-                      <FieldRenderer field={field} value={record[field.name]} />
+                      <FieldRenderer field={field} value={record[field.name!]} />
                     </dd>
                   </div>
                 ))}

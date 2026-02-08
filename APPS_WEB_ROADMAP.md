@@ -130,7 +130,7 @@ interface AppDefinition {
 
 | Deliverable | File(s) | Description |
 |---|---|---|
-| API client | `src/lib/api.ts` | Typed fetch wrapper for `/api/v1/*` |
+| API client | `src/lib/api.ts` | `@objectstack/client` SDK with mock fallback |
 | Metadata types | `src/types/metadata.ts` | TypeScript interfaces for objects, fields, apps |
 | Metadata hooks | `src/hooks/use-metadata.ts` | TanStack Query hooks: `useAppObjects`, `useObjectDefinition` |
 | Record hooks | `src/hooks/use-records.ts` | TanStack Query hooks: `useRecords`, `useRecord`, mutations |
@@ -197,32 +197,31 @@ interface AppDefinition {
 
 ## 5. API Contract
 
-### Metadata Endpoints
+The frontend uses the official `@objectstack/client` SDK to interact with the server.
 
-```
-GET /api/v1/metadata/objects                → { objects: ObjectDefinition[] }
-GET /api/v1/metadata/objects/:name          → { object: ObjectDefinition }
-GET /api/v1/metadata/apps                   → { apps: AppDefinition[] }
-GET /api/v1/metadata/apps/:appId            → { app: AppDefinition }
-```
+### Client SDK Usage
 
-### Data Endpoints
+```typescript
+import { ObjectStackClient } from '@objectstack/client';
 
-```
-GET    /api/v1/data/:objectName             → { records: Record[], total: number, page: number }
-GET    /api/v1/data/:objectName/:id         → { record: Record }
-POST   /api/v1/data/:objectName             → { record: Record }
-PATCH  /api/v1/data/:objectName/:id         → { record: Record }
-DELETE /api/v1/data/:objectName/:id         → { success: true }
-```
+const client = new ObjectStackClient({ baseUrl: '/api/v1' });
 
-### Query Parameters (List)
+// Metadata
+client.meta.getObject('lead')           // → ObjectDefinition
+client.meta.getItems('object')          // → { type: 'object', items: ObjectDefinition[] }
+client.meta.getItems('app')             // → { type: 'app', items: AppDefinition[] }
+client.meta.getItem('app', 'crm')       // → AppDefinition
 
-```
-?page=1&pageSize=20&sort=name&order=asc&search=keyword&filter[status]=active
+// Data
+client.data.find('lead', { top: 20 })   // → { records: T[], total: number }
+client.data.get('lead', 'lead-001')     // → { record: T }
+client.data.create('lead', { ... })      // → { record: T }
+client.data.update('lead', 'id', { })    // → { record: T }
+client.data.delete('lead', 'id')         // → { deleted: true }
 ```
 
-> **Note**: Until the server implements these endpoints, the frontend uses mock data with the same interface. The API layer (`src/lib/api.ts`) abstracts this so switching to real endpoints requires zero page-level changes.
+> When the server is unreachable, hooks fall back to mock data from `lib/mock-data.ts`.
+> This allows the UI to be developed independently of the backend.
 
 ---
 
@@ -238,7 +237,7 @@ apps/web/src/
 │   └── metadata.ts                  # Object, Field, App type definitions
 │
 ├── lib/
-│   ├── api.ts                       # Fetch wrapper for /api/v1/*
+│   ├── api.ts                       # @objectstack/client SDK singleton
 │   ├── auth-client.ts               # Better-Auth client
 │   ├── app-registry.ts              # App registry (mock → API)
 │   ├── mock-data.ts                 # Mock metadata & records for dev

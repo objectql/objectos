@@ -29,13 +29,13 @@ export function RecordTable({ objectDef, records, basePath }: RecordTableProps) 
     Object.keys(objectDef.fields).filter((k) => k !== 'id' && !objectDef.fields[k].readonly);
 
   const columns = columnNames
-    .map((name) => objectDef.fields[name])
-    .filter(Boolean);
+    .map((name) => ({ ...objectDef.fields[name], name }))
+    .filter((f) => f.type);
 
   if (records.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-        <p className="text-lg font-medium">No {objectDef.pluralLabel.toLowerCase()} yet</p>
+        <p className="text-lg font-medium">No {(objectDef.pluralLabel ?? objectDef.label ?? 'records').toLowerCase()} yet</p>
         <p className="text-sm text-muted-foreground">
           Records will appear here once they are created.
         </p>
@@ -49,7 +49,7 @@ export function RecordTable({ objectDef, records, basePath }: RecordTableProps) 
         <TableHeader>
           <TableRow>
             {columns.map((col) => (
-              <TableHead key={col.name}>{col.label}</TableHead>
+              <TableHead key={col.name}>{col.label ?? col.name}</TableHead>
             ))}
           </TableRow>
         </TableHeader>

@@ -3,67 +3,123 @@
  *
  * These types mirror the @objectstack/spec protocol and are used to drive
  * the metadata-based UI rendering in the Business App Shell.
+ *
+ * The canonical source for these types is the `@objectstack/spec` package,
+ * but we define local interfaces here so page-level code does not import
+ * the full spec dependency and for convenient use in the frontend.
  */
 
 // ── Field Types ─────────────────────────────────────────────────
 
+/**
+ * All field types supported by @objectstack/spec FieldSchema.
+ */
 export type FieldType =
   | 'text'
-  | 'number'
-  | 'boolean'
-  | 'datetime'
-  | 'select'
-  | 'reference'
   | 'textarea'
   | 'email'
   | 'url'
   | 'phone'
+  | 'password'
+  | 'markdown'
+  | 'html'
+  | 'richtext'
+  | 'number'
   | 'currency'
   | 'percent'
-  | 'object';
+  | 'date'
+  | 'datetime'
+  | 'time'
+  | 'boolean'
+  | 'toggle'
+  | 'select'
+  | 'multiselect'
+  | 'radio'
+  | 'checkboxes'
+  | 'lookup'
+  | 'master_detail'
+  | 'tree'
+  | 'image'
+  | 'file'
+  | 'avatar'
+  | 'video'
+  | 'audio'
+  | 'formula'
+  | 'summary'
+  | 'autonumber'
+  | 'location'
+  | 'address'
+  | 'code'
+  | 'json'
+  | 'color'
+  | 'rating'
+  | 'slider'
+  | 'signature'
+  | 'qrcode'
+  | 'progress'
+  | 'tags'
+  | 'vector';
 
 export interface SelectOption {
   label: string;
   value: string;
+  color?: string;
 }
 
 export interface FieldDefinition {
-  name: string;
+  name?: string;
   type: FieldType;
-  label: string;
+  label?: string;
   required?: boolean;
   readonly?: boolean;
+  searchable?: boolean;
+  unique?: boolean;
+  multiple?: boolean;
   defaultValue?: unknown;
   options?: SelectOption[];
-  referenceTo?: string;
-  group?: string;
+  reference?: string;
   description?: string;
+  expression?: string;
+  formula?: string;
 }
 
 // ── Object Definition ───────────────────────────────────────────
 
 export interface ObjectDefinition {
   name: string;
-  label: string;
-  pluralLabel: string;
+  label?: string;
+  pluralLabel?: string;
   icon?: string;
   description?: string;
   fields: Record<string, FieldDefinition>;
   primaryField?: string;
   listFields?: string[];
+  /** @objectstack/spec flags */
+  active?: boolean;
+  isSystem?: boolean;
 }
 
 // ── App Definition ──────────────────────────────────────────────
 
 export interface AppDefinition {
-  id: string;
+  /** App name / identifier (spec: `name`) */
   name: string;
-  description: string;
+  /** Display label */
+  label: string;
+  description?: string;
   icon?: string;
-  objects: string[];
-  defaultObject?: string;
-  status: 'active' | 'paused';
-  category: 'system' | 'business' | 'custom';
+  /** Object names belonging to this app */
+  objects?: string[];
+  /** Whether the app is active */
+  active?: boolean;
+  /** Whether this is the default app */
+  isDefault?: boolean;
+  branding?: {
+    primaryColor?: string;
+    logo?: string;
+    favicon?: string;
+  };
+  navigation?: unknown[];
 }
 
 // ── Record Types ────────────────────────────────────────────────
@@ -79,12 +135,4 @@ export interface RecordListResponse {
 
 export interface RecordDetailResponse {
   record: RecordData;
-}
-
-// ── API Envelope ────────────────────────────────────────────────
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
 }

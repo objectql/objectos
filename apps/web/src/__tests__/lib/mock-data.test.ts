@@ -13,9 +13,9 @@ describe('mock-data', () => {
     it('returns the CRM app definition', () => {
       const app = getMockAppDefinition('crm');
       expect(app).toBeDefined();
-      expect(app?.name).toBe('CRM');
+      expect(app?.label).toBe('CRM');
       expect(app?.objects).toContain('lead');
-      expect(app?.category).toBe('business');
+      expect(app?.active).toBe(true);
     });
 
     it('returns undefined for unknown app', () => {
@@ -73,10 +73,10 @@ describe('mock-data', () => {
   describe('data consistency', () => {
     it('all app objects reference existing object definitions', () => {
       for (const app of mockAppDefinitions) {
-        for (const objName of app.objects) {
+        for (const objName of (app.objects ?? [])) {
           expect(
             mockObjectDefinitions[objName],
-            `App "${app.id}" references undefined object "${objName}"`,
+            `App "${app.name}" references undefined object "${objName}"`,
           ).toBeDefined();
         }
       }
