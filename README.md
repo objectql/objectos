@@ -139,7 +139,7 @@ ObjectUI (Controls)  →  apps/web (App Shell)  →  ObjectStack Hono (API)
 ### Installation
 
 ```bash
-git clone https://github.com/objectql/objectos.git
+git clone https://github.com/objectstack-ai/objectos.git
 cd objectos
 pnpm install
 ```
@@ -251,7 +251,7 @@ pnpm start
 - ✅ **Free for open source** AGPL-licensed projects
 - ⚠️ **Copyleft** — SaaS usage requires open-sourcing under AGPL or purchasing a commercial license
 
-**Commercial License:** [Contact us](https://github.com/objectql/objectos/issues)
+**Commercial License:** [Contact us](https://github.com/objectstack-ai/objectos/issues)
 
 ---
 

@@ -92,7 +92,7 @@ This separation means you can swap databases without changing business logic!
 
 ```bash
 # Clone the repository
-git clone https://github.com/objectql/objectos.git
+git clone https://github.com/objectstack-ai/objectos.git
 cd objectos
 
 # Install dependencies

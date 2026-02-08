@@ -59,7 +59,7 @@ Complete HTTP API reference including all REST endpoints, authentication, and re
 
 These specifications are living documents. If you find errors or omissions:
 
-1. Open an issue on [GitHub](https://github.com/objectql/objectos/issues)
+1. Open an issue on [GitHub](https://github.com/objectstack-ai/objectos/issues)
 2. Submit a pull request with corrections
 3. Discuss in our community forum (coming soon)
 
