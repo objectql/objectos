@@ -20,4 +20,4 @@ package-lock.json
 
 # Vercel
 .vercel
-
+.next
