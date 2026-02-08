@@ -70,6 +70,8 @@ export class AuditLogPlugin implements Plugin {
         context.logger.info('[Audit Log] Initialized successfully');
     }
 
+    private retentionTimer?: ReturnType<typeof setInterval>;
+
     /**
      * Start plugin - Connect to databases, start servers
      */
@@ -135,7 +137,10 @@ export class AuditLogPlugin implements Plugin {
         } catch (e: any) {
             context.logger.warn(`[Audit Log] Could not register HTTP routes: ${e?.message}`);
         }
-        
+
+        // Start retention policy cleanup if configured
+        this.startRetentionCleanup();
+
         context.logger.info('[Audit Log] Started successfully');
     }
 
@@ -159,6 +164,59 @@ export class AuditLogPlugin implements Plugin {
         context.hook('data.find', async (data: any) => {
             await this.handleDataEvent('data.find', data);
         });
+
+        // Subscribe to auth events
+        const authEvents = [
+            'auth.login', 'auth.login_failed', 'auth.logout',
+            'auth.session_created', 'auth.session_expired',
+            'auth.password_reset', 'auth.password_changed',
+            'auth.email_verified',
+            'auth.mfa_enabled', 'auth.mfa_disabled',
+            'auth.account_locked', 'auth.account_unlocked',
+        ] as const;
+        for (const event of authEvents) {
+            context.hook(event, async (data: any) => {
+                await this.handleGenericEvent(event, data);
+            });
+        }
+
+        // Subscribe to authorization events
+        const authzEvents = [
+            'authz.permission_granted', 'authz.permission_revoked',
+            'authz.role_assigned', 'authz.role_removed',
+            'authz.role_created', 'authz.role_updated', 'authz.role_deleted',
+            'authz.policy_created', 'authz.policy_updated', 'authz.policy_deleted',
+        ] as const;
+        for (const event of authzEvents) {
+            context.hook(event, async (data: any) => {
+                await this.handleGenericEvent(event, data);
+            });
+        }
+
+        // Subscribe to system events
+        const systemEvents = [
+            'system.config_changed',
+            'system.plugin_installed', 'system.plugin_uninstalled',
+            'system.backup_created', 'system.backup_restored',
+            'system.integration_added', 'system.integration_removed',
+        ] as const;
+        for (const event of systemEvents) {
+            context.hook(event, async (data: any) => {
+                await this.handleGenericEvent(event, data);
+            });
+        }
+
+        // Subscribe to security events
+        const securityEvents = [
+            'security.access_denied', 'security.suspicious_activity',
+            'security.data_breach',
+            'security.api_key_created', 'security.api_key_revoked',
+        ] as const;
+        for (const event of securityEvents) {
+            context.hook(event, async (data: any) => {
+                await this.handleGenericEvent(event, data);
+            });
+        }
 
         // Subscribe to job events
         context.hook('job.enqueued', async (data: any) => {
@@ -315,6 +373,93 @@ export class AuditLogPlugin implements Plugin {
     }
 
     /**
+     * Handle generic events (auth, authz, system, security) and create audit logs
+     */
+    private async handleGenericEvent(event: string, data: any): Promise<void> {
+        if (!this.config.enabled) return;
+
+        const { userId, userName, ipAddress, userAgent, sessionId, resource, ...rest } = data;
+
+        const auditEntry: AuditLogEntry = {
+            id: this.generateId(),
+            timestamp: new Date().toISOString(),
+            eventType: event as AuditEventType,
+            userId,
+            userName,
+            ipAddress,
+            userAgent,
+            sessionId,
+            resource: resource || event,
+            action: event,
+            success: !event.includes('failed') && !event.includes('denied'),
+            metadata: rest,
+        };
+
+        await this.storage.logEvent(auditEntry);
+        await this.emitEvent('audit.event.recorded', auditEntry);
+
+        this.context?.logger.debug(`[Audit Log] Recorded ${event} event`);
+    }
+
+    /**
+     * Start periodic retention cleanup based on configured policy
+     */
+    private startRetentionCleanup(): void {
+        const retention = this.config.retention;
+        if (!retention?.enabled) return;
+
+        // Default cleanup interval: every hour
+        const intervalMs = 60 * 60 * 1000;
+
+        this.retentionTimer = setInterval(async () => {
+            await this.applyRetentionPolicy();
+        }, intervalMs);
+
+        // Run initial cleanup immediately
+        this.applyRetentionPolicy().catch(err => {
+            this.context?.logger.error('[Audit Log] Retention cleanup error:', err);
+        });
+
+        this.context?.logger.info('[Audit Log] Retention policy cleanup scheduled');
+    }
+
+    /**
+     * Apply retention policy: delete expired events based on configured thresholds.
+     * Per-event-type overrides are applied first, then default retention handles
+     * any remaining events not covered by specific overrides.
+     */
+    async applyRetentionPolicy(): Promise<number> {
+        const retention = this.config.retention;
+        if (!retention?.enabled) return 0;
+
+        let totalDeleted = 0;
+
+        // Apply per-event-type retention overrides first
+        const overriddenTypes = new Set<string>();
+        if (retention.eventRetention) {
+            for (const [eventType, days] of Object.entries(retention.eventRetention)) {
+                overriddenTypes.add(eventType);
+                const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+                const deleted = await this.storage.deleteExpiredEvents(cutoff, eventType);
+                totalDeleted += deleted;
+            }
+        }
+
+        // Apply default retention only to event types not covered by overrides
+        if (retention.defaultRetentionDays && retention.defaultRetentionDays > 0) {
+            const cutoff = new Date(Date.now() - retention.defaultRetentionDays * 24 * 60 * 60 * 1000).toISOString();
+            const deleted = await this.storage.deleteExpiredEvents(cutoff);
+            totalDeleted += deleted;
+        }
+
+        if (totalDeleted > 0) {
+            this.context?.logger.info(`[Audit Log] Retention cleanup: deleted ${totalDeleted} expired events`);
+        }
+
+        return totalDeleted;
+    }
+
+    /**
      * Query audit events
      */
     async queryEvents(options: AuditQueryOptions): Promise<AuditLogEntry[]> {
@@ -374,7 +519,34 @@ export class AuditLogPlugin implements Plugin {
             capabilities: {
                 services: ['audit-log'],
                 emits: ['audit.event.recorded'],
-                listens: ['data.create', 'data.update', 'data.delete', 'data.find', 'job.enqueued', 'job.started', 'job.completed', 'job.failed', 'job.retried', 'job.cancelled', 'job.scheduled'],
+                listens: [
+                    // Data events
+                    'data.create', 'data.update', 'data.delete', 'data.find',
+                    // Auth events
+                    'auth.login', 'auth.login_failed', 'auth.logout',
+                    'auth.session_created', 'auth.session_expired',
+                    'auth.password_reset', 'auth.password_changed',
+                    'auth.email_verified',
+                    'auth.mfa_enabled', 'auth.mfa_disabled',
+                    'auth.account_locked', 'auth.account_unlocked',
+                    // Authorization events
+                    'authz.permission_granted', 'authz.permission_revoked',
+                    'authz.role_assigned', 'authz.role_removed',
+                    'authz.role_created', 'authz.role_updated', 'authz.role_deleted',
+                    'authz.policy_created', 'authz.policy_updated', 'authz.policy_deleted',
+                    // System events
+                    'system.config_changed',
+                    'system.plugin_installed', 'system.plugin_uninstalled',
+                    'system.backup_created', 'system.backup_restored',
+                    'system.integration_added', 'system.integration_removed',
+                    // Security events
+                    'security.access_denied', 'security.suspicious_activity',
+                    'security.data_breach',
+                    'security.api_key_created', 'security.api_key_revoked',
+                    // Job events
+                    'job.enqueued', 'job.started', 'job.completed', 'job.failed',
+                    'job.retried', 'job.cancelled', 'job.scheduled',
+                ],
                 routes: [],
                 objects: [],
             },
@@ -393,7 +565,10 @@ export class AuditLogPlugin implements Plugin {
      * Cleanup and shutdown
      */
     async destroy(): Promise<void> {
-        // Could implement retention policy cleanup here
+        if (this.retentionTimer) {
+            clearInterval(this.retentionTimer);
+            this.retentionTimer = undefined;
+        }
         this.context?.logger.info('[Audit Log] Destroyed');
     }
 }

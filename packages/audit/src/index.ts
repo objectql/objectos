@@ -68,7 +68,9 @@ export type {
     FieldChange,
     AuditQueryOptions,
     AuditStorage,
+    AuditConfig,
     AuditEvent,
     AuditEventType,
+    AuditRetentionPolicy,
     ExtendedAuditEventType,
 } from './types.js';

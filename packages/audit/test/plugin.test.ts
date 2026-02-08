@@ -441,6 +441,26 @@ describe('Kernel Compliance', () => {
             expect(manifest.capabilities.listens).toContain('data.create');
             expect(manifest.security.handlesSensitiveData).toBe(true);
         });
+
+        it('should declare full event type coverage', () => {
+            const manifest = plugin.getManifest();
+            const listens = manifest.capabilities.listens!;
+            // Auth events
+            expect(listens).toContain('auth.login');
+            expect(listens).toContain('auth.logout');
+            expect(listens).toContain('auth.session_created');
+            expect(listens).toContain('auth.session_expired');
+            expect(listens).toContain('auth.password_changed');
+            // Authz events
+            expect(listens).toContain('authz.permission_granted');
+            expect(listens).toContain('authz.role_assigned');
+            // System events
+            expect(listens).toContain('system.config_changed');
+            expect(listens).toContain('system.plugin_installed');
+            // Security events
+            expect(listens).toContain('security.access_denied');
+            expect(listens).toContain('security.suspicious_activity');
+        });
     });
 
     describe('getStartupResult()', () => {
@@ -449,5 +469,169 @@ describe('Kernel Compliance', () => {
             expect(result.pluginName).toBe('@objectos/audit');
             expect(result.success).toBe(true);
         });
+    });
+});
+
+// ─── Auth/System/Security Event Coverage Tests ─────────────────────────────────
+
+describe('Full Event Type Coverage', () => {
+    it('should record auth events', async () => {
+        const customPlugin = new AuditLogPlugin({});
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        await triggerHook(mock.hooks, 'auth.login', {
+            userId: 'user123',
+            userName: 'John',
+            ipAddress: '192.168.1.1',
+        });
+
+        await triggerHook(mock.hooks, 'auth.logout', {
+            userId: 'user123',
+        });
+
+        const events = await api!.queryEvents({});
+        expect(events.length).toBe(2);
+        expect(events.some((e: any) => e.eventType === 'auth.login')).toBe(true);
+        expect(events.some((e: any) => e.eventType === 'auth.logout')).toBe(true);
+    });
+
+    it('should record security events', async () => {
+        const customPlugin = new AuditLogPlugin({});
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        await triggerHook(mock.hooks, 'security.access_denied', {
+            userId: 'user456',
+            resource: '/admin/settings',
+        });
+
+        const events = await api!.queryEvents({});
+        expect(events.length).toBe(1);
+        expect(events[0].eventType).toBe('security.access_denied');
+        expect(events[0].success).toBe(false);
+    });
+
+    it('should record system events', async () => {
+        const customPlugin = new AuditLogPlugin({});
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        await triggerHook(mock.hooks, 'system.config_changed', {
+            userId: 'admin',
+            resource: 'system.settings',
+        });
+
+        const events = await api!.queryEvents({});
+        expect(events.length).toBe(1);
+        expect(events[0].eventType).toBe('system.config_changed');
+    });
+
+    it('should record authz events', async () => {
+        const customPlugin = new AuditLogPlugin({});
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        await triggerHook(mock.hooks, 'authz.role_assigned', {
+            userId: 'admin',
+            resource: 'user:user123',
+            role: 'editor',
+        });
+
+        const events = await api!.queryEvents({});
+        expect(events.length).toBe(1);
+        expect(events[0].eventType).toBe('authz.role_assigned');
+    });
+});
+
+// ─── Retention Policy Tests ────────────────────────────────────────────────────
+
+describe('Retention Policy', () => {
+    it('should delete expired events based on default retention days', async () => {
+        const customPlugin = new AuditLogPlugin({
+            retention: {
+                enabled: true,
+                defaultRetentionDays: 30,
+            },
+        });
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        // Create an event with a timestamp 60 days ago
+        await triggerHook(mock.hooks, 'data.create', {
+            objectName: 'orders',
+            recordId: 'old-1',
+            userId: 'user123',
+        });
+
+        // Manually set the event timestamp to 60 days ago
+        const events = await api!.queryEvents({});
+        const oldDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
+        (events[0] as any).timestamp = oldDate;
+
+        // Create a recent event
+        await triggerHook(mock.hooks, 'data.create', {
+            objectName: 'orders',
+            recordId: 'new-1',
+            userId: 'user123',
+        });
+
+        // Apply retention policy
+        const deleted = await customPlugin.applyRetentionPolicy();
+        expect(deleted).toBe(1);
+
+        // Verify only the recent event remains
+        const remaining = await api!.queryEvents({});
+        expect(remaining.length).toBe(1);
+    });
+
+    it('should not delete events when retention is disabled', async () => {
+        const customPlugin = new AuditLogPlugin({
+            retention: {
+                enabled: false,
+                defaultRetentionDays: 1,
+            },
+        });
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+
+        const api = getAuditLogAPI(mock.kernel);
+
+        await triggerHook(mock.hooks, 'data.create', {
+            objectName: 'orders',
+            recordId: '1',
+            userId: 'user123',
+        });
+
+        const deleted = await customPlugin.applyRetentionPolicy();
+        expect(deleted).toBe(0);
+
+        const events = await api!.queryEvents({});
+        expect(events.length).toBe(1);
+    });
+
+    it('should clean up retention timer on destroy', async () => {
+        const customPlugin = new AuditLogPlugin({
+            retention: {
+                enabled: true,
+                defaultRetentionDays: 30,
+            },
+        });
+        const mock = createMockContext();
+        await customPlugin.init(mock.context);
+        await customPlugin.start(mock.context);
+
+        // Destroy should not throw
+        await customPlugin.destroy();
     });
 });

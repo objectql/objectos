@@ -5,6 +5,8 @@
  * with support for multiple database backends (PostgreSQL, MongoDB, SQLite)
  */
 
+import type { AuthSecurityPolicies } from './types.js';
+
 let authInstance: any;
 let dbConnection: any; // Store database connection for cleanup
 
@@ -59,6 +61,10 @@ export interface BetterAuthConfig {
     // Two-factor authentication
     twoFactorEnabled?: boolean;
     twoFactorIssuer?: string;
+    /** Security policies for password and session management */
+    securityPolicies?: AuthSecurityPolicies;
+    /** Session lifecycle hook callback */
+    onSessionEvent?: (event: string, data: Record<string, unknown>) => void | Promise<void>;
     /** @deprecated Use google.clientId / google.clientSecret instead */
     googleClientId?: string;
     /** @deprecated */
@@ -312,6 +318,9 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
 
         // Configure Better-Auth with organization and role plugins
         // basePath must match the ObjectStack Hono route: /api/v1/auth/*
+        const passwordPolicy = config.securityPolicies?.password;
+        const sessionPolicy = config.securityPolicies?.session;
+
         authInstance = betterAuth({
             database: database,
             baseURL: config.baseURL || process.env.BETTER_AUTH_URL || "http://localhost:5320",
@@ -322,7 +331,18 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                 "http://[::1]:*"
             ],
             emailAndPassword: {
-                enabled: true
+                enabled: true,
+                minPasswordLength: passwordPolicy?.minLength ?? 8,
+                maxPasswordLength: passwordPolicy?.maxLength ?? 128,
+                autoSignIn: true,
+            },
+            session: {
+                expiresIn: sessionPolicy?.maxDurationMinutes
+                    ? sessionPolicy.maxDurationMinutes * 60
+                    : 60 * 60 * 24 * 7, // default: 7 days in seconds
+                updateAge: sessionPolicy?.idleTimeoutMinutes
+                    ? sessionPolicy.idleTimeoutMinutes * 60
+                    : 60 * 60 * 24, // default: 1 day in seconds
             },
             user: {
                 additionalFields: {
@@ -380,7 +400,18 @@ export const getBetterAuth = async (config: BetterAuthConfig = {}) => {
                             }
                         }
                     }
-                }
+                },
+                session: {
+                    create: {
+                        after: async (session) => {
+                            config.onSessionEvent?.('auth.session_created', {
+                                sessionId: session.id,
+                                userId: session.userId,
+                                timestamp: new Date().toISOString(),
+                            });
+                        },
+                    },
+                },
             },
             plugins: plugins,
         });
