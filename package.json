@@ -71,6 +71,7 @@
   },
   "version": "0.1.0",
   "dependencies": {
+    "@hono/node-server": "^1.19.0",
     "@objectos/audit": "workspace:*",
     "@objectos/auth": "workspace:*",
     "@objectos/automation": "workspace:*",
@@ -87,8 +88,10 @@
     "@objectql/driver-mongo": "^4.2.0",
     "@objectql/driver-sql": "^4.2.0",
     "@objectql/platform-node": "^4.2.0",
+    "@objectstack/runtime": "1.1.0",
     "@objectstack/spec": "1.1.0",
     "build": "^0.1.4",
+    "hono": "^4.11.0",
     "pino": "^10.3.0",
     "pino-pretty": "^13.1.3"
   }
