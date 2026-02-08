@@ -1,145 +1,128 @@
 /**
  * Vercel Serverless Function — ObjectOS API
  *
- * Bootstraps the ObjectStack kernel with all ObjectOS plugins
- * and exposes the Hono app as a Vercel Node.js serverless function.
+ * Mirrors the bootstrap sequence of `objectstack serve` (from @objectstack/cli)
+ * so that all platform-level base plugins are loaded alongside the user plugins
+ * defined in objectstack.config.ts.
  *
- * The kernel is initialized once on cold-start and reused for
- * subsequent warm invocations.
+ * The kernel is initialized once on cold-start and reused for warm invocations.
  */
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import { handle } from '@hono/node-server/vercel';
-import type { Plugin, PluginContext } from '@objectstack/runtime';
+import { cors } from 'hono/cors';
 
 /* ------------------------------------------------------------------ */
-/*  Hono App — created at module level so plugins can register routes */
-/* ------------------------------------------------------------------ */
-const app = new Hono();
-
-// Global CORS
-app.use(
-  '/api/v1/*',
-  cors({
-    origin: (origin) => origin ?? '*',
-    credentials: true,
-    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
-
-// Health-check (always available, even before kernel boots)
-app.get('/api/v1/health', (c) =>
-  c.json({
-    status: 'ok',
-    version: '0.1.0',
-    environment: 'vercel',
-    timestamp: new Date().toISOString(),
-  }),
-);
-
-/* ------------------------------------------------------------------ */
-/*  Kernel bootstrap (runs once per cold-start)                        */
+/*  Bootstrap (runs once per cold-start)                               */
 /* ------------------------------------------------------------------ */
 let bootstrapPromise: Promise<void> | null = null;
-
-/**
- * Minimal plugin that exposes our Hono app as the `http.server` service.
- * ObjectOS plugins call `context.getService('http.server').getRawApp()`
- * to register their HTTP routes.
- *
- * Only `getRawApp()` and `app` are used by ObjectOS plugins; the
- * remaining stubs satisfy the IHttpServer shape expected by the kernel.
- */
-function createHttpServicePlugin(honoApp: Hono): Plugin {
-  return {
-    name: 'vercel-http-service',
-    version: '1.0.0',
-    dependencies: [],
-    async init(context: PluginContext) {
-      context.registerService('http.server', {
-        getRawApp: () => honoApp,
-        app: honoApp,
-        getPort: () => 0,
-        get: () => {},
-        post: () => {},
-        put: () => {},
-        delete: () => {},
-        patch: () => {},
-        use: () => {},
-        listen: async () => {},
-        close: async () => {},
-        getRoutes: () => new Map(),
-        getMiddlewares: () => [],
-      });
-    },
-    async start() {},
-    async destroy() {},
-  } as Plugin;
-}
+let honoApp: import('hono').Hono | null = null;
 
 async function bootstrapKernel(): Promise<void> {
   try {
-    const { ObjectKernel } = await import('@objectstack/runtime');
-    const kernel = new ObjectKernel();
+    // ── 1. Runtime & HonoHttpServer ────────────────────────────
+    const { Runtime, AppPlugin, DriverPlugin } = await import('@objectstack/runtime');
+    const { HonoHttpServer } = await import('@objectstack/plugin-hono-server');
 
-    // 1. Register the HTTP service shim first so it is available for
-    //    all subsequent plugin init/start phases.
-    kernel.use(createHttpServicePlugin(app));
+    // Create a HonoHttpServer (port 0 = never listen) and pass it
+    // as the `server` option so Runtime registers it as 'http.server'.
+    const httpServer = new HonoHttpServer(0);
+    honoApp = httpServer.getRawApp();
 
-    // 2. Import and register ObjectOS plugins (same order as objectstack.config.ts)
-    const [
-      { MetricsPlugin },
-      { CachePlugin },
-      { StoragePlugin },
-      { BetterAuthPlugin },
-      { PermissionsPlugin },
-      { AuditLogPlugin },
-      { WorkflowPlugin },
-      { AutomationPlugin },
-      { JobsPlugin },
-      { NotificationPlugin },
-      { I18nPlugin },
-    ] = await Promise.all([
-      import('@objectos/metrics'),
-      import('@objectos/cache'),
-      import('@objectos/storage'),
-      import('@objectos/auth'),
-      import('@objectos/permissions'),
-      import('@objectos/audit'),
-      import('@objectos/workflow'),
-      import('@objectos/automation'),
-      import('@objectos/jobs'),
-      import('@objectos/notification'),
-      import('@objectos/i18n'),
-    ]);
+    // Global CORS on API routes
+    honoApp.use(
+      '/api/v1/*',
+      cors({
+        origin: (origin) => origin ?? '*',
+        credentials: true,
+        allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['Content-Type', 'Authorization'],
+      }),
+    );
 
-    // Foundation
-    kernel.use(new MetricsPlugin());
-    kernel.use(new CachePlugin());
-    kernel.use(new StoragePlugin());
+    // Health-check (always available)
+    honoApp.get('/api/v1/health', (c) =>
+      c.json({
+        status: 'ok',
+        version: '0.1.0',
+        environment: 'vercel',
+        timestamp: new Date().toISOString(),
+      }),
+    );
 
-    // Core
-    kernel.use(new BetterAuthPlugin());
-    kernel.use(new PermissionsPlugin());
-    kernel.use(new AuditLogPlugin());
+    const runtime = new Runtime({
+      server: httpServer,
+      kernel: { logger: { level: 'info' } },
+    });
+    const kernel = runtime.getKernel();
 
-    // Logic
-    kernel.use(new WorkflowPlugin());
-    kernel.use(new AutomationPlugin());
-    kernel.use(new JobsPlugin());
+    // ── 2. Load objectstack.config.ts ──────────────────────────
+    // Import the config directly (bundled by Vercel alongside this file).
+    const configModule = await import('../objectstack.config.js');
+    const config = configModule.default || configModule;
 
-    // Services
-    kernel.use(new NotificationPlugin());
-    kernel.use(new I18nPlugin());
+    // ── 3. Platform plugins (same order as @objectstack/cli serve) ──
 
-    await kernel.bootstrap();
+    // ObjectQL — register if config.objects is defined
+    const plugins = config.plugins || [];
+    const hasObjectQL = plugins.some(
+      (p: any) => p.name?.includes('objectql') || p.constructor?.name?.includes('ObjectQL'),
+    );
+    if (config.objects && !hasObjectQL) {
+      try {
+        const { ObjectQLPlugin } = await import('@objectstack/objectql');
+        await kernel.use(new ObjectQLPlugin());
+      } catch (_e) {
+        console.debug('[ObjectOS] ObjectQLPlugin not available, skipping');
+      }
+    }
+
+    // InMemoryDriver — for demo / serverless where no external DB is configured
+    const hasDriver = plugins.some(
+      (p: any) => p.name?.includes('driver') || p.constructor?.name?.includes('Driver'),
+    );
+    if (!hasDriver && config.objects) {
+      try {
+        const { InMemoryDriver } = await import('@objectstack/driver-memory');
+        await kernel.use(new DriverPlugin(new InMemoryDriver()));
+      } catch (_e) {
+        console.debug('[ObjectOS] InMemoryDriver not available, skipping');
+      }
+    }
+
+    // AppPlugin — if objects / manifest / apps are declared
+    if (config.objects || config.manifest || config.apps) {
+      try {
+        await kernel.use(new AppPlugin(config));
+      } catch (_e) {
+        console.debug('[ObjectOS] AppPlugin not available, skipping');
+      }
+    }
+
+    // ── 4. User plugins from config.plugins ────────────────────
+    for (const plugin of plugins) {
+      try {
+        await kernel.use(plugin);
+      } catch (e: any) {
+        console.warn(`[ObjectOS] Failed to load plugin: ${e?.message}`);
+      }
+    }
+
+    // NOTE: We intentionally do NOT register HonoServerPlugin here.
+    // The HonoHttpServer was already provided to Runtime via the
+    // `server` option and will NOT call listen() in serverless mode.
+
+    // ── 5. Start ───────────────────────────────────────────────
+    await runtime.start();
     console.log('[ObjectOS] Kernel bootstrapped on Vercel');
   } catch (error) {
     console.error('[ObjectOS] Kernel bootstrap failed:', error);
 
-    // Register a catch-all error route so callers get a meaningful response
-    app.all('/api/v1/*', (c) =>
+    // Lazy-import Hono only for the error fallback if not yet created
+    if (!honoApp) {
+      const { Hono } = await import('hono');
+      honoApp = new Hono();
+    }
+
+    honoApp.all('/api/v1/*', (c) =>
       c.json(
         {
           success: false,
@@ -152,16 +135,24 @@ async function bootstrapKernel(): Promise<void> {
   }
 }
 
-// Middleware: ensure kernel is ready before handling requests
-app.use('/api/v1/*', async (_c, next) => {
+/* ------------------------------------------------------------------ */
+/*  Export Vercel handler                                               */
+/* ------------------------------------------------------------------ */
+export default async function handler(
+  req: import('http').IncomingMessage,
+  res: import('http').ServerResponse,
+) {
   if (!bootstrapPromise) {
     bootstrapPromise = bootstrapKernel();
   }
   await bootstrapPromise;
-  await next();
-});
 
-/* ------------------------------------------------------------------ */
-/*  Export Vercel handler                                               */
-/* ------------------------------------------------------------------ */
-export default handle(app);
+  if (!honoApp) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: false, error: 'Server not initialized' }));
+    return;
+  }
+
+  // Delegate to the Hono app via @hono/node-server/vercel adapter
+  return handle(honoApp)(req, res);
+}
