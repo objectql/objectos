@@ -179,7 +179,7 @@ export class MetricsPlugin implements Plugin {
                                         name: service.name || pluginName,
                                         version: service.version || '0.1.0',
                                         status: health.status || 'unknown',
-                                        uptime: health.metrics?.uptime || 0,
+                                        uptime: health.metrics?.uptime ?? 0,
                                         health,
                                         manifest,
                                     });

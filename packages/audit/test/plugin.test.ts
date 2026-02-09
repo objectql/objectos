@@ -438,6 +438,9 @@ describe('Kernel Compliance', () => {
             expect(manifest.capabilities).toBeDefined();
             expect(manifest.security).toBeDefined();
             expect(manifest.security.pluginId).toBe('audit');
+            expect(manifest.security.trustLevel).toBe('trusted');
+            expect(manifest.security.permissions).toEqual({ permissions: [] });
+            expect(manifest.security.sandbox).toEqual({});
         });
     });
 
