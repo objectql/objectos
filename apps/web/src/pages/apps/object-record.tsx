@@ -7,9 +7,11 @@
 
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useRecord } from '@/hooks/use-records';
 import { useWorkflowStatus, useActivities } from '@/hooks/use-workflow';
+import { objectStackClient } from '@/lib/api';
 import { FieldRenderer } from '@/components/records/FieldRenderer';
 import { WorkflowStatusBadge } from '@/components/workflow/WorkflowStatusBadge';
 import { ApprovalActions } from '@/components/workflow/ApprovalActions';
@@ -21,6 +23,7 @@ import { resolveFields } from '@/types/metadata';
 
 export default function ObjectRecordPage() {
   const { appId, objectName, recordId } = useParams();
+  const queryClient = useQueryClient();
 
   const { data: objectDef, isLoading: metaLoading } = useObjectDefinition(objectName);
   const { data: record, isLoading: dataLoading } = useRecord({ objectName, recordId });
@@ -63,9 +66,19 @@ export default function ObjectRecordPage() {
   const editableFields = allFields.filter((f) => !f.readonly);
   const readonlyFields = allFields.filter((f) => f.readonly);
 
-  const handleTransition = (transition: { name: string }) => {
-    // TODO: Call real API to execute workflow transition
-    console.info(`Executing transition: ${transition.name} on record ${recordId}`);
+  const handleTransition = async (transition: { name: string }) => {
+    if (!objectName || !recordId) return;
+    try {
+      await objectStackClient.data.update(objectName, recordId, {
+        _workflow_transition: transition.name,
+      });
+      // Refresh workflow status and record data after transition
+      await queryClient.invalidateQueries({ queryKey: ['workflow', 'status', recordId] });
+      await queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
+      await queryClient.invalidateQueries({ queryKey: ['activities', recordId] });
+    } catch {
+      console.error(`Failed to execute transition: ${transition.name} on record ${recordId}`);
+    }
   };
 
   return (
