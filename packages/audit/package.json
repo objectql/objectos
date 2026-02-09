@@ -11,8 +11,8 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^1.1.0",
-    "@objectstack/spec": "1.1.0"
+    "@objectstack/runtime": "^2.0.0",
+    "@objectstack/spec": "2.0.0"
   },
   "devDependencies": {
     "@objectos/permissions": "workspace:^",

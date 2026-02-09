@@ -4,9 +4,9 @@ const taskHook: Hook = {
   name: 'task_logic',
   object: 'task',
   events: ['beforeInsert', 'afterUpdate'],
-  handler: async (ctx: HookContext) => {
+  handler: (async (ctx: HookContext) => {
     if (ctx.event === 'beforeInsert') {
-      const { input } = ctx;
+      const input = ctx.input as Record<string, unknown>;
       // Default priority
       if (!input.priority) {
         input.priority = 'normal';
@@ -16,7 +16,7 @@ const taskHook: Hook = {
         input.status = 'not_started';
       }
       // Validation
-      if (input.subject && input.subject.includes('spam')) {
+      if (input.subject && typeof input.subject === 'string' && input.subject.includes('spam')) {
         throw new Error('Spam tasks are not allowed');
       }
     }
@@ -25,7 +25,6 @@ const taskHook: Hook = {
       // Check if completed
       if (ctx.input.status === 'completed' && ctx.previous && ctx.previous.status !== 'completed') {
         console.log(`Task ${ctx.id} completed by ${ctx.session?.userId || 'unknown'}`);
-        // Could trigger notifications or integrations here
       }
       
       // Check if task became overdue
@@ -33,7 +32,7 @@ const taskHook: Hook = {
         console.log(`Task ${ctx.id} is now overdue`);
       }
     }
-  }
+  }) as (...args: unknown[]) => unknown
 };
 
 export default taskHook;

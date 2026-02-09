@@ -111,12 +111,16 @@ export interface PermissionSet {
     label?: string;
     /** Description */
     description?: string;
+    /** Object this permission set applies to */
+    objectName?: string;
     /** System permission set — cannot be deleted */
     isSystem?: boolean;
     /** Active status */
     isActive?: boolean;
     /** Scoped to a specific profile (optional) */
     profileName?: string;
+    /** Profile-based object permissions keyed by profile name */
+    profiles?: Record<string, ObjectPermissions>;
     /** Object-level permissions keyed by object name */
     objectPermissions?: Record<string, ObjectPermission>;
     /** Field-level permissions keyed by "objectName.fieldName" */
@@ -173,6 +177,25 @@ export interface ObjectPermission {
     modifyAll?: boolean;
 }
 
+/**
+ * ObjectPermissions — Profile-level object permissions.
+ * Used within a PermissionSet to define what a profile can do on an object.
+ */
+export interface ObjectPermissions {
+    /** The API name of the object */
+    objectName?: string;
+    /** Allow read access */
+    allowRead?: boolean;
+    /** Allow create access */
+    allowCreate?: boolean;
+    /** Allow edit access */
+    allowEdit?: boolean;
+    /** Allow delete access */
+    allowDelete?: boolean;
+    /** Record-level view filters (template variables supported) */
+    viewFilters?: Record<string, any>;
+}
+
 // ─── Field Permission ──────────────────────────────────────────────────────────
 
 /**
@@ -192,6 +215,10 @@ export interface FieldPermission {
     read: boolean;
     /** Whether the field is editable (requires read=true) */
     update: boolean;
+    /** Profiles that can view this field */
+    visibleTo?: string[];
+    /** Profiles that can edit this field */
+    editableBy?: string[];
 }
 
 // ─── Organization-Wide Defaults ────────────────────────────────────────────────
@@ -318,7 +345,9 @@ export interface PermissionContext {
     /** User ID */
     userId: string;
     /** User's profile name */
-    profileName: string;
+    profileName?: string;
+    /** User's profiles (array of profile names) */
+    profiles: string[];
     /** User's role name */
     roleName?: string;
     /** Names of all assigned permission sets */

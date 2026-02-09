@@ -17,10 +17,10 @@
     "test": "objectstack test"
   },
   "dependencies": {
-    "@objectstack/spec": "workspace:*"
+    "@objectstack/spec": "2.0.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@objectstack/cli": "workspace:*"
+    "@objectstack/cli": "^2.0.0"
   }
 }
