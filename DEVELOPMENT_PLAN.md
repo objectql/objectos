@@ -297,12 +297,12 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 | Dependency | Version | Role | Consumers |
 |-----------|---------|------|-----------|
-| `@objectstack/runtime` | 1.1.0 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
-| `@objectstack/spec` | 1.1.0 | Protocol contracts — Zod schemas, TypeScript interfaces | audit, automation, auth, jobs, permissions, workflow, browser |
-| `@objectstack/cli` | 1.1.0 | Server bootstrap — `objectstack serve` command | Root devDependency |
-| `@objectstack/objectql` | 1.1.0 | ObjectQL plugin for metadata loading | Root dependency |
-| `@objectstack/driver-memory` | 1.1.0 | In-memory data driver for development/serverless | Root dependency |
-| `@objectstack/plugin-hono-server` | 1.1.0 | Hono HTTP server plugin | Root dependency |
+| `@objectstack/runtime` | 2.0.1 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
+| `@objectstack/spec` | 2.0.1 | Protocol contracts — Zod schemas, TypeScript interfaces | audit, automation, auth, jobs, permissions, workflow, browser |
+| `@objectstack/cli` | 2.0.1 | Server bootstrap — `objectstack serve` command | Root devDependency |
+| `@objectstack/objectql` | 2.0.1 | ObjectQL plugin for metadata loading | Root dependency |
+| `@objectstack/driver-memory` | 2.0.1 | In-memory data driver for development/serverless | Root dependency |
+| `@objectstack/plugin-hono-server` | 2.0.1 | Hono HTTP server plugin | Root dependency |
 | `@objectql/core` | 4.2.0 | Data engine — metadata registry, query compiler | Root dependency |
 | `@objectql/driver-sql` | 4.2.0 | SQL database driver (PostgreSQL, MySQL, SQLite) | Root dependency |
 | `@objectql/driver-mongo` | 4.2.0 | MongoDB database driver | Root dependency |
@@ -364,7 +364,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Metadata Registry | ✅ | ✅ YAML glob loading | `packages/*/objects/*.object.yml` |
 | SQL Driver | ✅ | ✅ PostgreSQL, MySQL, SQLite | `@objectql/driver-sql` 4.2.0 |
 | MongoDB Driver | ✅ | ✅ | `@objectql/driver-mongo` 4.2.0 |
-| In-Memory Driver | ✅ | ✅ for dev/serverless | `@objectstack/driver-memory` 1.1.0 |
+| In-Memory Driver | ✅ | ✅ for dev/serverless | `@objectstack/driver-memory` 2.0.1 |
 | Relationship Resolution | ✅ | 🟡 | Lookup/master-detail defined in schema |
 | Query Compilation | ✅ | ✅ | Filter groups, field selection, sorting, pagination |
 | Schema Sync | ✅ | 🟡 | Auto-create tables; migration tooling needed |
@@ -545,7 +545,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Plugin Interface | All plugins implement `Plugin` from `@objectstack/runtime` | ✅ |
 | Runtime Dependency | All plugins declare `@objectstack/runtime` as dependency | ✅ |
 | Spec Dependency | Packages importing from `@objectstack/spec` declare it | ✅ |
-| Version Consistency | `@objectstack/spec: 1.0.0`, `@objectstack/runtime: ^1.0.0` | ✅ |
+| Version Consistency | `@objectstack/spec: 2.0.1`, `@objectstack/runtime: ^2.0.1` | ✅ |
 | Lifecycle Methods | All plugins implement `init()`, `start()`, `destroy()` | ✅ |
 
 ### Automation & Workflow Spec Migration

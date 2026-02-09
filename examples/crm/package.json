@@ -17,10 +17,10 @@
     "test": "objectstack test"
   },
   "dependencies": {
-    "@objectstack/spec": "2.0.0"
+    "@objectstack/spec": "2.0.1"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@objectstack/cli": "^2.0.0"
+    "@objectstack/cli": "^2.0.1"
   }
 }
