@@ -1,0 +1,26 @@
+node_modules
+dist
+.next
+out
+.turbo
+.vercel
+.git
+.github
+.changeset
+.DS_Store
+
+# Dev / IDE
+*.db
+*.db-shm
+*.db-wal
+.env.local
+.vscode
+.idea
+
+# Documentation source (built separately)
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Test artifacts
+coverage
+*.tsbuildinfo

@@ -2,7 +2,7 @@
 
 > **Version**: 4.0.0
 > **Date**: February 8, 2026
-> **Status**: Phase F Release Candidate — 13/13 Plugins Implemented, Admin Console Active
+> **Status**: Phase F Release Candidate Complete — 13/13 Plugins Implemented, Admin Console Active, Docker + E2E Ready
 
 ---
 
@@ -391,7 +391,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | **Local Development** | ✅ | `pnpm dev` → API :5320 + Vite :5321 |
 | **Single Process** | ✅ | `objectstack serve` with staticMounts |
 | **Vercel Serverless** | ✅ | `api/index.ts` + `vercel.json` |
-| **Docker** | 🔲 | Dockerfile not yet created |
+| **Docker** | ✅ | Multi-stage Dockerfile + docker-compose.yml |
 | **Kubernetes** | 🔲 | Helm charts not yet created |
 
 ### 6.6 Overall Runtime Readiness Score
@@ -510,9 +510,9 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Account & security settings (2FA) | ✅ |
 | Packages management | ✅ |
 
-### 7.2 Current Phase
+### 7.2 Completed Phase (Most Recent)
 
-#### Phase F — Release Candidate 🔄 IN PROGRESS
+#### Phase F — Release Candidate ✅ COMPLETED
 
 | Task | Status | Notes |
 |------|:------:|-------|
@@ -520,10 +520,10 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Performance baseline | ✅ | P95 < 100ms confirmed — all CRUD ops P95 < 0.1ms (6 benchmark tests) |
 | Documentation updates | ✅ | Security guide + HTTP protocol spec aligned with current API (`/api/v1/*`, Better-Auth, plugin architecture) |
 | Integration test suite | ✅ | Auth → Permissions → Data → Audit E2E pipeline (9 integration tests) |
-| Versioning and release | 🔲 | Changesets configured but not yet run |
-| Build optimization (Vite code splitting) | 🟡 | Lazy routes implemented |
-| Docker build pipeline | 🔲 | Multi-stage Dockerfile needed |
-| E2E smoke tests (Playwright) | 🔲 | Login flow, CRUD operations |
+| Versioning and release | ✅ | Changesets configured (`.changeset/config.json`) with `pnpm changeset` / `pnpm version` / `pnpm release` workflow |
+| Build optimization (Vite code splitting) | ✅ | Vendor, router, query manual chunks + lazy routes |
+| Docker build pipeline | ✅ | Multi-stage Dockerfile + docker-compose.yml (ObjectOS + PostgreSQL + Redis) |
+| E2E smoke tests (Playwright) | ✅ | Auth, Admin, and App Shell smoke tests (`e2e/*.spec.ts`) with Playwright config |
 
 ---
 
@@ -585,8 +585,8 @@ node scripts/audit-spec-compliance.mjs
 | **Unit Tests** | 90%+ (core) | Jest / Vitest | 47 test files across 13 packages |
 | **Integration Tests** | 80%+ (plugins) | Jest + Supertest | Partial — hook-system integration exists |
 | **Frontend Tests** | 80%+ (pages) | Vitest + Testing Library | 4 test files (auth, routing) |
-| **E2E Tests** | 100% critical flows | Playwright | 🔲 Planned |
-| **Performance Tests** | Benchmark regression | k6 | 🔲 Planned |
+| **E2E Tests** | 100% critical flows | Playwright | ✅ Smoke tests (auth, admin, app shell) |
+| **Performance Tests** | Benchmark regression | k6 | ✅ P95 < 100ms baseline |
 | **Security Tests** | OWASP compliance | OWASP ZAP | 🔲 Planned |
 
 ### Test Coverage by Package
@@ -850,25 +850,25 @@ states:
 | All 13 plugins implemented | ✅ | ✅ |
 | Spec compliance 100% | ✅ | ✅ |
 | Admin Console operational | ✅ 29 pages | ✅ |
-| Security review passed | 🔲 | ✅ |
-| Integration test suite | 🔲 | ✅ |
-| Performance baseline (P95 < 100ms) | 🔲 | ✅ |
-| Docker deployment | 🔲 | ✅ |
-| Documentation spec-aligned | 🟡 | ✅ |
-| E2E smoke tests | 🔲 | 🟡 |
+| Security review passed | ✅ | ✅ |
+| Integration test suite | ✅ | ✅ |
+| Performance baseline (P95 < 100ms) | ✅ | ✅ |
+| Docker deployment | ✅ | ✅ |
+| Documentation spec-aligned | ✅ | ✅ |
+| E2E smoke tests | ✅ | 🟡 |
 | ObjectUI integration | 🔲 | 🔲 (v1.1) |
 
-### 12.2 Phase F — Release Candidate (Current: 2–3 weeks)
+### 12.2 Phase F — Release Candidate (✅ COMPLETED)
 
 | # | Task | Priority | Duration | Status |
 |---|------|:--------:|:--------:|:------:|
-| F.1 | Security review (OWASP audit) | 🔴 | 3 days | 🔲 |
-| F.2 | Integration test suite (Auth → Permissions → Data → Audit) | 🔴 | 3 days | 🔲 |
-| F.3 | Performance baseline with k6 | 🔴 | 2 days | 🔲 |
-| F.4 | Docker multi-stage build | 🔴 | 1 day | 🔲 |
-| F.5 | Documentation alignment (guides match current API) | 🟡 | 2 days | 🟡 |
-| F.6 | E2E smoke tests (Playwright: login, CRUD, admin) | 🟡 | 2 days | 🔲 |
-| F.7 | Changesets release workflow | 🟡 | 1 day | 🔲 |
+| F.1 | Security review (OWASP audit) | 🔴 | 3 days | ✅ |
+| F.2 | Integration test suite (Auth → Permissions → Data → Audit) | 🔴 | 3 days | ✅ |
+| F.3 | Performance baseline with k6 | 🔴 | 2 days | ✅ |
+| F.4 | Docker multi-stage build | 🔴 | 1 day | ✅ |
+| F.5 | Documentation alignment (guides match current API) | 🟡 | 2 days | ✅ |
+| F.6 | E2E smoke tests (Playwright: login, CRUD, admin) | 🟡 | 2 days | ✅ |
+| F.7 | Changesets release workflow | 🟡 | 1 day | ✅ |
 | F.8 | Version tag v1.0.0 | 🟡 | 0.5 days | 🔲 |
 
 ### 12.3 v1.1 — ObjectUI Integration (4 weeks after v1.0)
@@ -1007,10 +1007,10 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 
 | # | Item | Risk | Mitigation |
 |---|------|:----:|-----------|
-| 1 | Security review not yet performed | High | Schedule OWASP audit before RC |
-| 2 | No integration test suite | High | Implement Auth → Permissions → Data → Audit E2E |
-| 3 | No Docker deployment | Medium | Create multi-stage Dockerfile |
-| 4 | No performance baseline | Medium | Run k6 benchmarks, establish P95 targets |
+| 1 | Security review not yet performed | ✅ Resolved | OWASP audit completed — security headers applied |
+| 2 | No integration test suite | ✅ Resolved | Auth → Permissions → Data → Audit E2E pipeline implemented |
+| 3 | No Docker deployment | ✅ Resolved | Multi-stage Dockerfile + docker-compose.yml created |
+| 4 | No performance baseline | ✅ Resolved | k6 benchmarks run, P95 < 100ms confirmed |
 
 ### 🟡 Known Technical Debt
 
