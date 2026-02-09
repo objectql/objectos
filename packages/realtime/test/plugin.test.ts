@@ -110,7 +110,7 @@ describe('Realtime Plugin', () => {
             await plugin.init(mockContext);
 
             expect(mockContext.registerService).toHaveBeenCalledWith(
-                'websocket-server',
+                'realtime',
                 expect.objectContaining({
                     broadcast: expect.any(Function),
                     updatePresence: expect.any(Function),
@@ -131,7 +131,7 @@ describe('Realtime Plugin', () => {
             );
 
             // Verify server is accessible via the registered service
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             expect(service.getServer()).toBeDefined();
         });
 
@@ -196,7 +196,7 @@ describe('Realtime Plugin', () => {
             // Wait for the close event to propagate
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             const wss = service.getServer() as WebSocketServer;
             expect(wss.clients.size).toBe(0);
         });
@@ -318,7 +318,7 @@ describe('Realtime Plugin', () => {
             await waitForMessage(client); // ack
 
             // Broadcast via service
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.broadcast('user.created', { name: 'John', email: 'john@test.com' });
 
             const event = await waitForMessage(client);
@@ -339,7 +339,7 @@ describe('Realtime Plugin', () => {
             await waitForMessage(client); // ack
 
             // Broadcast an order event
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.broadcast('order.created', { orderId: '123' });
 
             // Should NOT receive anything (use timeout to verify)
@@ -355,7 +355,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.broadcast('user.updated', { id: '1', name: 'Jane' });
 
             const event = await waitForMessage(client);
@@ -372,7 +372,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.broadcast('anything.goes', { data: true });
 
             const event = await waitForMessage(client);
@@ -392,7 +392,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             // Should match
             service.broadcast('record.updated', { name: 'Acme' }, { object: 'Account' });
@@ -424,7 +424,7 @@ describe('Realtime Plugin', () => {
             await waitForMessage(client); // ack
 
             // Broadcast should not reach client
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.broadcast('user.created', { name: 'Test' });
 
             await expect(waitForMessage(client, 300)).rejects.toThrow('Message timeout');
@@ -459,7 +459,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             // Should match
             service.broadcast('order.updated', { status: 'paid', amount: 100 });
@@ -484,7 +484,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             // Should match (amount > 100)
             service.broadcast('order.created', { amount: 200 });
@@ -509,7 +509,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             service.broadcast('user.login', { role: 'admin' });
             const event = await waitForMessage(client);
@@ -532,7 +532,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             service.broadcast('log.entry', { message: 'Critical error occurred' });
             const event = await waitForMessage(client);
@@ -555,7 +555,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             service.broadcast('email.sent', { to: 'user@company.com' });
             const event = await waitForMessage(client);
@@ -583,7 +583,7 @@ describe('Realtime Plugin', () => {
             }));
             await waitForMessage(client); // ack
 
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
 
             // Both conditions met
             service.broadcast('order.updated', { status: 'paid', amount: 150 });
@@ -658,7 +658,7 @@ describe('Realtime Plugin', () => {
         });
 
         it('should broadcast presence via service API', async () => {
-            const service = mockKernel.services.get('websocket-server');
+            const service = mockKernel.services.get('realtime');
             service.updatePresence('user-99', { status: 'busy' }, { page: '/dashboard' });
 
             // Both clients should receive presence update
@@ -856,7 +856,7 @@ describe('Kernel Compliance', () => {
             expect(report.status).toBe('healthy');
             expect(report.metrics?.uptime).toBeGreaterThanOrEqual(0);
             expect(report.checks).toHaveLength(1);
-            expect(report.checks![0].name).toBe('websocket-server');
+            expect(report.checks![0].name).toBe('realtime');
             expect(report.timestamp).toBeDefined();
         });
     });
