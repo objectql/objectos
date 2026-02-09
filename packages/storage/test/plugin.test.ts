@@ -72,7 +72,7 @@ describe('Storage Plugin', () => {
         it('should initialize successfully', async () => {
             await plugin.init(mockContext);
 
-            expect(mockContext.registerService).toHaveBeenCalledWith('storage', plugin);
+            expect(mockContext.registerService).toHaveBeenCalledWith('file-storage', plugin);
             expect(mockContext.logger.info).toHaveBeenCalledWith(
                 expect.stringContaining('Initialized successfully')
             );

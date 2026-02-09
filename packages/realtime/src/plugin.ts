@@ -117,7 +117,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
       startedAt = Date.now();
 
       // 1. Register the service so Adapters can find us
-      ctx.registerService('websocket-server', {
+      ctx.registerService('realtime', {
         broadcast: (eventName: string, payload: any, meta?: { object?: string, userId?: string }) => {
           if (!wss) return;
 
@@ -187,7 +187,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
         getServer: () => wss
       });
 
-      ctx.logger.info('[Realtime] Service registered as "websocket-server"');
+      ctx.logger.info('[Realtime] Service registered as "realtime"');
     },
 
     async start(ctx: PluginContext) {
@@ -338,7 +338,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
         metrics: {
           uptime: startedAt ? Date.now() - startedAt : 0,
         },
-        checks: [{ name: 'websocket-server', status: wss ? 'passed' : 'failed', message }],
+        checks: [{ name: 'realtime', status: wss ? 'passed' : 'failed', message }],
       };
     },
 

@@ -97,7 +97,7 @@ describe('Jobs Plugin', () => {
         it('should initialize successfully', async () => {
             await plugin.init(mockContext);
 
-            expect(mockContext.registerService).toHaveBeenCalledWith('jobs', plugin);
+            expect(mockContext.registerService).toHaveBeenCalledWith('job', plugin);
             expect(mockContext.logger.info).toHaveBeenCalledWith(
                 expect.stringContaining('Initialized successfully')
             );

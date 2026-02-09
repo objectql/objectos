@@ -89,7 +89,7 @@ export class JobsPlugin implements Plugin {
         (this.scheduler as any).logger = context.logger;
 
         // Register jobs service
-        context.registerService('jobs', this);
+        context.registerService('job', this);
 
         // Register built-in jobs if enabled
         if (this.config.enableBuiltInJobs) {
@@ -360,7 +360,7 @@ export class JobsPlugin implements Plugin {
  */
 export function getJobsAPI(kernel: any): JobsPlugin | null {
     try {
-        return kernel.getService('jobs');
+        return kernel.getService('job');
     } catch {
         return null;
     }

@@ -95,7 +95,7 @@ export class StoragePlugin implements Plugin {
         this.startedAt = Date.now();
 
         // Register storage service
-        context.registerService('storage', this);
+        context.registerService('file-storage', this);
 
         // For Redis backend, connect
         if (this.backend instanceof RedisStorageBackend) {
@@ -239,7 +239,7 @@ export class StoragePlugin implements Plugin {
  */
 export function getStorageAPI(kernel: any): StoragePlugin | null {
     try {
-        return kernel.getService('storage');
+        return kernel.getService('file-storage');
     } catch {
         return null;
     }
