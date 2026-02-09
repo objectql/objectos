@@ -154,7 +154,7 @@ export class PermissionsPlugin implements Plugin {
                         const permissionContext: PermissionContext = {
                             userId,
                             profileName,
-                            profiles: body.profiles || [profileName],
+                            profiles: body.profiles || (profileName ? [profileName] : []),
                             roleName,
                             permissionSetNames: body.permissionSetNames || [],
                         };
