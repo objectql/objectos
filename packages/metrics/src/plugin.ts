@@ -179,7 +179,7 @@ export class MetricsPlugin implements Plugin {
                                         name: service.name || pluginName,
                                         version: service.version || '0.1.0',
                                         status: health.status || 'unknown',
-                                        uptime: health.uptime || 0,
+                                        uptime: health.metrics?.uptime || 0,
                                         health,
                                         manifest,
                                     });
@@ -454,23 +454,22 @@ export class MetricsPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
-        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
+        const message = `${this.counters.size} counters, ${this.gauges.size} gauges, ${this.histograms.size} histograms`;
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
             checks: [
                 {
                     name: 'metrics-collection',
-                    status,
-                    message: `${this.counters.size} counters, ${this.gauges.size} gauges, ${this.histograms.size} histograms`,
-                    latency: Date.now() - start,
-                    timestamp: new Date().toISOString(),
+                    status: status === 'healthy' ? 'passed' : 'warning',
+                    message,
                 },
             ],
-            timestamp: new Date().toISOString(),
         };
     }
 
@@ -479,17 +478,12 @@ export class MetricsPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['metrics'],
-                emits: [],
-                listens: ['plugin.load.start', 'plugin.load.end', 'plugin.enable.start', 'plugin.enable.end', 'service.call', 'hook.execute.start', 'hook.execute.end'],
-                routes: ['/api/v1/metrics'],
-                objects: [],
-            },
+            capabilities: {},
             security: {
-                requiredPermissions: [],
-                handlesSensitiveData: false,
-                makesExternalCalls: false,
+                pluginId: 'metrics',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
         };
     }
@@ -498,12 +492,7 @@ export class MetricsPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return {
-            pluginName: this.name,
-            success: !!this.context,
-            duration: 0,
-            servicesRegistered: ['metrics'],
-        };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

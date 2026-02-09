@@ -330,31 +330,32 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
     async healthCheck(): Promise<PluginHealthReport> {
       const clientCount = wss ? wss.clients.size : 0;
       const status = wss ? 'healthy' : 'unhealthy';
+      const message = `${clientCount} connected clients`;
       return {
-        pluginName: '@objectos/realtime',
-        pluginVersion: '0.1.0',
         status,
-        uptime: startedAt ? Date.now() - startedAt : 0,
-        checks: [{ name: 'websocket-server', status, message: `${clientCount} connected clients`, latency: 0, timestamp: new Date().toISOString() }],
         timestamp: new Date().toISOString(),
+        message,
+        metrics: {
+          uptime: startedAt ? Date.now() - startedAt : 0,
+        },
+        checks: [{ name: 'websocket-server', status: wss ? 'passed' : 'failed', message }],
       };
     },
 
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
       return {
-        capabilities: {
-          services: ['websocket-server'],
-          emits: [],
-          listens: [],
-          routes: ['/ws'],
-          objects: [],
+        capabilities: {},
+        security: {
+          pluginId: 'realtime',
+          trustLevel: 'trusted',
+          permissions: { permissions: [], defaultGrant: 'deny' },
+          sandbox: { enabled: false, level: 'none' },
         },
-        security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
       };
     },
 
     getStartupResult(): PluginStartupResult {
-      return { pluginName: '@objectos/realtime', success: !!wss, duration: 0, servicesRegistered: ['websocket-server'] };
+      return { plugin: { name: '@objectos/realtime', version: '0.1.0' }, success: !!wss, duration: 0 };
     },
   } as Plugin;
 };
