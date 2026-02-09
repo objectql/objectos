@@ -419,9 +419,8 @@ describe('Kernel Compliance', () => {
     describe('healthCheck()', () => {
         it('should return healthy status when enabled', async () => {
             const report = await plugin.healthCheck();
-            expect(report.pluginName).toBe('@objectos/audit');
             expect(report.status).toBe('healthy');
-            expect(report.checks[0].name).toBe('audit-storage');
+            expect(report.checks![0].name).toBe('audit-storage');
         });
 
         it('should return degraded when disabled', async () => {
@@ -466,7 +465,7 @@ describe('Kernel Compliance', () => {
     describe('getStartupResult()', () => {
         it('should return successful startup result', () => {
             const result = plugin.getStartupResult();
-            expect(result.pluginName).toBe('@objectos/audit');
+            expect(result.plugin.name).toBe('@objectos/audit');
             expect(result.success).toBe(true);
         });
     });
