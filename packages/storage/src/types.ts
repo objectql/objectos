@@ -131,30 +131,29 @@ export interface StorageEntry {
 
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
 
-import type { z } from 'zod';
 import type {
-  PluginHealthStatusSchema,
-  PluginHealthReportSchema,
-  PluginCapabilityManifestSchema,
-  PluginSecurityManifestSchema,
-  PluginStartupResultSchema,
-  EventBusConfigSchema,
+  PluginHealthStatus,
+  PluginHealthReport as SpecPluginHealthReport,
+  PluginCapabilityManifest as SpecPluginCapabilityManifest,
+  PluginSecurityManifest as SpecPluginSecurityManifest,
+  PluginStartupResult as SpecPluginStartupResult,
+  EventBusConfig as SpecEventBusConfig,
 } from '@objectstack/spec/kernel';
 
 /** Plugin health status — from @objectstack/spec */
-export type HealthStatus = z.infer<typeof PluginHealthStatusSchema>;
+export type HealthStatus = PluginHealthStatus;
 
 /** Aggregate health report — from @objectstack/spec */
-export type PluginHealthReport = z.infer<typeof PluginHealthReportSchema>;
+export type PluginHealthReport = SpecPluginHealthReport;
 
 /** Plugin capability manifest — from @objectstack/spec */
-export type PluginCapabilityManifest = z.infer<typeof PluginCapabilityManifestSchema>;
+export type PluginCapabilityManifest = SpecPluginCapabilityManifest;
 
 /** Plugin security manifest — from @objectstack/spec */
-export type PluginSecurityManifest = z.infer<typeof PluginSecurityManifestSchema>;
+export type PluginSecurityManifest = SpecPluginSecurityManifest;
 
 /** Plugin startup result — from @objectstack/spec */
-export type PluginStartupResult = z.infer<typeof PluginStartupResultSchema>;
+export type PluginStartupResult = SpecPluginStartupResult;
 
 /** Event bus configuration — from @objectstack/spec */
-export type EventBusConfig = z.infer<typeof EventBusConfigSchema>;
+export type EventBusConfig = SpecEventBusConfig;
