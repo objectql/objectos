@@ -237,13 +237,15 @@ export class I18nPlugin implements Plugin {
      */
     async healthCheck(): Promise<PluginHealthReport> {
         const locales = this.getLoadedLocales();
+        const message = `${locales.length} locales loaded (current: ${this.currentLocale})`;
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status: 'healthy',
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'i18n-translations', status: 'healthy', message: `${locales.length} locales loaded (current: ${this.currentLocale})`, latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'i18n-translations', status: 'passed', message }],
         };
     }
 
@@ -252,8 +254,13 @@ export class I18nPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: { services: ['i18n'], emits: [], listens: [], routes: [], objects: [] },
-            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
+            capabilities: {},
+            security: {
+                pluginId: 'i18n',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
+            },
         };
     }
 
@@ -261,7 +268,7 @@ export class I18nPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['i18n'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

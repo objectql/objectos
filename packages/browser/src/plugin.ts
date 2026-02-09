@@ -133,16 +133,18 @@ export class BrowserRuntimePlugin implements Plugin {
   async healthCheck(): Promise<PluginHealthReport> {
     const isDbReady = !!this.database;
     const status = isDbReady ? 'healthy' : 'unhealthy';
+    const message = isDbReady ? 'SQLite WASM ready' : 'Database not initialized';
     return {
-      pluginName: this.name,
-      pluginVersion: this.version,
       status,
-      uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-      checks: [
-        { name: 'browser-database', status: isDbReady ? 'healthy' : 'unhealthy', message: isDbReady ? 'SQLite WASM ready' : 'Database not initialized', latency: 0, timestamp: new Date().toISOString() },
-        { name: 'browser-storage', status: this.storage ? 'healthy' : 'degraded', message: this.storage ? 'OPFS ready' : 'Storage not initialized', latency: 0, timestamp: new Date().toISOString() },
-      ],
       timestamp: new Date().toISOString(),
+      message,
+      metrics: {
+        uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+      },
+      checks: [
+        { name: 'browser-database', status: isDbReady ? 'passed' : 'failed', message },
+        { name: 'browser-storage', status: this.storage ? 'passed' : 'warning', message: this.storage ? 'OPFS ready' : 'Storage not initialized' },
+      ],
     };
   }
 
@@ -151,8 +153,13 @@ export class BrowserRuntimePlugin implements Plugin {
    */
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
-      capabilities: { services: ['browser-database', 'browser-storage', 'browser-service-worker', 'browser-worker'], emits: [], listens: [], routes: ['/api/graphql', '/api/data/*'], objects: [] },
-      security: { requiredPermissions: [], handlesSensitiveData: true, makesExternalCalls: false },
+      capabilities: {},
+      security: {
+        pluginId: 'browser',
+        trustLevel: 'trusted',
+        permissions: { permissions: [], defaultGrant: 'deny' },
+        sandbox: { enabled: false, level: 'none' },
+      },
     };
   }
 
@@ -160,7 +167,7 @@ export class BrowserRuntimePlugin implements Plugin {
    * Startup result
    */
   getStartupResult(): PluginStartupResult {
-    return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['browser-database', 'browser-storage', 'browser-service-worker', 'browser-worker'] };
+    return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
   }
 
   /**

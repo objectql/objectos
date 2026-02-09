@@ -448,13 +448,15 @@ export class AutomationPlugin implements Plugin {
      */
     async healthCheck(): Promise<PluginHealthReport> {
         const status = this.config.enabled ? 'healthy' : 'degraded';
+        const message = this.config.enabled ? 'Automation engine active' : 'Automation disabled';
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'automation-engine', status, message: this.config.enabled ? 'Automation engine active' : 'Automation disabled', latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'automation-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
     }
 
@@ -463,23 +465,12 @@ export class AutomationPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['automation'],
-                emits: ['automation.trigger.fired', 'automation.action.executed', 'automation.rule.executed', 'automation.rule.failed', 'automation.formula.calculated'],
-                listens: ['data.afterCreate', 'data.afterUpdate', 'data.afterDelete'],
-                routes: [],
-                objects: [],
-            },
+            capabilities: {},
             security: {
-                requiredPermissions: [],
-                handlesSensitiveData: false,
-                makesExternalCalls: !!this.config.enableHttp,
-                executesUserScripts: !!this.config.enableScriptExecution,
-                sandboxConfig: {
-                    timeout: this.config.maxExecutionTime || 30000,
-                    maxMemory: 128 * 1024 * 1024,
-                    allowedModules: [],
-                },
+                pluginId: 'automation',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
         };
     }
@@ -488,7 +479,7 @@ export class AutomationPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['automation'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

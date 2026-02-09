@@ -202,18 +202,19 @@ export class BetterAuthPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
-        const start = Date.now();
         const isInitialized = !!this.authInstance;
         const status = isInitialized ? 'healthy' : 'unhealthy';
+        const message = isInitialized ? 'Better-Auth instance active' : 'Auth not initialized';
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [
-                { name: 'auth-instance', status, message: isInitialized ? 'Better-Auth instance active' : 'Auth not initialized', latency: Date.now() - start, timestamp: new Date().toISOString() },
-            ],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [
+                { name: 'auth-instance', status: isInitialized ? 'passed' : 'failed', message },
+            ],
         };
     }
 
@@ -222,21 +223,12 @@ export class BetterAuthPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['auth', 'better-auth'],
-                emits: [
-                    'plugin.initialized', 'plugin.destroyed', 'auth.ready',
-                    'auth.session_created',
-                ],
-                listens: [],
-                routes: ['/api/v1/auth/*'],
-                objects: Object.keys(Objects),
-            },
+            capabilities: {},
             security: {
-                requiredPermissions: [],
-                handlesSensitiveData: true,
-                makesExternalCalls: true,
-                allowedDomains: ['*.google.com', '*.github.com', '*.microsoft.com'],
+                pluginId: 'auth',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
         };
     }
@@ -245,7 +237,7 @@ export class BetterAuthPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.authInstance, duration: 0, servicesRegistered: ['auth', 'better-auth'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.authInstance, duration: 0 };
     }
 
     /**
