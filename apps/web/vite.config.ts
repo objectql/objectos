@@ -35,5 +35,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // Performance budget: warn if chunks exceed 250 KB
+    chunkSizeWarningLimit: 250,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          query: ['@tanstack/react-query'],
+        },
+      },
+    },
   },
 });

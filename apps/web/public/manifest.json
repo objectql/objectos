@@ -1,0 +1,17 @@
+{
+  "name": "ObjectOS Console",
+  "short_name": "ObjectOS",
+  "description": "Business Operating System — Admin Console",
+  "start_url": "/console/",
+  "scope": "/console/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

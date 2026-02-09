@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequireOrgAdmin } from './components/auth/RequireOrgAdmin';
 import { SettingsLayout } from './components/layouts/SettingsLayout';
 import { AppLayout } from './components/layouts/AppLayout';
+import { SkipLink } from './components/ui/skip-link';
 
 // ── Public pages ──────────────────────────────────────────────
 const HomePage = lazy(() => import('./pages/home'));
@@ -44,55 +45,60 @@ export function App() {
   );
 
   return (
-    <Suspense fallback={fallback}>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/sign-in" element={<SignInPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/verify-2fa" element={<Verify2FAPage />} />
+    <>
+      <SkipLink />
+      <main id="main-content">
+        <Suspense fallback={fallback}>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/sign-in" element={<SignInPage />} />
+            <Route path="/sign-up" element={<SignUpPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-2fa" element={<Verify2FAPage />} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
 
-          {/* ── Create Org (accessible to any authenticated user) ── */}
-          <Route path="/settings/organization/create" element={<CreateOrganizationPage />} />
+              {/* ── Create Org (accessible to any authenticated user) ── */}
+              <Route path="/settings/organization/create" element={<CreateOrganizationPage />} />
 
-          {/* ── Admin Console (/settings/*) — owner / admin only ── */}
-          <Route element={<RequireOrgAdmin />}>
-            <Route element={<SettingsLayout />}>
-              <Route path="/settings" element={<SettingsOverviewPage />} />
-              <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
-              <Route path="/settings/members" element={<MembersPage />} />
-              <Route path="/settings/teams" element={<TeamsPage />} />
-              <Route path="/settings/invitations" element={<InvitationsPage />} />
-              <Route path="/settings/permissions" element={<PermissionsPage />} />
-              <Route path="/settings/sso" element={<SSOSettingsPage />} />
-              <Route path="/settings/audit" element={<AuditPage />} />
-              <Route path="/settings/packages" element={<PackagesPage />} />
-              <Route path="/settings/jobs" element={<JobsPage />} />
-              <Route path="/settings/plugins" element={<PluginsPage />} />
-              <Route path="/settings/metrics" element={<MetricsPage />} />
-              <Route path="/settings/notifications" element={<NotificationsPage />} />
-              <Route path="/settings/account" element={<AccountSettingsPage />} />
-              <Route path="/settings/security" element={<SecuritySettingsPage />} />
+              {/* ── Admin Console (/settings/*) — owner / admin only ── */}
+              <Route element={<RequireOrgAdmin />}>
+                <Route element={<SettingsLayout />}>
+                  <Route path="/settings" element={<SettingsOverviewPage />} />
+                  <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
+                  <Route path="/settings/members" element={<MembersPage />} />
+                  <Route path="/settings/teams" element={<TeamsPage />} />
+                  <Route path="/settings/invitations" element={<InvitationsPage />} />
+                  <Route path="/settings/permissions" element={<PermissionsPage />} />
+                  <Route path="/settings/sso" element={<SSOSettingsPage />} />
+                  <Route path="/settings/audit" element={<AuditPage />} />
+                  <Route path="/settings/packages" element={<PackagesPage />} />
+                  <Route path="/settings/jobs" element={<JobsPage />} />
+                  <Route path="/settings/plugins" element={<PluginsPage />} />
+                  <Route path="/settings/metrics" element={<MetricsPage />} />
+                  <Route path="/settings/notifications" element={<NotificationsPage />} />
+                  <Route path="/settings/account" element={<AccountSettingsPage />} />
+                  <Route path="/settings/security" element={<SecuritySettingsPage />} />
+                </Route>
+              </Route>
+
+              {/* ── Business Apps (/apps/:appId/*) ── */}
+              <Route path="/apps/:appId" element={<AppLayout />}>
+                <Route index element={<BusinessAppPage />} />
+                <Route path=":objectName" element={<ObjectListPage />} />
+                <Route path=":objectName/:recordId" element={<ObjectRecordPage />} />
+              </Route>
+
             </Route>
-          </Route>
 
-          {/* ── Business Apps (/apps/:appId/*) ── */}
-          <Route path="/apps/:appId" element={<AppLayout />}>
-            <Route index element={<BusinessAppPage />} />
-            <Route path=":objectName" element={<ObjectListPage />} />
-            <Route path=":objectName/:recordId" element={<ObjectRecordPage />} />
-          </Route>
-
-        </Route>
-
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Suspense>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </main>
+    </>
   );
 }

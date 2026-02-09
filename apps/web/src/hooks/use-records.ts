@@ -3,6 +3,7 @@
  *
  * Uses the official @objectstack/client SDK to fetch from the server.
  * Falls back to mock data when the server is unreachable.
+ * Supports optimistic updates for instant UI feedback (Phase 5).
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -70,6 +71,22 @@ export function useRecord({ objectName, recordId }: UseRecordOptions) {
   });
 }
 
+// ── Optimistic update context types ─────────────────────────────
+
+type QueryListSnapshot = [readonly unknown[], RecordListResponse | undefined][];
+
+interface CreateMutationContext {
+  previous: QueryListSnapshot;
+}
+
+interface UpdateMutationContext {
+  previous: RecordData | undefined;
+}
+
+interface DeleteMutationContext {
+  previous: QueryListSnapshot;
+}
+
 // ── Create record ───────────────────────────────────────────────
 
 interface UseCreateRecordOptions {
@@ -79,12 +96,30 @@ interface UseCreateRecordOptions {
 export function useCreateRecord({ objectName }: UseCreateRecordOptions) {
   const queryClient = useQueryClient();
 
-  return useMutation<RecordData, Error, Partial<RecordData>>({
+  return useMutation<RecordData, Error, Partial<RecordData>, CreateMutationContext>({
     mutationFn: async (data) => {
       const result = await objectStackClient.data.create(objectName, data);
       return (result?.record ?? data) as RecordData;
     },
-    onSuccess: () => {
+    // Optimistic update: append the new record to the cached list immediately
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ['records', objectName] });
+      const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
+      queryClient.setQueriesData<RecordListResponse>(
+        { queryKey: ['records', objectName] },
+        (old) => old ? { ...old, records: [...old.records, { id: crypto.randomUUID(), ...newData } as RecordData], total: old.total + 1 } : old,
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
+    onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
     },
   });
@@ -100,12 +135,27 @@ interface UseUpdateRecordOptions {
 export function useUpdateRecord({ objectName, recordId }: UseUpdateRecordOptions) {
   const queryClient = useQueryClient();
 
-  return useMutation<RecordData, Error, Partial<RecordData>>({
+  return useMutation<RecordData, Error, Partial<RecordData>, UpdateMutationContext>({
     mutationFn: async (data) => {
       const result = await objectStackClient.data.update(objectName, recordId, data);
       return (result?.record ?? data) as RecordData;
     },
-    onSuccess: () => {
+    // Optimistic update: merge changes into the cached record immediately
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ['record', objectName, recordId] });
+      const previous = queryClient.getQueryData<RecordData>(['record', objectName, recordId]);
+      queryClient.setQueryData<RecordData>(
+        ['record', objectName, recordId],
+        (old) => old ? { ...old, ...newData } : old,
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['record', objectName, recordId], context.previous);
+      }
+    },
+    onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
       void queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
     },
@@ -121,11 +171,33 @@ interface UseDeleteRecordOptions {
 export function useDeleteRecord({ objectName }: UseDeleteRecordOptions) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
+  return useMutation<void, Error, string, DeleteMutationContext>({
     mutationFn: async (recordId) => {
       await objectStackClient.data.delete(objectName, recordId);
     },
-    onSuccess: (_data, recordId) => {
+    // Optimistic update: remove the record from the cached list immediately
+    onMutate: async (recordId) => {
+      await queryClient.cancelQueries({ queryKey: ['records', objectName] });
+      const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
+      queryClient.setQueriesData<RecordListResponse>(
+        { queryKey: ['records', objectName] },
+        (old) => {
+          if (!old) return old;
+          const filtered = old.records.filter((r) => String(r.id) !== recordId);
+          const removed = filtered.length < old.records.length;
+          return { ...old, records: filtered, total: removed ? Math.max(0, old.total - 1) : old.total };
+        },
+      );
+      return { previous };
+    },
+    onError: (_err, _recordId, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
+    onSettled: (_data, _err, recordId) => {
       void queryClient.invalidateQueries({ queryKey: ['records', objectName] });
       void queryClient.removeQueries({ queryKey: ['record', objectName, recordId] });
     },
