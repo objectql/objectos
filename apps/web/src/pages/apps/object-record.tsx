@@ -76,8 +76,8 @@ export default function ObjectRecordPage() {
       await queryClient.invalidateQueries({ queryKey: ['workflow', 'status', recordId] });
       await queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
       await queryClient.invalidateQueries({ queryKey: ['activities', recordId] });
-    } catch {
-      console.error(`Failed to execute transition: ${transition.name} on record ${recordId}`);
+    } catch (error) {
+      console.error(`Failed to execute transition: ${transition.name} on record ${recordId}`, error);
     }
   };
 

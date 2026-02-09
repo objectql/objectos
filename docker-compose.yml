@@ -1,6 +1,5 @@
 # ObjectOS — Development Docker Compose
 # Usage: docker compose up
-version: "3.9"
 
 services:
   objectos:
