@@ -54,7 +54,9 @@ export class InMemoryPermissionStorage implements PermissionStorage {
 
     async storePermissionSet(permissionSet: PermissionSet): Promise<void> {
         this.permissionSets.set(permissionSet.name, permissionSet);
-        this.objectIndex.set(permissionSet.objectName, permissionSet.name);
+        if (permissionSet.objectName) {
+            this.objectIndex.set(permissionSet.objectName, permissionSet.name);
+        }
     }
 
     async getPermissionSet(name: string): Promise<PermissionSet | null> {
@@ -74,7 +76,9 @@ export class InMemoryPermissionStorage implements PermissionStorage {
     async deletePermissionSet(name: string): Promise<void> {
         const permissionSet = this.permissionSets.get(name);
         if (permissionSet) {
-            this.objectIndex.delete(permissionSet.objectName);
+            if (permissionSet.objectName) {
+                this.objectIndex.delete(permissionSet.objectName);
+            }
             this.permissionSets.delete(name);
         }
     }

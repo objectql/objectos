@@ -6,7 +6,6 @@ export const CrmApp = App.create({
   icon: 'briefcase',
   branding: {
     primaryColor: '#4169E1',
-    secondaryColor: '#00AA00',
     logo: '/assets/crm-logo.png',
     favicon: '/assets/crm-favicon.ico',
   },

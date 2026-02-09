@@ -5,7 +5,7 @@ const accountHook: Hook = {
     name: 'account_protection',
     object: 'account',
     events: ['beforeInsert', 'beforeUpdate', 'beforeDelete'],
-    handler: async (ctx: HookContext) => {
+    handler: (async (ctx: HookContext) => {
         const { input } = ctx;
 
         if (ctx.event === 'beforeInsert' || ctx.event === 'beforeUpdate') {
@@ -17,14 +17,11 @@ const accountHook: Hook = {
 
         if (ctx.event === 'beforeDelete') {
              // Prevent deletion of 'Strategic' accounts
-             // Note: ctx.previous is available in beforeDelete?
-             // Actually, usually in beforeDelete we might need to fetch it first if not provided.
-             // But let's assume the engine provides 'previous' (which is the record being deleted).
              if (ctx.previous && ctx.previous.type === 'Strategic') {
                  throw new Error('Cannot delete Strategic accounts');
              }
         }
-    }
+    }) as (...args: unknown[]) => unknown
 };
 
 export default accountHook;

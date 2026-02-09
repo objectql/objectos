@@ -45,7 +45,7 @@ describe('Flow Converter', () => {
 
             expect(flow.name).toBe('Order Approval');
             expect(flow.description).toBe('Order approval workflow');
-            expect(flow.version).toBe('1.0.0');
+            expect(flow.version).toBe(1);
         });
 
         it('should create correct number of nodes', () => {
@@ -60,7 +60,7 @@ describe('Flow Converter', () => {
             const endNodes = flow.nodes.filter(n => n.type === 'end');
 
             expect(startNodes).toHaveLength(1);
-            expect(startNodes[0].name).toBe('draft');
+            expect(startNodes[0].label).toBe('draft');
             expect(endNodes).toHaveLength(2); // approved, rejected
         });
 
@@ -124,21 +124,21 @@ describe('Flow Converter', () => {
         });
 
         it('should fail for flow with no name', () => {
-            const flow: Flow = { name: '', version: '1.0.0', nodes: [], edges: [] };
+            const flow: Flow = { name: '', label: '', type: 'autolaunched', version: 1, nodes: [], edges: [] };
             const errors = validateFlow(flow);
             expect(errors).toContain('Flow must have a name');
         });
 
         it('should fail for flow with no nodes', () => {
-            const flow: Flow = { name: 'Test', version: '1.0.0', nodes: [], edges: [] };
+            const flow: Flow = { name: 'Test', label: 'Test', type: 'autolaunched', version: 1, nodes: [], edges: [] };
             const errors = validateFlow(flow);
             expect(errors).toContain('Flow must have at least one node');
         });
 
         it('should fail for flow with no start node', () => {
             const flow: Flow = {
-                name: 'Test', version: '1.0.0',
-                nodes: [{ id: '1', name: 'end', type: 'end', config: {} }],
+                name: 'Test', label: 'Test', type: 'autolaunched', version: 1,
+                nodes: [{ id: '1', label: 'end', type: 'end' }],
                 edges: [],
             };
             const errors = validateFlow(flow);
@@ -147,8 +147,8 @@ describe('Flow Converter', () => {
 
         it('should fail for flow with no end node', () => {
             const flow: Flow = {
-                name: 'Test', version: '1.0.0',
-                nodes: [{ id: '1', name: 'start', type: 'start', config: {} }],
+                name: 'Test', label: 'Test', type: 'autolaunched', version: 1,
+                nodes: [{ id: '1', label: 'start', type: 'start' }],
                 edges: [],
             };
             const errors = validateFlow(flow);
@@ -157,10 +157,10 @@ describe('Flow Converter', () => {
 
         it('should detect invalid edge references', () => {
             const flow: Flow = {
-                name: 'Test', version: '1.0.0',
+                name: 'Test', label: 'Test', type: 'autolaunched', version: 1,
                 nodes: [
-                    { id: '1', name: 'start', type: 'start', config: {} },
-                    { id: '2', name: 'end', type: 'end', config: {} },
+                    { id: '1', label: 'start', type: 'start' },
+                    { id: '2', label: 'end', type: 'end' },
                 ],
                 edges: [
                     { id: 'e1', source: '1', target: 'nonexistent' },

@@ -17,14 +17,14 @@
     "test": "objectstack test"
   },
   "dependencies": {
-    "@objectstack/client": "workspace:*",
-    "@objectstack/driver-memory": "workspace:^",
-    "@objectstack/objectql": "workspace:^",
-    "@objectstack/runtime": "workspace:^",
-    "@objectstack/spec": "workspace:*"
+    "@objectstack/client": "2.0.0",
+    "@objectstack/driver-memory": "^2.0.0",
+    "@objectstack/objectql": "^2.0.0",
+    "@objectstack/runtime": "^2.0.0",
+    "@objectstack/spec": "2.0.0"
   },
   "devDependencies": {
-    "@objectstack/cli": "workspace:*",
+    "@objectstack/cli": "^2.0.0",
     "typescript": "^5.0.0"
   }
 }

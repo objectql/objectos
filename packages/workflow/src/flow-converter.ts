@@ -42,7 +42,7 @@ export function legacyToFlow(definition: WorkflowDefinition): Flow {
 
         const node: FlowNode = {
             id: nodeId,
-            name: stateName,
+            label: stateName,
             type: nodeType,
             config: {
                 metadata: stateConfig.metadata,
@@ -94,8 +94,10 @@ export function legacyToFlow(definition: WorkflowDefinition): Flow {
 
     return {
         name: definition.name,
+        label: definition.name,
         description: definition.description,
-        version: definition.version,
+        type: 'autolaunched',
+        version: typeof definition.version === 'string' ? parseInt(definition.version, 10) || 1 : (definition.version ?? 1),
         nodes,
         edges,
     };
@@ -114,12 +116,12 @@ export function flowToLegacy(
     // Map nodes to states
     const nodeIdToName = new Map<string, string>();
     for (const node of flow.nodes) {
-        nodeIdToName.set(node.id, node.name);
+        nodeIdToName.set(node.id, node.label);
     }
 
     for (const node of flow.nodes) {
         const stateConfig: StateConfig = {
-            name: node.name,
+            name: node.label,
             initial: node.type === 'start',
             final: node.type === 'end',
             metadata: node.config,
@@ -127,10 +129,10 @@ export function flowToLegacy(
         };
 
         if (node.type === 'start') {
-            initialState = node.name;
+            initialState = node.label;
         }
 
-        states[node.name] = stateConfig;
+        states[node.label] = stateConfig;
     }
 
     // Map edges to transitions
@@ -154,7 +156,7 @@ export function flowToLegacy(
         name: flow.name,
         description: flow.description,
         type: options?.type || 'sequential',
-        version: flow.version || '1.0.0',
+        version: String(flow.version || '1.0.0'),
         states,
         initialState: initialState || Object.keys(states)[0] || '',
     };
@@ -189,13 +191,13 @@ export function validateFlow(flow: Flow): string[] {
     for (const node of flow.nodes) {
         if (node.type === 'start') continue;
         const hasIncoming = flow.edges.some(e => e.target === node.id);
-        if (!hasIncoming) errors.push(`Node ${node.name} (${node.id}) has no incoming edges`);
+        if (!hasIncoming) errors.push(`Node ${node.label} (${node.id}) has no incoming edges`);
     }
 
     for (const node of flow.nodes) {
         if (node.type === 'end') continue;
         const hasOutgoing = flow.edges.some(e => e.source === node.id);
-        if (!hasOutgoing) errors.push(`Node ${node.name} (${node.id}) has no outgoing edges`);
+        if (!hasOutgoing) errors.push(`Node ${node.label} (${node.id}) has no outgoing edges`);
     }
 
     return errors;

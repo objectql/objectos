@@ -151,9 +151,10 @@ export class PermissionsPlugin implements Plugin {
                             return c.json({ success: false, error: 'Missing required fields' }, 400);
                         }
 
-                        const permissionContext = {
+                        const permissionContext: PermissionContext = {
                             userId,
                             profileName,
+                            profiles: body.profiles || (profileName ? [profileName] : []),
                             roleName,
                             permissionSetNames: body.permissionSetNames || [],
                         };
