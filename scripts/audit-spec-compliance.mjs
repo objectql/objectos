@@ -248,28 +248,38 @@ class SpecComplianceAuditor {
                           pkg.devDependencies?.['@objectstack/spec'] ||
                           pkg.peerDependencies?.['@objectstack/spec'];
       
-      if (specVersion !== '1.0.0' && specVersion !== '^1.0.0') {
+      if (specVersion !== '2.0.1' && specVersion !== '^2.0.1') {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/spec version is ${specVersion}, expected 1.0.0 or ^1.0.0`
+          message: `@objectstack/spec version is ${specVersion}, expected 2.0.1 or ^2.0.1`
         });
       }
     }
 
-    // Rule 5: Check runtime version consistency
+    // Rule 5: All plugin packages should have @objectstack/spec dependency
+    if (result.hasPluginImplementation && !result.hasSpecDependency) {
+      result.issues.push({
+        package: result.package,
+        severity: 'warning',
+        category: 'dependencies',
+        message: 'Plugin package should declare @objectstack/spec dependency for kernel type imports'
+      });
+    }
+
+    // Rule 6: Check runtime version consistency
     if (result.hasRuntimeDependency) {
       const runtimeVersion = pkg.dependencies?.['@objectstack/runtime'] || 
                              pkg.devDependencies?.['@objectstack/runtime'] ||
                              pkg.peerDependencies?.['@objectstack/runtime'];
       
-      if (runtimeVersion !== '^1.0.0' && runtimeVersion !== '1.0.0') {
+      if (runtimeVersion !== '^2.0.1' && runtimeVersion !== '2.0.1') {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^1.0.0`
+          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^2.0.1`
         });
       }
     }

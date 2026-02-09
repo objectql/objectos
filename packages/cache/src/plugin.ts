@@ -171,7 +171,6 @@ export class CachePlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
-        const start = Date.now();
         let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
         let message = 'Cache backend operational';
         try {
@@ -184,12 +183,13 @@ export class CachePlugin implements Plugin {
             message = 'Cache backend unreachable';
         }
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status: checkStatus,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'cache-backend', status: checkStatus, message, latency: Date.now() - start, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'cache-backend', status: checkStatus === 'healthy' ? 'passed' : checkStatus === 'degraded' ? 'warning' : 'failed', message }],
         };
     }
 
@@ -198,8 +198,13 @@ export class CachePlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: { services: ['cache'], emits: [], listens: [], routes: [], objects: [] },
-            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: this.backend instanceof RedisCacheBackend },
+            capabilities: {},
+            security: {
+                pluginId: 'cache',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
+            },
         };
     }
 
@@ -207,7 +212,7 @@ export class CachePlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['cache'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

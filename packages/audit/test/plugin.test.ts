@@ -419,9 +419,8 @@ describe('Kernel Compliance', () => {
     describe('healthCheck()', () => {
         it('should return healthy status when enabled', async () => {
             const report = await plugin.healthCheck();
-            expect(report.pluginName).toBe('@objectos/audit');
             expect(report.status).toBe('healthy');
-            expect(report.checks[0].name).toBe('audit-storage');
+            expect(report.checks![0].name).toBe('audit-storage');
         });
 
         it('should return degraded when disabled', async () => {
@@ -436,37 +435,19 @@ describe('Kernel Compliance', () => {
     describe('getManifest()', () => {
         it('should declare audit services and events', () => {
             const manifest = plugin.getManifest();
-            expect(manifest.capabilities.services).toContain('audit-log');
-            expect(manifest.capabilities.emits).toContain('audit.event.recorded');
-            expect(manifest.capabilities.listens).toContain('data.create');
-            expect(manifest.security.handlesSensitiveData).toBe(true);
-        });
-
-        it('should declare full event type coverage', () => {
-            const manifest = plugin.getManifest();
-            const listens = manifest.capabilities.listens!;
-            // Auth events
-            expect(listens).toContain('auth.login');
-            expect(listens).toContain('auth.logout');
-            expect(listens).toContain('auth.session_created');
-            expect(listens).toContain('auth.session_expired');
-            expect(listens).toContain('auth.password_changed');
-            // Authz events
-            expect(listens).toContain('authz.permission_granted');
-            expect(listens).toContain('authz.role_assigned');
-            // System events
-            expect(listens).toContain('system.config_changed');
-            expect(listens).toContain('system.plugin_installed');
-            // Security events
-            expect(listens).toContain('security.access_denied');
-            expect(listens).toContain('security.suspicious_activity');
+            expect(manifest.capabilities).toBeDefined();
+            expect(manifest.security).toBeDefined();
+            expect(manifest.security.pluginId).toBe('audit');
+            expect(manifest.security.trustLevel).toBe('trusted');
+            expect(manifest.security.permissions).toEqual({ permissions: [] });
+            expect(manifest.security.sandbox).toEqual({});
         });
     });
 
     describe('getStartupResult()', () => {
         it('should return successful startup result', () => {
             const result = plugin.getStartupResult();
-            expect(result.pluginName).toBe('@objectos/audit');
+            expect(result.plugin.name).toBe('@objectos/audit');
             expect(result.success).toBe(true);
         });
     });

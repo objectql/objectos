@@ -342,13 +342,15 @@ export class PermissionsPlugin implements Plugin {
      */
     async healthCheck(): Promise<PluginHealthReport> {
         const status = this.config.enabled ? 'healthy' : 'degraded';
+        const message = this.config.enabled ? 'Permission engine active' : 'Permissions disabled';
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'permissions-engine', status, message: this.config.enabled ? 'Permission engine active' : 'Permissions disabled', latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'permissions-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
     }
 
@@ -357,14 +359,13 @@ export class PermissionsPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['permissions'],
-                emits: [],
-                listens: ['data.beforeCreate', 'data.beforeUpdate', 'data.beforeDelete', 'data.beforeFind'],
-                routes: [],
-                objects: [],
+            capabilities: {},
+            security: {
+                pluginId: 'permissions',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
-            security: { requiredPermissions: ['admin'], handlesSensitiveData: true, makesExternalCalls: false },
         };
     }
 
@@ -372,7 +373,7 @@ export class PermissionsPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['permissions'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

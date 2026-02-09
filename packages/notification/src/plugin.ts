@@ -221,13 +221,15 @@ export class NotificationPlugin implements Plugin {
     if (this.pushChannel) channels.push('push');
     if (this.webhookChannel) channels.push('webhook');
     const status = channels.length > 0 ? 'healthy' : 'degraded';
+    const message = `Active channels: ${channels.join(', ') || 'none'}`;
     return {
-      pluginName: this.name,
-      pluginVersion: this.version,
       status,
-      uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-      checks: [{ name: 'notification-channels', status, message: `Active channels: ${channels.join(', ') || 'none'}`, latency: 0, timestamp: new Date().toISOString() }],
       timestamp: new Date().toISOString(),
+      message,
+      metrics: {
+        uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+      },
+      checks: [{ name: 'notification-channels', status: status === 'healthy' ? 'passed' : 'warning', message }],
     };
   }
 
@@ -236,8 +238,13 @@ export class NotificationPlugin implements Plugin {
    */
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
-      capabilities: { services: ['notification'], emits: [], listens: [], routes: [], objects: [] },
-      security: { requiredPermissions: [], handlesSensitiveData: true, makesExternalCalls: true, allowedDomains: ['*'] },
+      capabilities: {},
+      security: {
+        pluginId: 'notification',
+        trustLevel: 'trusted',
+        permissions: { permissions: [], defaultGrant: 'deny' },
+        sandbox: { enabled: false, level: 'none' },
+      },
     };
   }
 
@@ -245,7 +252,7 @@ export class NotificationPlugin implements Plugin {
    * Startup result
    */
   getStartupResult(): PluginStartupResult {
-    return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['notification'] };
+    return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
   }
 
   /**

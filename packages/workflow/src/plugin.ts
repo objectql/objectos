@@ -243,13 +243,15 @@ export class WorkflowPlugin implements Plugin {
      */
     async healthCheck(): Promise<PluginHealthReport> {
         const status = this.config.enabled ? 'healthy' : 'degraded';
+        const message = this.config.enabled ? 'Workflow engine active' : 'Workflows disabled';
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'workflow-engine', status, message: this.config.enabled ? 'Workflow engine active' : 'Workflows disabled', latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'workflow-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
     }
 
@@ -258,14 +260,13 @@ export class WorkflowPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['workflow'],
-                emits: ['workflow.trigger'],
-                listens: ['data.afterCreate', 'data.afterUpdate', 'workflow.trigger'],
-                routes: [],
-                objects: [],
+            capabilities: {},
+            security: {
+                pluginId: 'workflow',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
-            security: { requiredPermissions: [], handlesSensitiveData: false, makesExternalCalls: false },
         };
     }
 
@@ -273,7 +274,7 @@ export class WorkflowPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['workflow'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**

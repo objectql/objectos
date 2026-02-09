@@ -415,90 +415,31 @@ export interface AutomationExecutionResult {
   results?: any[];
 }
 
-// ─── Kernel Compliance Types ───────────────────────────────────────────────────
+// ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
 
-/** Plugin health status */
-export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+import type {
+  PluginHealthStatus,
+  PluginHealthReport as SpecPluginHealthReport,
+  PluginCapabilityManifest as SpecPluginCapabilityManifest,
+  PluginSecurityManifest as SpecPluginSecurityManifest,
+  PluginStartupResult as SpecPluginStartupResult,
+  EventBusConfig as SpecEventBusConfig,
+} from '@objectstack/spec/kernel';
 
-/** Health check result for a single check */
-export interface HealthCheckResult {
-  name: string;
-  status: HealthStatus;
-  message?: string;
-  latency?: number;
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
+/** Plugin health status — from @objectstack/spec */
+export type HealthStatus = PluginHealthStatus;
 
-/** Aggregate health report for a plugin */
-export interface PluginHealthReport {
-  pluginName: string;
-  pluginVersion: string;
-  status: HealthStatus;
-  uptime: number;
-  checks: HealthCheckResult[];
-  timestamp: string;
-}
+/** Aggregate health report — from @objectstack/spec */
+export type PluginHealthReport = SpecPluginHealthReport;
 
-/** Plugin capability declaration */
-export interface PluginCapabilityManifest {
-  services?: string[];
-  emits?: string[];
-  listens?: string[];
-  routes?: string[];
-  objects?: string[];
-}
+/** Plugin capability manifest — from @objectstack/spec */
+export type PluginCapabilityManifest = SpecPluginCapabilityManifest;
 
-/** Plugin security manifest */
-export interface PluginSecurityManifest {
-  requiredPermissions?: string[];
-  handlesSensitiveData?: boolean;
-  makesExternalCalls?: boolean;
-  allowedDomains?: string[];
-  executesUserScripts?: boolean;
-  sandboxConfig?: {
-    timeout?: number;
-    maxMemory?: number;
-    allowedModules?: string[];
-  };
-}
+/** Plugin security manifest — from @objectstack/spec */
+export type PluginSecurityManifest = SpecPluginSecurityManifest;
 
-/** Plugin startup result */
-export interface PluginStartupResult {
-  pluginName: string;
-  success: boolean;
-  duration: number;
-  servicesRegistered: string[];
-  warnings?: string[];
-  errors?: string[];
-}
+/** Plugin startup result — from @objectstack/spec */
+export type PluginStartupResult = SpecPluginStartupResult;
 
-/** Event bus configuration */
-export interface EventBusConfig {
-  persistence?: {
-    enabled: boolean;
-    storage?: 'memory' | 'redis' | 'sqlite';
-    maxEvents?: number;
-    ttl?: number;
-  };
-  retry?: {
-    enabled: boolean;
-    maxRetries?: number;
-    backoffMs?: number;
-    backoffMultiplier?: number;
-  };
-  deadLetterQueue?: {
-    enabled: boolean;
-    maxSize?: number;
-    storage?: 'memory' | 'redis' | 'sqlite';
-  };
-  webhooks?: {
-    enabled: boolean;
-    endpoints?: Array<{
-      url: string;
-      events: string[];
-      secret?: string;
-      timeout?: number;
-    }>;
-  };
-}
+/** Event bus configuration — from @objectstack/spec */
+export type EventBusConfig = SpecEventBusConfig;

@@ -10,10 +10,7 @@
  * - Monitoring and alerting integrations
  */
 
-import type { PluginHealthReport } from './types.js';
-
-/** Status type */
-type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+import type { HealthStatus, PluginHealthReport } from './types.js';
 
 /**
  * System-wide health report
@@ -60,7 +57,8 @@ export function aggregateHealth(
         switch (report.status) {
             case 'healthy': healthyCount++; break;
             case 'degraded': degradedCount++; break;
-            case 'unhealthy': unhealthyCount++; break;
+            case 'unhealthy':
+            default: unhealthyCount++; break;
         }
     }
 

@@ -725,13 +725,11 @@ describe('Kernel Compliance', () => {
     describe('healthCheck()', () => {
         it('should return healthy status when enabled', async () => {
             const report = await plugin.healthCheck();
-            expect(report.pluginName).toBe('@objectos/metrics');
-            expect(report.pluginVersion).toBe('0.1.0');
             expect(report.status).toBe('healthy');
-            expect(report.uptime).toBeGreaterThanOrEqual(0);
+            expect(report.metrics?.uptime).toBeGreaterThanOrEqual(0);
             expect(report.checks).toHaveLength(1);
-            expect(report.checks[0].name).toBe('metrics-collection');
-            expect(report.checks[0].status).toBe('healthy');
+            expect(report.checks![0].name).toBe('metrics-collection');
+            expect(report.checks![0].status).toBe('passed');
             expect(report.timestamp).toBeDefined();
         });
 
@@ -748,8 +746,8 @@ describe('Kernel Compliance', () => {
             plugin.incrementCounter('test_counter');
             plugin.setGauge('test_gauge', 42);
             const report = await plugin.healthCheck();
-            expect(report.checks[0].message).toContain('1 counters');
-            expect(report.checks[0].message).toContain('1 gauges');
+            expect(report.checks![0].message).toContain('1 counters');
+            expect(report.checks![0].message).toContain('1 gauges');
         });
     });
 
@@ -758,24 +756,14 @@ describe('Kernel Compliance', () => {
             const manifest = plugin.getManifest();
             expect(manifest.capabilities).toBeDefined();
             expect(manifest.security).toBeDefined();
-            expect(manifest.capabilities.services).toContain('metrics');
-            expect(manifest.security.handlesSensitiveData).toBe(false);
-            expect(manifest.security.makesExternalCalls).toBe(false);
-        });
-
-        it('should list kernel hooks in listens', () => {
-            const manifest = plugin.getManifest();
-            expect(manifest.capabilities.listens).toContain('plugin.load.start');
-            expect(manifest.capabilities.listens).toContain('service.call');
         });
     });
 
     describe('getStartupResult()', () => {
         it('should return successful startup result after init', () => {
             const result = plugin.getStartupResult();
-            expect(result.pluginName).toBe('@objectos/metrics');
+            expect(result.plugin.name).toBe('@objectos/metrics');
             expect(result.success).toBe(true);
-            expect(result.servicesRegistered).toContain('metrics');
         });
     });
 });
@@ -787,12 +775,13 @@ import type { PluginHealthReport } from '../src/types.js';
 
 describe('Health Aggregator', () => {
     const makeReport = (name: string, status: 'healthy' | 'degraded' | 'unhealthy'): PluginHealthReport => ({
-        pluginName: name,
-        pluginVersion: '0.1.0',
         status,
-        uptime: 1000,
-        checks: [{ name: 'test', status, timestamp: new Date().toISOString() }],
         timestamp: new Date().toISOString(),
+        message: `${name} is ${status}`,
+        metrics: {
+            uptime: 1000,
+        },
+        checks: [{ name: 'test', status: status === 'healthy' ? 'passed' : status === 'degraded' ? 'warning' : 'failed' }],
     });
 
     describe('aggregateHealth()', () => {

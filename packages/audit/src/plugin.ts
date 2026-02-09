@@ -501,13 +501,15 @@ export class AuditLogPlugin implements Plugin {
      */
     async healthCheck(): Promise<PluginHealthReport> {
         const status = this.config.enabled ? 'healthy' : 'degraded';
+        const message = this.config.enabled ? 'Audit logging active' : 'Audit logging disabled';
         return {
-            pluginName: this.name,
-            pluginVersion: this.version,
             status,
-            uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            checks: [{ name: 'audit-storage', status, message: this.config.enabled ? 'Audit logging active' : 'Audit logging disabled', latency: 0, timestamp: new Date().toISOString() }],
             timestamp: new Date().toISOString(),
+            message,
+            metrics: {
+                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+            },
+            checks: [{ name: 'audit-storage', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
     }
 
@@ -516,41 +518,13 @@ export class AuditLogPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {
-                services: ['audit-log'],
-                emits: ['audit.event.recorded'],
-                listens: [
-                    // Data events
-                    'data.create', 'data.update', 'data.delete', 'data.find',
-                    // Auth events
-                    'auth.login', 'auth.login_failed', 'auth.logout',
-                    'auth.session_created', 'auth.session_expired',
-                    'auth.password_reset', 'auth.password_changed',
-                    'auth.email_verified',
-                    'auth.mfa_enabled', 'auth.mfa_disabled',
-                    'auth.account_locked', 'auth.account_unlocked',
-                    // Authorization events
-                    'authz.permission_granted', 'authz.permission_revoked',
-                    'authz.role_assigned', 'authz.role_removed',
-                    'authz.role_created', 'authz.role_updated', 'authz.role_deleted',
-                    'authz.policy_created', 'authz.policy_updated', 'authz.policy_deleted',
-                    // System events
-                    'system.config_changed',
-                    'system.plugin_installed', 'system.plugin_uninstalled',
-                    'system.backup_created', 'system.backup_restored',
-                    'system.integration_added', 'system.integration_removed',
-                    // Security events
-                    'security.access_denied', 'security.suspicious_activity',
-                    'security.data_breach',
-                    'security.api_key_created', 'security.api_key_revoked',
-                    // Job events
-                    'job.enqueued', 'job.started', 'job.completed', 'job.failed',
-                    'job.retried', 'job.cancelled', 'job.scheduled',
-                ],
-                routes: [],
-                objects: [],
+            capabilities: {},
+            security: {
+                pluginId: 'audit',
+                trustLevel: 'trusted',
+                permissions: { permissions: [], defaultGrant: 'deny' },
+                sandbox: { enabled: false, level: 'none' },
             },
-            security: { requiredPermissions: ['admin'], handlesSensitiveData: true, makesExternalCalls: false },
         };
     }
 
@@ -558,7 +532,7 @@ export class AuditLogPlugin implements Plugin {
      * Startup result
      */
     getStartupResult(): PluginStartupResult {
-        return { pluginName: this.name, success: !!this.context, duration: 0, servicesRegistered: ['audit-log'] };
+        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
     }
 
     /**
