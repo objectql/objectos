@@ -74,7 +74,7 @@ export class UIPlugin implements Plugin {
     }
 
     if (this.objectql) {
-      this.registerViewObject();
+      await this.registerViewObject();
     }
 
     context.logger.info('[UI] Started successfully');
@@ -217,17 +217,14 @@ export class UIPlugin implements Plugin {
   /**
    * Register the sys_view metadata object in ObjectQL.
    */
-  private registerViewObject(): void {
+  private async registerViewObject(): Promise<void> {
     if (!this.objectql) return;
 
     // Only attempt if ObjectQL exposes registerObject (engine instance)
     if (typeof this.objectql.registerObject !== 'function') return;
 
     try {
-      // Lazy-import ObjectSchema / Field helpers from @objectstack/spec/data
-      // so we don't fail at load-time if they are not available.
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { ObjectSchema, Field } = require('@objectstack/spec/data');
+      const { ObjectSchema, Field } = await import('@objectstack/spec/data');
 
       const SysView = ObjectSchema.create({
         name: this.viewObjectName,
