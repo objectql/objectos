@@ -19,6 +19,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), htmlBaseUrl()],
   base,
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       '@': resolve(__dirname, 'src'),
     },
