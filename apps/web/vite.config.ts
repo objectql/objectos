@@ -17,12 +17,14 @@ function htmlBaseUrl(): Plugin {
 
 /**
  * Rollup plugin: stub Node.js built-in modules that leak into the browser
- * bundle via server-side transitive dependencies (e.g. @objectstack/core).
- * Each built-in is resolved to a virtual module exporting a Proxy so that
- * any named import (e.g. `import { createHash } from "crypto"`) receives a
- * no-op function instead of failing the build.
+ * bundle via server-side transitive dependencies (e.g. @objectstack/core
+ * imports "crypto" and "path").
+ *
+ * Each built-in is resolved to a virtual module whose default export is an
+ * empty object and every named import becomes a no-op function, so that
+ * `import { createHash } from "crypto"` does not crash the build.
  */
-const nodeBuiltins = ['crypto', 'path', 'module', 'fs', 'os', 'util'];
+const nodeBuiltins = ['crypto', 'path'];
 const VIRTUAL_PREFIX = '\0node-stub:';
 function nodeBuiltinStubs(): Plugin {
   return {
@@ -33,13 +35,18 @@ function nodeBuiltinStubs(): Plugin {
     },
     load(id) {
       if (id.startsWith(VIRTUAL_PREFIX)) {
-        // Return a module that exports a Proxy as its default + re-exports
-        // any named binding the consumer asks for as a no-op function.
+        // Proxy-based default that returns no-op for any property access;
+        // explicit named exports for identifiers Rollup needs to resolve
+        // statically during tree-shaking.
         return `
-const handler = { get: (_, prop) => typeof prop === 'string' ? () => '' : undefined };
-const stub = new Proxy({}, handler);
-export default stub;
-export const createHash = () => ({ update: () => ({ digest: () => '' }) });
+const noop = () => '';
+const chainable = () => ({ update: chainable, digest: noop });
+export default new Proxy({}, { get: () => noop });
+export const createHash = chainable;
+export const resolve = noop;
+export const join = noop;
+export const dirname = noop;
+export const basename = noop;
 `;
       }
     },
