@@ -214,20 +214,27 @@ with API proxy to ObjectStack at `:5320`.
 ### Production
 
 ```bash
-# Build frontend assets
-pnpm web:build
-pnpm site:build
+# Build all packages and apps
+pnpm build
 
 # Start single-process server
 # Serves API + /console (SPA) + /docs (static)
 pnpm start
 ```
 
+### Deploy to Vercel
+
+The project includes `vercel.json` and `api/index.ts` for Vercel deployment.
+Static assets are served from CDN; the API runs as a serverless function.
+
+See [Deployment Guide](./DEPLOYMENT.md) for full details.
+
 ---
 
 ## Documentation
 
 - [Architecture Guide](./ARCHITECTURE.md)
+- [Deployment Guide](./DEPLOYMENT.md)
 - [Development Plan](./DEVELOPMENT_PLAN.md)
 - [Contributing Guide](./CONTRIBUTING.md)
 
