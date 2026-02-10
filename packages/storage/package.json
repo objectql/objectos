@@ -11,8 +11,8 @@
     "test": "jest --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^2.0.1",
-    "@objectstack/spec": "2.0.1"
+    "@objectstack/runtime": "^2.0.4",
+    "@objectstack/spec": "2.0.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

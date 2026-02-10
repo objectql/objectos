@@ -10,7 +10,7 @@ import { AppPlugin, DriverPlugin } from '@objectstack/runtime';
 import { ObjectQLPlugin } from '@objectstack/objectql';
 import { InMemoryDriver } from '@objectstack/driver-memory';
 import { AuditLogPlugin } from '@objectos/audit';
-import { BetterAuthPlugin } from '@objectos/auth';
+import { AuthPlugin } from '@objectstack/plugin-auth';
 import { AutomationPlugin } from '@objectos/automation';
 import { CachePlugin } from '@objectos/cache';
 import { I18nPlugin } from '@objectos/i18n';
@@ -65,7 +65,7 @@ export default defineStack({
     new StoragePlugin(),
 
     // Core
-    new BetterAuthPlugin(),
+    new AuthPlugin(),
     new PermissionsPlugin(),
     new AuditLogPlugin(),
 
