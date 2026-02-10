@@ -85,6 +85,7 @@
     "@objectos/permissions": "workspace:*",
     "@objectos/realtime": "workspace:*",
     "@objectos/storage": "workspace:*",
+    "@objectos/ui": "workspace:*",
     "@objectos/workflow": "workspace:*",
     "@objectql/core": "^4.2.0",
     "@objectql/driver-mongo": "^4.2.0",

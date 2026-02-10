@@ -20,6 +20,7 @@ import { NotificationPlugin } from '@objectos/notification';
 import { PermissionsPlugin } from '@objectos/permissions';
 import { createRealtimePlugin } from '@objectos/realtime';
 import { StoragePlugin } from '@objectos/storage';
+import { UIPlugin } from '@objectos/ui';
 import { WorkflowPlugin } from '@objectos/workflow';
 import { resolve } from 'path';
 
@@ -77,6 +78,7 @@ export default defineStack({
     // Services
     new NotificationPlugin(),
     new I18nPlugin(),
+    new UIPlugin(),
     // createRealtimePlugin(),
 
     // Example Apps
