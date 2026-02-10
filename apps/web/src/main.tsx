@@ -20,11 +20,15 @@ const queryClient = new QueryClient({
 // Vercel → "/" (stripped to ""), Local → "/console/" (stripped to "/console")
 const basename = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
-// Register service worker for PWA offline support
-registerServiceWorker({
-  onSuccess: () => console.log('[SW] Content cached for offline use'),
-  onUpdate: () => console.log('[SW] New content available; please refresh'),
-});
+// Register service worker for PWA offline support (production only).
+// In dev mode the SW's cache-first strategy serves stale Vite pre-bundled
+// chunks, causing React hook mismatches and HMR WebSocket failures.
+if (import.meta.env.PROD) {
+  registerServiceWorker({
+    onSuccess: () => console.log('[SW] Content cached for offline use'),
+    onUpdate: () => console.log('[SW] New content available; please refresh'),
+  });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

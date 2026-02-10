@@ -19,13 +19,33 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), htmlBaseUrl()],
   base,
   resolve: {
-    dedupe: ['react', 'react-dom'],
+    // Ensure every dependency resolves to exactly ONE copy of React, its DOM
+    // renderer, and the router — prevents "Invalid hook call" errors.
+    dedupe: ['react', 'react-dom', 'react-router', 'react-router-dom'],
     alias: {
       '@': resolve(__dirname, 'src'),
     },
   },
+  optimizeDeps: {
+    // Force these into the Vite pre-bundle so they share a single React chunk.
+    include: [
+      'react',
+      'react-dom',
+      'react-dom/client',
+      'react-router-dom',
+      'better-auth/react',
+      'better-auth/client/plugins',
+      '@tanstack/react-query',
+    ],
+  },
   server: {
     port: 5321,
+    hmr: {
+      // With base: '/console/' the default WS path becomes /console/ which
+      // can fail behind proxies or when a stale Service Worker intercepts the
+      // upgrade request.  Use a dedicated path so HMR always connects.
+      path: 'hmr',
+    },
     proxy: {
       '/api/v1': {
         target: 'http://localhost:5320',
