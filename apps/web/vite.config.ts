@@ -15,8 +15,46 @@ function htmlBaseUrl(): Plugin {
   };
 }
 
+/**
+ * Rollup plugin: stub Node.js built-in modules that leak into the browser
+ * bundle via server-side transitive dependencies (e.g. @objectstack/core
+ * imports "crypto" and "path").
+ *
+ * Each built-in is resolved to a virtual module whose default export is an
+ * empty object and every named import becomes a no-op function, so that
+ * `import { createHash } from "crypto"` does not crash the build.
+ */
+const nodeBuiltins = ['crypto', 'path'];
+const VIRTUAL_PREFIX = '\0node-stub:';
+function nodeBuiltinStubs(): Plugin {
+  return {
+    name: 'node-builtin-stubs',
+    enforce: 'pre',
+    resolveId(source) {
+      if (nodeBuiltins.includes(source)) return VIRTUAL_PREFIX + source;
+    },
+    load(id) {
+      if (id.startsWith(VIRTUAL_PREFIX)) {
+        // Proxy-based default that returns no-op for any property access;
+        // explicit named exports for identifiers Rollup needs to resolve
+        // statically during tree-shaking.
+        return `
+const noop = () => '';
+const chainable = () => ({ update: chainable, digest: noop });
+export default new Proxy({}, { get: () => noop });
+export const createHash = chainable;
+export const resolve = noop;
+export const join = noop;
+export const dirname = noop;
+export const basename = noop;
+`;
+      }
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), htmlBaseUrl()],
+  plugins: [react(), tailwindcss(), htmlBaseUrl(), nodeBuiltinStubs()],
   base,
   resolve: {
     // Ensure every dependency resolves to exactly ONE copy of React, its DOM
@@ -32,11 +70,15 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-dom/client',
+      'react-router',
       'react-router-dom',
       'better-auth/react',
       'better-auth/client/plugins',
       '@tanstack/react-query',
     ],
+    // @objectstack/core contains Node.js built-ins (crypto, path).
+    // Exclude it from pre-bundling so the stubs plugin resolves them.
+    exclude: ['@objectstack/core'],
   },
   server: {
     port: 5321,
