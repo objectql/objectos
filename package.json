@@ -20,7 +20,7 @@
     "dev:all": "concurrently -n api,web,site -c blue,green,yellow \"pnpm objectstack:serve\" \"pnpm web:dev\" \"pnpm site:dev\"",
     "start": "pnpm objectstack:serve",
     "build": "turbo run build",
-    "build:vercel": "turbo run build && cp -r apps/site/out apps/web/dist/docs",
+    "build:vercel": "turbo run build --filter=@objectos/web...",
     "test": "turbo run test --concurrency=3",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
