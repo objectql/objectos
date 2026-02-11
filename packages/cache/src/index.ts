@@ -10,6 +10,7 @@ export type {
     CacheConfig,
     CacheEntry,
     CacheStats,
+    CacheStrategy,
     LruCacheOptions,
     RedisCacheOptions,
 } from './types.js';
