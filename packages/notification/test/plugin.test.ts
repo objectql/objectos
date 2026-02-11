@@ -21,6 +21,7 @@ jest.mock('axios', () => {
 // Mock PluginContext
 const createMockContext = (): PluginContext => {
   const services = new Map();
+  const hooks: Map<string, Function[]> = new Map();
   
   return {
     logger: {
@@ -33,8 +34,20 @@ const createMockContext = (): PluginContext => {
       services.set(name, service);
     },
     getService: (name: string) => services.get(name),
+    hasService: (name: string) => services.has(name),
+    getServices: () => services,
     emit: jest.fn(),
-    on: jest.fn()
+    on: jest.fn(),
+    hook: jest.fn((name: string, handler: Function) => {
+      if (!hooks.has(name)) hooks.set(name, []);
+      hooks.get(name)!.push(handler);
+    }),
+    trigger: jest.fn(async (name: string, ...args: any[]) => {
+      const handlers = hooks.get(name) || [];
+      for (const handler of handlers) {
+        await handler(...args);
+      }
+    }),
   } as any;
 };
 
