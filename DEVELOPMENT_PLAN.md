@@ -1,9 +1,12 @@
 # ObjectOS Development Plan
 
-> **Version**: 5.0.0
+> **Version**: 6.0.0
 > **Date**: February 11, 2026
-> **Status**: Phase G — Spec Protocol Alignment + Business App Shell
-> **Spec SDK**: `@objectstack/spec@2.0.6`
+> **Status**: Phase H — @object-ui Driven Development
+> **Spec SDK**: `@objectstack/spec@2.0.7`
+> **ObjectUI**: `@object-ui/*@2.0.0`
+>
+> **Roadmap**: See [ROADMAP.md](./ROADMAP.md) for the consolidated roadmap reassessed around @object-ui integration.
 
 ---
 
@@ -37,9 +40,11 @@
 |--------|-------|
 | **Plugin Packages** | 13/13 (100%) — All implemented with lifecycle compliance |
 | **Spec Compliance** | ✅ 100% — All packages pass `@objectstack/spec` audit |
-| **ObjectStack SDK** | `v2.0.6` |
+| **ObjectStack SDK** | `v2.0.7` |
+| **ObjectUI Packages** | 6 packages at `v2.0.0` |
 | **Spec Protocol Namespaces** | 14 |
 | **Spec Service Contracts** | 25 |
+| **Contract Adoption** | 10/14 plugins formally adopt spec contracts |
 | **Server Source Code** | 21,947 lines across 107 TypeScript files in 13 packages |
 | **Test Files** | 49 test files across 13 packages (incl. integration + performance baselines) |
 | **Frontend Source Code** | 9,570 lines across 65 files (29 pages, 15 UI components) |
@@ -64,6 +69,11 @@
 - ✅ Realtime WebSocket server with presence, awareness, and collaboration support (35 tests)
 - ✅ `@objectstack/spec` protocol compliance audit passed
 - ✅ Vercel serverless deployment configured and operational
+- ✅ 10/14 plugins adopt `@objectstack/spec/contracts` interfaces
+- ✅ @objectstack/* packages upgraded to v2.0.7
+- ✅ @object-ui v2.0.0 packages integrated (6 packages: core, react, components, layout, fields, data-objectstack)
+- ✅ ObjectStack data adapter for @object-ui configured
+- ✅ Business App Shell pages created (app, object-list, object-record)
 
 ---
 
@@ -302,15 +312,22 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 | Dependency | Version | Role | Consumers |
 |-----------|---------|------|-----------|
-| `@objectstack/runtime` | 2.0.6 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
-| `@objectstack/spec` | 2.0.6 | Protocol contracts — Zod schemas, TypeScript interfaces, Contracts module | audit, automation, auth, jobs, permissions, workflow, browser |
-| `@objectstack/cli` | 2.0.6 | Server bootstrap — `objectstack serve` command | Root devDependency |
-| `@objectstack/objectql` | 2.0.6 | ObjectQL plugin for metadata loading | Root dependency |
-| `@objectstack/driver-memory` | 2.0.6 | In-memory data driver for development/serverless | Root dependency |
-| `@objectstack/plugin-hono-server` | 2.0.6 | Hono HTTP server plugin | Root dependency |
+| `@objectstack/runtime` | 2.0.7 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
+| `@objectstack/spec` | 2.0.7 | Protocol contracts — Zod schemas, TypeScript interfaces, Contracts module | audit, automation, auth, jobs, permissions, workflow, browser |
+| `@objectstack/cli` | 2.0.7 | Server bootstrap — `objectstack serve` command | Root devDependency |
+| `@objectstack/objectql` | 2.0.7 | ObjectQL plugin for metadata loading | Root dependency |
+| `@objectstack/driver-memory` | 2.0.7 | In-memory data driver for development/serverless | Root dependency |
+| `@objectstack/plugin-hono-server` | 2.0.7 | Hono HTTP server plugin | Root dependency |
+| `@objectstack/client` | 2.0.7 | Frontend SDK for API integration | apps/web |
 | `@objectql/core` | 4.2.0 | Data engine — metadata registry, query compiler | Root dependency |
 | `@objectql/driver-sql` | 4.2.0 | SQL database driver (PostgreSQL, MySQL, SQLite) | Root dependency |
 | `@objectql/driver-mongo` | 4.2.0 | MongoDB database driver | Root dependency |
+| `@object-ui/core` | 2.0.0 | UI core logic, types, validation | apps/web |
+| `@object-ui/react` | 2.0.0 | React bindings, SchemaRenderer | apps/web |
+| `@object-ui/components` | 2.0.0 | Standard UI components (Shadcn-based) | apps/web |
+| `@object-ui/layout` | 2.0.0 | Application shell components | apps/web |
+| `@object-ui/fields` | 2.0.0 | Field renderers and registry | apps/web |
+| `@object-ui/data-objectstack` | 2.0.0 | ObjectStack data adapter | apps/web |
 | `better-auth` | latest | Authentication framework | @objectos/auth |
 | `hono` | 4.11.0 | HTTP framework | Root + API server |
 
@@ -517,7 +534,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 
 ### 7.2 Completed Phase (Most Recent)
 
-#### Phase F — Release Candidate ✅ COMPLETED
+#### Phase G — Spec Protocol Alignment + @object-ui Integration ✅ COMPLETED
 
 | Task | Status | Notes |
 |------|:------:|-------|
@@ -529,6 +546,24 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Build optimization (Vite code splitting) | ✅ | Vendor, router, query manual chunks + lazy routes |
 | Docker build pipeline | ✅ | Multi-stage Dockerfile + docker-compose.yml (ObjectOS + PostgreSQL + Redis) |
 | E2E smoke tests (Playwright) | ✅ | Auth, Admin, and App Shell smoke tests (`e2e/*.spec.ts`) with Playwright config |
+| @objectstack/* packages upgrade to v2.0.7 | ✅ | All packages updated |
+| @object-ui v2.0.0 integration | ✅ | 6 packages installed, adapter configured, demo page functional |
+| Spec Contracts adoption (10/14 plugins) | ✅ | ICacheService, II18nService, INotificationService, IJobService, IAuthService, IAutomationService, IWorkflowService, IRealtimeService, IUIService, IStorageService |
+| Business App Shell pages | ✅ | app.tsx, object-list.tsx, object-record.tsx with TanStack Query hooks |
+| Consolidate development plan | ✅ | ROADMAP.md created as consolidated roadmap |
+
+### 7.3 Current Phase
+
+#### Phase H — @object-ui Driven Development 🔄 IN PROGRESS
+
+> See [ROADMAP.md](./ROADMAP.md) for full Phase H breakdown.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| H.1 | SchemaRenderer integration for business pages | 🔴 | 🔲 |
+| H.2 | Metadata-driven navigation | 🔴 | 🔲 |
+| H.3 | API client completion (remove mock data reliance) | 🔴 | 🔲 |
+| H.4 | @object-ui / @objectos bridge components | 🟡 | 🔲 |
 
 ---
 
@@ -550,10 +585,10 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Plugin Interface | All plugins implement `Plugin` from `@objectstack/runtime` | ✅ |
 | Runtime Dependency | All plugins declare `@objectstack/runtime` as dependency | ✅ |
 | Spec Dependency | Packages importing from `@objectstack/spec` declare it | ✅ |
-| Version Consistency | `@objectstack/spec: 2.0.6`, `@objectstack/runtime: ^2.0.6` | ✅ |
+| Version Consistency | `@objectstack/spec: 2.0.7`, `@objectstack/runtime: ^2.0.7` | ✅ |
 | Lifecycle Methods | All plugins implement `init()`, `start()`, `destroy()` | ✅ |
 
-### Spec v2.0.6 — New Capabilities
+### Spec v2.0.7 — Capabilities
 
 **Contracts Module** — 25 service interfaces (`@objectstack/spec/contracts`):
 - Typed service contracts for all `CoreServiceNames` (metadata, data, auth, cache, etc.)
@@ -859,6 +894,8 @@ states:
 
 ## 12. Roadmap to v1.0 and Beyond
 
+> **See [ROADMAP.md](./ROADMAP.md) for the full consolidated roadmap reassessed around @object-ui integration.**
+
 ### 12.1 v1.0 Release Criteria
 
 | Criterion | Current Status | Required for v1.0 |
@@ -871,35 +908,29 @@ states:
 | Performance baseline (P95 < 100ms) | ✅ | ✅ |
 | Docker deployment | ✅ | ✅ |
 | Documentation spec-aligned | ✅ | ✅ |
-| E2E smoke tests | ✅ | 🟡 |
-| ObjectUI integration | 🔲 | 🔲 (v1.1) |
+| E2E smoke tests | ✅ | ✅ |
+| @object-ui integration (SchemaRenderer) | 🔲 | ✅ |
+| Business App Shell with live API | 🔲 | ✅ |
 
-### 12.2 Phase F — Release Candidate (✅ COMPLETED)
-
-| # | Task | Priority | Duration | Status |
-|---|------|:--------:|:--------:|:------:|
-| F.1 | Security review (OWASP audit) | 🔴 | 3 days | ✅ |
-| F.2 | Integration test suite (Auth → Permissions → Data → Audit) | 🔴 | 3 days | ✅ |
-| F.3 | Performance baseline with k6 | 🔴 | 2 days | ✅ |
-| F.4 | Docker multi-stage build | 🔴 | 1 day | ✅ |
-| F.5 | Documentation alignment (guides match current API) | 🟡 | 2 days | ✅ |
-| F.6 | E2E smoke tests (Playwright: login, CRUD, admin) | 🟡 | 2 days | ✅ |
-| F.7 | Changesets release workflow | 🟡 | 1 day | ✅ |
-| F.8 | Version tag v1.0.0 | 🟡 | 0.5 days | 🔲 |
-
-### 12.3 Phase G — Spec Protocol Alignment (Current — February 2026)
-
-This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0.6` protocol, including the new Contracts module (25 service interfaces) and 14 protocol namespaces, as well as building the Business App Shell foundation.
+### 12.2 Phase G — Spec Protocol Alignment + @object-ui (✅ COMPLETED)
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
 | G.1 | Update Spec Compliance Design Document (v2.0) | 🔴 | ✅ |
-| G.2 | Adopt Contracts interfaces for all 14 plugins | 🔴 | ✅ |
-| G.3 | Implement Identity protocol alignment (SCIM schemas) | 🟡 | 🔲 |
-| G.4 | Business App Shell (Object List + Record views) | 🔴 | 🔲 |
-| G.5 | API client layer (@objectstack/client integration) | 🔴 | 🔲 |
-| G.6 | Metadata-driven navigation | 🟡 | 🔲 |
-| G.7 | Consolidate development plan documents | 🟡 | ✅ |
+| G.2 | Adopt Contracts interfaces for core plugins | 🔴 | ✅ (10/14) |
+| G.3 | @object-ui v2.0.0 package integration | 🔴 | ✅ |
+| G.4 | Business App Shell pages (app, object-list, object-record) | 🔴 | ✅ |
+| G.5 | @objectstack/* packages upgrade to v2.0.7 | 🔴 | ✅ |
+| G.6 | Consolidate development plan documents | 🟡 | ✅ |
+
+### 12.3 Phase H — @object-ui Driven Development (Current — February–March 2026)
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| H.1 | SchemaRenderer integration for business pages (grid/form/detail) | 🔴 | 🔲 |
+| H.2 | Metadata-driven navigation | 🔴 | 🔲 |
+| H.3 | API client completion (remove mock data reliance) | 🔴 | 🔲 |
+| H.4 | @object-ui / @objectos bridge components (ObjectPage, ObjectToolbar) | 🟡 | 🔲 |
 
 ### 12.4 v1.0.0 — Production Release (Target: March 2026)
 
@@ -912,26 +943,24 @@ This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0
 | Integration test suite | ✅ | ✅ |
 | Performance baseline (P95 < 100ms) | ✅ | ✅ |
 | Docker deployment | ✅ | ✅ |
-| Documentation spec-aligned | ✅ | ✅ |
 | E2E smoke tests | ✅ | ✅ |
-| Spec Contracts adoption (metadata, data, auth, cache) | ✅ | ✅ |
-| Business App Shell Phase 1 (object list + record detail) | 🔲 | ✅ |
+| Spec Contracts adoption (10/14 plugins) | ✅ | ✅ |
+| @object-ui SchemaRenderer for business pages | 🔲 | ✅ |
+| Business App Shell with live API data | 🔲 | ✅ |
 
-### 12.5 v1.1.0 — ObjectUI Integration + Identity (Target: April 2026)
+### 12.5 v1.1.0 — Rich Business UI (Target: April 2026)
 
 | # | Task | Description |
 |---|------|-------------|
-| 1.1.1 | Install `@objectui/core` | Add ObjectUI as dependency to apps/web |
-| 1.1.2 | Metadata-driven routing | `/apps/:objectName` → fetch schema → render ObjectUI |
-| 1.1.3 | Schema Renderer integration | `<SchemaRenderer object="contacts" view="grid" />` |
-| 1.1.4 | Form Renderer integration | `<SchemaRenderer object="contacts" view="form" />` |
-| 1.1.5 | Plugin UI extension slots | Define extension points for plugin-contributed UI |
-| 1.1.6 | View configuration | Support ObjectStack UI protocol for dashboards |
-| 1.1.7 | SCIM 2.0 provisioning endpoints | Identity provisioning via SCIM 2.0 |
-| 1.1.8 | Identity protocol compliance | Align `@objectos/auth` with Identity namespace |
-| 1.1.9 | Studio plugin protocol support | Enable Studio namespace for admin tooling |
+| 1.1.1 | Inline editing in grid view | Click-to-edit cells using @object-ui/fields |
+| 1.1.2 | Bulk record actions | Select multiple → delete, update field, change owner |
+| 1.1.3 | Saved filters / views | Persist filter configurations per user per object |
+| 1.1.4 | Visual Flow Editor | Drag-and-drop workflow designer |
+| 1.1.5 | Approval Inbox | Centralized pending approvals view |
+| 1.1.6 | Related lists on record detail | Child objects rendered as sub-tables |
+| 1.1.7 | CSV import/export | Bulk data upload with field mapping |
 
-### 12.6 v1.2.0 — Enterprise Features + Spec Full Compliance (Target: June 2026)
+### 12.6 v1.2.0 — Enterprise Features (Target: June 2026)
 
 | # | Feature | Package(s) | Description |
 |---|---------|-----------|-------------|
@@ -940,11 +969,9 @@ This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0
 | 1.2.3 | OpenTelemetry integration | metrics | Distributed tracing, span collection |
 | 1.2.4 | Event bus persistence | runtime | Event replay, dead-letter queue, retry |
 | 1.2.5 | Schema migrations | objectql | Version-controlled schema evolution |
-| 1.2.6 | Search plugin | `@objectos/search` | Full-text search across objects |
-| 1.2.7 | Queue plugin | `@objectos/queue` | Persistent job queue with priority scheduling |
-| 1.2.8 | Compliance plugin | `@objectos/compliance` | Policy enforcement and compliance rules |
-| 1.2.9 | Logging plugin | `@objectos/logging` | Structured logging with log levels and sinks |
-| 1.2.10 | Full Contracts compliance | All plugins | Implement all 18 `CoreServiceNames` contracts |
+| 1.2.6 | Offline & Sync | browser | Service Worker, OPFS, mutation queue, conflict resolution |
+| 1.2.7 | Automation Rule Builder UI | apps/web | Visual trigger + condition + action configuration |
+| 1.2.8 | Workflow Instance Monitor | apps/web | Real-time workflow execution tracking |
 
 ### 12.7 v2.0.0 — Platform (Target: September 2026)
 
@@ -960,33 +987,38 @@ This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0
 | 2.0.8 | GraphQL plugin | Full GraphQL resolver layer with schema stitching |
 | 2.0.9 | Analytics plugin | Business analytics and reporting engine |
 | 2.0.10 | AI plugin | AI-powered data extraction, classification, suggestions |
-| 2.0.11 | Integration/Connector framework | Extensible connector system for third-party services |
-| 2.0.12 | Hub marketplace integration | Publish/consume plugins via Hub namespace |
 
 ### 12.8 Master Timeline
 
 ```
-Feb 2026                                    Dec 2026
-  │                                             │
-  ├─ Phase G: Spec Alignment (2-3 weeks) ─┐   │
-  │                                        ▼   │
-  │                                 v1.0.0 Release
-  │                                        │   │
-  │                    v1.1 ObjectUI + Identity (4 weeks)
-  │                                        │   │
-  │                    v1.2 Enterprise + Full Spec (6 weeks)
-  │                                        │   │
-  │                    v2.0 Platform (12 weeks) │
-  │                                        │   │
-  ▼                                        ▼   ▼
+Feb 2026                                                    Sep 2026
+  │                                                            │
+  ├── Phase H: @object-ui Driven Dev ──────┐                  │
+  │   (SchemaRenderer, API, navigation)    │                  │
+  │                                         ▼                  │
+  │                                  v1.0.0 Release           │
+  │                                         │                  │
+  ├── Phase I: Rich Data Experience ────────┤                  │
+  ├── Phase J: Workflow & Automation UI ────┤                  │
+  │                                         ▼                  │
+  │                                  v1.1.0 Release           │
+  │                                         │                  │
+  ├── Phase K: Offline & Sync ──────────────┤                  │
+  │                                         ▼                  │
+  │                                  v1.2.0 Release           │
+  │                                         │                  │
+  ├── Phase L: Polish & Performance ────────┤                  │
+  │                                         ▼                  │
+  │                                  v2.0.0 Release           │
+  ▼                                         ▼                  ▼
 ```
 
 | Version | Target Date | Key Deliverables |
 |---------|:-----------:|-----------------|
-| **v1.0.0** | March 2026 | Production-ready runtime + Admin Console + Docker + Spec Contracts (core) + Business App Shell Phase 1 |
-| **v1.1.0** | April 2026 | ObjectUI integration, metadata-driven business UI, SCIM 2.0, Identity protocol |
-| **v1.2.0** | June 2026 | Multi-tenancy, rate limiting, OpenTelemetry, search/queue/compliance/logging plugins, full Contracts compliance |
-| **v2.0.0** | September 2026 | Visual designer, marketplace, AI agents, sync protocol, GraphQL, analytics, Hub integration |
+| **v1.0.0** | March 2026 | Production runtime + @object-ui business pages + live API |
+| **v1.1.0** | April 2026 | Rich data views, Visual Flow Editor, Approval Inbox |
+| **v1.2.0** | June 2026 | Enterprise features, offline/sync, automation UI |
+| **v2.0.0** | September 2026 | Platform: marketplace, AI agents, GraphQL, analytics |
 
 ---
 
@@ -1099,26 +1131,24 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 
 ## 15. Consolidated Frontend Roadmap
 
-> Consolidated from `APPS_WEB_ROADMAP.md` — detailed frontend development phases for `apps/web`.
+> Consolidated from `APPS_WEB_ROADMAP.md` — reassessed around @object-ui integration. See [ROADMAP.md](./ROADMAP.md) for full details.
 
 | Phase | Name | Target | Key Deliverables | Status |
 |:-----:|------|:------:|-----------------|:------:|
-| **1** | Foundation | Feb–Mar 2026 | Object List page, Record Detail page, API client layer (`@objectstack/client`), metadata-driven navigation | 🔲 Current |
-| **2** | Rich Data Views | Apr 2026 | Inline editing, bulk actions, saved filters, related lists, kanban/calendar views | 🔲 |
-| **3** | ObjectUI Integration | Apr–May 2026 | `@objectui/core` integration, `<SchemaRenderer>` for grid/form, plugin UI extension slots | 🔲 |
-| **4** | Workflow & Automation UI | May–Jun 2026 | Visual Flow editor, approval inbox, automation rule builder, trigger monitoring | 🔲 |
-| **5** | Offline & Sync | Jul–Aug 2026 | `@objectos/browser` integration, OPFS storage, Service Worker, conflict resolution UI | 🔲 |
-| **6** | Polish & Performance | Aug–Sep 2026 | Virtual scrolling, optimistic updates, skeleton loading, accessibility (WCAG 2.1 AA), bundle optimization | 🔲 |
+| **H** | @object-ui Driven Development | Feb–Mar 2026 | SchemaRenderer for grid/form/detail, metadata navigation, API client completion | 🔲 Current |
+| **I** | Rich Data Experience | Mar–Apr 2026 | Inline editing, bulk actions, saved filters, related lists, CSV import/export | 🔲 |
+| **J** | Workflow & Automation UI | Apr–May 2026 | Visual Flow editor, approval inbox, automation rule builder, trigger monitoring | 🔲 |
+| **K** | Offline & Sync | May–Jun 2026 | Service Worker, OPFS storage, mutation queue, conflict resolution UI | 🔲 |
+| **L** | Polish & Performance | Jun–Jul 2026 | Virtual scrolling, skeletons, accessibility (WCAG 2.1 AA), bundle optimization | 🔲 |
 
-### Phase 1 Details (Current Focus)
+### Phase H Details (Current Focus)
 
 | # | Task | Priority | Description |
 |---|------|:--------:|-------------|
-| 1.1 | Object List page | 🔴 | Generic `/app/:objectName` route with server-side pagination, sorting, filtering |
-| 1.2 | Record Detail page | 🔴 | `/app/:objectName/:recordId` with field-type-aware rendering |
-| 1.3 | API client integration | 🔴 | TanStack Query hooks wrapping `@objectstack/client` for CRUD operations |
-| 1.4 | Metadata-driven nav | 🟡 | Sidebar generated from `GET /api/v1/metadata/objects` response |
-| 1.5 | Field type renderers | 🟡 | Components for text, number, date, boolean, lookup, picklist fields |
+| H.1 | SchemaRenderer for business pages | 🔴 | Replace hand-built views with `<SchemaRenderer view="grid/form/detail" />` |
+| H.2 | Metadata-driven navigation | 🔴 | Sidebar generated from `GET /api/v1/meta/apps` response |
+| H.3 | API client completion | 🔴 | Connect hooks to live @objectstack/client, remove mock data reliance |
+| H.4 | Bridge components | 🟡 | ObjectPage (permissions), ObjectToolbar (view switcher), RelatedList, FilterPanel |
 
 ---
 
@@ -1140,5 +1170,5 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 ---
 
 <div align="center">
-<sub>ObjectOS v5.0.0 — The Enterprise Operating System | Built with @objectstack/spec@2.0.6</sub>
+<sub>ObjectOS v6.0.0 — The Enterprise Operating System | Built with @objectstack/spec@2.0.7 + @object-ui@2.0.0</sub>
 </div>
