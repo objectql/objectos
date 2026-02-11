@@ -68,6 +68,8 @@ export class AuditLogPlugin implements Plugin {
         await this.setupEventListeners(context);
 
         context.logger.info('[Audit Log] Initialized successfully');
+
+        await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     private retentionTimer?: ReturnType<typeof setInterval>;
@@ -142,6 +144,8 @@ export class AuditLogPlugin implements Plugin {
         this.startRetentionCleanup();
 
         context.logger.info('[Audit Log] Started successfully');
+
+        await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -500,14 +504,17 @@ export class AuditLogPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         const message = this.config.enabled ? 'Audit logging active' : 'Audit logging disabled';
+        const latency = Date.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'audit-storage', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
@@ -518,7 +525,20 @@ export class AuditLogPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.audit',
+                    name: 'audit',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'logEvent', description: 'Record an audit event', async: true },
+                        { name: 'query', description: 'Query audit log entries', returnType: 'Promise<AuditLogEntry[]>', async: true },
+                        { name: 'getTrail', description: 'Get audit trail for a record', returnType: 'Promise<AuditTrailEntry[]>', async: true },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'audit',
                 trustLevel: 'trusted',
@@ -544,6 +564,10 @@ export class AuditLogPlugin implements Plugin {
             this.retentionTimer = undefined;
         }
         this.context?.logger.info('[Audit Log] Destroyed');
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 }
 
