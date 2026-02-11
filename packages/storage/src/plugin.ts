@@ -267,6 +267,7 @@ export class StoragePlugin implements Plugin, IStorageService {
      * Upload a file to storage (stores binary data as a KV entry).
      */
     async upload(key: string, data: Buffer | ReadableStream, options?: SpecStorageUploadOptions): Promise<void> {
+        // ReadableStream conversion uses global Response API (available in Node.js 18+ LTS)
         const buf = Buffer.isBuffer(data) ? data : Buffer.from(await new Response(data as any).arrayBuffer());
         await this.backend.set(`file:${key}`, buf);
         this.fileMeta.set(key, {
