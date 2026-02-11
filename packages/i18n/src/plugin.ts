@@ -17,6 +17,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { II18nService } from '@objectstack/spec/contracts';
 import type { 
     I18nConfig, 
     TranslationData, 
@@ -36,7 +37,7 @@ import { interpolate, pluralize, processDirectives, formatNumber, formatDate } f
  * I18n Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class I18nPlugin implements Plugin {
+export class I18nPlugin implements Plugin, II18nService {
     name = '@objectos/i18n';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -99,38 +100,52 @@ export class I18nPlugin implements Plugin {
     }
 
     /**
-     * Translate a key
-     * 
-     * @param key - Translation key (supports nested: 'user.profile.name')
-     * @param params - Interpolation parameters
-     * @returns The translated string
+     * Translate a key (II18nService contract: with explicit locale)
      */
-    t(key: string, params?: InterpolationOptions): string {
-        const result = this.lookup(key, this.currentLocale);
+    t(key: string, locale: string, params?: Record<string, unknown>): string;
+    /**
+     * Translate a key (legacy: uses current locale)
+     */
+    t(key: string, params?: InterpolationOptions): string;
+    t(key: string, localeOrParams?: string | InterpolationOptions | Record<string, unknown>, maybeParams?: Record<string, unknown>): string {
+        let locale: string;
+        let params: InterpolationOptions | undefined;
+
+        if (typeof localeOrParams === 'string') {
+            // II18nService contract: t(key, locale, params?)
+            locale = localeOrParams;
+            params = maybeParams as InterpolationOptions | undefined;
+        } else {
+            // Legacy: t(key, params?)
+            locale = this.currentLocale;
+            params = localeOrParams as InterpolationOptions | undefined;
+        }
+
+        const result = this.lookup(key, locale);
         
         if (!result.found && this.warnOnMissing) {
-            this.context?.logger.warn(`[I18n] Missing translation: ${key} (locale: ${this.currentLocale})`);
+            this.context?.logger.warn(`[I18n] Missing translation: ${key} (locale: ${locale})`);
         }
 
         let translation = result.value;
 
         // Handle custom missing translation
         if (!result.found && this.onMissingTranslation) {
-            translation = this.onMissingTranslation(key, this.currentLocale);
+            translation = this.onMissingTranslation(key, locale);
         }
 
         // Apply interpolation if params provided
         if (params) {
             // Check for pluralization (if params has 'count')
             if ('count' in params && typeof params.count === 'number') {
-                const pluralData = this.lookupRaw(key, this.currentLocale);
+                const pluralData = this.lookupRaw(key, locale);
                 if (pluralData && typeof pluralData === 'object') {
                     return pluralize(pluralData, { ...params, count: params.count });
                 }
             }
             
             // Process directives and interpolation
-            translation = processDirectives(translation, params, this.currentLocale);
+            translation = processDirectives(translation, params, locale);
         }
 
         return translation;
@@ -188,6 +203,35 @@ export class I18nPlugin implements Plugin {
      */
     getLoadedLocales(): string[] {
         return Array.from(this.translations.keys());
+    }
+
+    /**
+     * Get all translations for a locale (II18nService contract)
+     */
+    getTranslations(locale: string): Record<string, unknown> {
+        return (this.translations.get(locale) as Record<string, unknown>) ?? {};
+    }
+
+    /**
+     * Get all available locales (II18nService contract)
+     */
+    getLocales(): string[] {
+        return this.getLoadedLocales();
+    }
+
+    /**
+     * Get the default locale (II18nService contract)
+     */
+    getDefaultLocale(): string {
+        return this.defaultLocale;
+    }
+
+    /**
+     * Set the default locale (II18nService contract)
+     */
+    setDefaultLocale(locale: string): void {
+        this.defaultLocale = locale;
+        this.context?.logger.info(`[I18n] Default locale changed to: ${locale}`);
     }
 
     /**
