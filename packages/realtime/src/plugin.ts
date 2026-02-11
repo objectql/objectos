@@ -1,4 +1,5 @@
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IRealtimeService, RealtimeEventPayload as SpecRealtimeEventPayload, RealtimeEventHandler as SpecRealtimeEventHandler, RealtimeSubscriptionOptions as SpecRealtimeSubscriptionOptions } from '@objectstack/spec/contracts';
 import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, CollaborationSession } from './types.js';
 import { WebSocketServer, WebSocket } from 'ws';
 import { randomUUID } from 'crypto';
@@ -68,12 +69,15 @@ interface ClientState {
     subscriptions: Map<string, SubscribeMessage['subscription']>;
 }
 
-export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugin => {
+export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugin & IRealtimeService => {
   let wss: WebSocketServer;
   const clientStates = new Map<WebSocket, ClientState>();
   let startedAt: number | undefined;
   let pluginCtx: PluginContext | undefined;
   const collaborationSessions = new Map<string, CollaborationSession>();
+
+  // In-memory handler registry for IRealtimeService.subscribe / unsubscribe
+  const handlerRegistry = new Map<string, { channel: string; handler: SpecRealtimeEventHandler; options?: SpecRealtimeSubscriptionOptions }>();
 
   // Helper: Simple Wildcard Matcher (e.g. "user.*" matches "user.created")
   const matchPattern = (pattern: string, event: string): boolean => {
@@ -418,5 +422,57 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
     getStartupResult(): PluginStartupResult {
       return { plugin: { name: '@objectos/realtime', version: '0.1.0' }, success: !!wss, duration: 0 };
     },
-  } as Plugin;
+
+    // ── IRealtimeService contract methods ──
+
+    async publish(event: SpecRealtimeEventPayload): Promise<void> {
+      if (!wss) return;
+      const timestamp = new Date().toISOString();
+
+      // Broadcast to WebSocket clients via existing logic
+      wss.clients.forEach(client => {
+        if (client.readyState !== WebSocket.OPEN) return;
+        const state = clientStates.get(client);
+        if (!state) return;
+
+        state.subscriptions.forEach(subscription => {
+          if (subscription.objects && event.object) {
+            if (!subscription.objects.includes(event.object)) return;
+          }
+          const isMatch = subscription.events.some(pattern => matchPattern(pattern, event.type));
+          if (isMatch) {
+            const message: EventMessage = {
+              messageId: randomUUID(),
+              timestamp,
+              type: 'event',
+              subscriptionId: subscription.subscriptionId,
+              eventName: event.type,
+              object: event.object,
+              payload: event.payload,
+            };
+            client.send(JSON.stringify(message));
+          }
+        });
+      });
+
+      // Dispatch to in-memory handler subscriptions
+      handlerRegistry.forEach(({ channel, handler, options }) => {
+        const channelMatch = channel === '*' || channel === event.type || event.type.startsWith(channel + '.');
+        if (!channelMatch) return;
+        if (options?.object && event.object !== options.object) return;
+        if (options?.eventTypes && !options.eventTypes.includes(event.type)) return;
+        try { handler(event); } catch { /* swallow handler errors */ }
+      });
+    },
+
+    async subscribe(channel: string, handler: SpecRealtimeEventHandler, options?: SpecRealtimeSubscriptionOptions): Promise<string> {
+      const subscriptionId = randomUUID();
+      handlerRegistry.set(subscriptionId, { channel, handler, options });
+      return subscriptionId;
+    },
+
+    async unsubscribe(subscriptionId: string): Promise<void> {
+      handlerRegistry.delete(subscriptionId);
+    },
+  } as Plugin & IRealtimeService;
 };

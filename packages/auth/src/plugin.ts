@@ -12,6 +12,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IAuthService, AuthResult as SpecAuthResult, AuthUser as SpecAuthUser } from '@objectstack/spec/contracts';
 import { getBetterAuth, resetAuthInstance, getEnabledProviders, type BetterAuthConfig } from './auth-client.js';
 import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, AuthSecurityPolicies } from './types.js';
 import * as Objects from './objects/index.js';
@@ -28,7 +29,7 @@ export interface BetterAuthPluginOptions extends BetterAuthConfig {
  * Better-Auth Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class BetterAuthPlugin implements Plugin {
+export class BetterAuthPlugin implements Plugin, IAuthService {
     name = '@objectos/auth';
     version = '0.1.0';
     
@@ -184,6 +185,71 @@ export class BetterAuthPlugin implements Plugin {
             } else {
                 context.logger.warn(`[Better-Auth Plugin] Could not replace service '${name}'`);
             }
+        }
+    }
+
+    // ── IAuthService contract methods ──
+
+    /**
+     * IAuthService.handleRequest — delegates to the Better-Auth handler
+     */
+    async handleRequest(request: Request): Promise<Response> {
+        if (!this.authInstance) {
+            throw new Error('Better-Auth not initialized');
+        }
+        return this.authInstance.handler(request);
+    }
+
+    /**
+     * IAuthService.verify — validate a session token
+     */
+    async verify(token: string): Promise<SpecAuthResult> {
+        if (!this.authInstance) {
+            return { success: false, error: 'Auth not initialized' };
+        }
+        try {
+            const ctx = await this.authInstance.$context;
+            const session = await ctx.sessionManager?.getSession?.(token);
+            if (session?.user) {
+                return {
+                    success: true,
+                    user: { id: session.user.id, email: session.user.email, name: session.user.name },
+                    session: { id: session.session?.id ?? token, userId: session.user.id, token, expiresAt: session.session?.expiresAt?.toISOString?.() ?? '' },
+                };
+            }
+            return { success: false, error: 'Invalid or expired token' };
+        } catch {
+            return { success: false, error: 'Token verification failed' };
+        }
+    }
+
+    /**
+     * IAuthService.logout — invalidate a session (optional)
+     */
+    async logout(sessionId: string): Promise<void> {
+        if (!this.authInstance) return;
+        try {
+            const ctx = await this.authInstance.$context;
+            await ctx.sessionManager?.revokeSession?.(sessionId);
+        } catch {
+            // best-effort
+        }
+    }
+
+    /**
+     * IAuthService.getCurrentUser — extract user from request (optional)
+     */
+    async getCurrentUser(request: Request): Promise<SpecAuthUser | undefined> {
+        if (!this.authInstance) return undefined;
+        try {
+            const ctx = await this.authInstance.$context;
+            const session = await ctx.sessionManager?.getSessionFromRequest?.(request);
+            if (session?.user) {
+                return { id: session.user.id, email: session.user.email, name: session.user.name };
+            }
+            return undefined;
+        } catch {
+            return undefined;
         }
     }
 

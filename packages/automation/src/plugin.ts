@@ -10,6 +10,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IAutomationService, AutomationContext as SpecAutomationContext, AutomationResult as SpecAutomationResult } from '@objectstack/spec/contracts';
 import type {
     AutomationPluginConfig,
     AutomationRule,
@@ -30,7 +31,7 @@ import { InMemoryQueue, Queue, Job } from './queue.js';
  * Automation Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class AutomationPlugin implements Plugin {
+export class AutomationPlugin implements Plugin, IAutomationService {
     name = '@objectos/automation';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -430,6 +431,62 @@ export class AutomationPlugin implements Plugin {
         });
 
         return value;
+    }
+
+    // ── IAutomationService contract methods ──
+
+    /**
+     * IAutomationService.execute — find and execute a named flow/rule
+     */
+    async execute(flowName: string, context?: SpecAutomationContext): Promise<SpecAutomationResult> {
+        const startTime = Date.now();
+        try {
+            const rule = await this.storage.getRule(flowName);
+            if (!rule) {
+                return { success: false, error: `Flow not found: ${flowName}` };
+            }
+            const triggerData = {
+                objectName: context?.object,
+                record: context?.record,
+                eventType: context?.event,
+            };
+            const result = await this.executeRuleInternal(rule, triggerData);
+            return {
+                success: result.success,
+                output: result.results,
+                durationMs: Date.now() - startTime,
+                error: result.error,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error',
+                durationMs: Date.now() - startTime,
+            };
+        }
+    }
+
+    /**
+     * IAutomationService.listFlows — list all registered rule names
+     */
+    async listFlows(): Promise<string[]> {
+        const rules = await this.storage.listRules({});
+        return rules.map((r: AutomationRule) => r.id);
+    }
+
+    /**
+     * IAutomationService.registerFlow — register a flow definition (optional)
+     */
+    registerFlow(name: string, definition: unknown): void {
+        const rule = definition as AutomationRule;
+        this.registerRule({ ...rule, id: name }).catch(() => {});
+    }
+
+    /**
+     * IAutomationService.unregisterFlow — unregister a flow by name (optional)
+     */
+    unregisterFlow(name: string): void {
+        this.storage.deleteRule?.(name)?.catch?.(() => {});
     }
 
     /**
