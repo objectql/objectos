@@ -14,16 +14,11 @@ import { createObjectStackAdapter } from '@object-ui/data-objectstack';
  * through the @objectstack/client API.
  */
 export const objectUIAdapter = createObjectStackAdapter({
-  // Base URL for ObjectStack API
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  // Base URL for ObjectStack API (note: baseUrl not baseURL)
+  baseUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   
-  // Optional: Custom headers for authentication
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  
-  // Optional: Enable credentials for cookie-based auth
-  credentials: 'include',
+  // Optional: Token for authentication (if not using cookies)
+  // token: 'your-auth-token',
 });
 
 /**

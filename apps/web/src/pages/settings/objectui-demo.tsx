@@ -53,12 +53,12 @@ export default function ObjectUIDemoPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">@object-ui/core@0.5.0</Badge>
-            <Badge variant="secondary">@object-ui/react@0.5.0</Badge>
-            <Badge variant="secondary">@object-ui/components@0.5.0</Badge>
-            <Badge variant="secondary">@object-ui/layout@0.5.0</Badge>
-            <Badge variant="secondary">@object-ui/fields@0.5.0</Badge>
-            <Badge variant="secondary">@object-ui/data-objectstack@0.5.0</Badge>
+            <Badge variant="secondary">@object-ui/core@2.0.0</Badge>
+            <Badge variant="secondary">@object-ui/react@2.0.0</Badge>
+            <Badge variant="secondary">@object-ui/components@2.0.0</Badge>
+            <Badge variant="secondary">@object-ui/layout@2.0.0</Badge>
+            <Badge variant="secondary">@object-ui/fields@2.0.0</Badge>
+            <Badge variant="secondary">@object-ui/data-objectstack@2.0.0</Badge>
           </div>
         </CardContent>
       </Card>
