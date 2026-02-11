@@ -357,3 +357,62 @@ describe('getUIAPI helper', () => {
     expect(api).toBeNull();
   });
 });
+
+// ─── Contract Compliance (IUIService) ──────────────────────────────────────────
+
+describe('Contract Compliance (IUIService)', () => {
+  let plugin: UIPlugin;
+
+  beforeEach(async () => {
+    const objectql = createInMemoryObjectQL();
+    const { context } = createMockContext(objectql);
+    plugin = new UIPlugin();
+    await plugin.init(context);
+    await plugin.start(context);
+  });
+
+  afterEach(async () => {
+    await plugin.destroy();
+  });
+
+  describe('registerView() / getView()', () => {
+    it('should register and retrieve a view definition', () => {
+      const def = { type: 'grid', columns: ['name'] };
+      plugin.registerView('contract-view', def);
+      const retrieved = plugin.getView('contract-view');
+      expect(retrieved).toEqual(def);
+    });
+
+    it('should return undefined for unregistered view', () => {
+      expect(plugin.getView('nonexistent')).toBeUndefined();
+    });
+  });
+
+  describe('listViews()', () => {
+    it('should return an array', () => {
+      const views = plugin.listViews();
+      expect(Array.isArray(views)).toBe(true);
+    });
+
+    it('should include registered views', () => {
+      plugin.registerView('lv-1', { type: 'grid', object_name: 'account' });
+      const views = plugin.listViews();
+      expect(views.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('registerDashboard() / getDashboard() / listDashboards()', () => {
+    it('should register and retrieve a dashboard', () => {
+      const def = { title: 'Sales', widgets: [] };
+      plugin.registerDashboard('sales-dash', def);
+      expect(plugin.getDashboard('sales-dash')).toEqual(def);
+    });
+
+    it('should list dashboards as an array', () => {
+      plugin.registerDashboard('d1', { title: 'D1' });
+      const dashboards = plugin.listDashboards();
+      expect(Array.isArray(dashboards)).toBe(true);
+      expect(dashboards.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+});

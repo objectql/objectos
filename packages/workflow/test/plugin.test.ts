@@ -223,3 +223,87 @@ describe('Workflow Plugin', () => {
         });
     });
 });
+
+// ─── Contract Compliance (IWorkflowService) ────────────────────────────────────
+
+describe('Contract Compliance (IWorkflowService)', () => {
+    let plugin: WorkflowPlugin;
+    let mockContext: PluginContext;
+
+    beforeEach(async () => {
+        const mockKernel = {
+            getService: vi.fn(),
+            services: new Map(),
+        };
+
+        mockContext = {
+            logger: {
+                info: vi.fn(),
+                warn: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
+            },
+            registerService: vi.fn((name: string, service: any) => {
+                mockKernel.services.set(name, service);
+                mockKernel.getService.mockImplementation((n: string) => {
+                    if (n === name) return service;
+                    throw new Error(`Service ${n} not found`);
+                });
+            }),
+            hook: vi.fn(),
+            trigger: vi.fn(),
+        } as any;
+
+        plugin = new WorkflowPlugin({
+            enabled: true,
+            storage: new InMemoryWorkflowStorage(),
+        });
+        await plugin.init(mockContext);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('transition()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.transition).toBe('function');
+        });
+
+        it('should return a result with success field for nonexistent record', async () => {
+            const result = await plugin.transition({
+                object: 'TestObj',
+                recordId: 'nonexistent',
+                targetState: 'approved',
+            });
+            expect(result).toBeDefined();
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+        });
+    });
+
+    describe('getStatus()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.getStatus).toBe('function');
+        });
+
+        it('should return status with currentState and availableTransitions', async () => {
+            const status = await plugin.getStatus('TestObj', 'nonexistent');
+            expect(status).toBeDefined();
+            expect(status.currentState).toBe('unknown');
+            expect(Array.isArray(status.availableTransitions)).toBe(true);
+        });
+    });
+
+    describe('getHistory()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.getHistory).toBe('function');
+        });
+
+        it('should return an array for nonexistent record', async () => {
+            const history = await plugin.getHistory('TestObj', 'nonexistent');
+            expect(Array.isArray(history)).toBe(true);
+            expect(history).toHaveLength(0);
+        });
+    });
+});

@@ -392,3 +392,55 @@ describe('Jobs Plugin', () => {
         });
     });
 });
+
+// ─── Contract Compliance (IJobService) ─────────────────────────────────────────
+
+describe('Contract Compliance (IJobService)', () => {
+    let plugin: JobsPlugin;
+    let mockContext: PluginContext;
+
+    beforeEach(async () => {
+        const mock = createMockContext();
+        mockContext = mock.context;
+
+        plugin = new JobsPlugin({ enabled: true, concurrency: 1 });
+        await plugin.init(mockContext);
+    });
+
+    afterEach(async () => {
+        try { await plugin.destroy(); } catch { /* ignore */ }
+    }, 10000);
+
+    describe('schedule() with spec JobSchedule shape', () => {
+        it('should accept (name, schedule, handler) signature', async () => {
+            const handler = async () => {};
+            await expect(
+                plugin.schedule('test-contract-job', { type: 'cron', expression: '0 * * * *' }, handler)
+            ).resolves.toBeUndefined();
+        });
+    });
+
+    describe('cancel()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.cancel).toBe('function');
+        });
+    });
+
+    describe('trigger()', () => {
+        it('should trigger a job by name immediately', async () => {
+            plugin.registerHandler({ name: 'trigger-contract-job', handler: async () => {} });
+            await expect(plugin.trigger('trigger-contract-job', { foo: 'bar' })).resolves.toBeUndefined();
+        });
+    });
+
+    describe('listJobs()', () => {
+        it('should return an array of job name strings', async () => {
+            plugin.registerHandler({ name: 'list-job-a', handler: async () => {} });
+            await plugin.enqueue({ id: 'lj-1', name: 'list-job-a', data: {} });
+
+            const names = await plugin.listJobs();
+            expect(Array.isArray(names)).toBe(true);
+            expect(names.every((n: unknown) => typeof n === 'string')).toBe(true);
+        });
+    });
+});

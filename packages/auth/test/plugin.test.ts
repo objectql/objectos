@@ -88,3 +88,59 @@ describe('Auth Type Exports', () => {
         expect(mod.IdentitySchemas).toBeDefined();
     });
 });
+
+// ─── Contract Compliance (IAuthService) ────────────────────────────────────────
+
+describe('Contract Compliance (IAuthService)', () => {
+    let plugin: BetterAuthPlugin;
+
+    beforeEach(() => {
+        plugin = new BetterAuthPlugin();
+    });
+
+    describe('handleRequest()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.handleRequest).toBe('function');
+        });
+
+        it('should throw when auth is not initialized', async () => {
+            const req = new Request('http://localhost/api/v1/auth/session');
+            await expect(plugin.handleRequest(req)).rejects.toThrow('Better-Auth not initialized');
+        });
+    });
+
+    describe('verify()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.verify).toBe('function');
+        });
+
+        it('should return unsuccessful result when auth is not initialized', async () => {
+            const result = await plugin.verify('fake-token');
+            expect(result).toBeDefined();
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+        });
+    });
+
+    describe('logout()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.logout).toBe('function');
+        });
+
+        it('should not throw when auth is not initialized', async () => {
+            await expect(plugin.logout('fake-session-id')).resolves.toBeUndefined();
+        });
+    });
+
+    describe('getCurrentUser()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.getCurrentUser).toBe('function');
+        });
+
+        it('should return undefined when auth is not initialized', async () => {
+            const req = new Request('http://localhost/api/v1/auth/session');
+            const user = await plugin.getCurrentUser(req);
+            expect(user).toBeUndefined();
+        });
+    });
+});

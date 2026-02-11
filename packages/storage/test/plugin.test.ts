@@ -299,3 +299,74 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Contract Compliance (IStorageService) ─────────────────────────────────────
+
+describe('Contract Compliance (IStorageService)', () => {
+    let plugin: StoragePlugin;
+
+    beforeEach(async () => {
+        plugin = new StoragePlugin({ backend: 'memory' });
+        const mock = createMockContext();
+        await plugin.init(mock.context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('upload()', () => {
+        it('should store binary data', async () => {
+            const buf = Buffer.from('hello world');
+            await expect(plugin.upload('test-file.txt', buf)).resolves.toBeUndefined();
+        });
+
+        it('should accept upload options', async () => {
+            const buf = Buffer.from('data');
+            await expect(
+                plugin.upload('opts-file.txt', buf, { contentType: 'text/plain' })
+            ).resolves.toBeUndefined();
+        });
+    });
+
+    describe('download()', () => {
+        it('should return a Buffer for uploaded file', async () => {
+            const buf = Buffer.from('download test');
+            await plugin.upload('dl-file.txt', buf);
+            const result = await plugin.download('dl-file.txt');
+            expect(Buffer.isBuffer(result)).toBe(true);
+            expect(result.toString()).toBe('download test');
+        });
+
+        it('should throw for non-existent file', async () => {
+            await expect(plugin.download('nope.txt')).rejects.toThrow();
+        });
+    });
+
+    describe('exists()', () => {
+        it('should return true for an uploaded file', async () => {
+            await plugin.upload('exists-file.txt', Buffer.from('x'));
+            expect(await plugin.exists('exists-file.txt')).toBe(true);
+        });
+
+        it('should return false for a non-existent file', async () => {
+            expect(await plugin.exists('no-file.txt')).toBe(false);
+        });
+    });
+
+    describe('getInfo()', () => {
+        it('should return file metadata with key and size', async () => {
+            const buf = Buffer.from('info test');
+            await plugin.upload('info-file.txt', buf, { contentType: 'text/plain' });
+            const info = await plugin.getInfo('info-file.txt');
+            expect(info).toBeDefined();
+            expect(info.key).toBe('info-file.txt');
+            expect(info.size).toBe(buf.length);
+            expect(info.contentType).toBe('text/plain');
+        });
+
+        it('should throw for non-existent file', async () => {
+            await expect(plugin.getInfo('missing.txt')).rejects.toThrow();
+        });
+    });
+});

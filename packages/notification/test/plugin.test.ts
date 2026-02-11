@@ -534,3 +534,52 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Contract Compliance (INotificationService) ────────────────────────────────
+
+describe('Contract Compliance (INotificationService)', () => {
+    let plugin: NotificationPlugin;
+
+    beforeEach(async () => {
+        plugin = new NotificationPlugin({
+            sms: { provider: 'mock' },
+            queue: { enabled: false },
+        });
+        const context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('send() with spec NotificationMessage shape', () => {
+        it('should accept a message with to, channel, and body fields', async () => {
+            const result = await plugin.send({
+                to: '+1234567890',
+                channel: 'sms' as any,
+                body: 'Test message',
+            } as any);
+
+            expect(result).toBeDefined();
+            expect(result).toHaveProperty('success');
+        });
+    });
+
+    describe('getChannels()', () => {
+        it('should return an array', () => {
+            const channels = plugin.getChannels();
+            expect(Array.isArray(channels)).toBe(true);
+        });
+
+        it('should include configured channels', () => {
+            const channels = plugin.getChannels();
+            expect(channels).toContain('sms');
+        });
+
+        it('should not include unconfigured channels like email', () => {
+            const channels = plugin.getChannels();
+            expect(channels).not.toContain('email');
+        });
+    });
+});

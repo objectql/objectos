@@ -385,3 +385,100 @@ describe('Automation Plugin', () => {
         });
     });
 });
+
+// ─── Contract Compliance (IAutomationService) ──────────────────────────────────
+
+describe('Contract Compliance (IAutomationService)', () => {
+    let plugin: AutomationPlugin;
+    let mockContext: PluginContext;
+
+    beforeEach(async () => {
+        const mock = createMockContext();
+        mockContext = mock.context;
+
+        plugin = new AutomationPlugin({
+            enabled: true,
+            enableEmail: false,
+            enableHttp: false,
+            enableScriptExecution: false,
+        });
+        await plugin.init(mockContext);
+        await plugin.start(mockContext);
+    });
+
+    afterEach(async () => {
+        try { await plugin.destroy(); } catch { /* ignore */ }
+    });
+
+    describe('execute()', () => {
+        it('should return a result with success field for unknown flow', async () => {
+            const result = await plugin.execute('nonexistent-flow');
+            expect(result).toBeDefined();
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+        });
+
+        it('should execute a registered rule by name', async () => {
+            const rule: AutomationRule = {
+                id: 'exec-rule',
+                name: 'Exec Rule',
+                status: 'active',
+                trigger: { type: 'object.create', objectName: 'TestObj' },
+                actions: [],
+                createdAt: new Date(),
+            };
+            await plugin.registerRule(rule);
+
+            const result = await plugin.execute('exec-rule', {
+                object: 'TestObj',
+                record: { id: '1' },
+                event: 'create',
+            });
+            expect(result).toBeDefined();
+            expect(typeof result.success).toBe('boolean');
+        });
+    });
+
+    describe('listFlows()', () => {
+        it('should return an array of flow name strings', async () => {
+            const rule: AutomationRule = {
+                id: 'flow-rule-1',
+                name: 'Flow Rule',
+                status: 'active',
+                trigger: { type: 'object.create', objectName: 'Obj' },
+                actions: [],
+                createdAt: new Date(),
+            };
+            await plugin.registerRule(rule);
+
+            const flows = await plugin.listFlows();
+            expect(Array.isArray(flows)).toBe(true);
+            expect(flows).toContain('flow-rule-1');
+        });
+    });
+
+    describe('registerFlow() / unregisterFlow()', () => {
+        it('should register a flow definition', () => {
+            expect(() => plugin.registerFlow('new-flow', {
+                id: 'new-flow',
+                name: 'New Flow',
+                status: 'active',
+                trigger: { type: 'object.create', objectName: 'X' },
+                actions: [],
+                createdAt: new Date(),
+            })).not.toThrow();
+        });
+
+        it('should unregister a flow by name', () => {
+            plugin.registerFlow('del-flow', {
+                id: 'del-flow',
+                name: 'Del Flow',
+                status: 'active',
+                trigger: { type: 'object.create', objectName: 'X' },
+                actions: [],
+                createdAt: new Date(),
+            });
+            expect(() => plugin.unregisterFlow('del-flow')).not.toThrow();
+        });
+    });
+});

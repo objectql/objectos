@@ -417,3 +417,77 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Contract Compliance (II18nService) ────────────────────────────────────────
+
+describe('Contract Compliance (II18nService)', () => {
+    let plugin: I18nPlugin;
+
+    beforeEach(async () => {
+        plugin = new I18nPlugin({
+            defaultLocale: 'en',
+            translations: {
+                en: { greeting: 'Hello', user: { name: 'Name' } },
+                fr: { greeting: 'Bonjour' },
+            },
+        });
+        const context = createMockContext();
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('t() with spec signature (key, locale, params)', () => {
+        it('should translate using explicit locale parameter', () => {
+            const result = plugin.t('greeting', 'en');
+            expect(result).toBe('Hello');
+        });
+
+        it('should translate with a different locale', () => {
+            const result = plugin.t('greeting', 'fr');
+            expect(result).toBe('Bonjour');
+        });
+
+        it('should accept params as third argument', () => {
+            plugin.loadTranslations('en', { welcome: 'Hi {{name}}!' });
+            const result = plugin.t('welcome', 'en', { name: 'Alice' });
+            expect(result).toContain('Alice');
+        });
+    });
+
+    describe('getTranslations()', () => {
+        it('should return translations for a given locale', () => {
+            const translations = plugin.getTranslations('en');
+            expect(translations).toBeDefined();
+            expect(typeof translations).toBe('object');
+            expect(translations).toHaveProperty('greeting');
+        });
+
+        it('should return empty object for unknown locale', () => {
+            const translations = plugin.getTranslations('xx');
+            expect(translations).toEqual({});
+        });
+    });
+
+    describe('getLocales()', () => {
+        it('should return an array of loaded locale strings', () => {
+            const locales = plugin.getLocales();
+            expect(Array.isArray(locales)).toBe(true);
+            expect(locales).toContain('en');
+            expect(locales).toContain('fr');
+        });
+    });
+
+    describe('getDefaultLocale() / setDefaultLocale()', () => {
+        it('should return the default locale', () => {
+            expect(plugin.getDefaultLocale()).toBe('en');
+        });
+
+        it('should change the default locale', () => {
+            plugin.setDefaultLocale('fr');
+            expect(plugin.getDefaultLocale()).toBe('fr');
+        });
+    });
+});

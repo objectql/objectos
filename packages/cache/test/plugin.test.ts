@@ -331,3 +331,65 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Contract Compliance (ICacheService) ───────────────────────────────────────
+
+describe('Contract Compliance (ICacheService)', () => {
+    let plugin: CachePlugin;
+    let context: PluginContext;
+
+    beforeEach(async () => {
+        plugin = new CachePlugin({ backend: 'lru', options: { maxSize: 100 } });
+        const mock = createMockContext();
+        context = mock.context;
+        await plugin.init(context);
+        await plugin.start(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('stats()', () => {
+        it('should return an object with hits, misses, and keyCount', async () => {
+            await plugin.set('k1', 'v1');
+            await plugin.get('k1'); // hit
+            await plugin.get('k2'); // miss
+
+            const s = await plugin.stats();
+            expect(s).toBeDefined();
+            expect(typeof s.hits).toBe('number');
+            expect(typeof s.misses).toBe('number');
+            expect(typeof s.keyCount).toBe('number');
+            expect(s.hits).toBe(1);
+            expect(s.misses).toBe(1);
+            expect(s.keyCount).toBe(1);
+        });
+
+        it('should return zeroes on a fresh cache', async () => {
+            const s = await plugin.stats();
+            expect(s.hits).toBe(0);
+            expect(s.misses).toBe(0);
+            expect(s.keyCount).toBe(0);
+        });
+    });
+
+    describe('delete()', () => {
+        it('should return a boolean', async () => {
+            await plugin.set('dk', 'dv');
+            const result = await plugin.delete('dk');
+            expect(typeof result).toBe('boolean');
+        });
+
+        it('should return true when deleting an existing key', async () => {
+            await plugin.set('existing', 'val');
+            const result = await plugin.delete('existing');
+            expect(result).toBe(true);
+        });
+
+        it('should return false when deleting a non-existent key', async () => {
+            const result = await plugin.delete('nonexistent');
+            expect(result).toBe(false);
+        });
+    });
+});
