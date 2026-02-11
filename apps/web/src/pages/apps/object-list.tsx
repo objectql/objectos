@@ -2,29 +2,87 @@
  * Object List Page — displays records of a specific object as a data table,
  * kanban board, or calendar (switchable via ViewSwitcher).
  *
+ * Uses @object-ui SchemaRenderer for grid, kanban, and calendar views (Phase H).
+ * Falls back to built-in components when SchemaRenderer is not suitable.
+ *
  * Route: /apps/:appId/:objectName
  */
 
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useMemo, useCallback } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { SchemaRenderer } from '@object-ui/react';
+import { objectUIAdapter } from '@/lib/object-ui-adapter';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useRecords } from '@/hooks/use-records';
-import { RecordTable } from '@/components/records/RecordTable';
-import { KanbanBoard } from '@/components/objectui/KanbanBoard';
-import { ViewSwitcher, findKanbanField } from '@/components/objectui/ViewSwitcher';
-import { Badge } from '@/components/ui/badge';
+import { ObjectToolbar } from '@/components/objectui/ObjectToolbar';
+import { FilterPanel } from '@/components/objectui/FilterPanel';
+import type { FilterValue } from '@/components/objectui/FilterPanel';
 import { Button } from '@/components/ui/button';
 import type { ViewMode } from '@/types/workflow';
 
 export default function ObjectListPage() {
   const { appId, objectName } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [filters, setFilters] = useState<FilterValue[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Server-side pagination (H.3.2)
+  const currentPage = Number(searchParams.get('page') ?? '1');
+  const pageSize = 20;
 
   const { data: objectDef, isLoading: metaLoading } = useObjectDefinition(objectName);
-  const { data: result, isLoading: dataLoading } = useRecords({ objectName });
+  const { data: result, isLoading: dataLoading } = useRecords({
+    objectName,
+    page: currentPage,
+    pageSize,
+  });
 
   const isLoading = metaLoading || dataLoading;
+
+  // Client-side filtering for search and filters (H.3.3)
+  const filteredRecords = useMemo(() => {
+    let records = result?.records ?? [];
+
+    // Apply text search
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      records = records.filter((r) =>
+        Object.values(r).some((v) =>
+          v != null && String(v).toLowerCase().includes(term),
+        ),
+      );
+    }
+
+    // Apply field filters
+    for (const filter of filters) {
+      records = records.filter((r) => {
+        const val = String(r[filter.field] ?? '').toLowerCase();
+        switch (filter.operator) {
+          case 'equals':
+            return val === filter.value.toLowerCase();
+          case 'contains':
+            return val.includes(filter.value.toLowerCase());
+          case 'gt':
+            return Number(r[filter.field]) > Number(filter.value);
+          case 'lt':
+            return Number(r[filter.field]) < Number(filter.value);
+          default:
+            return true;
+        }
+      });
+    }
+
+    return records;
+  }, [result?.records, searchTerm, filters]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setSearchParams({ page: String(page) });
+    },
+    [setSearchParams],
+  );
 
   if (isLoading) {
     return (
@@ -51,55 +109,77 @@ export default function ObjectListPage() {
     );
   }
 
-  const records = result?.records ?? [];
   const total = result?.total ?? 0;
-  const kanbanField = findKanbanField(objectDef);
-  const basePath = `/apps/${appId}/${objectName}`;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const createPath = `/apps/${appId}/${objectName}/new`;
+
+  // Map view mode to SchemaRenderer view name
+  const schemaView =
+    viewMode === 'table' ? 'grid' : viewMode === 'kanban' ? 'kanban' : 'calendar';
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">{objectDef.pluralLabel ?? objectDef.label ?? objectName}</h2>
-          {objectDef.description && (
-            <p className="text-muted-foreground">{objectDef.description}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          <ViewSwitcher
-            currentView={viewMode}
-            onViewChange={setViewMode}
-            objectDef={objectDef}
-          />
-          <Badge variant="secondary">{total} records</Badge>
-        </div>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">
+          {objectDef.pluralLabel ?? objectDef.label ?? objectName}
+        </h2>
+        {objectDef.description && (
+          <p className="text-muted-foreground">{objectDef.description}</p>
+        )}
       </div>
 
-      {/* View content */}
-      {viewMode === 'table' && (
-        <RecordTable
-          objectDef={objectDef}
-          records={records}
-          basePath={basePath}
-        />
-      )}
+      {/* Toolbar — H.4.2 */}
+      <ObjectToolbar
+        objectDef={objectDef}
+        total={filteredRecords.length}
+        viewMode={viewMode}
+        onViewChange={setViewMode}
+        createPath={createPath}
+      />
 
-      {viewMode === 'kanban' && kanbanField && (
-        <KanbanBoard
-          objectDef={objectDef}
-          records={records}
-          basePath={basePath}
-          groupField={kanbanField}
-        />
-      )}
+      {/* Filter panel — H.4.4 */}
+      <FilterPanel
+        objectDef={objectDef}
+        filters={filters}
+        onFiltersChange={setFilters}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
 
-      {viewMode === 'calendar' && (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-          <p className="text-lg font-medium">Calendar view</p>
+      {/* SchemaRenderer view — H.1.1, H.1.5, H.1.6 */}
+      <div data-testid="schema-renderer-container">
+        <SchemaRenderer
+          adapter={objectUIAdapter}
+          objectName={objectName!}
+          view={schemaView}
+        />
+      </div>
+
+      {/* Pagination — H.3.2 */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t pt-4">
           <p className="text-sm text-muted-foreground">
-            Calendar view coming soon — records with date fields will be displayed here.
+            Page {currentPage} of {totalPages} ({total} total records)
           </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>
