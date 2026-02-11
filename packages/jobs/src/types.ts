@@ -249,6 +249,43 @@ export interface BackupJobConfig {
   includeMetadata?: boolean;
 }
 
+/**
+ * Task retry policy configuration
+ */
+export interface TaskRetryPolicy {
+  maxRetries: number;
+  backoffStrategy: 'fixed' | 'exponential' | 'linear';
+  initialDelay: number;
+  maxDelay?: number;
+  backoffMultiplier?: number;
+}
+
+/**
+ * Task execution result
+ */
+export interface TaskExecutionResult {
+  jobId: string;
+  status: 'completed' | 'failed' | 'cancelled' | 'timeout';
+  startedAt: Date;
+  completedAt: Date;
+  duration: number;
+  result?: any;
+  error?: string;
+  retryCount: number;
+}
+
+/**
+ * Queue configuration for named queues
+ */
+export interface QueueConfig {
+  name: string;
+  concurrency?: number;
+  maxRetries?: number;
+  retryDelay?: number;
+  timeout?: number;
+  priority?: number;
+}
+
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
 
 import type {

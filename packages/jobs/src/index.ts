@@ -100,4 +100,7 @@ export type {
     DataCleanupJobConfig,
     ReportJobConfig,
     BackupJobConfig,
+    TaskRetryPolicy,
+    TaskExecutionResult,
+    QueueConfig,
 } from './types.js';
