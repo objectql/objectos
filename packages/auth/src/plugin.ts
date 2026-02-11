@@ -214,7 +214,7 @@ export class BetterAuthPlugin implements Plugin, IAuthService {
                 return {
                     success: true,
                     user: { id: session.user.id, email: session.user.email, name: session.user.name },
-                    session: { id: session.session?.id ?? token, userId: session.user.id, token, expiresAt: session.session?.expiresAt?.toISOString?.() ?? '' },
+                    session: { id: session.session?.id ?? token, userId: session.user.id, token, expiresAt: typeof session.session?.expiresAt?.toISOString === 'function' ? session.session.expiresAt.toISOString() : String(session.session?.expiresAt ?? '') },
                 };
             }
             return { success: false, error: 'Invalid or expired token' };

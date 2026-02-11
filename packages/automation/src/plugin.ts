@@ -479,14 +479,20 @@ export class AutomationPlugin implements Plugin, IAutomationService {
      */
     registerFlow(name: string, definition: unknown): void {
         const rule = definition as AutomationRule;
-        this.registerRule({ ...rule, id: name }).catch(() => {});
+        this.registerRule({ ...rule, id: name }).catch((err) => {
+            this.context?.logger.warn(`[Automation Plugin] Failed to register flow ${name}: ${err instanceof Error ? err.message : err}`);
+        });
     }
 
     /**
      * IAutomationService.unregisterFlow — unregister a flow by name (optional)
      */
     unregisterFlow(name: string): void {
-        this.storage.deleteRule?.(name)?.catch?.(() => {});
+        if (this.storage.deleteRule) {
+            this.storage.deleteRule(name).catch((err: unknown) => {
+                this.context?.logger.warn(`[Automation Plugin] Failed to unregister flow ${name}: ${err instanceof Error ? err.message : err}`);
+            });
+        }
     }
 
     /**
