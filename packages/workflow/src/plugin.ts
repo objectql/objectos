@@ -87,6 +87,8 @@ export class WorkflowPlugin implements Plugin {
         await this.setupEventListeners(context);
 
         context.logger.info('[Workflow Plugin] Initialized successfully');
+
+        await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -121,6 +123,8 @@ export class WorkflowPlugin implements Plugin {
         }
         
         context.logger.info('[Workflow Plugin] Started successfully');
+
+        await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -242,14 +246,17 @@ export class WorkflowPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         const message = this.config.enabled ? 'Workflow engine active' : 'Workflows disabled';
+        const latency = Date.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'workflow-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
@@ -260,7 +267,22 @@ export class WorkflowPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.workflow',
+                    name: 'workflow',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'startWorkflow', description: 'Start a workflow instance', async: true },
+                        { name: 'transitionState', description: 'Transition workflow to a new state', async: true },
+                        { name: 'getWorkflowStatus', description: 'Get current workflow status', async: false },
+                        { name: 'listWorkflows', description: 'List registered workflows', async: false },
+                        { name: 'getApprovalStatus', description: 'Get approval chain status', async: true },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'workflow',
                 trustLevel: 'trusted',
@@ -282,6 +304,10 @@ export class WorkflowPlugin implements Plugin {
      */
     async destroy(): Promise<void> {
         this.context?.logger.info('[Workflow Plugin] Destroyed');
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 }
 
