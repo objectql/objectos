@@ -12,6 +12,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { INotificationService, NotificationMessage as SpecNotificationMessage, NotificationResult as SpecNotificationResult, NotificationChannel as SpecNotificationChannel } from '@objectstack/spec/contracts';
 import type { 
   NotificationConfig, 
   NotificationRequest, 
@@ -41,7 +42,7 @@ import { WebhookChannel } from './channels/webhook.js';
  * Notification Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class NotificationPlugin implements Plugin {
+export class NotificationPlugin implements Plugin, INotificationService {
   name = '@objectos/notification';
   version = '0.1.0';
   dependencies: string[] = [];
@@ -303,8 +304,23 @@ export class NotificationPlugin implements Plugin {
 
   /**
    * Send a notification via specified channel
+   * Supports both local NotificationRequest and spec NotificationMessage
    */
-  async send(request: NotificationRequest): Promise<NotificationResult> {
+  async send(request: NotificationRequest): Promise<NotificationResult>;
+  async send(message: SpecNotificationMessage): Promise<SpecNotificationResult>;
+  async send(input: NotificationRequest | SpecNotificationMessage): Promise<NotificationResult | SpecNotificationResult> {
+    // Adapt spec NotificationMessage to local NotificationRequest if needed
+    const request: NotificationRequest = ('recipient' in input && !('to' in input))
+      ? input as NotificationRequest
+      : {
+          channel: (input as SpecNotificationMessage).channel as unknown as NotificationChannel,
+          recipient: (input as SpecNotificationMessage).to,
+          subject: (input as SpecNotificationMessage).subject,
+          body: (input as SpecNotificationMessage).body,
+          template: (input as SpecNotificationMessage).templateId,
+          data: (input as SpecNotificationMessage).templateData as TemplateData | undefined,
+        };
+
     try {
       // Validate channel
       const channel = this.getChannel(request.channel);
@@ -333,6 +349,25 @@ export class NotificationPlugin implements Plugin {
         timestamp: new Date()
       };
     }
+  }
+
+  /**
+   * Send a batch of notifications (INotificationService contract)
+   */
+  async sendBatch(messages: SpecNotificationMessage[]): Promise<SpecNotificationResult[]> {
+    return Promise.all(messages.map(msg => this.send(msg)));
+  }
+
+  /**
+   * Get configured notification channels (INotificationService contract)
+   */
+  getChannels(): SpecNotificationChannel[] {
+    const channels: SpecNotificationChannel[] = [];
+    if (this.emailChannel) channels.push('email');
+    if (this.smsChannel) channels.push('sms');
+    if (this.pushChannel) channels.push('push');
+    if (this.webhookChannel) channels.push('webhook');
+    return channels;
   }
 
   /**

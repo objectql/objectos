@@ -14,6 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { ICacheService, CacheStats as SpecCacheStats } from '@objectstack/spec/contracts';
 import type { CacheBackend, CacheConfig, CacheStats, CacheStrategy, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { LruCacheBackend } from './lru-backend.js';
 import { RedisCacheBackend } from './redis-backend.js';
@@ -36,7 +37,7 @@ export class ScopedCache implements CacheBackend {
         return this.backend.set(this.scopedKey(key), value, ttl);
     }
 
-    async delete(key: string): Promise<void> {
+    async delete(key: string): Promise<boolean> {
         return this.backend.delete(this.scopedKey(key));
     }
 
@@ -69,7 +70,7 @@ export class ScopedCache implements CacheBackend {
  * Cache Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class CachePlugin implements Plugin {
+export class CachePlugin implements Plugin, ICacheService {
     name = '@objectos/cache';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -179,7 +180,7 @@ export class CachePlugin implements Plugin {
         return this.backend.set(key, value, ttl);
     }
 
-    async delete(key: string): Promise<void> {
+    async delete(key: string): Promise<boolean> {
         return this.backend.delete(key);
     }
 
@@ -199,6 +200,18 @@ export class CachePlugin implements Plugin {
             return undefined;
         }
         return this.backend.getStats?.();
+    }
+
+    /**
+     * Get cache statistics (ICacheService contract)
+     */
+    async stats(): Promise<SpecCacheStats> {
+        const internal = this.getStats();
+        return {
+            hits: internal?.hits ?? 0,
+            misses: internal?.misses ?? 0,
+            keyCount: internal?.size ?? 0,
+        };
     }
 
     /**

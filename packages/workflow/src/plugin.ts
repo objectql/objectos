@@ -10,6 +10,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IWorkflowService, WorkflowTransition as SpecWorkflowTransition, WorkflowTransitionResult as SpecWorkflowTransitionResult, WorkflowStatus as SpecWorkflowStatus } from '@objectstack/spec/contracts';
 import type {
     WorkflowPluginConfig,
     WorkflowDefinition,
@@ -30,7 +31,7 @@ import * as path from 'path';
  * Workflow Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class WorkflowPlugin implements Plugin {
+export class WorkflowPlugin implements Plugin, IWorkflowService {
     name = '@objectos/workflow';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -226,6 +227,82 @@ export class WorkflowPlugin implements Plugin {
     async registerWorkflow(definition: WorkflowDefinition): Promise<void> {
         await this.api.registerWorkflow(definition);
         this.context?.logger.info(`[Workflow Plugin] Registered workflow: ${definition.name}`);
+    }
+
+    // ── IWorkflowService contract methods ──
+
+    /**
+     * IWorkflowService.transition — transition a record to a new state
+     */
+    async transition(trans: SpecWorkflowTransition): Promise<SpecWorkflowTransitionResult> {
+        try {
+            // Find an active workflow instance for this record
+            const instances = await this.api.queryWorkflows({ status: 'running' });
+            const instance = instances.find(
+                (i) => i.data?.recordId === trans.recordId || i.id === trans.recordId
+            );
+            if (!instance) {
+                return { success: false, error: `No active workflow found for ${trans.object}/${trans.recordId}` };
+            }
+
+            // Find a transition that leads to the target state
+            const definition = await this.api.getWorkflow(instance.workflowId, instance.version);
+            if (!definition) {
+                return { success: false, error: 'Workflow definition not found' };
+            }
+            const currentStateDef = definition.states[instance.currentState];
+            const transitionName = currentStateDef?.transitions
+                ? Object.keys(currentStateDef.transitions).find(
+                      (t) => currentStateDef.transitions![t].target === trans.targetState
+                  )
+                : undefined;
+            if (!transitionName) {
+                return { success: false, error: `No transition to state "${trans.targetState}" from "${instance.currentState}"` };
+            }
+
+            const updated = await this.api.executeTransition(instance.id, transitionName, trans.userId);
+            return { success: true, currentState: updated.currentState };
+        } catch (error) {
+            return { success: false, error: error instanceof Error ? error.message : 'Transition failed' };
+        }
+    }
+
+    /**
+     * IWorkflowService.getStatus — get the current workflow status for a record
+     */
+    async getStatus(object: string, recordId: string): Promise<SpecWorkflowStatus> {
+        const instances = await this.api.queryWorkflows({ status: 'running' });
+        const instance = instances.find(
+            (i) => i.data?.recordId === recordId || i.id === recordId
+        );
+        if (!instance) {
+            return { recordId, object, currentState: 'unknown', availableTransitions: [] };
+        }
+        const transitions = await this.api.getAvailableTransitions(instance.id);
+        return { recordId, object, currentState: instance.currentState, availableTransitions: transitions };
+    }
+
+    /**
+     * IWorkflowService.getHistory — get transition history for a record (optional)
+     */
+    async getHistory(object: string, recordId: string): Promise<Array<{
+        fromState: string;
+        toState: string;
+        userId?: string;
+        comment?: string;
+        timestamp: string;
+    }>> {
+        const instances = await this.api.queryWorkflows({});
+        const instance = instances.find(
+            (i) => i.data?.recordId === recordId || i.id === recordId
+        );
+        if (!instance) return [];
+        return (instance.history || []).map((entry) => ({
+            fromState: entry.fromState,
+            toState: entry.toState,
+            userId: entry.triggeredBy,
+            timestamp: entry.timestamp instanceof Date ? entry.timestamp.toISOString() : String(entry.timestamp),
+        }));
     }
 
     /**

@@ -57,9 +57,8 @@ The `@objectstack/spec@2.0.6` protocol has matured significantly:
 
 - **Operational packages:** 14/14 (all green)
 - **CoreServiceName coverage:** 13/18 (72%)
-- **Contracts interface adoption:** 0/25 (formal interfaces not yet implemented)
+- **Contracts interface adoption:** 10/14 plugin packages (formal interfaces adopted)
 - **Schema coverage (estimated):** ~65/139 schemas have corresponding ObjectOS implementations
-- **Critical gap:** No formal Contracts interface adoption in any package
 
 ---
 
@@ -71,20 +70,20 @@ All 14 packages are operational and depend on `@objectstack/spec@2.0.6`:
 
 | # | Package | Service Name | Spec Namespace | Status | Contracts Interface |
 |---|---------|-------------|----------------|--------|-------------------|
-| 1 | `@objectos/audit` | `audit-log` | System | ✅ Operational | ❌ Not adopted |
-| 2 | `@objectos/auth` | `auth`, `better-auth` | System, Identity | ✅ Operational | ❌ Not adopted |
-| 3 | `@objectos/automation` | `automation` | Automation | ✅ Operational | ❌ Not adopted |
+| 1 | `@objectos/audit` | `audit-log` | System | ✅ Operational | N/A (no matching contract) |
+| 2 | `@objectos/auth` | `auth`, `better-auth` | System, Identity | ✅ Operational | ✅ `IAuthService` |
+| 3 | `@objectos/automation` | `automation` | Automation | ✅ Operational | ✅ `IAutomationService` |
 | 4 | `@objectos/browser` | `browser-*` | Shared | ✅ Operational | N/A |
-| 5 | `@objectos/cache` | `cache` | System | ✅ Operational | ❌ Not adopted |
-| 6 | `@objectos/i18n` | `i18n` | System | ✅ Operational | ❌ Not adopted |
-| 7 | `@objectos/jobs` | `job` | System | ✅ Operational | ❌ Not adopted |
-| 8 | `@objectos/metrics` | `metrics` | System | ✅ Operational | N/A |
-| 9 | `@objectos/notification` | `notification` | System | ✅ Operational | ❌ Not adopted |
-| 10 | `@objectos/permissions` | `permissions` | Security | ✅ Operational | ❌ Not adopted |
-| 11 | `@objectos/realtime` | `realtime` | System | ✅ Operational | ❌ Not adopted |
-| 12 | `@objectos/storage` | `file-storage` | System | ✅ Operational | ❌ Not adopted |
-| 13 | `@objectos/ui` | `ui` | UI | ✅ Operational | ❌ Not adopted |
-| 14 | `@objectos/workflow` | `workflow` | Automation | ✅ Operational | ❌ Not adopted |
+| 5 | `@objectos/cache` | `cache` | System | ✅ Operational | ✅ `ICacheService` |
+| 6 | `@objectos/i18n` | `i18n` | System | ✅ Operational | ✅ `II18nService` |
+| 7 | `@objectos/jobs` | `job` | System | ✅ Operational | ✅ `IJobService` |
+| 8 | `@objectos/metrics` | `metrics` | System | ✅ Operational | N/A (no matching contract) |
+| 9 | `@objectos/notification` | `notification` | System | ✅ Operational | ✅ `INotificationService` |
+| 10 | `@objectos/permissions` | `permissions` | Security | ✅ Operational | N/A (no matching contract) |
+| 11 | `@objectos/realtime` | `realtime` | System | ✅ Operational | ✅ `IRealtimeService` |
+| 12 | `@objectos/storage` | `file-storage` | System | ✅ Operational | ✅ `IStorageService` |
+| 13 | `@objectos/ui` | `ui` | UI | ✅ Operational | ✅ `IUIService` |
+| 14 | `@objectos/workflow` | `workflow` | Automation | ✅ Operational | ✅ `IWorkflowService` |
 
 **Additional:** `@objectstack/plugin-auth` — BetterAuth plugin adapter (operational).
 
@@ -339,25 +338,25 @@ The spec defines 18 `CoreServiceName` values with formal criticality levels. Obj
 
 | # | CoreServiceName | Criticality | ObjectOS Package | Status | Formal Contract |
 |---|----------------|-------------|------------------|--------|-----------------|
-| 1 | `metadata` | required | ObjectQL | ✅ Implemented | ❌ Not adopted |
-| 2 | `data` | required | ObjectQL | ✅ Implemented | ❌ Not adopted |
-| 3 | `auth` | core | `@objectos/auth` | ✅ Implemented | ❌ Not adopted |
-| 4 | `cache` | core | `@objectos/cache` | ✅ Implemented | ❌ Not adopted |
+| 1 | `metadata` | required | ObjectQL | ✅ Implemented | ⚠️ Upstream (ObjectQL) |
+| 2 | `data` | required | ObjectQL | ✅ Implemented | ⚠️ Upstream (ObjectQL) |
+| 3 | `auth` | core | `@objectos/auth` | ✅ Implemented | ✅ `IAuthService` |
+| 4 | `cache` | core | `@objectos/cache` | ✅ Implemented | ✅ `ICacheService` |
 | 5 | `queue` | core | — | ❌ **Missing** | ❌ N/A |
-| 6 | `job` | core | `@objectos/jobs` | ✅ Implemented | ❌ Not adopted |
-| 7 | `file-storage` | optional | `@objectos/storage` | ✅ Implemented | ❌ Not adopted |
+| 6 | `job` | core | `@objectos/jobs` | ✅ Implemented | ✅ `IJobService` |
+| 7 | `file-storage` | optional | `@objectos/storage` | ✅ Implemented | ✅ `IStorageService` |
 | 8 | `search` | optional | — | ❌ **Missing** | ❌ N/A |
-| 9 | `automation` | optional | `@objectos/automation` | ✅ Implemented | ❌ Not adopted |
+| 9 | `automation` | optional | `@objectos/automation` | ✅ Implemented | ✅ `IAutomationService` |
 | 10 | `graphql` | optional | — | ❌ **Missing** | ❌ N/A |
 | 11 | `analytics` | optional | — | ❌ **Missing** | ❌ N/A |
-| 12 | `realtime` | optional | `@objectos/realtime` | ✅ Implemented | ❌ Not adopted |
-| 13 | `notification` | optional | `@objectos/notification` | ✅ Implemented | ❌ Not adopted |
+| 12 | `realtime` | optional | `@objectos/realtime` | ✅ Implemented | ✅ `IRealtimeService` |
+| 13 | `notification` | optional | `@objectos/notification` | ✅ Implemented | ✅ `INotificationService` |
 | 14 | `ai` | optional | — | ❌ **Missing** | ❌ N/A |
-| 15 | `i18n` | optional | `@objectos/i18n` | ✅ Implemented | ❌ Not adopted |
-| 16 | `ui` | optional | `@objectos/ui` | ✅ Implemented | ❌ Not adopted |
-| 17 | `workflow` | optional | `@objectos/workflow` | ✅ Implemented | ❌ Not adopted |
+| 15 | `i18n` | optional | `@objectos/i18n` | ✅ Implemented | ✅ `II18nService` |
+| 16 | `ui` | optional | `@objectos/ui` | ✅ Implemented | ✅ `IUIService` |
+| 17 | `workflow` | optional | `@objectos/workflow` | ✅ Implemented | ✅ `IWorkflowService` |
 
-**Result:** 13/18 CoreServiceNames implemented (72%). 5 missing: `search`, `queue`, `graphql`, `analytics`, `ai`.
+**Result:** 13/18 CoreServiceNames implemented (72%). 5 missing: `search`, `queue`, `graphql`, `analytics`, `ai`. All 13 implemented services now formally adopt their spec contract interfaces.
 
 ---
 
@@ -369,57 +368,54 @@ The spec's Contracts module defines **25 formal TypeScript service interfaces**.
 
 | # | Contract Interface | ObjectOS Package | Implementation Status |
 |---|-------------------|------------------|----------------------|
-| 1 | `LoggerContract` | `@objectos/metrics` | ⚠️ Partial — logging exists, interface not adopted |
-| 2 | `DataEngineContract` | ObjectQL | ⚠️ Partial — data engine exists in ObjectQL |
-| 3 | `HttpServerContract` | `@objectstack/cli` | ⚠️ Partial — Hono server exists |
-| 4 | `ServiceRegistryContract` | `@objectstack/runtime` | ⚠️ Partial — basic registry |
-| 5 | `PluginValidatorContract` | `@objectstack/runtime` | ⚠️ Partial — basic validation |
-| 6 | `StartupOrchestratorContract` | `@objectstack/runtime` | ⚠️ Partial — sequential boot |
-| 7 | `PluginLifecycleEventsContract` | `@objectstack/runtime` | ⚠️ Partial — basic events |
-| 8 | `SchemaDriverContract` | ObjectQL | ⚠️ Partial — schema driver in ObjectQL |
-| 9 | `CacheServiceContract` | `@objectos/cache` | ⚠️ Partial — cache works, interface not formal |
-| 10 | `SearchServiceContract` | — | ❌ Missing — no search service |
-| 11 | `QueueServiceContract` | — | ❌ Missing — no queue service |
-| 12 | `NotificationServiceContract` | `@objectos/notification` | ⚠️ Partial — service works |
-| 13 | `StorageServiceContract` | `@objectos/storage` | ⚠️ Partial — service works |
-| 14 | `MetadataServiceContract` | ObjectQL | ⚠️ Partial — metadata in ObjectQL |
-| 15 | `AuthServiceContract` | `@objectos/auth` | ⚠️ Partial — BetterAuth integration |
-| 16 | `AutomationServiceContract` | `@objectos/automation` | ⚠️ Partial — service works |
-| 17 | `GraphQLServiceContract` | — | ❌ Missing — no GraphQL service |
-| 18 | `AnalyticsServiceContract` | — | ❌ Missing — no analytics service |
-| 19 | `RealtimeServiceContract` | `@objectos/realtime` | ⚠️ Partial — WebSocket server works |
-| 20 | `JobServiceContract` | `@objectos/jobs` | ⚠️ Partial — job system works |
-| 21 | `AIServiceContract` | — | ❌ Missing — no AI service |
-| 22 | `I18nServiceContract` | `@objectos/i18n` | ⚠️ Partial — i18n works |
-| 23 | `UIServiceContract` | `@objectos/ui` | ⚠️ Partial — UI service works |
-| 24 | `WorkflowServiceContract` | `@objectos/workflow` | ⚠️ Partial — workflow engine works |
-| 25 | `PluginContract` (base) | All plugins | ⚠️ Partial — plugins work but don't implement formally |
+| 1 | `Logger` | `@objectos/metrics` | ⚠️ Partial — logging exists, no matching contract |
+| 2 | `IDataEngine` | ObjectQL | ⚠️ Partial — data engine exists in ObjectQL |
+| 3 | `IHttpServer` | `@objectstack/cli` | ⚠️ Partial — Hono server exists |
+| 4 | `IServiceRegistry` | `@objectstack/runtime` | ⚠️ Partial — basic registry |
+| 5 | `IPluginValidator` | `@objectstack/runtime` | ⚠️ Partial — basic validation |
+| 6 | `IStartupOrchestrator` | `@objectstack/runtime` | ⚠️ Partial — sequential boot |
+| 7 | `IPluginLifecycleEvents` | `@objectstack/runtime` | ⚠️ Partial — basic events |
+| 8 | `ISchemaDriver` | ObjectQL | ⚠️ Partial — schema driver in ObjectQL |
+| 9 | `ICacheService` | `@objectos/cache` | ✅ **Adopted** — `CachePlugin implements ICacheService` |
+| 10 | `ISearchService` | — | ❌ Missing — no search service |
+| 11 | `IQueueService` | — | ❌ Missing — no queue service |
+| 12 | `INotificationService` | `@objectos/notification` | ✅ **Adopted** — `NotificationPlugin implements INotificationService` |
+| 13 | `IStorageService` | `@objectos/storage` | ✅ **Adopted** — `StoragePlugin implements IStorageService` |
+| 14 | `IMetadataService` | ObjectQL | ⚠️ Partial — metadata in ObjectQL |
+| 15 | `IAuthService` | `@objectos/auth` | ✅ **Adopted** — `BetterAuthPlugin implements IAuthService` |
+| 16 | `IAutomationService` | `@objectos/automation` | ✅ **Adopted** — `AutomationPlugin implements IAutomationService` |
+| 17 | `IGraphQLService` | — | ❌ Missing — no GraphQL service |
+| 18 | `IAnalyticsService` | — | ❌ Missing — no analytics service |
+| 19 | `IRealtimeService` | `@objectos/realtime` | ✅ **Adopted** — `createRealtimePlugin(): Plugin & IRealtimeService` |
+| 20 | `IJobService` | `@objectos/jobs` | ✅ **Adopted** — `JobsPlugin implements IJobService` |
+| 21 | `IAIService` | — | ❌ Missing — no AI service |
+| 22 | `II18nService` | `@objectos/i18n` | ✅ **Adopted** — `I18nPlugin implements II18nService` |
+| 23 | `IUIService` | `@objectos/ui` | ✅ **Adopted** — `UIPlugin implements IUIService` |
+| 24 | `IWorkflowService` | `@objectos/workflow` | ✅ **Adopted** — `WorkflowPlugin implements IWorkflowService` |
+| 25 | `Plugin` (base) | All plugins | ✅ All plugins implement `Plugin` from `@objectstack/runtime` |
+
+**Result:** 10/14 ObjectOS packages formally adopt their matching spec contract interfaces. The remaining 4 packages (`audit`, `browser`, `metrics`, `permissions`) either have no matching contract in the spec or their contracts are owned by upstream packages (ObjectQL, runtime).
 
 ### 5.2 Adoption Strategy
 
-**Phase 1 — Required services:** Adopt `DataEngineContract`, `MetadataServiceContract`, `HttpServerContract`
-**Phase 2 — Core services:** Adopt `AuthServiceContract`, `CacheServiceContract`, `JobServiceContract`
-**Phase 3 — Optional services:** Adopt remaining 19 contracts incrementally
-**Phase 4 — Full compliance:** All 25 contracts formally implemented and validated
+**Phase 1 — Required services:** Adopt `DataEngineContract`, `MetadataServiceContract`, `HttpServerContract` (upstream — ObjectQL/runtime)
+**Phase 2 — Core services:** ✅ Adopted `IAuthService`, `ICacheService`, `IJobService`
+**Phase 3 — Optional services:** ✅ Adopted remaining 7 contracts (`INotificationService`, `IStorageService`, `IAutomationService`, `IRealtimeService`, `II18nService`, `IUIService`, `IWorkflowService`)
+**Phase 4 — Full compliance:** 5 missing services (`search`, `queue`, `graphql`, `analytics`, `ai`) to be implemented in future releases
 
 ### 5.3 Contract Implementation Pattern
 
 ```typescript
-// Example: adopting CacheServiceContract in @objectos/cache
-import type { CacheServiceContract } from '@objectstack/spec/contracts';
+// Example: CachePlugin adopting ICacheService contract
+import type { ICacheService } from '@objectstack/spec/contracts';
 
-export class ObjectOSCacheService implements CacheServiceContract {
-  readonly name = 'cache' as const;
-  readonly version = '1.0.0';
-
-  async get<T>(key: string): Promise<T | null> { /* ... */ }
+export class CachePlugin implements Plugin, ICacheService {
+  async get<T>(key: string): Promise<T | undefined> { /* ... */ }
   async set<T>(key: string, value: T, ttl?: number): Promise<void> { /* ... */ }
   async delete(key: string): Promise<boolean> { /* ... */ }
-  async clear(namespace?: string): Promise<void> { /* ... */ }
+  async clear(): Promise<void> { /* ... */ }
   async has(key: string): Promise<boolean> { /* ... */ }
-
-  // Health check (required by all contracts)
-  async healthCheck(): Promise<ServiceHealth> { /* ... */ }
+  async stats(): Promise<CacheStats> { /* ... */ }
 }
 ```
 

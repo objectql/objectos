@@ -10,10 +10,12 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IJobService, JobSchedule as SpecJobSchedule, JobHandler as SpecJobHandler, JobExecution as SpecJobExecution } from '@objectstack/spec/contracts';
 import type {
     JobPluginConfig,
     JobDefinition,
     JobConfig,
+    JobContext,
     Job,
     JobQueryOptions,
     JobQueueStats,
@@ -35,7 +37,7 @@ import {
  * Jobs Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class JobsPlugin implements Plugin {
+export class JobsPlugin implements Plugin, IJobService {
     name = '@objectos/jobs';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -167,12 +169,80 @@ export class JobsPlugin implements Plugin {
     }
 
     /**
-     * Schedule a recurring job
+     * Schedule a recurring job (IJobService contract)
      */
-    async schedule(config: JobConfig): Promise<Job> {
-        const job = await this.scheduler.scheduleJob(config);
+    async schedule(name: string, schedule: SpecJobSchedule, handler: SpecJobHandler): Promise<void>;
+    /**
+     * Schedule a recurring job (legacy)
+     */
+    async schedule(config: JobConfig): Promise<Job>;
+    async schedule(nameOrConfig: string | JobConfig, specSchedule?: SpecJobSchedule, handler?: SpecJobHandler): Promise<Job | void> {
+        if (typeof nameOrConfig === 'string') {
+            // IJobService contract: schedule(name, schedule, handler)
+            const name = nameOrConfig;
+            // Register handler for this job name
+            this.queue.registerHandler({
+                name,
+                handler: async (ctx: JobContext) => {
+                    await handler!({ jobId: ctx.jobId, data: ctx.data });
+                },
+            });
+            // Schedule via internal scheduler
+            const config: JobConfig = {
+                id: `${name}_${crypto.randomUUID()}`,
+                name,
+                cronExpression: specSchedule?.expression,
+            };
+            await this.scheduler.scheduleJob(config);
+            await this.emitEvent('job.scheduled', { name });
+            return;
+        }
+        // Legacy: schedule(config)
+        const job = await this.scheduler.scheduleJob(nameOrConfig);
         await this.emitEvent('job.scheduled', job);
         return job;
+    }
+
+    /**
+     * Trigger a job by name immediately (IJobService contract)
+     */
+    async trigger(name: string, data?: unknown): Promise<void> {
+        const job = await this.enqueue({
+            id: `${name}_trigger_${crypto.randomUUID()}`,
+            name,
+            data,
+        });
+        await this.emitEvent('job.triggered', { name, jobId: job.id });
+    }
+
+    /**
+     * Get recent executions for a job by name (IJobService contract)
+     */
+    async getExecutions(name: string, limit = 10): Promise<SpecJobExecution[]> {
+        const jobs = await this.queryJobs({ name, limit });
+        return jobs.map(job => ({
+            jobId: job.id,
+            status: job.status === 'completed' ? 'success' as const
+                 : job.status === 'running' ? 'running' as const
+                 : job.status === 'failed' ? 'failed' as const
+                 : job.status === 'cancelled' ? 'timeout' as const
+                 : 'failed' as const,
+            startedAt: (job.startedAt ?? job.createdAt ?? new Date()).toISOString(),
+            completedAt: job.completedAt?.toISOString(),
+            error: job.error,
+            durationMs: job.startedAt && job.completedAt
+                ? job.completedAt.getTime() - job.startedAt.getTime()
+                : undefined,
+        }));
+    }
+
+    /**
+     * List all registered job names (IJobService contract)
+     */
+    async listJobs(): Promise<string[]> {
+        const jobs = await this.queryJobs({});
+        const names = new Set(jobs.map(j => j.name));
+        return Array.from(names);
     }
 
     /**

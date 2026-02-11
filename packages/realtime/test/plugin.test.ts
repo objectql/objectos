@@ -884,3 +884,51 @@ describe('Kernel Compliance', () => {
         });
     });
 });
+
+// ─── Contract Compliance (IRealtimeService) ────────────────────────────────────
+
+describe('Contract Compliance (IRealtimeService)', () => {
+    let plugin: any;
+    let context: PluginContext;
+
+    beforeEach(async () => {
+        const mock = createMockContext();
+        context = mock.context;
+        plugin = createRealtimePlugin({ port: getPort() });
+        await plugin.init(context);
+    });
+
+    afterEach(async () => {
+        await plugin.destroy();
+    });
+
+    describe('subscribe()', () => {
+        it('should return a subscription ID string', async () => {
+            const handler = jest.fn();
+            const subId = await plugin.subscribe('test-channel', handler);
+            expect(typeof subId).toBe('string');
+            expect(subId.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('unsubscribe()', () => {
+        it('should remove a subscription without error', async () => {
+            const handler = jest.fn();
+            const subId = await plugin.subscribe('test-channel', handler);
+            await expect(plugin.unsubscribe(subId)).resolves.toBeUndefined();
+        });
+    });
+
+    describe('publish()', () => {
+        it('should exist as a function', () => {
+            expect(typeof plugin.publish).toBe('function');
+        });
+
+        it('should accept a spec RealtimeEventPayload', async () => {
+            await expect(plugin.publish({
+                type: 'test.event',
+                data: { foo: 'bar' },
+            })).resolves.toBeUndefined();
+        });
+    });
+});

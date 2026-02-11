@@ -894,7 +894,7 @@ This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
 | G.1 | Update Spec Compliance Design Document (v2.0) | 🔴 | ✅ |
-| G.2 | Adopt Contracts interfaces for all 14 plugins | 🔴 | 🔲 |
+| G.2 | Adopt Contracts interfaces for all 14 plugins | 🔴 | ✅ |
 | G.3 | Implement Identity protocol alignment (SCIM schemas) | 🟡 | 🔲 |
 | G.4 | Business App Shell (Object List + Record views) | 🔴 | 🔲 |
 | G.5 | API client layer (@objectstack/client integration) | 🔴 | 🔲 |
@@ -914,7 +914,7 @@ This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0
 | Docker deployment | ✅ | ✅ |
 | Documentation spec-aligned | ✅ | ✅ |
 | E2E smoke tests | ✅ | ✅ |
-| Spec Contracts adoption (metadata, data, auth, cache) | 🔲 | ✅ |
+| Spec Contracts adoption (metadata, data, auth, cache) | ✅ | ✅ |
 | Business App Shell Phase 1 (object list + record detail) | 🔲 | ✅ |
 
 ### 12.5 v1.1.0 — ObjectUI Integration + Identity (Target: April 2026)

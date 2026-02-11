@@ -14,6 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IStorageService, StorageUploadOptions as SpecStorageUploadOptions, StorageFileInfo as SpecStorageFileInfo } from '@objectstack/spec/contracts';
 import type { StorageBackend, StorageConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, BucketInfo } from './types.js';
 import { MemoryStorageBackend } from './memory-backend.js';
 import { SqliteStorageBackend } from './sqlite-backend.js';
@@ -67,7 +68,7 @@ export class ScopedStorage implements StorageBackend {
  * Storage Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class StoragePlugin implements Plugin {
+export class StoragePlugin implements Plugin, IStorageService {
     name = '@objectos/storage';
     version = '0.1.0';
     dependencies: string[] = [];
@@ -77,6 +78,7 @@ export class StoragePlugin implements Plugin {
     private scopedInstances: Map<string, ScopedStorage> = new Map();
     private startedAt?: number;
     private buckets: Map<string, { createdAt: string }> = new Map();
+    private fileMeta: Map<string, { size: number; contentType?: string; metadata?: Record<string, string>; lastModified: Date }> = new Map();
 
     constructor(config: StorageConfig = {}) {
         // Initialize backend
@@ -245,7 +247,10 @@ export class StoragePlugin implements Plugin {
     }
 
     async delete(key: string): Promise<void> {
-        return this.backend.delete(key);
+        await this.backend.delete(key);
+        // Also clean up file-storage entry and metadata if present
+        await this.backend.delete(`file:${key}`);
+        this.fileMeta.delete(key);
     }
 
     async keys(pattern?: string): Promise<string[]> {
@@ -254,6 +259,59 @@ export class StoragePlugin implements Plugin {
 
     async clear(): Promise<void> {
         return this.backend.clear();
+    }
+
+    // ─── IStorageService Contract (file storage over KV) ────────────────────
+
+    /**
+     * Upload a file to storage (stores binary data as a KV entry).
+     */
+    async upload(key: string, data: Buffer | ReadableStream, options?: SpecStorageUploadOptions): Promise<void> {
+        // ReadableStream conversion uses global Response API (available in Node.js 18+ LTS)
+        const buf = Buffer.isBuffer(data) ? data : Buffer.from(await new Response(data as any).arrayBuffer());
+        await this.backend.set(`file:${key}`, buf);
+        this.fileMeta.set(key, {
+            size: buf.length,
+            contentType: options?.contentType,
+            metadata: options?.metadata,
+            lastModified: new Date(),
+        });
+    }
+
+    /**
+     * Download a file from storage.
+     */
+    async download(key: string): Promise<Buffer> {
+        const value = await this.backend.get(`file:${key}`);
+        if (value === undefined || value === null) {
+            throw new Error(`File not found: ${key}`);
+        }
+        return Buffer.isBuffer(value) ? value : Buffer.from(value);
+    }
+
+    /**
+     * Check if a file exists in storage.
+     */
+    async exists(key: string): Promise<boolean> {
+        const value = await this.backend.get(`file:${key}`);
+        return value !== undefined && value !== null;
+    }
+
+    /**
+     * Get metadata about a stored file.
+     */
+    async getInfo(key: string): Promise<SpecStorageFileInfo> {
+        const meta = this.fileMeta.get(key);
+        if (meta) {
+            return { key, size: meta.size, contentType: meta.contentType, lastModified: meta.lastModified, metadata: meta.metadata };
+        }
+        // Fallback: check if data exists in backend
+        const value = await this.backend.get(`file:${key}`);
+        if (value === undefined || value === null) {
+            throw new Error(`File not found: ${key}`);
+        }
+        const buf = Buffer.isBuffer(value) ? value : Buffer.from(value);
+        return { key, size: buf.length, lastModified: new Date() };
     }
 
     /**
@@ -302,6 +360,10 @@ export class StoragePlugin implements Plugin {
                         { name: 'delete', description: 'Delete a value by key', async: true },
                         { name: 'keys', description: 'List keys matching a pattern', returnType: 'Promise<string[]>', async: true },
                         { name: 'clear', description: 'Clear all stored data', async: true },
+                        { name: 'upload', description: 'Upload file to storage (IStorageService)', async: true },
+                        { name: 'download', description: 'Download file from storage (IStorageService)', returnType: 'Promise<Buffer>', async: true },
+                        { name: 'exists', description: 'Check if file exists (IStorageService)', returnType: 'Promise<boolean>', async: true },
+                        { name: 'getInfo', description: 'Get file metadata (IStorageService)', async: true },
                         { name: 'listBuckets', description: 'List storage buckets', returnType: 'Promise<BucketInfo[]>', async: true },
                         { name: 'createBucket', description: 'Create a storage bucket', async: true },
                         { name: 'deleteBucket', description: 'Delete a storage bucket', async: true },
@@ -335,6 +397,7 @@ export class StoragePlugin implements Plugin {
         }
         this.scopedInstances.clear();
         this.buckets.clear();
+        this.fileMeta.clear();
 
         if (this.context) {
             await this.context.trigger('plugin.destroyed', { plugin: this.name });

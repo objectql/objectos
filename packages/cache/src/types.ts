@@ -22,7 +22,7 @@ export interface CacheBackend {
     /**
      * Delete a value by key
      */
-    delete(key: string): Promise<void>;
+    delete(key: string): Promise<boolean>;
     
     /**
      * Check if a key exists
