@@ -1,8 +1,9 @@
 # ObjectOS Development Plan
 
-> **Version**: 4.0.0
-> **Date**: February 8, 2026
-> **Status**: Phase F Release Candidate Complete — 13/13 Plugins Implemented, Admin Console Active, Docker + E2E Ready
+> **Version**: 5.0.0
+> **Date**: February 11, 2026
+> **Status**: Phase G — Spec Protocol Alignment + Business App Shell
+> **Spec SDK**: `@objectstack/spec@2.0.6`
 
 ---
 
@@ -22,6 +23,7 @@
 12. [Roadmap to v1.0 and Beyond](#12-roadmap-to-v10-and-beyond)
 13. [Frontend Architecture Decision](#13-frontend-architecture-decision)
 14. [Open Items & Risk Assessment](#14-open-items--risk-assessment)
+15. [Consolidated Frontend Roadmap](#15-consolidated-frontend-roadmap)
 
 ---
 
@@ -29,12 +31,15 @@
 
 **ObjectOS** is a metadata-driven, microkernel-based enterprise runtime platform. It serves as the **runtime environment for ObjectStack metadata applications**, transforming declarative YAML definitions into fully functional, secure, and scalable enterprise APIs with a complete Admin Console.
 
-### Current Achievement (Scan Date: February 8, 2026)
+### Current Achievement (Scan Date: February 11, 2026)
 
 | Metric | Value |
 |--------|-------|
 | **Plugin Packages** | 13/13 (100%) — All implemented with lifecycle compliance |
 | **Spec Compliance** | ✅ 100% — All packages pass `@objectstack/spec` audit |
+| **ObjectStack SDK** | `v2.0.6` |
+| **Spec Protocol Namespaces** | 14 |
+| **Spec Service Contracts** | 25 |
 | **Server Source Code** | 21,947 lines across 107 TypeScript files in 13 packages |
 | **Test Files** | 49 test files across 13 packages (incl. integration + performance baselines) |
 | **Frontend Source Code** | 9,570 lines across 65 files (29 pages, 15 UI components) |
@@ -297,12 +302,12 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 | Dependency | Version | Role | Consumers |
 |-----------|---------|------|-----------|
-| `@objectstack/runtime` | 2.0.1 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
-| `@objectstack/spec` | 2.0.1 | Protocol contracts — Zod schemas, TypeScript interfaces | audit, automation, auth, jobs, permissions, workflow, browser |
-| `@objectstack/cli` | 2.0.1 | Server bootstrap — `objectstack serve` command | Root devDependency |
-| `@objectstack/objectql` | 2.0.1 | ObjectQL plugin for metadata loading | Root dependency |
-| `@objectstack/driver-memory` | 2.0.1 | In-memory data driver for development/serverless | Root dependency |
-| `@objectstack/plugin-hono-server` | 2.0.1 | Hono HTTP server plugin | Root dependency |
+| `@objectstack/runtime` | 2.0.6 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
+| `@objectstack/spec` | 2.0.6 | Protocol contracts — Zod schemas, TypeScript interfaces, Contracts module | audit, automation, auth, jobs, permissions, workflow, browser |
+| `@objectstack/cli` | 2.0.6 | Server bootstrap — `objectstack serve` command | Root devDependency |
+| `@objectstack/objectql` | 2.0.6 | ObjectQL plugin for metadata loading | Root dependency |
+| `@objectstack/driver-memory` | 2.0.6 | In-memory data driver for development/serverless | Root dependency |
+| `@objectstack/plugin-hono-server` | 2.0.6 | Hono HTTP server plugin | Root dependency |
 | `@objectql/core` | 4.2.0 | Data engine — metadata registry, query compiler | Root dependency |
 | `@objectql/driver-sql` | 4.2.0 | SQL database driver (PostgreSQL, MySQL, SQLite) | Root dependency |
 | `@objectql/driver-mongo` | 4.2.0 | MongoDB database driver | Root dependency |
@@ -529,7 +534,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 
 ## 8. Spec Compliance Status
 
-### Audit Results (Last Run: February 8, 2026)
+### Audit Results (Last Run: February 11, 2026)
 
 | Metric | Result |
 |--------|--------|
@@ -545,8 +550,19 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Plugin Interface | All plugins implement `Plugin` from `@objectstack/runtime` | ✅ |
 | Runtime Dependency | All plugins declare `@objectstack/runtime` as dependency | ✅ |
 | Spec Dependency | Packages importing from `@objectstack/spec` declare it | ✅ |
-| Version Consistency | `@objectstack/spec: 2.0.1`, `@objectstack/runtime: ^2.0.1` | ✅ |
+| Version Consistency | `@objectstack/spec: 2.0.6`, `@objectstack/runtime: ^2.0.6` | ✅ |
 | Lifecycle Methods | All plugins implement `init()`, `start()`, `destroy()` | ✅ |
+
+### Spec v2.0.6 — New Capabilities
+
+**Contracts Module** — 25 service interfaces (`@objectstack/spec/contracts`):
+- Typed service contracts for all `CoreServiceNames` (metadata, data, auth, cache, etc.)
+- Each contract defines input/output Zod schemas and method signatures
+- Plugins can declare which contracts they implement for type-safe service discovery
+
+**New Protocol Namespaces** (14 total):
+- Existing: Metadata, Data, Auth, Workflow, Automation, Notification, Realtime, Cache, Storage
+- New in v2.0.6: **Identity**, **Integration**, **Studio**, **Hub**, **QA**
 
 ### Automation & Workflow Spec Migration
 
@@ -871,7 +887,37 @@ states:
 | F.7 | Changesets release workflow | 🟡 | 1 day | ✅ |
 | F.8 | Version tag v1.0.0 | 🟡 | 0.5 days | 🔲 |
 
-### 12.3 v1.1 — ObjectUI Integration (4 weeks after v1.0)
+### 12.3 Phase G — Spec Protocol Alignment (Current — February 2026)
+
+This phase focuses on aligning ObjectOS with the expanded `@objectstack/spec@2.0.6` protocol, including the new Contracts module (25 service interfaces) and 14 protocol namespaces, as well as building the Business App Shell foundation.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| G.1 | Update Spec Compliance Design Document (v2.0) | 🔴 | ✅ |
+| G.2 | Adopt Contracts interfaces for all 14 plugins | 🔴 | 🔲 |
+| G.3 | Implement Identity protocol alignment (SCIM schemas) | 🟡 | 🔲 |
+| G.4 | Business App Shell (Object List + Record views) | 🔴 | 🔲 |
+| G.5 | API client layer (@objectstack/client integration) | 🔴 | 🔲 |
+| G.6 | Metadata-driven navigation | 🟡 | 🔲 |
+| G.7 | Consolidate development plan documents | 🟡 | ✅ |
+
+### 12.4 v1.0.0 — Production Release (Target: March 2026)
+
+| Criterion | Current Status | Required for v1.0 |
+|-----------|:-:|:-:|
+| All 13 plugins implemented | ✅ | ✅ |
+| Spec compliance 100% | ✅ | ✅ |
+| Admin Console operational | ✅ 29 pages | ✅ |
+| Security review passed | ✅ | ✅ |
+| Integration test suite | ✅ | ✅ |
+| Performance baseline (P95 < 100ms) | ✅ | ✅ |
+| Docker deployment | ✅ | ✅ |
+| Documentation spec-aligned | ✅ | ✅ |
+| E2E smoke tests | ✅ | ✅ |
+| Spec Contracts adoption (metadata, data, auth, cache) | 🔲 | ✅ |
+| Business App Shell Phase 1 (object list + record detail) | 🔲 | ✅ |
+
+### 12.5 v1.1.0 — ObjectUI Integration + Identity (Target: April 2026)
 
 | # | Task | Description |
 |---|------|-------------|
@@ -881,8 +927,11 @@ states:
 | 1.1.4 | Form Renderer integration | `<SchemaRenderer object="contacts" view="form" />` |
 | 1.1.5 | Plugin UI extension slots | Define extension points for plugin-contributed UI |
 | 1.1.6 | View configuration | Support ObjectStack UI protocol for dashboards |
+| 1.1.7 | SCIM 2.0 provisioning endpoints | Identity provisioning via SCIM 2.0 |
+| 1.1.8 | Identity protocol compliance | Align `@objectos/auth` with Identity namespace |
+| 1.1.9 | Studio plugin protocol support | Enable Studio namespace for admin tooling |
 
-### 12.4 v1.2 — Enterprise Features (6 weeks after v1.1)
+### 12.6 v1.2.0 — Enterprise Features + Spec Full Compliance (Target: June 2026)
 
 | # | Feature | Package(s) | Description |
 |---|---------|-----------|-------------|
@@ -891,9 +940,13 @@ states:
 | 1.2.3 | OpenTelemetry integration | metrics | Distributed tracing, span collection |
 | 1.2.4 | Event bus persistence | runtime | Event replay, dead-letter queue, retry |
 | 1.2.5 | Schema migrations | objectql | Version-controlled schema evolution |
-| 1.2.6 | GraphQL native | server | Full GraphQL resolver layer |
+| 1.2.6 | Search plugin | `@objectos/search` | Full-text search across objects |
+| 1.2.7 | Queue plugin | `@objectos/queue` | Persistent job queue with priority scheduling |
+| 1.2.8 | Compliance plugin | `@objectos/compliance` | Policy enforcement and compliance rules |
+| 1.2.9 | Logging plugin | `@objectos/logging` | Structured logging with log levels and sinks |
+| 1.2.10 | Full Contracts compliance | All plugins | Implement all 18 `CoreServiceNames` contracts |
 
-### 12.5 v2.0 — Platform (12 weeks after v1.2)
+### 12.7 v2.0.0 — Platform (Target: September 2026)
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -901,35 +954,39 @@ states:
 | 2.0.2 | Plugin Marketplace | Discover, install, configure plugins from registry |
 | 2.0.3 | Dynamic Plugin Loading | Hot-load plugins at runtime without restart |
 | 2.0.4 | Sync Protocol | Client-server delta sync with conflict resolution |
-| 2.0.5 | SCIM Provisioning | Identity provisioning via SCIM 2.0 endpoints |
-| 2.0.6 | AI Agent Framework | LLM-powered automation actions and data extraction |
-| 2.0.7 | Module Federation | Dynamic CDN loading of plugin UIs |
-| 2.0.8 | Offline Admin Console | Service Worker + @objectos/browser for offline access |
+| 2.0.5 | AI Agent Framework | LLM-powered automation actions and data extraction |
+| 2.0.6 | Module Federation | Dynamic CDN loading of plugin UIs |
+| 2.0.7 | Offline Admin Console | Service Worker + @objectos/browser for offline access |
+| 2.0.8 | GraphQL plugin | Full GraphQL resolver layer with schema stitching |
+| 2.0.9 | Analytics plugin | Business analytics and reporting engine |
+| 2.0.10 | AI plugin | AI-powered data extraction, classification, suggestions |
+| 2.0.11 | Integration/Connector framework | Extensible connector system for third-party services |
+| 2.0.12 | Hub marketplace integration | Publish/consume plugins via Hub namespace |
 
-### 12.6 Master Timeline
+### 12.8 Master Timeline
 
 ```
 Feb 2026                                    Dec 2026
   │                                             │
-  ├─ Phase F: RC (2-3 weeks) ────┐             │
-  │                               ▼             │
-  │                          v1.0.0 Release     │
-  │                               │             │
-  │                    v1.1 ObjectUI (4 weeks)  │
-  │                               │             │
-  │                    v1.2 Enterprise (6 weeks)│
-  │                               │             │
+  ├─ Phase G: Spec Alignment (2-3 weeks) ─┐   │
+  │                                        ▼   │
+  │                                 v1.0.0 Release
+  │                                        │   │
+  │                    v1.1 ObjectUI + Identity (4 weeks)
+  │                                        │   │
+  │                    v1.2 Enterprise + Full Spec (6 weeks)
+  │                                        │   │
   │                    v2.0 Platform (12 weeks) │
-  │                               │             │
-  ▼                               ▼             ▼
+  │                                        │   │
+  ▼                                        ▼   ▼
 ```
 
 | Version | Target Date | Key Deliverables |
 |---------|:-----------:|-----------------|
-| **v1.0.0** | March 2026 | Production-ready runtime + Admin Console + Docker |
-| **v1.1.0** | April 2026 | ObjectUI integration, metadata-driven business UI |
-| **v1.2.0** | June 2026 | Multi-tenancy, rate limiting, OpenTelemetry, GraphQL |
-| **v2.0.0** | September 2026 | Visual designer, marketplace, AI agents, sync protocol |
+| **v1.0.0** | March 2026 | Production-ready runtime + Admin Console + Docker + Spec Contracts (core) + Business App Shell Phase 1 |
+| **v1.1.0** | April 2026 | ObjectUI integration, metadata-driven business UI, SCIM 2.0, Identity protocol |
+| **v1.2.0** | June 2026 | Multi-tenancy, rate limiting, OpenTelemetry, search/queue/compliance/logging plugins, full Contracts compliance |
+| **v2.0.0** | September 2026 | Visual designer, marketplace, AI agents, sync protocol, GraphQL, analytics, Hub integration |
 
 ---
 
@@ -1040,6 +1097,31 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 
 ---
 
+## 15. Consolidated Frontend Roadmap
+
+> Consolidated from `APPS_WEB_ROADMAP.md` — detailed frontend development phases for `apps/web`.
+
+| Phase | Name | Target | Key Deliverables | Status |
+|:-----:|------|:------:|-----------------|:------:|
+| **1** | Foundation | Feb–Mar 2026 | Object List page, Record Detail page, API client layer (`@objectstack/client`), metadata-driven navigation | 🔲 Current |
+| **2** | Rich Data Views | Apr 2026 | Inline editing, bulk actions, saved filters, related lists, kanban/calendar views | 🔲 |
+| **3** | ObjectUI Integration | Apr–May 2026 | `@objectui/core` integration, `<SchemaRenderer>` for grid/form, plugin UI extension slots | 🔲 |
+| **4** | Workflow & Automation UI | May–Jun 2026 | Visual Flow editor, approval inbox, automation rule builder, trigger monitoring | 🔲 |
+| **5** | Offline & Sync | Jul–Aug 2026 | `@objectos/browser` integration, OPFS storage, Service Worker, conflict resolution UI | 🔲 |
+| **6** | Polish & Performance | Aug–Sep 2026 | Virtual scrolling, optimistic updates, skeleton loading, accessibility (WCAG 2.1 AA), bundle optimization | 🔲 |
+
+### Phase 1 Details (Current Focus)
+
+| # | Task | Priority | Description |
+|---|------|:--------:|-------------|
+| 1.1 | Object List page | 🔴 | Generic `/app/:objectName` route with server-side pagination, sorting, filtering |
+| 1.2 | Record Detail page | 🔴 | `/app/:objectName/:recordId` with field-type-aware rendering |
+| 1.3 | API client integration | 🔴 | TanStack Query hooks wrapping `@objectstack/client` for CRUD operations |
+| 1.4 | Metadata-driven nav | 🟡 | Sidebar generated from `GET /api/v1/metadata/objects` response |
+| 1.5 | Field type renderers | 🟡 | Components for text, number, date, boolean, lookup, picklist fields |
+
+---
+
 ## Licensing
 
 - **Core Runtime**: AGPL-3.0
@@ -1058,5 +1140,5 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 ---
 
 <div align="center">
-<sub>ObjectOS v4.0.0 — The Enterprise Operating System | Built with @objectstack/spec</sub>
+<sub>ObjectOS v5.0.0 — The Enterprise Operating System | Built with @objectstack/spec@2.0.6</sub>
 </div>
