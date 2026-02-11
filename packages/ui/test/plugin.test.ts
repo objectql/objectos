@@ -226,7 +226,7 @@ describe('UI Plugin', () => {
       await plugin.saveView('view_b', 'contact', { type: 'kanban', columns: ['name'] });
       await plugin.saveView('other_view', 'account', { type: 'grid', columns: ['name'] });
 
-      const views = await plugin.listViews('contact');
+      const views = await plugin.listViewsByObject('contact');
       expect(views).toHaveLength(2);
       // sorted by name ascending
       expect(views[0].name).toBe('view_a');

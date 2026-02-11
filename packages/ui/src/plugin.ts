@@ -11,6 +11,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
+import type { IUIService } from '@objectstack/spec/contracts';
 import type {
   UIServiceConfig,
   ViewRecord,
@@ -24,7 +25,7 @@ import type {
  * UI Plugin
  * Implements the Plugin interface for @objectstack/runtime
  */
-export class UIPlugin implements Plugin {
+export class UIPlugin implements Plugin, IUIService {
   name = '@objectos/ui';
   version = '0.1.0';
   dependencies: string[] = [];
@@ -33,6 +34,10 @@ export class UIPlugin implements Plugin {
   private objectql: any;
   private startedAt?: number;
   private viewObjectName: string;
+
+  // In-memory registries for IUIService contract (synchronous access)
+  private viewRegistry: Map<string, unknown> = new Map();
+  private dashboardRegistry: Map<string, unknown> = new Map();
 
   constructor(config: UIServiceConfig = {}) {
     this.viewObjectName = config.viewObjectName ?? 'sys_view';
@@ -122,9 +127,9 @@ export class UIPlugin implements Plugin {
   }
 
   /**
-   * List all views for a given object.
+   * List all views for a given object (async, ObjectQL-backed).
    */
-  async listViews(objectName: string): Promise<ViewRecord[]> {
+  async listViewsByObject(objectName: string): Promise<ViewRecord[]> {
     this.ensureObjectQL();
 
     return await this.objectql.find(this.viewObjectName, {
@@ -147,6 +152,52 @@ export class UIPlugin implements Plugin {
 
     await this.objectql.delete(this.viewObjectName, existing._id);
     return true;
+  }
+
+  // ─── IUIService Contract ──────────────────────────────────────────────────
+
+  /**
+   * Get a view definition by name (synchronous, in-memory registry).
+   */
+  getView(name: string): unknown | undefined {
+    return this.viewRegistry.get(name);
+  }
+
+  /**
+   * List view definitions, optionally filtered by object (IUIService contract).
+   */
+  listViews(object?: string): unknown[] {
+    const all = Array.from(this.viewRegistry.values());
+    if (!object) return all;
+    return all.filter((v: any) => v?.object_name === object);
+  }
+
+  /**
+   * Get a dashboard definition by name.
+   */
+  getDashboard(name: string): unknown | undefined {
+    return this.dashboardRegistry.get(name);
+  }
+
+  /**
+   * List all dashboard definitions.
+   */
+  listDashboards(): unknown[] {
+    return Array.from(this.dashboardRegistry.values());
+  }
+
+  /**
+   * Register a view definition in the in-memory registry.
+   */
+  registerView(name: string, definition: unknown): void {
+    this.viewRegistry.set(name, definition);
+  }
+
+  /**
+   * Register a dashboard definition in the in-memory registry.
+   */
+  registerDashboard(name: string, definition: unknown): void {
+    this.dashboardRegistry.set(name, definition);
   }
 
   // ─── Kernel Compliance ─────────────────────────────────────────────────────
@@ -198,8 +249,11 @@ export class UIPlugin implements Plugin {
           methods: [
             { name: 'saveView', description: 'Save a view definition', async: true },
             { name: 'loadView', description: 'Load a view definition', async: true },
-            { name: 'listViews', description: 'List all views', async: true },
+            { name: 'listViewsByObject', description: 'List views by object (async)', async: true },
             { name: 'deleteView', description: 'Delete a view', async: true },
+            { name: 'getView', description: 'Get a view from registry', async: false },
+            { name: 'listViews', description: 'List views from registry', async: false },
+            { name: 'registerView', description: 'Register a view in registry', async: false },
           ],
           stability: 'stable',
         }],
@@ -230,6 +284,8 @@ export class UIPlugin implements Plugin {
    */
   async destroy(): Promise<void> {
     this.objectql = undefined;
+    this.viewRegistry.clear();
+    this.dashboardRegistry.clear();
     this.context?.trigger('plugin.destroyed', { plugin: this.name });
     this.context?.logger.info('[UI] Destroyed');
   }
