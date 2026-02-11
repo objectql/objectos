@@ -19,7 +19,10 @@ interface ObjectUIExampleProps {
 }
 
 /**
- * Example component showing how to integrate @object-ui components
+ * Example component showing how to integrate @object-ui components.
+ * 
+ * The SchemaRenderer will automatically fetch object metadata from the ObjectStack
+ * backend and render the appropriate view based on the schema definition.
  */
 export function ObjectUIExample({ 
   objectName, 
@@ -27,14 +30,12 @@ export function ObjectUIExample({
   recordId 
 }: ObjectUIExampleProps) {
   return (
-    <div className="object-ui-container">
-      <SchemaRenderer
-        adapter={objectUIAdapter}
-        objectName={objectName}
-        view={view}
-        recordId={recordId}
-      />
-    </div>
+    <SchemaRenderer
+      adapter={objectUIAdapter}
+      objectName={objectName}
+      view={view}
+      recordId={recordId}
+    />
   );
 }
 
