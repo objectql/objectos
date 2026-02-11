@@ -248,12 +248,12 @@ class SpecComplianceAuditor {
                           pkg.devDependencies?.['@objectstack/spec'] ||
                           pkg.peerDependencies?.['@objectstack/spec'];
       
-      if (specVersion !== '2.0.4' && specVersion !== '^2.0.4') {
+      if (specVersion !== '2.0.6' && specVersion !== '^2.0.6') {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/spec version is ${specVersion}, expected 2.0.4 or ^2.0.4`
+          message: `@objectstack/spec version is ${specVersion}, expected 2.0.6 or ^2.0.6`
         });
       }
     }
@@ -274,12 +274,12 @@ class SpecComplianceAuditor {
                              pkg.devDependencies?.['@objectstack/runtime'] ||
                              pkg.peerDependencies?.['@objectstack/runtime'];
       
-      if (runtimeVersion !== '^2.0.4' && runtimeVersion !== '2.0.4') {
+      if (runtimeVersion !== '^2.0.6' && runtimeVersion !== '2.0.6') {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^2.0.4`
+          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^2.0.6`
         });
       }
     }

@@ -13,8 +13,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@objectstack/runtime": "^2.0.4",
-    "@objectstack/spec": "2.0.4"
+    "@objectstack/runtime": "^2.0.6",
+    "@objectstack/spec": "2.0.6"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

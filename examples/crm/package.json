@@ -17,10 +17,10 @@
     "test": "echo 'skipped — example project'"
   },
   "dependencies": {
-    "@objectstack/spec": "2.0.4"
+    "@objectstack/spec": "2.0.6"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@objectstack/cli": "^2.0.4"
+    "@objectstack/cli": "^2.0.6"
   }
 }

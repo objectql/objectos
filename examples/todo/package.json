@@ -17,14 +17,14 @@
     "test": "echo 'skipped — example project'"
   },
   "dependencies": {
-    "@objectstack/client": "2.0.4",
-    "@objectstack/driver-memory": "^2.0.4",
-    "@objectstack/objectql": "^2.0.4",
-    "@objectstack/runtime": "^2.0.4",
-    "@objectstack/spec": "2.0.4"
+    "@objectstack/client": "2.0.6",
+    "@objectstack/driver-memory": "^2.0.6",
+    "@objectstack/objectql": "^2.0.6",
+    "@objectstack/runtime": "^2.0.6",
+    "@objectstack/spec": "2.0.6"
   },
   "devDependencies": {
-    "@objectstack/cli": "^2.0.4",
+    "@objectstack/cli": "^2.0.6",
     "typescript": "^5.0.0"
   }
 }
