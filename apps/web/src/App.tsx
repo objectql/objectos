@@ -31,6 +31,7 @@ const JobsPage = lazy(() => import('./pages/settings/jobs'));
 const PluginsPage = lazy(() => import('./pages/settings/plugins'));
 const MetricsPage = lazy(() => import('./pages/settings/metrics'));
 const NotificationsPage = lazy(() => import('./pages/settings/notifications'));
+const ObjectUIDemoPage = lazy(() => import('./pages/settings/objectui-demo'));
 
 // ── Business Apps ─────────────────────────────────────────────
 const BusinessAppPage = lazy(() => import('./pages/apps/app'));
@@ -80,6 +81,7 @@ export function App() {
                   <Route path="/settings/plugins" element={<PluginsPage />} />
                   <Route path="/settings/metrics" element={<MetricsPage />} />
                   <Route path="/settings/notifications" element={<NotificationsPage />} />
+                  <Route path="/settings/objectui-demo" element={<ObjectUIDemoPage />} />
                   <Route path="/settings/account" element={<AccountSettingsPage />} />
                   <Route path="/settings/security" element={<SecuritySettingsPage />} />
                 </Route>

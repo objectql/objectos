@@ -10,3 +10,4 @@ export { KanbanBoard } from './KanbanBoard';
 export { ChartWidget } from './ChartWidget';
 export { ViewSwitcher, findKanbanField } from './ViewSwitcher';
 export { LayoutBuilder } from './LayoutBuilder';
+export { ObjectUIExample } from './ObjectUIExample';
