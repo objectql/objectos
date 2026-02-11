@@ -15,6 +15,7 @@ import {
   Briefcase,
   BarChart3,
   Bell,
+  Layers,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -59,6 +60,7 @@ const navSystem = [
   { title: 'Jobs', href: '/settings/jobs', icon: Briefcase },
   { title: 'Metrics', href: '/settings/metrics', icon: BarChart3 },
   { title: 'Notifications', href: '/settings/notifications', icon: Bell },
+  { title: 'ObjectUI Demo', href: '/settings/objectui-demo', icon: Layers },
 ];
 
 const navAccount = [
