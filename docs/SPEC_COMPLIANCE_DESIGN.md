@@ -2,7 +2,7 @@
 
 > **Date:** 2026-02-10
 > **Version:** 1.0.0
-> **Based on:** `@objectstack/spec@2.0.4` protocol analysis + ObjectOS codebase scan
+> **Based on:** `@objectstack/spec@2.0.6` protocol analysis + ObjectOS codebase scan
 > **Scope:** Full gap analysis, improvement plan, and upstream spec recommendations
 
 ---

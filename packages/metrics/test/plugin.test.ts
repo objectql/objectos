@@ -48,6 +48,9 @@ function createMockContext(): PluginContext {
             debug: jest.fn(),
         },
         getKernel: jest.fn(),
+        replaceService: jest.fn((name: string, service: any) => {
+            services.set(name, service);
+        }),
     };
 }
 
