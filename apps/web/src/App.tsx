@@ -37,6 +37,8 @@ const ObjectUIDemoPage = lazy(() => import('./pages/settings/objectui-demo'));
 const BusinessAppPage = lazy(() => import('./pages/apps/app'));
 const ObjectListPage = lazy(() => import('./pages/apps/object-list'));
 const ObjectRecordPage = lazy(() => import('./pages/apps/object-record'));
+const RecordCreatePage = lazy(() => import('./pages/apps/record-create'));
+const RecordEditPage = lazy(() => import('./pages/apps/record-edit'));
 
 export function App() {
   const fallback = (
@@ -91,7 +93,9 @@ export function App() {
               <Route path="/apps/:appId" element={<AppLayout />}>
                 <Route index element={<BusinessAppPage />} />
                 <Route path=":objectName" element={<ObjectListPage />} />
+                <Route path=":objectName/new" element={<RecordCreatePage />} />
                 <Route path=":objectName/:recordId" element={<ObjectRecordPage />} />
+                <Route path=":objectName/:recordId/edit" element={<RecordEditPage />} />
               </Route>
 
             </Route>

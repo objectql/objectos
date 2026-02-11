@@ -1,25 +1,28 @@
 /**
- * Object Record Page — displays a single record's fields,
- * workflow status, approval actions, and activity timeline.
+ * Object Record Page — displays a single record using SchemaRenderer detail view,
+ * workflow status, approval actions, activity timeline, and related lists.
+ *
+ * Uses @object-ui SchemaRenderer for detail view rendering (Phase H.1.2).
+ * Includes RelatedList components for child/lookup records (Phase H.4.3).
  *
  * Route: /apps/:appId/:objectName/:recordId
  */
 
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { SchemaRenderer } from '@object-ui/react';
+import { objectUIAdapter } from '@/lib/object-ui-adapter';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useRecord } from '@/hooks/use-records';
 import { useWorkflowStatus, useActivities } from '@/hooks/use-workflow';
 import { objectStackClient } from '@/lib/api';
-import { FieldRenderer } from '@/components/records/FieldRenderer';
 import { WorkflowStatusBadge } from '@/components/workflow/WorkflowStatusBadge';
 import { ApprovalActions } from '@/components/workflow/ApprovalActions';
 import { ActivityTimeline } from '@/components/workflow/ActivityTimeline';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RelatedList } from '@/components/objectui/RelatedList';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { resolveFields } from '@/types/metadata';
+import { mockObjectDefinitions } from '@/lib/mock-data';
 
 export default function ObjectRecordPage() {
   const { appId, objectName, recordId } = useParams();
@@ -61,10 +64,27 @@ export default function ObjectRecordPage() {
   const primaryField = objectDef.primaryField ?? 'name';
   const recordTitle = String(record[primaryField] ?? record.id ?? 'Untitled');
 
-  // Group fields: primary info fields vs metadata/readonly fields
-  const allFields = resolveFields(objectDef.fields, ['id']);
-  const editableFields = allFields.filter((f) => !f.readonly);
-  const readonlyFields = allFields.filter((f) => f.readonly);
+  // Find related objects (objects with lookup/master_detail fields referencing this object)
+  const relatedObjects = Object.entries(mockObjectDefinitions)
+    .filter(([, def]) =>
+      Object.values(def.fields).some(
+        (f) =>
+          (f.type === 'lookup' || f.type === 'master_detail') &&
+          f.reference === objectName,
+      ),
+    )
+    .map(([name, def]) => {
+      const fkField = Object.entries(def.fields).find(
+        ([, f]) =>
+          (f.type === 'lookup' || f.type === 'master_detail') &&
+          f.reference === objectName,
+      );
+      return {
+        objectName: name,
+        foreignKeyField: fkField?.[0] ?? '',
+        label: def.pluralLabel ?? def.label ?? name,
+      };
+    });
 
   const handleTransition = async (transition: { name: string }) => {
     if (!objectName || !recordId) return;
@@ -72,7 +92,6 @@ export default function ObjectRecordPage() {
       await objectStackClient.data.update(objectName, recordId, {
         _workflow_transition: transition.name,
       });
-      // Refresh workflow status and record data after transition
       await queryClient.invalidateQueries({ queryKey: ['workflow', 'status', recordId] });
       await queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
       await queryClient.invalidateQueries({ queryKey: ['activities', recordId] });
@@ -94,6 +113,12 @@ export default function ObjectRecordPage() {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
           {workflowStatus && <WorkflowStatusBadge status={workflowStatus} />}
+          <Button variant="outline" size="sm" className="ml-auto gap-1.5" asChild>
+            <Link to={`/apps/${appId}/${objectName}/${recordId}/edit`}>
+              <Pencil className="size-4" />
+              Edit
+            </Link>
+          </Button>
         </div>
         <p className="text-muted-foreground">{objectDef.label ?? objectName} Detail</p>
       </div>
@@ -103,44 +128,31 @@ export default function ObjectRecordPage() {
         <ApprovalActions status={workflowStatus} onTransition={handleTransition} />
       )}
 
-      {/* Field card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="grid gap-4 sm:grid-cols-2">
-            {editableFields.map((field) => (
-              <div key={field.name}>
-                <dt className="text-sm font-medium text-muted-foreground">
-                  {field.label}
-                </dt>
-                <dd className="mt-1 text-sm">
-                  <FieldRenderer field={field} value={record[field.name]} />
-                </dd>
-              </div>
-            ))}
-          </dl>
+      {/* SchemaRenderer detail view — H.1.2 */}
+      <div data-testid="schema-renderer-detail">
+        <SchemaRenderer
+          adapter={objectUIAdapter}
+          objectName={objectName!}
+          view="detail"
+          recordId={recordId}
+        />
+      </div>
 
-          {readonlyFields.length > 0 && (
-            <>
-              <Separator className="my-6" />
-              <dl className="grid gap-4 sm:grid-cols-2">
-                {readonlyFields.map((field) => (
-                  <div key={field.name}>
-                    <dt className="text-sm font-medium text-muted-foreground">
-                      {field.label}
-                    </dt>
-                    <dd className="mt-1 text-sm">
-                      <FieldRenderer field={field} value={record[field.name]} />
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      {/* Related lists — H.4.3 */}
+      {relatedObjects.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Related Records</h3>
+          {relatedObjects.map((rel) => (
+            <RelatedList
+              key={rel.objectName}
+              objectName={rel.objectName}
+              foreignKeyField={rel.foreignKeyField}
+              parentRecordId={recordId!}
+              basePath={`/apps/${appId}/${rel.objectName}`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Activity timeline */}
       {activities && activities.length > 0 && (

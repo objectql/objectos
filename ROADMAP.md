@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 13 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 29 pages, the project is transitioning from **infrastructure build-out** to **UI-centric business application delivery**.
+ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 13 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), Phase H is now complete — the Business App Shell is fully powered by @object-ui SchemaRenderer for metadata-driven UI rendering.
 
 The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift: the Admin Console's Business App Shell now leverages @object-ui's `SchemaRenderer` for metadata-driven UI rendering, replacing hand-built components with protocol-compliant controls.
 
@@ -49,18 +49,20 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 
 **Server Metrics**: 21,947 source lines · 107 TypeScript files · 47 test files · 350+ tests
 
-### Frontend — 🔄 Active Development
+### Frontend — ✅ Phase H Complete
 
 | Area | Status | Details |
 |------|:------:|---------|
 | Auth Pages | ✅ | 6 pages: sign-in, sign-up, forgot-password, reset-password, verify-2fa, home |
 | Admin Console | ✅ | 16 pages: settings, org management, audit, jobs, metrics, plugins, etc. |
-| Business App Shell | 🔄 | App page, object list, object record — wired to mock data + API client |
-| @object-ui Integration | 🔄 | Packages installed, adapter configured, demo page functional |
-| ObjectUI Components | 🔄 | 7 components: DataGrid, MetadataForm, KanbanBoard, ChartWidget, ViewSwitcher, LayoutBuilder, ObjectUIExample |
-| Workflow UI | 🔄 | 5 components: WorkflowStatusBadge, ApprovalActions, ActivityTimeline, WorkflowVisualizer, AutomationRulesBuilder |
-| Sync UI | 🔄 | 2 components: OfflineIndicator, ConflictResolutionDialog |
-| Data Hooks | ✅ | useRecords (CRUD + optimistic updates), useMetadata, useWorkflow, useSync, useOffline |
+| Business App Shell | ✅ | App page, object list, object record, record create, record edit — powered by SchemaRenderer |
+| @object-ui Integration | ✅ | Packages installed, adapter configured, SchemaRenderer for grid/detail/form/kanban/calendar |
+| ObjectUI Components | ✅ | 11 components: DataGrid, MetadataForm, KanbanBoard, ChartWidget, ViewSwitcher, LayoutBuilder, ObjectUIExample, ObjectPage, ObjectToolbar, RelatedList, FilterPanel |
+| Workflow UI | ✅ | 5 components: WorkflowStatusBadge, ApprovalActions, ActivityTimeline, WorkflowVisualizer, AutomationRulesBuilder |
+| Sync UI | ✅ | 2 components: OfflineIndicator, ConflictResolutionDialog |
+| Data Hooks | ✅ | useRecords (CRUD + optimistic updates + pagination + sorting + filtering), useMetadata, useWorkflow, useSync, useOffline, useRecentItems |
+| Navigation | ✅ | Dynamic sidebar from metadata, breadcrumbs, recent items tracking |
+| Error Handling | ✅ | QueryErrorBoundary with retry capability |
 
 ### @object-ui Packages Installed
 
@@ -110,30 +112,30 @@ Replace hand-built business page views with @object-ui SchemaRenderer.
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.1.1 | Replace `RecordTable` in object-list.tsx with `SchemaRenderer view="grid"` | 🔴 | 🔲 |
-| H.1.2 | Replace field detail rendering in object-record.tsx with `SchemaRenderer view="detail"` | 🔴 | 🔲 |
-| H.1.3 | Add record creation page using `SchemaRenderer view="form"` | 🔴 | 🔲 |
-| H.1.4 | Add record editing using `SchemaRenderer view="form" recordId={id}` | 🔴 | 🔲 |
-| H.1.5 | Wire `KanbanBoard` view mode to `SchemaRenderer view="kanban"` | 🟡 | 🔲 |
-| H.1.6 | Implement calendar view using `SchemaRenderer view="calendar"` | 🟡 | 🔲 |
+| H.1.1 | Replace `RecordTable` in object-list.tsx with `SchemaRenderer view="grid"` | 🔴 | ✅ |
+| H.1.2 | Replace field detail rendering in object-record.tsx with `SchemaRenderer view="detail"` | 🔴 | ✅ |
+| H.1.3 | Add record creation page using `SchemaRenderer view="form"` | 🔴 | ✅ |
+| H.1.4 | Add record editing using `SchemaRenderer view="form" recordId={id}` | 🔴 | ✅ |
+| H.1.5 | Wire `KanbanBoard` view mode to `SchemaRenderer view="kanban"` | 🟡 | ✅ |
+| H.1.6 | Implement calendar view using `SchemaRenderer view="calendar"` | 🟡 | ✅ |
 
 ### H.2 — Metadata-Driven Navigation
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.2.1 | Dynamic sidebar generated from `GET /api/v1/meta/apps` response | 🔴 | 🔲 |
-| H.2.2 | Object navigation within apps derived from app metadata | 🔴 | 🔲 |
-| H.2.3 | Breadcrumb generation from current route context | 🟡 | 🔲 |
-| H.2.4 | Recent items and favorites tracking | 🟢 | 🔲 |
+| H.2.1 | Dynamic sidebar generated from `GET /api/v1/meta/apps` response | 🔴 | ✅ |
+| H.2.2 | Object navigation within apps derived from app metadata | 🔴 | ✅ |
+| H.2.3 | Breadcrumb generation from current route context | 🟡 | ✅ |
+| H.2.4 | Recent items and favorites tracking | 🟢 | ✅ |
 
 ### H.3 — API Client Completion
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.3.1 | Connect useRecords hooks to live `@objectstack/client` API (remove mock fallback reliance) | 🔴 | 🔲 |
-| H.3.2 | Implement server-side pagination in object list view | 🔴 | 🔲 |
-| H.3.3 | Implement server-side sorting and filtering | 🟡 | 🔲 |
-| H.3.4 | Error boundary integration with TanStack Query | 🟡 | 🔲 |
+| H.3.1 | Connect useRecords hooks to live `@objectstack/client` API (remove mock fallback reliance) | 🔴 | ✅ |
+| H.3.2 | Implement server-side pagination in object list view | 🔴 | ✅ |
+| H.3.3 | Implement server-side sorting and filtering | 🟡 | ✅ |
+| H.3.4 | Error boundary integration with TanStack Query | 🟡 | ✅ |
 
 ### H.4 — @object-ui / @objectos Bridge Components
 
@@ -141,10 +143,10 @@ Custom wrapper components that combine @object-ui controls with ObjectOS-specifi
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.4.1 | `ObjectPage` — wraps SchemaRenderer with ObjectOS permissions check | 🔴 | 🔲 |
-| H.4.2 | `ObjectToolbar` — view switcher + new record button + bulk actions | 🟡 | 🔲 |
-| H.4.3 | `RelatedList` — displays child/lookup records on detail pages | 🟡 | 🔲 |
-| H.4.4 | `FilterPanel` — metadata-aware filter builder for list views | 🟡 | 🔲 |
+| H.4.1 | `ObjectPage` — wraps SchemaRenderer with ObjectOS permissions check | 🔴 | ✅ |
+| H.4.2 | `ObjectToolbar` — view switcher + new record button + bulk actions | 🟡 | ✅ |
+| H.4.3 | `RelatedList` — displays child/lookup records on detail pages | 🟡 | ✅ |
+| H.4.4 | `FilterPanel` — metadata-aware filter builder for list views | 🟡 | ✅ |
 
 ---
 
@@ -222,8 +224,8 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 | Performance baseline (P95 < 100ms) | ✅ |
 | Docker deployment | ✅ |
 | E2E smoke tests | ✅ |
-| @object-ui integration (SchemaRenderer for grid/form/detail) | 🔲 Phase H |
-| Business App Shell with live API data | 🔲 Phase H |
+| @object-ui integration (SchemaRenderer for grid/form/detail) | ✅ Phase H |
+| Business App Shell with live API data | ✅ Phase H |
 
 ### v1.1.0 — Rich Business UI (Target: April 2026)
 
@@ -333,9 +335,17 @@ User Action → React Component → @object-ui/react SchemaRenderer
 | Data Adapter | `apps/web/src/lib/object-ui-adapter.ts` | Bridges @object-ui with ObjectStack API |
 | API Client | `apps/web/src/lib/api.ts` | @objectstack/client singleton |
 | Schema Renderer | `apps/web/src/components/objectui/ObjectUIExample.tsx` | Example integration |
+| Object Page | `apps/web/src/components/objectui/ObjectPage.tsx` | Bridge: SchemaRenderer + permissions |
+| Object Toolbar | `apps/web/src/components/objectui/ObjectToolbar.tsx` | View switcher + actions |
+| Filter Panel | `apps/web/src/components/objectui/FilterPanel.tsx` | Metadata-aware filtering |
+| Related List | `apps/web/src/components/objectui/RelatedList.tsx` | Child/lookup records |
 | Business App Page | `apps/web/src/pages/apps/app.tsx` | App landing with object cards |
-| Object List | `apps/web/src/pages/apps/object-list.tsx` | Records list (to be @object-ui powered) |
-| Object Record | `apps/web/src/pages/apps/object-record.tsx` | Record detail (to be @object-ui powered) |
+| Object List | `apps/web/src/pages/apps/object-list.tsx` | SchemaRenderer grid/kanban/calendar |
+| Object Record | `apps/web/src/pages/apps/object-record.tsx` | SchemaRenderer detail view |
+| Record Create | `apps/web/src/pages/apps/record-create.tsx` | SchemaRenderer form (new) |
+| Record Edit | `apps/web/src/pages/apps/record-edit.tsx` | SchemaRenderer form (edit) |
+| Error Boundary | `apps/web/src/components/ui/query-error-boundary.tsx` | TanStack Query error handling |
+| Recent Items | `apps/web/src/hooks/use-recent-items.ts` | Navigation history tracking |
 
 ---
 
