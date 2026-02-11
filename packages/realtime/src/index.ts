@@ -9,4 +9,5 @@ export type {
     AwarenessPresence,
     AwarenessEdit,
     AwarenessState,
+    CollaborationSession,
 } from './types.js';

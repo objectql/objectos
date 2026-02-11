@@ -181,3 +181,19 @@ export interface AwarenessState {
   /** Active selections in this context */
   selections: AwarenessSelection[];
 }
+
+// ─── Collaboration Session Types ───────────────────────────────────────────────
+
+/** Collaboration session for real-time document editing */
+export interface CollaborationSession {
+  /** Unique session identifier */
+  sessionId: string;
+  /** Document or record being collaborated on */
+  documentId: string;
+  /** List of participant user IDs */
+  participants: string[];
+  /** ISO 8601 timestamp when session was created */
+  createdAt: string;
+  /** Session interaction mode */
+  mode: 'view' | 'edit' | 'comment';
+}

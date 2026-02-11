@@ -1,5 +1,5 @@
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
+import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, CollaborationSession } from './types.js';
 import { WebSocketServer, WebSocket } from 'ws';
 import { randomUUID } from 'crypto';
 
@@ -72,6 +72,8 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
   let wss: WebSocketServer;
   const clientStates = new Map<WebSocket, ClientState>();
   let startedAt: number | undefined;
+  let pluginCtx: PluginContext | undefined;
+  const collaborationSessions = new Map<string, CollaborationSession>();
 
   // Helper: Simple Wildcard Matcher (e.g. "user.*" matches "user.created")
   const matchPattern = (pattern: string, event: string): boolean => {
@@ -115,6 +117,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
     async init(ctx: PluginContext) {
       ctx.logger.info('[Realtime] Initializing WebSocket Server...');
       startedAt = Date.now();
+      pluginCtx = ctx;
 
       // 1. Register the service so Adapters can find us
       ctx.registerService('realtime', {
@@ -184,10 +187,26 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
         },
 
         // Allow adapters to get the raw WSS if needed
-        getServer: () => wss
+        getServer: () => wss,
+
+        // Collaboration session management
+        createSession: (session: CollaborationSession) => {
+            collaborationSessions.set(session.sessionId, session);
+            return session;
+        },
+        getSession: (sessionId: string) => {
+            return collaborationSessions.get(sessionId) || null;
+        },
+        listSessions: () => {
+            return Array.from(collaborationSessions.values());
+        },
+        closeSession: (sessionId: string) => {
+            return collaborationSessions.delete(sessionId);
+        },
       });
 
       ctx.logger.info('[Realtime] Service registered as "realtime"');
+      await ctx.trigger('plugin.initialized', { pluginId: '@objectos/realtime' });
     },
 
     async start(ctx: PluginContext) {
@@ -280,6 +299,29 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
                         }
                     });
                 }
+
+                // Handle OT operations (Operational Transform)
+                if (data.type === 'ot-operation') {
+                    wss.clients.forEach(c => {
+                        if (c !== ws && c.readyState === WebSocket.OPEN) {
+                            c.send(JSON.stringify({
+                                ...data,
+                                messageId: randomUUID(),
+                                timestamp
+                            }));
+                        }
+                    });
+
+                    // Send ACK
+                    const ack: AckMessage = {
+                        messageId: randomUUID(),
+                        timestamp,
+                        type: 'ack',
+                        ackMessageId: messageId,
+                        success: true
+                    };
+                    ws.send(JSON.stringify(ack));
+                }
                 
                 // Handle Ping
                 if (data.type === 'ping') {
@@ -318,6 +360,7 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
       });
 
       ctx.logger.info('[Realtime] WebSocket Server started');
+      await ctx.trigger('plugin.started', { pluginId: '@objectos/realtime' });
     },
 
     async destroy() {
@@ -325,18 +368,23 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
         wss.clients.forEach(client => client.close());
         wss.close();
       }
+      collaborationSessions.clear();
+      await pluginCtx?.trigger('plugin.destroyed', { pluginId: '@objectos/realtime' });
     },
 
     async healthCheck(): Promise<PluginHealthReport> {
+      const start = Date.now();
       const clientCount = wss ? wss.clients.size : 0;
       const status = wss ? 'healthy' : 'unhealthy';
       const message = `${clientCount} connected clients`;
+      const latency = Date.now() - start;
       return {
         status,
         timestamp: new Date().toISOString(),
         message,
         metrics: {
           uptime: startedAt ? Date.now() - startedAt : 0,
+          responseTime: latency,
         },
         checks: [{ name: 'realtime', status: wss ? 'passed' : 'failed', message }],
       };
@@ -344,7 +392,20 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
 
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
       return {
-        capabilities: {},
+        capabilities: {
+          provides: [{
+            id: 'com.objectstack.service.realtime',
+            name: 'realtime',
+            version: { major: 0, minor: 1, patch: 0 },
+            methods: [
+              { name: 'broadcast', description: 'Broadcast event to subscribed clients', async: false },
+              { name: 'updatePresence', description: 'Update user presence status', async: false },
+              { name: 'getServer', description: 'Get the raw WebSocket server instance', async: false },
+            ],
+            stability: 'stable',
+          }],
+          requires: [],
+        },
         security: {
           pluginId: 'realtime',
           trustLevel: 'trusted',
