@@ -14,7 +14,6 @@ import { SchemaRenderer } from '@object-ui/react';
 import { objectUIAdapter } from '@/lib/object-ui-adapter';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useCreateRecord } from '@/hooks/use-records';
-import { MetadataForm } from '@/components/objectui/MetadataForm';
 import { Button } from '@/components/ui/button';
 import type { RecordData } from '@/types/metadata';
 
@@ -95,14 +94,6 @@ export default function RecordCreatePage() {
           onCancel={handleCancel}
         />
       </div>
-
-      {/* Fallback form using local MetadataForm */}
-      <MetadataForm
-        objectDef={objectDef}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        isSubmitting={createMutation.isPending}
-      />
     </div>
   );
 }

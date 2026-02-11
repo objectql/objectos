@@ -8,7 +8,7 @@
  * Route: /apps/:appId/:objectName
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { SchemaRenderer } from '@object-ui/react';
@@ -40,42 +40,6 @@ export default function ObjectListPage() {
   });
 
   const isLoading = metaLoading || dataLoading;
-
-  // Client-side filtering for search and filters (H.3.3)
-  const filteredRecords = useMemo(() => {
-    let records = result?.records ?? [];
-
-    // Apply text search
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      records = records.filter((r) =>
-        Object.values(r).some((v) =>
-          v != null && String(v).toLowerCase().includes(term),
-        ),
-      );
-    }
-
-    // Apply field filters
-    for (const filter of filters) {
-      records = records.filter((r) => {
-        const val = String(r[filter.field] ?? '').toLowerCase();
-        switch (filter.operator) {
-          case 'equals':
-            return val === filter.value.toLowerCase();
-          case 'contains':
-            return val.includes(filter.value.toLowerCase());
-          case 'gt':
-            return Number(r[filter.field]) > Number(filter.value);
-          case 'lt':
-            return Number(r[filter.field]) < Number(filter.value);
-          default:
-            return true;
-        }
-      });
-    }
-
-    return records;
-  }, [result?.records, searchTerm, filters]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -132,7 +96,7 @@ export default function ObjectListPage() {
       {/* Toolbar — H.4.2 */}
       <ObjectToolbar
         objectDef={objectDef}
-        total={filteredRecords.length}
+        total={total}
         viewMode={viewMode}
         onViewChange={setViewMode}
         createPath={createPath}

@@ -53,7 +53,11 @@ export function useRecords({
         }
         if (filters?.length) {
           params.filter = filters.map(
-            (f) => `${f.field} ${f.operator} '${f.value}'`,
+            (f) => {
+              // Sanitize: escape single quotes in values to prevent filter injection
+              const safeValue = f.value.replace(/'/g, "''");
+              return `${f.field} ${f.operator} '${safeValue}'`;
+            },
           ).join(' and ');
         }
         const result = await objectStackClient.data.find(objectName, params);

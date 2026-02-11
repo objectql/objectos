@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams, Outlet } from 'react-router-dom';
-import { Database, LayoutDashboard, ChevronRight, Star } from 'lucide-react';
+import { Database, LayoutDashboard, ChevronRight, Clock } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -143,7 +143,7 @@ export function AppLayout() {
                     <SidebarMenuItem key={item.id}>
                       <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
                         <Link to={item.href}>
-                          <Star className="size-3.5" />
+                          <Clock className="size-3.5" />
                           <span className="truncate">{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
