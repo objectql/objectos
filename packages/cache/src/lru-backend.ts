@@ -107,9 +107,10 @@ export class LruCacheBackend implements CacheBackend {
         this.addToFront(key);
     }
 
-    async delete(key: string): Promise<void> {
-        this.store.delete(key);
+    async delete(key: string): Promise<boolean> {
+        const existed = this.store.delete(key);
         this.removeFromAccessOrder(key);
+        return existed;
     }
 
     async has(key: string): Promise<boolean> {

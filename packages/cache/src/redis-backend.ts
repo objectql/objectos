@@ -83,9 +83,10 @@ export class RedisCacheBackend implements CacheBackend {
         }
     }
 
-    async delete(key: string): Promise<void> {
+    async delete(key: string): Promise<boolean> {
         this.ensureConnected();
-        await this.client.del(key);
+        const result = await this.client.del(key);
+        return result > 0;
     }
 
     async has(key: string): Promise<boolean> {
