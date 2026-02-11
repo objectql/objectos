@@ -3,7 +3,7 @@
  * kanban board, or calendar (switchable via ViewSwitcher).
  *
  * Uses @object-ui SchemaRenderer for grid, kanban, and calendar views (Phase H).
- * Falls back to built-in components when SchemaRenderer is not suitable.
+ * Phase I additions: bulk actions, saved views, CSV import/export.
  *
  * Route: /apps/:appId/:objectName
  */
@@ -15,9 +15,17 @@ import { SchemaRenderer } from '@object-ui/react';
 import { objectUIAdapter } from '@/lib/object-ui-adapter';
 import { useObjectDefinition } from '@/hooks/use-metadata';
 import { useRecords } from '@/hooks/use-records';
+import { useBulkActions } from '@/hooks/use-bulk-actions';
+import { useSavedViews } from '@/hooks/use-saved-views';
+import { useCsvOperations } from '@/hooks/use-csv-operations';
 import { ObjectToolbar } from '@/components/objectui/ObjectToolbar';
 import { FilterPanel } from '@/components/objectui/FilterPanel';
+import { BulkActionBar } from '@/components/objectui/BulkActionBar';
+import { SavedViewsPanel } from '@/components/objectui/SavedViewsPanel';
+import { CsvImportDialog } from '@/components/objectui/CsvImportDialog';
+import { CsvExportButton } from '@/components/objectui/CsvExportButton';
 import type { FilterValue } from '@/components/objectui/FilterPanel';
+import type { SavedView } from '@/components/objectui/SavedViewsPanel';
 import { Button } from '@/components/ui/button';
 import type { ViewMode } from '@/types/workflow';
 
@@ -39,6 +47,11 @@ export default function ObjectListPage() {
     pageSize,
   });
 
+  // Phase I hooks
+  const bulkActions = useBulkActions({ objectName: objectName! });
+  const { views: savedViews, saveView, deleteView } = useSavedViews(objectName);
+  const csvOps = useCsvOperations({ objectName: objectName! });
+
   const isLoading = metaLoading || dataLoading;
 
   const handlePageChange = useCallback(
@@ -46,6 +59,14 @@ export default function ObjectListPage() {
       setSearchParams({ page: String(page) });
     },
     [setSearchParams],
+  );
+
+  const handleLoadView = useCallback(
+    (view: SavedView) => {
+      setFilters(view.filters);
+      if (view.viewMode) setViewMode(view.viewMode);
+    },
+    [],
   );
 
   if (isLoading) {
@@ -74,6 +95,7 @@ export default function ObjectListPage() {
   }
 
   const total = result?.total ?? 0;
+  const records = result?.records ?? [];
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const createPath = `/apps/${appId}/${objectName}/new`;
 
@@ -93,13 +115,37 @@ export default function ObjectListPage() {
         )}
       </div>
 
-      {/* Toolbar — H.4.2 */}
-      <ObjectToolbar
+      {/* Toolbar — H.4.2 + I.2 bulk actions + I.6 CSV */}
+      <div className="flex items-center justify-between">
+        <ObjectToolbar
+          objectDef={objectDef}
+          total={total}
+          viewMode={viewMode}
+          onViewChange={setViewMode}
+          createPath={createPath}
+          selectedIds={bulkActions.selectedIds}
+          onBulkDelete={bulkActions.bulkDelete}
+        />
+        <div className="flex items-center gap-2">
+          <CsvImportDialog
+            objectDef={objectDef}
+            onImport={csvOps.importRecords}
+            isLoading={csvOps.isImporting}
+          />
+          <CsvExportButton
+            objectDef={objectDef}
+            records={records}
+          />
+        </div>
+      </div>
+
+      {/* Bulk action bar — I.2 */}
+      <BulkActionBar
         objectDef={objectDef}
-        total={total}
-        viewMode={viewMode}
-        onViewChange={setViewMode}
-        createPath={createPath}
+        selectedIds={bulkActions.selectedIds}
+        onBulkDelete={bulkActions.bulkDelete}
+        onBulkUpdate={bulkActions.bulkUpdate}
+        onDeselectAll={bulkActions.deselectAll}
       />
 
       {/* Filter panel — H.4.4 */}
@@ -109,6 +155,17 @@ export default function ObjectListPage() {
         onFiltersChange={setFilters}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+      />
+
+      {/* Saved views — I.3 */}
+      <SavedViewsPanel
+        objectName={objectName!}
+        currentFilters={filters}
+        currentViewMode={viewMode}
+        onLoadView={handleLoadView}
+        savedViews={savedViews}
+        onSaveView={saveView}
+        onDeleteView={deleteView}
       />
 
       {/* SchemaRenderer view — H.1.1, H.1.5, H.1.6 */}
