@@ -189,6 +189,7 @@ class SpecComplianceAuditor {
       hasSpecDependency: this.hasSpecDependency(pkg),
       hasRuntimeDependency: this.hasRuntimeDependency(pkg),
       hasPluginImplementation: this.hasPluginImplementation(packageDir),
+      hasContractAdoption: false,
       specImports: []
     };
 
@@ -283,6 +284,13 @@ class SpecComplianceAuditor {
         });
       }
     }
+
+    // Rule 7: Check for @objectstack/spec/contracts adoption
+    if (result.hasPluginImplementation) {
+      result.hasContractAdoption = result.specImports.some(
+        imp => imp.includes('@objectstack/spec/contracts')
+      );
+    }
   }
 
   /**
@@ -327,6 +335,9 @@ class SpecComplianceAuditor {
     console.log(`   - Errors: ${errors}`);
     console.log(`   - Warnings: ${warnings}`);
     console.log(`   - Info: ${infos}`);
+    const contractsAdopted = this.results.filter(r => r.hasContractAdoption).length;
+    const pluginPackages = this.results.filter(r => r.hasPluginImplementation).length;
+    console.log(`   Contracts adoption: ${contractsAdopted}/${pluginPackages} plugin packages`);
     console.log();
 
     // Package details
@@ -342,6 +353,7 @@ class SpecComplianceAuditor {
       console.log(`   Has @objectstack/spec: ${result.hasSpecDependency ? '✓' : '✗'}`);
       console.log(`   Has @objectstack/runtime: ${result.hasRuntimeDependency ? '✓' : '✗'}`);
       console.log(`   Has Plugin implementation: ${result.hasPluginImplementation ? '✓' : '✗'}`);
+      console.log(`   Spec contracts adopted: ${result.hasContractAdoption ? '✓' : '✗'}`);
       console.log(`   Spec imports: ${result.specImports.length}`);
       
       if (result.issues.length > 0) {
