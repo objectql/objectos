@@ -210,6 +210,55 @@ export interface NotificationChannelInterface {
   send(request: NotificationRequest): Promise<NotificationResult>;
 }
 
+/**
+ * Notification template definition
+ */
+export interface NotificationTemplate {
+  id: string;
+  name: string;
+  channel: NotificationChannel;
+  subject?: string;
+  body: string;
+  locale?: string;
+  variables?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * User notification preferences
+ */
+export interface NotificationPreference {
+  userId: string;
+  channels: {
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+    webhook: boolean;
+  };
+  quietHours?: {
+    enabled: boolean;
+    start: string;
+    end: string;
+    timezone: string;
+  };
+}
+
+/**
+ * Notification delivery log entry
+ */
+export interface NotificationLog {
+  id: string;
+  channel: NotificationChannel;
+  recipient: string;
+  subject?: string;
+  status: 'sent' | 'delivered' | 'failed' | 'bounced' | 'pending';
+  sentAt: string;
+  deliveredAt?: string;
+  error?: string;
+  metadata?: Record<string, any>;
+}
+
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
 
 import type {

@@ -16,6 +16,9 @@ import type {
   NotificationConfig, 
   NotificationRequest, 
   NotificationResult,
+  NotificationTemplate,
+  NotificationPreference,
+  NotificationLog,
   EmailOptions,
   SmsOptions,
   PushOptions,
@@ -53,6 +56,10 @@ export class NotificationPlugin implements Plugin {
   private smsChannel?: SmsChannel;
   private pushChannel?: PushChannel;
   private webhookChannel?: WebhookChannel;
+
+  private templates: Map<string, NotificationTemplate> = new Map();
+  private preferences: Map<string, NotificationPreference> = new Map();
+  private logs: NotificationLog[] = [];
 
   constructor(config: NotificationConfig = {}) {
     this.config = config;
@@ -116,10 +123,18 @@ export class NotificationPlugin implements Plugin {
       sendPush: this.sendPush.bind(this),
       sendWebhook: this.sendWebhook.bind(this),
       renderTemplate: this.renderTemplate.bind(this),
-      getQueueStatus: this.getQueueStatus.bind(this)
+      getQueueStatus: this.getQueueStatus.bind(this),
+      saveTemplate: this.saveTemplate.bind(this),
+      getTemplate: this.getTemplate.bind(this),
+      listTemplates: this.listTemplates.bind(this),
+      deleteTemplate: this.deleteTemplate.bind(this),
+      savePreference: this.savePreference.bind(this),
+      getPreference: this.getPreference.bind(this),
+      getNotificationLogs: this.getNotificationLogs.bind(this),
     });
 
     context.logger.info('[NotificationPlugin] Initialized successfully');
+    await context.trigger('plugin.initialized', { plugin: this.name });
   }
 
   /**
@@ -209,12 +224,14 @@ export class NotificationPlugin implements Plugin {
     }
     
     context.logger.info('[NotificationPlugin] Started successfully');
+    await context.trigger('plugin.started', { plugin: this.name });
   }
 
   /**
    * Health check
    */
   async healthCheck(): Promise<PluginHealthReport> {
+    const start = Date.now();
     const channels: string[] = [];
     if (this.emailChannel) channels.push('email');
     if (this.smsChannel) channels.push('sms');
@@ -228,6 +245,7 @@ export class NotificationPlugin implements Plugin {
       message,
       metrics: {
         uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+        responseTime: Date.now() - start,
       },
       checks: [{ name: 'notification-channels', status: status === 'healthy' ? 'passed' : 'warning', message }],
     };
@@ -238,7 +256,24 @@ export class NotificationPlugin implements Plugin {
    */
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
-      capabilities: {},
+      capabilities: {
+        provides: [{
+          id: 'com.objectstack.service.notification',
+          name: 'notification',
+          version: { major: 0, minor: 1, patch: 0 },
+          methods: [
+            { name: 'send', description: 'Send a notification via specified channel', returnType: 'Promise<NotificationResult>', async: true },
+            { name: 'sendEmail', description: 'Send email notification', async: true },
+            { name: 'sendSMS', description: 'Send SMS notification', async: true },
+            { name: 'sendPush', description: 'Send push notification', async: true },
+            { name: 'sendWebhook', description: 'Send webhook notification', async: true },
+            { name: 'renderTemplate', description: 'Render a template with data', returnType: 'string', async: false },
+            { name: 'getQueueStatus', description: 'Get notification queue status', async: false },
+          ],
+          stability: 'stable',
+        }],
+        requires: [],
+      },
       security: {
         pluginId: 'notification',
         trustLevel: 'trusted',
@@ -263,6 +298,7 @@ export class NotificationPlugin implements Plugin {
     this.queue?.stop();
     
     this.context?.logger.info('[NotificationPlugin] Destroyed');
+    await this.context?.trigger('plugin.destroyed', { plugin: this.name });
   }
 
   /**
@@ -425,6 +461,55 @@ export class NotificationPlugin implements Plugin {
       enabled: true,
       ...this.queue.getStatus()
     };
+  }
+
+  /**
+   * Save a notification template
+   */
+  async saveTemplate(template: NotificationTemplate): Promise<void> {
+    this.templates.set(template.id, template);
+  }
+
+  /**
+   * Get a notification template by ID
+   */
+  async getTemplate(id: string): Promise<NotificationTemplate | undefined> {
+    return this.templates.get(id);
+  }
+
+  /**
+   * List all notification templates
+   */
+  async listTemplates(): Promise<NotificationTemplate[]> {
+    return Array.from(this.templates.values());
+  }
+
+  /**
+   * Delete a notification template by ID
+   */
+  async deleteTemplate(id: string): Promise<void> {
+    this.templates.delete(id);
+  }
+
+  /**
+   * Save a user's notification preference
+   */
+  async savePreference(pref: NotificationPreference): Promise<void> {
+    this.preferences.set(pref.userId, pref);
+  }
+
+  /**
+   * Get a user's notification preference
+   */
+  async getPreference(userId: string): Promise<NotificationPreference | undefined> {
+    return this.preferences.get(userId);
+  }
+
+  /**
+   * Get notification delivery logs
+   */
+  async getNotificationLogs(limit = 100): Promise<NotificationLog[]> {
+    return this.logs.slice(-limit);
   }
 
   /**
