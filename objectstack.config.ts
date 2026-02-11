@@ -66,7 +66,16 @@ export default defineStack({
     new StoragePlugin(),
 
     // Core
-    new AuthPlugin(),
+    new AuthPlugin({
+      secret: process.env.AUTH_SECRET || (() => {
+        const defaultSecret = 'dev-secret-change-in-production-min-32-chars';
+        if (process.env.NODE_ENV === 'production') {
+          console.error('WARNING: Using default AUTH_SECRET in production! Set AUTH_SECRET environment variable.');
+        }
+        return defaultSecret;
+      })(),
+      baseUrl: process.env.BETTER_AUTH_URL || 'http://localhost:5320',
+    }),
     new PermissionsPlugin(),
     new AuditLogPlugin(),
 

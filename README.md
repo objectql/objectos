@@ -144,6 +144,37 @@ cd objectos
 pnpm install
 ```
 
+### Environment Setup
+
+Before running the application, you need to configure environment variables. Copy the example file and update it with your settings:
+
+```bash
+cp .env.example .env
+```
+
+**Required Configuration:**
+
+At minimum, you need to set the `AUTH_SECRET` for authentication to work:
+
+```bash
+# Generate a secure random secret (32+ characters recommended)
+export AUTH_SECRET=$(openssl rand -base64 32)
+```
+
+Or add it to your `.env` file:
+
+```env
+AUTH_SECRET=your-super-secret-key-change-this-in-production
+```
+
+**Optional Configuration:**
+
+- **Database**: Defaults to SQLite (`objectstack.db`). Set `OBJECTQL_DATABASE_URL` for PostgreSQL or MongoDB.
+- **OAuth Providers**: Configure `GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, etc. for social login.
+- **Enterprise SSO**: Set up Auth0, Okta, Keycloak, or Azure AD via environment variables.
+
+See `.env.example` for all available options.
+
 ### Development
 
 ```bash
