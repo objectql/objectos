@@ -91,6 +91,7 @@ export class BrowserRuntimePlugin implements Plugin {
       context.registerService('browser-service-worker', this.serviceWorker);
       context.registerService('browser-worker', this.worker);
 
+      context.trigger('plugin.initialized', { plugin: this.name });
       context.logger.info('[BrowserRuntime] Initialized successfully');
     } catch (error: any) {
       context.logger.error('[BrowserRuntime] Initialization failed:', error);
@@ -102,6 +103,7 @@ export class BrowserRuntimePlugin implements Plugin {
    * Start plugin
    */
   async start(context: PluginContext): Promise<void> {
+    context.trigger('plugin.started', { plugin: this.name });
     context.logger.info('[BrowserRuntime] Started successfully');
     
     // Set up API handlers
@@ -131,15 +133,21 @@ export class BrowserRuntimePlugin implements Plugin {
    * Health check
    */
   async healthCheck(): Promise<PluginHealthReport> {
+    const start = Date.now();
+
     const isDbReady = !!this.database;
     const status = isDbReady ? 'healthy' : 'unhealthy';
     const message = isDbReady ? 'SQLite WASM ready' : 'Database not initialized';
+
+    const latency = Date.now() - start;
+
     return {
       status,
       timestamp: new Date().toISOString(),
       message,
       metrics: {
         uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+        responseTime: latency,
       },
       checks: [
         { name: 'browser-database', status: isDbReady ? 'passed' : 'failed', message },
@@ -153,7 +161,20 @@ export class BrowserRuntimePlugin implements Plugin {
    */
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
-      capabilities: {},
+      capabilities: {
+        provides: [{
+          id: 'com.objectstack.service.browser',
+          name: 'browser',
+          version: { major: 0, minor: 1, patch: 0 },
+          methods: [
+            { name: 'getDatabase', description: 'Get browser database instance', async: false },
+            { name: 'getStorage', description: 'Get OPFS storage instance', async: false },
+            { name: 'getServiceWorker', description: 'Get service worker manager', async: false },
+          ],
+          stability: 'experimental',
+        }],
+        requires: [],
+      },
       security: {
         pluginId: 'browser',
         trustLevel: 'trusted',
@@ -175,6 +196,7 @@ export class BrowserRuntimePlugin implements Plugin {
    */
   async destroy(): Promise<void> {
     await this.stop();
+    this.context?.trigger('plugin.destroyed', { plugin: this.name });
     this.context?.logger.info('[BrowserRuntime] Destroyed');
   }
 
