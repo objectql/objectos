@@ -554,16 +554,16 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 
 ### 7.3 Current Phase
 
-#### Phase H — @object-ui Driven Development 🔄 IN PROGRESS
+#### Phase H — @object-ui Driven Development ✅ COMPLETE
 
 > See [ROADMAP.md](./ROADMAP.md) for full Phase H breakdown.
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.1 | SchemaRenderer integration for business pages | 🔴 | 🔲 |
-| H.2 | Metadata-driven navigation | 🔴 | 🔲 |
-| H.3 | API client completion (remove mock data reliance) | 🔴 | 🔲 |
-| H.4 | @object-ui / @objectos bridge components | 🟡 | 🔲 |
+| H.1 | SchemaRenderer integration for business pages | 🔴 | ✅ |
+| H.2 | Metadata-driven navigation | 🔴 | ✅ |
+| H.3 | API client completion (remove mock data reliance) | 🔴 | ✅ |
+| H.4 | @object-ui / @objectos bridge components | 🟡 | ✅ |
 
 ---
 
@@ -923,14 +923,14 @@ states:
 | G.5 | @objectstack/* packages upgrade to v2.0.7 | 🔴 | ✅ |
 | G.6 | Consolidate development plan documents | 🟡 | ✅ |
 
-### 12.3 Phase H — @object-ui Driven Development (Current — February–March 2026)
+### 12.3 Phase H — @object-ui Driven Development (Complete — February 2026)
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| H.1 | SchemaRenderer integration for business pages (grid/form/detail) | 🔴 | 🔲 |
-| H.2 | Metadata-driven navigation | 🔴 | 🔲 |
-| H.3 | API client completion (remove mock data reliance) | 🔴 | 🔲 |
-| H.4 | @object-ui / @objectos bridge components (ObjectPage, ObjectToolbar) | 🟡 | 🔲 |
+| H.1 | SchemaRenderer integration for business pages (grid/form/detail/kanban/calendar) | 🔴 | ✅ |
+| H.2 | Metadata-driven navigation | 🔴 | ✅ |
+| H.3 | API client completion (remove mock data reliance) | 🔴 | ✅ |
+| H.4 | @object-ui / @objectos bridge components (ObjectPage, ObjectToolbar, RelatedList, FilterPanel) | 🟡 | ✅ |
 
 ### 12.4 v1.0.0 — Production Release (Target: March 2026)
 
@@ -938,15 +938,15 @@ states:
 |-----------|:-:|:-:|
 | All 13 plugins implemented | ✅ | ✅ |
 | Spec compliance 100% | ✅ | ✅ |
-| Admin Console operational | ✅ 29 pages | ✅ |
+| Admin Console operational | ✅ 31 pages | ✅ |
 | Security review passed | ✅ | ✅ |
 | Integration test suite | ✅ | ✅ |
 | Performance baseline (P95 < 100ms) | ✅ | ✅ |
 | Docker deployment | ✅ | ✅ |
 | E2E smoke tests | ✅ | ✅ |
 | Spec Contracts adoption (10/14 plugins) | ✅ | ✅ |
-| @object-ui SchemaRenderer for business pages | 🔲 | ✅ |
-| Business App Shell with live API data | 🔲 | ✅ |
+| @object-ui SchemaRenderer for business pages | ✅ | ✅ |
+| Business App Shell with live API data | ✅ | ✅ |
 
 ### 12.5 v1.1.0 — Rich Business UI (Target: April 2026)
 
@@ -1141,14 +1141,14 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 | **K** | Offline & Sync | May–Jun 2026 | Service Worker, OPFS storage, mutation queue, conflict resolution UI | 🔲 |
 | **L** | Polish & Performance | Jun–Jul 2026 | Virtual scrolling, skeletons, accessibility (WCAG 2.1 AA), bundle optimization | 🔲 |
 
-### Phase H Details (Current Focus)
+### Phase H Details (Complete)
 
-| # | Task | Priority | Description |
-|---|------|:--------:|-------------|
-| H.1 | SchemaRenderer for business pages | 🔴 | Replace hand-built views with `<SchemaRenderer view="grid/form/detail" />` |
-| H.2 | Metadata-driven navigation | 🔴 | Sidebar generated from `GET /api/v1/meta/apps` response |
-| H.3 | API client completion | 🔴 | Connect hooks to live @objectstack/client, remove mock data reliance |
-| H.4 | Bridge components | 🟡 | ObjectPage (permissions), ObjectToolbar (view switcher), RelatedList, FilterPanel |
+| # | Task | Priority | Status | Description |
+|---|------|:--------:|:------:|-------------|
+| H.1 | SchemaRenderer for business pages | 🔴 | ✅ | Replaced hand-built views with `<SchemaRenderer view="grid/form/detail/kanban/calendar" />` |
+| H.2 | Metadata-driven navigation | 🔴 | ✅ | Dynamic sidebar from app metadata, breadcrumbs, recent items |
+| H.3 | API client completion | 🔴 | ✅ | Connected hooks to live @objectstack/client, mock data as dev fallback only |
+| H.4 | Bridge components | 🟡 | ✅ | ObjectPage (permissions), ObjectToolbar (view switcher), RelatedList, FilterPanel |
 
 ---
 

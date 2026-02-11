@@ -2,8 +2,9 @@
  * TanStack Query hooks for CRUD record operations.
  *
  * Uses the official @objectstack/client SDK to fetch from the server.
- * Falls back to mock data when the server is unreachable.
- * Supports optimistic updates for instant UI feedback (Phase 5).
+ * Falls back to mock data only when the server is unreachable during development.
+ * Supports optimistic updates for instant UI feedback.
+ * Supports server-side pagination, sorting, and filtering (Phase H).
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,24 +12,51 @@ import type { RecordData, RecordListResponse } from '@/types/metadata';
 import { objectStackClient } from '@/lib/api';
 import { getMockRecords, getMockRecord } from '@/lib/mock-data';
 
+// ── Helpers ─────────────────────────────────────────────────────
+
+/** Whether to use mock data as fallback (development only) */
+const USE_MOCK_FALLBACK = import.meta.env.DEV;
+
 // ── Record list ─────────────────────────────────────────────────
 
-interface UseRecordsOptions {
+export interface UseRecordsOptions {
   objectName: string | undefined;
   page?: number;
   pageSize?: number;
+  /** Sort field name */
+  sortField?: string;
+  /** Sort direction */
+  sortOrder?: 'asc' | 'desc';
+  /** Filter conditions */
+  filters?: Array<{ field: string; operator: string; value: string }>;
 }
 
-export function useRecords({ objectName, page = 1, pageSize = 20 }: UseRecordsOptions) {
+export function useRecords({
+  objectName,
+  page = 1,
+  pageSize = 20,
+  sortField,
+  sortOrder,
+  filters,
+}: UseRecordsOptions) {
   return useQuery<RecordListResponse>({
-    queryKey: ['records', objectName, page, pageSize],
+    queryKey: ['records', objectName, page, pageSize, sortField, sortOrder, filters],
     queryFn: async () => {
       if (!objectName) return { records: [], total: 0, page, pageSize };
       try {
-        const result = await objectStackClient.data.find(objectName, {
+        const params: Record<string, unknown> = {
           top: pageSize,
           skip: (page - 1) * pageSize,
-        });
+        };
+        if (sortField) {
+          params.orderby = sortOrder === 'desc' ? `${sortField} desc` : sortField;
+        }
+        if (filters?.length) {
+          params.filter = filters.map(
+            (f) => `${f.field} ${f.operator} '${f.value}'`,
+          ).join(' and ');
+        }
+        const result = await objectStackClient.data.find(objectName, params);
         return {
           records: result.records ?? [],
           total: result.total ?? result.records?.length ?? 0,
@@ -36,14 +64,16 @@ export function useRecords({ objectName, page = 1, pageSize = 20 }: UseRecordsOp
           pageSize,
         };
       } catch {
-        // Server unreachable — use mock data
+        if (!USE_MOCK_FALLBACK) throw new Error(`Failed to fetch ${objectName} records`);
       }
+      // Development fallback — mock data with client-side pagination
       const all = getMockRecords(objectName);
       const start = (page - 1) * pageSize;
       const records = all.slice(start, start + pageSize);
       return { records, total: all.length, page, pageSize };
     },
     enabled: !!objectName,
+    retry: USE_MOCK_FALLBACK ? 0 : 2,
   });
 }
 
@@ -63,11 +93,12 @@ export function useRecord({ objectName, recordId }: UseRecordOptions) {
         const result = await objectStackClient.data.get(objectName, recordId);
         if (result?.record) return result.record as RecordData;
       } catch {
-        // Server unreachable — use mock data
+        if (!USE_MOCK_FALLBACK) throw new Error(`Failed to fetch ${objectName}/${recordId}`);
       }
       return getMockRecord(objectName, recordId);
     },
     enabled: !!objectName && !!recordId,
+    retry: USE_MOCK_FALLBACK ? 0 : 2,
   });
 }
 

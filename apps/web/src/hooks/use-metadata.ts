@@ -2,14 +2,17 @@
  * TanStack Query hooks for fetching object and app metadata.
  *
  * Uses the official @objectstack/client SDK to fetch from the server.
- * Falls back to mock data when the server is unreachable so the UI
- * can be developed without a running backend.
+ * Falls back to mock data only during development when the server is unreachable.
+ * In production, errors are propagated to error boundaries (Phase H.3.1).
  */
 
 import { useQuery } from '@tanstack/react-query';
 import type { AppDefinition, ObjectDefinition } from '@/types/metadata';
 import { objectStackClient } from '@/lib/api';
 import { getMockAppDefinition, getMockObjectDefinition, mockAppDefinitions } from '@/lib/mock-data';
+
+/** Whether to use mock data as fallback (development only) */
+const USE_MOCK_FALLBACK = import.meta.env.DEV;
 
 // ── App metadata ────────────────────────────────────────────────
 
@@ -22,11 +25,12 @@ export function useAppDefinition(appId: string | undefined) {
         const result = await objectStackClient.meta.getItem('apps', appId);
         if (result) return result as AppDefinition;
       } catch {
-        // Server unreachable — use mock data
+        if (!USE_MOCK_FALLBACK) throw new Error(`Failed to fetch app: ${appId}`);
       }
       return getMockAppDefinition(appId);
     },
     enabled: !!appId,
+    retry: USE_MOCK_FALLBACK ? 0 : 2,
   });
 }
 
@@ -38,10 +42,11 @@ export function useAppList() {
         const result = await objectStackClient.meta.getItems('apps');
         if (result?.items?.length) return result.items as AppDefinition[];
       } catch {
-        // Server unreachable — use mock data
+        if (!USE_MOCK_FALLBACK) throw new Error('Failed to fetch app list');
       }
       return mockAppDefinitions;
     },
+    retry: USE_MOCK_FALLBACK ? 0 : 2,
   });
 }
 
@@ -56,11 +61,12 @@ export function useObjectDefinition(objectName: string | undefined) {
         const result = await objectStackClient.meta.getObject(objectName);
         if (result) return result as ObjectDefinition;
       } catch {
-        // Server unreachable — use mock data
+        if (!USE_MOCK_FALLBACK) throw new Error(`Failed to fetch object: ${objectName}`);
       }
       return getMockObjectDefinition(objectName);
     },
     enabled: !!objectName,
+    retry: USE_MOCK_FALLBACK ? 0 : 2,
   });
 }
 
