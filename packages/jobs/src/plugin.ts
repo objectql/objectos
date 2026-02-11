@@ -99,6 +99,7 @@ export class JobsPlugin implements Plugin {
         // Set up event listeners using kernel hooks
         await this.setupEventListeners(context);
 
+        await this.emitEvent('plugin.initialized', { pluginId: this.name });
         context.logger.info('[Jobs Plugin] Initialized successfully');
     }
 
@@ -207,16 +208,19 @@ export class JobsPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         let stats: JobQueueStats | undefined;
         try { stats = await this.queue.getStats(); } catch { /* ignore */ }
         const message = stats ? `Queue: ${stats.pending || 0} pending, ${stats.running || 0} running` : 'Job queue active';
+        const latency = Date.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'job-queue', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
@@ -227,7 +231,25 @@ export class JobsPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.job',
+                    name: 'job',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'registerHandler', description: 'Register a custom job handler', async: false },
+                        { name: 'enqueue', description: 'Add a job to the queue', returnType: 'Promise<Job>', async: true },
+                        { name: 'schedule', description: 'Schedule a recurring job', returnType: 'Promise<Job>', async: true },
+                        { name: 'cancel', description: 'Cancel a job', async: true },
+                        { name: 'getJob', description: 'Get job by ID', returnType: 'Promise<Job | null>', async: true },
+                        { name: 'queryJobs', description: 'Query jobs with filters', returnType: 'Promise<Job[]>', async: true },
+                        { name: 'getStats', description: 'Get queue statistics', returnType: 'Promise<JobQueueStats>', async: true },
+                        { name: 'enqueueBatch', description: 'Enqueue a batch of jobs', returnType: 'Promise<Job[]>', async: true },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'jobs',
                 trustLevel: 'trusted',
@@ -242,6 +264,13 @@ export class JobsPlugin implements Plugin {
      */
     getStartupResult(): PluginStartupResult {
         return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
+    }
+
+    /**
+     * Enqueue a batch of jobs
+     */
+    async enqueueBatch(configs: JobConfig[]): Promise<Job[]> {
+        return Promise.all(configs.map(config => this.enqueue(config)));
     }
 
     /**
@@ -342,6 +371,7 @@ export class JobsPlugin implements Plugin {
             context.logger.warn(`[Jobs Plugin] Could not register HTTP routes: ${e?.message}`);
         }
         
+        await this.emitEvent('plugin.started', { pluginId: this.name });
         context.logger.info('[Jobs Plugin] Started');
     }
 
@@ -351,6 +381,7 @@ export class JobsPlugin implements Plugin {
     async destroy(): Promise<void> {
         await this.queue.stopProcessing();
         this.scheduler.stop();
+        await this.emitEvent('plugin.destroyed', { pluginId: this.name });
         this.context?.logger.info('[Jobs Plugin] Destroyed');
     }
 }

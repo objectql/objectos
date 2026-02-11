@@ -84,6 +84,8 @@ export class PermissionsPlugin implements Plugin {
         await this.setupEventListeners(context);
 
         context.logger.info('[Permissions Plugin] Initialized successfully');
+
+        await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -179,6 +181,8 @@ export class PermissionsPlugin implements Plugin {
         }
         
         context.logger.info('[Permissions Plugin] Started successfully');
+
+        await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -341,14 +345,17 @@ export class PermissionsPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         const message = this.config.enabled ? 'Permission engine active' : 'Permissions disabled';
+        const latency = Date.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'permissions-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
@@ -359,7 +366,21 @@ export class PermissionsPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.permissions',
+                    name: 'permissions',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'checkPermission', description: 'Check if user has permission', returnType: 'boolean', async: false },
+                        { name: 'getProfile', description: 'Get user permission profile', async: false },
+                        { name: 'assignProfile', description: 'Assign a profile to a user', async: true },
+                        { name: 'getPermissionSets', description: 'Get all permission sets', async: false },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'permissions',
                 trustLevel: 'trusted',
@@ -385,6 +406,10 @@ export class PermissionsPlugin implements Plugin {
         this.rlsEvaluator.clear();
         await this.storage.clear();
         this.context?.logger.info('[Permissions Plugin] Destroyed');
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 }
 

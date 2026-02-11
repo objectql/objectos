@@ -14,7 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { StorageBackend, StorageConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
+import type { StorageBackend, StorageConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, BucketInfo } from './types.js';
 import { MemoryStorageBackend } from './memory-backend.js';
 import { SqliteStorageBackend } from './sqlite-backend.js';
 import { RedisStorageBackend } from './redis-backend.js';
@@ -76,6 +76,7 @@ export class StoragePlugin implements Plugin {
     private context?: PluginContext;
     private scopedInstances: Map<string, ScopedStorage> = new Map();
     private startedAt?: number;
+    private buckets: Map<string, { createdAt: string }> = new Map();
 
     constructor(config: StorageConfig = {}) {
         // Initialize backend
@@ -103,13 +104,116 @@ export class StoragePlugin implements Plugin {
         }
 
         context.logger.info('[Storage] Initialized successfully');
+
+        await context.trigger('plugin.initialized', { plugin: this.name });
     }
 
     /**
      * Start plugin
      */
     async start(context: PluginContext): Promise<void> {
+        // Register HTTP routes for Storage API
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                // GET /api/v1/storage/buckets - List buckets
+                rawApp.get('/api/v1/storage/buckets', async (c: any) => {
+                    try {
+                        const buckets = await this.listBuckets();
+                        return c.json({ success: true, data: buckets });
+                    } catch (error: any) {
+                        context.logger.error('[Storage API] List buckets error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // POST /api/v1/storage/buckets - Create bucket
+                rawApp.post('/api/v1/storage/buckets', async (c: any) => {
+                    try {
+                        const body = await c.req.json();
+                        await this.createBucket(body.name);
+                        return c.json({ success: true });
+                    } catch (error: any) {
+                        const status = error.message.includes('already exists') ? 409 : 500;
+                        return c.json({ success: false, error: error.message }, status);
+                    }
+                });
+
+                // DELETE /api/v1/storage/buckets/:name - Delete bucket
+                rawApp.delete('/api/v1/storage/buckets/:name', async (c: any) => {
+                    try {
+                        const name = c.req.param('name');
+                        await this.deleteBucket(name);
+                        return c.json({ success: true });
+                    } catch (error: any) {
+                        const status = error.message.includes('not found') ? 404 : 500;
+                        return c.json({ success: false, error: error.message }, status);
+                    }
+                });
+
+                // GET /api/v1/storage/buckets/:bucket/objects - List objects
+                rawApp.get('/api/v1/storage/buckets/:bucket/objects', async (c: any) => {
+                    try {
+                        const bucket = c.req.param('bucket');
+                        const objects = await this.listObjects(bucket);
+                        return c.json({ success: true, data: objects });
+                    } catch (error: any) {
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                // PUT /api/v1/storage/buckets/:bucket/objects/:key - Put object
+                rawApp.put('/api/v1/storage/buckets/:bucket/objects/:key', async (c: any) => {
+                    try {
+                        const bucket = c.req.param('bucket');
+                        const key = c.req.param('key');
+                        const body = await c.req.json();
+                        await this.putObject(bucket, key, body.value);
+                        return c.json({ success: true });
+                    } catch (error: any) {
+                        const status = error.message.includes('not found') ? 404 : 500;
+                        return c.json({ success: false, error: error.message }, status);
+                    }
+                });
+
+                // GET /api/v1/storage/buckets/:bucket/objects/:key - Get object
+                rawApp.get('/api/v1/storage/buckets/:bucket/objects/:key', async (c: any) => {
+                    try {
+                        const bucket = c.req.param('bucket');
+                        const key = c.req.param('key');
+                        const value = await this.getObject(bucket, key);
+                        if (value === undefined) {
+                            return c.json({ success: false, error: 'Object not found' }, 404);
+                        }
+                        return c.json({ success: true, data: value });
+                    } catch (error: any) {
+                        const status = error.message.includes('not found') ? 404 : 500;
+                        return c.json({ success: false, error: error.message }, status);
+                    }
+                });
+
+                // DELETE /api/v1/storage/buckets/:bucket/objects/:key - Delete object
+                rawApp.delete('/api/v1/storage/buckets/:bucket/objects/:key', async (c: any) => {
+                    try {
+                        const bucket = c.req.param('bucket');
+                        const key = c.req.param('key');
+                        await this.deleteObject(bucket, key);
+                        return c.json({ success: true });
+                    } catch (error: any) {
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+
+                context.logger.info('[Storage] HTTP routes registered');
+            }
+        } catch (e: any) {
+            context.logger.warn(`[Storage] Could not register HTTP routes: ${e?.message}`);
+        }
+
         context.logger.info('[Storage] Started successfully');
+
+        await context.trigger('plugin.started', { plugin: this.name });
     }
 
     /**
@@ -158,11 +262,14 @@ export class StoragePlugin implements Plugin {
     async healthCheck(): Promise<PluginHealthReport> {
         let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
         let message = 'Storage backend operational';
+        let latencyMs = 0;
         try {
+            const start = Date.now();
             await this.backend.set('__health_check__', 'ok', 5);
             const val = await this.backend.get('__health_check__');
             if (val !== 'ok') { checkStatus = 'degraded'; message = 'Storage read/write mismatch'; }
             await this.backend.delete('__health_check__');
+            latencyMs = Date.now() - start;
         } catch {
             checkStatus = 'unhealthy';
             message = 'Storage backend unreachable';
@@ -173,6 +280,7 @@ export class StoragePlugin implements Plugin {
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latencyMs,
             },
             checks: [{ name: 'storage-backend', status: checkStatus === 'healthy' ? 'passed' : checkStatus === 'degraded' ? 'warning' : 'failed', message }],
         };
@@ -183,7 +291,25 @@ export class StoragePlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.file-storage',
+                    name: 'file-storage',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'get', description: 'Get a value by key', returnType: 'Promise<any>', async: true },
+                        { name: 'set', description: 'Set a value with optional TTL', async: true },
+                        { name: 'delete', description: 'Delete a value by key', async: true },
+                        { name: 'keys', description: 'List keys matching a pattern', returnType: 'Promise<string[]>', async: true },
+                        { name: 'clear', description: 'Clear all stored data', async: true },
+                        { name: 'listBuckets', description: 'List storage buckets', returnType: 'Promise<BucketInfo[]>', async: true },
+                        { name: 'createBucket', description: 'Create a storage bucket', async: true },
+                        { name: 'deleteBucket', description: 'Delete a storage bucket', async: true },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'storage',
                 trustLevel: 'trusted',
@@ -208,7 +334,91 @@ export class StoragePlugin implements Plugin {
             await this.backend.close();
         }
         this.scopedInstances.clear();
+        this.buckets.clear();
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { plugin: this.name });
+        }
+
         this.context?.logger.info('[Storage] Destroyed');
+    }
+
+    /**
+     * List all storage buckets
+     */
+    async listBuckets(): Promise<BucketInfo[]> {
+        const result: BucketInfo[] = [];
+        for (const [name, meta] of this.buckets) {
+            const keys = await this.backend.keys(`bucket:${name}:*`);
+            result.push({ name, createdAt: meta.createdAt, itemCount: keys.length });
+        }
+        return result;
+    }
+
+    /**
+     * Create a storage bucket
+     */
+    async createBucket(name: string): Promise<void> {
+        if (this.buckets.has(name)) {
+            throw new Error(`Bucket '${name}' already exists`);
+        }
+        this.buckets.set(name, { createdAt: new Date().toISOString() });
+    }
+
+    /**
+     * Delete a storage bucket and all its objects
+     */
+    async deleteBucket(name: string): Promise<void> {
+        if (!this.buckets.has(name)) {
+            throw new Error(`Bucket '${name}' not found`);
+        }
+        const keys = await this.backend.keys(`bucket:${name}:*`);
+        for (const key of keys) {
+            await this.backend.delete(key);
+        }
+        this.buckets.delete(name);
+    }
+
+    /**
+     * Put an object into a bucket
+     */
+    async putObject(bucket: string, key: string, value: any): Promise<void> {
+        if (!this.buckets.has(bucket)) {
+            throw new Error(`Bucket '${bucket}' not found`);
+        }
+        await this.backend.set(`bucket:${bucket}:${key}`, value);
+    }
+
+    /**
+     * Get an object from a bucket
+     */
+    async getObject(bucket: string, key: string): Promise<any> {
+        if (!this.buckets.has(bucket)) {
+            throw new Error(`Bucket '${bucket}' not found`);
+        }
+        return this.backend.get(`bucket:${bucket}:${key}`);
+    }
+
+    /**
+     * Delete an object from a bucket
+     */
+    async deleteObject(bucket: string, key: string): Promise<void> {
+        if (!this.buckets.has(bucket)) {
+            throw new Error(`Bucket '${bucket}' not found`);
+        }
+        await this.backend.delete(`bucket:${bucket}:${key}`);
+    }
+
+    /**
+     * List all objects in a bucket
+     */
+    async listObjects(bucket: string): Promise<string[]> {
+        if (!this.buckets.has(bucket)) {
+            throw new Error(`Bucket '${bucket}' not found`);
+        }
+        const prefix = `bucket:${bucket}:`;
+        const keys = await this.backend.keys(`bucket:${bucket}:*`);
+        return keys.map(k => k.slice(prefix.length));
     }
 
     /**

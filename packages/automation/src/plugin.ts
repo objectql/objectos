@@ -99,6 +99,8 @@ export class AutomationPlugin implements Plugin {
         await this.setupEventListeners(context);
 
         context.logger.info('[Automation Plugin] Initialized successfully');
+
+        await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -123,6 +125,8 @@ export class AutomationPlugin implements Plugin {
         }
 
         context.logger.info('[Automation Plugin] Started successfully');
+
+        await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
     }
 
     /**
@@ -447,14 +451,17 @@ export class AutomationPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         const message = this.config.enabled ? 'Automation engine active' : 'Automation disabled';
+        const latency = Date.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'automation-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
         };
@@ -465,7 +472,21 @@ export class AutomationPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.automation',
+                    name: 'automation',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'registerRule', description: 'Register a workflow rule', async: false },
+                        { name: 'evaluateRules', description: 'Evaluate rules for a trigger event', async: true },
+                        { name: 'getRules', description: 'Get all registered rules', async: false },
+                        { name: 'getExecutionHistory', description: 'Get rule execution history', async: false },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'automation',
                 trustLevel: 'trusted',
@@ -488,6 +509,10 @@ export class AutomationPlugin implements Plugin {
     async destroy(): Promise<void> {
         this.triggerEngine.shutdown();
         this.context?.logger.info('[Automation Plugin] Destroyed');
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 }
 

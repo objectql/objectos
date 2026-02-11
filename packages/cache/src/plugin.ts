@@ -14,7 +14,7 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { CacheBackend, CacheConfig, CacheStats, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
+import type { CacheBackend, CacheConfig, CacheStats, CacheStrategy, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types.js';
 import { LruCacheBackend } from './lru-backend.js';
 import { RedisCacheBackend } from './redis-backend.js';
 
@@ -79,9 +79,11 @@ export class CachePlugin implements Plugin {
     private scopedInstances: Map<string, ScopedCache> = new Map();
     private enableStats: boolean;
     private startedAt?: number;
+    private strategy: CacheStrategy;
 
     constructor(config: CacheConfig = {}) {
         this.enableStats = config.enableStats ?? true;
+        this.strategy = config.strategy ?? 'lru';
 
         // Initialize backend
         if (config.customBackend) {
@@ -99,6 +101,10 @@ export class CachePlugin implements Plugin {
         this.context = context;
         this.startedAt = Date.now();
 
+        if (this.strategy !== 'lru') {
+            context.logger.warn(`[Cache] Strategy '${this.strategy}' is not yet implemented, falling back to LRU`);
+        }
+
         // Register cache service
         context.registerService('cache', this);
 
@@ -108,13 +114,41 @@ export class CachePlugin implements Plugin {
         }
 
         context.logger.info('[Cache] Initialized successfully');
+
+        await context.trigger('plugin.initialized', {
+            pluginId: this.name,
+            timestamp: new Date().toISOString()
+        });
     }
 
     /**
      * Start plugin
      */
     async start(context: PluginContext): Promise<void> {
+        try {
+            const httpServer = context.getService('http.server') as any;
+            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+            if (rawApp) {
+                rawApp.get('/api/v1/cache/stats', async (c: any) => {
+                    try {
+                        const stats = this.getStats();
+                        return c.json({ success: true, data: stats ?? {} });
+                    } catch (error: any) {
+                        context.logger.error('[Cache API] Get stats error:', error);
+                        return c.json({ success: false, error: error.message }, 500);
+                    }
+                });
+            }
+        } catch {
+            // http.server not available — skip route registration
+        }
+
         context.logger.info('[Cache] Started successfully');
+
+        await context.trigger('plugin.started', {
+            pluginId: this.name,
+            timestamp: new Date().toISOString()
+        });
     }
 
     /**
@@ -173,6 +207,7 @@ export class CachePlugin implements Plugin {
     async healthCheck(): Promise<PluginHealthReport> {
         let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
         let message = 'Cache backend operational';
+        const start = Date.now();
         try {
             await this.backend.set('__health_check__', 'ok', 5);
             const val = await this.backend.get('__health_check__');
@@ -182,12 +217,14 @@ export class CachePlugin implements Plugin {
             checkStatus = 'unhealthy';
             message = 'Cache backend unreachable';
         }
+        const latency = Date.now() - start;
         return {
             status: checkStatus,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'cache-backend', status: checkStatus === 'healthy' ? 'passed' : checkStatus === 'degraded' ? 'warning' : 'failed', message }],
         };
@@ -198,7 +235,23 @@ export class CachePlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.cache',
+                    name: 'cache',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'get', description: 'Get a cached value by key', returnType: 'Promise<any>', async: true },
+                        { name: 'set', description: 'Set a cached value with optional TTL', async: true },
+                        { name: 'delete', description: 'Delete a cached value', async: true },
+                        { name: 'has', description: 'Check if a key exists', returnType: 'Promise<boolean>', async: true },
+                        { name: 'clear', description: 'Clear all cached values', async: true },
+                        { name: 'getStats', description: 'Get cache statistics', returnType: 'CacheStats', async: false },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'cache',
                 trustLevel: 'trusted',
@@ -224,6 +277,13 @@ export class CachePlugin implements Plugin {
         }
         this.scopedInstances.clear();
         this.context?.logger.info('[Cache] Destroyed');
+
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', {
+                pluginId: this.name,
+                timestamp: new Date().toISOString()
+            });
+        }
     }
 
     /**

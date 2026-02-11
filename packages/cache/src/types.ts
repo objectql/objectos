@@ -46,6 +46,11 @@ export interface CacheBackend {
 }
 
 /**
+ * Cache eviction strategy
+ */
+export type CacheStrategy = 'lru' | 'lfu' | 'fifo';
+
+/**
  * Cache Plugin Configuration
  */
 export interface CacheConfig {
@@ -68,6 +73,11 @@ export interface CacheConfig {
      * Enable statistics tracking
      */
     enableStats?: boolean;
+
+    /**
+     * Cache eviction strategy (default: 'lru')
+     */
+    strategy?: CacheStrategy;
 }
 
 /**

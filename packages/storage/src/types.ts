@@ -129,6 +129,15 @@ export interface StorageEntry {
     expiresAt?: number;
 }
 
+/**
+ * Bucket metadata
+ */
+export interface BucketInfo {
+    name: string;
+    createdAt: string;
+    itemCount: number;
+}
+
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
 
 import type {

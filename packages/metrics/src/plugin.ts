@@ -77,6 +77,7 @@ export class MetricsPlugin implements Plugin {
         }
 
         context.logger.info('[Metrics] Initialized successfully');
+        await context.trigger('plugin.initialized', { pluginId: this.name });
     }
 
     /**
@@ -204,6 +205,7 @@ export class MetricsPlugin implements Plugin {
         }
         
         context.logger.info('[Metrics] Started successfully');
+        await context.trigger('plugin.started', { pluginId: this.name });
     }
 
     /**
@@ -451,17 +453,42 @@ export class MetricsPlugin implements Plugin {
     }
 
     /**
-     * Health check
+     * Get the metric registry with all registered metric keys by type
+     */
+    getRegistry(): { counters: string[]; gauges: string[]; histograms: string[] } {
+        return {
+            counters: Array.from(this.counters.keys()),
+            gauges: Array.from(this.gauges.keys()),
+            histograms: Array.from(this.histograms.keys()),
+        };
+    }
+
+    /**
+     * Get all unique metric names across all types
+     */
+    getMetricNames(): string[] {
+        const names = new Set<string>();
+        for (const c of this.counters.values()) names.add(c.get().name);
+        for (const g of this.gauges.values()) names.add(g.get().name);
+        for (const h of this.histograms.values()) names.add(h.get().name);
+        return Array.from(names);
+    }
+
+    /**
+     * Health check with latency tracking
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = performance.now();
         const status = this.config.enabled ? 'healthy' : 'degraded';
         const message = `${this.counters.size} counters, ${this.gauges.size} gauges, ${this.histograms.size} histograms`;
+        const responseTime = performance.now() - start;
         return {
             status,
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime,
             },
             checks: [
                 {
@@ -478,7 +505,26 @@ export class MetricsPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.metrics',
+                    name: 'metrics',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'incrementCounter', description: 'Increment a counter metric', async: false },
+                        { name: 'setGauge', description: 'Set a gauge metric value', async: false },
+                        { name: 'incrementGauge', description: 'Increment a gauge metric', async: false },
+                        { name: 'decrementGauge', description: 'Decrement a gauge metric', async: false },
+                        { name: 'recordHistogram', description: 'Record a histogram observation', async: false },
+                        { name: 'getMetrics', description: 'Get all metrics', returnType: 'Metric[]', async: false },
+                        { name: 'getMetric', description: 'Get a specific metric by name', async: false },
+                        { name: 'exportPrometheus', description: 'Export metrics in Prometheus format', returnType: 'string', async: false },
+                        { name: 'resetAllMetrics', description: 'Reset all metrics', async: false },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'metrics',
                 trustLevel: 'trusted',
@@ -502,6 +548,9 @@ export class MetricsPlugin implements Plugin {
         this.counters.clear();
         this.gauges.clear();
         this.histograms.clear();
+        if (this.context) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name });
+        }
         this.context?.logger.info('[Metrics] Destroyed');
     }
 }

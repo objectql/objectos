@@ -57,6 +57,7 @@ export class UIPlugin implements Plugin {
       // ObjectQL might not be available yet; will try again in start()
     }
 
+    context.trigger('plugin.initialized', { plugin: this.name });
     context.logger.info('[UI] Initialized successfully');
   };
 
@@ -77,6 +78,7 @@ export class UIPlugin implements Plugin {
       await this.registerViewObject();
     }
 
+    context.trigger('plugin.started', { plugin: this.name });
     context.logger.info('[UI] Started successfully');
   }
 
@@ -153,6 +155,8 @@ export class UIPlugin implements Plugin {
    * Health check
    */
   async healthCheck(): Promise<PluginHealthReport> {
+    const start = Date.now();
+
     let checkStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
     let message = 'UI service operational';
 
@@ -161,12 +165,15 @@ export class UIPlugin implements Plugin {
       message = 'ObjectQL service not available';
     }
 
+    const latency = Date.now() - start;
+
     return {
       status: checkStatus,
       timestamp: new Date().toISOString(),
       message,
       metrics: {
         uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+        responseTime: latency,
       },
       checks: [
         {
@@ -183,7 +190,21 @@ export class UIPlugin implements Plugin {
    */
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
-      capabilities: {},
+      capabilities: {
+        provides: [{
+          id: 'com.objectstack.service.ui',
+          name: 'ui',
+          version: { major: 0, minor: 1, patch: 0 },
+          methods: [
+            { name: 'saveView', description: 'Save a view definition', async: true },
+            { name: 'loadView', description: 'Load a view definition', async: true },
+            { name: 'listViews', description: 'List all views', async: true },
+            { name: 'deleteView', description: 'Delete a view', async: true },
+          ],
+          stability: 'stable',
+        }],
+        requires: [],
+      },
       security: {
         pluginId: 'ui',
         trustLevel: 'trusted',
@@ -209,6 +230,7 @@ export class UIPlugin implements Plugin {
    */
   async destroy(): Promise<void> {
     this.objectql = undefined;
+    this.context?.trigger('plugin.destroyed', { plugin: this.name });
     this.context?.logger.info('[UI] Destroyed');
   }
 

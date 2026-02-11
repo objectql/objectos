@@ -81,6 +81,10 @@ export class I18nPlugin implements Plugin {
         context.registerService('i18n', this);
 
         context.logger.info(`[I18n] Initialized with default locale: ${this.defaultLocale}`);
+
+        if (context.trigger) {
+            await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 
     /**
@@ -88,6 +92,10 @@ export class I18nPlugin implements Plugin {
      */
     async start(context: PluginContext): Promise<void> {
         context.logger.info('[I18n] Started successfully');
+
+        if (context.trigger) {
+            await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 
     /**
@@ -236,14 +244,17 @@ export class I18nPlugin implements Plugin {
      * Health check
      */
     async healthCheck(): Promise<PluginHealthReport> {
+        const start = Date.now();
         const locales = this.getLoadedLocales();
         const message = `${locales.length} locales loaded (current: ${this.currentLocale})`;
+        const latency = Date.now() - start;
         return {
             status: 'healthy',
             timestamp: new Date().toISOString(),
             message,
             metrics: {
                 uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+                responseTime: latency,
             },
             checks: [{ name: 'i18n-translations', status: 'passed', message }],
         };
@@ -254,7 +265,22 @@ export class I18nPlugin implements Plugin {
      */
     getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
         return {
-            capabilities: {},
+            capabilities: {
+                provides: [{
+                    id: 'com.objectstack.service.i18n',
+                    name: 'i18n',
+                    version: { major: 0, minor: 1, patch: 0 },
+                    methods: [
+                        { name: 'translate', description: 'Translate a key to the target locale', async: false, returnType: 'string' },
+                        { name: 'setLocale', description: 'Set the current locale', async: false },
+                        { name: 'getLocale', description: 'Get the current locale', async: false, returnType: 'string' },
+                        { name: 'getSupportedLocales', description: 'Get list of supported locales', async: false, returnType: 'string[]' },
+                        { name: 'loadTranslations', description: 'Load translations for a locale', async: true },
+                    ],
+                    stability: 'stable',
+                }],
+                requires: [],
+            },
             security: {
                 pluginId: 'i18n',
                 trustLevel: 'trusted',
@@ -277,6 +303,10 @@ export class I18nPlugin implements Plugin {
     async destroy(): Promise<void> {
         this.translations.clear();
         this.context?.logger.info('[I18n] Destroyed');
+
+        if (this.context?.trigger) {
+            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
+        }
     }
 
     /**
