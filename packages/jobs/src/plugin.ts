@@ -189,7 +189,7 @@ export class JobsPlugin implements Plugin, IJobService {
             });
             // Schedule via internal scheduler
             const config: JobConfig = {
-                id: `${name}_${Date.now()}`,
+                id: `${name}_${crypto.randomUUID()}`,
                 name,
                 cronExpression: specSchedule?.expression,
             };
@@ -208,7 +208,7 @@ export class JobsPlugin implements Plugin, IJobService {
      */
     async trigger(name: string, data?: unknown): Promise<void> {
         const job = await this.enqueue({
-            id: `${name}_trigger_${Date.now()}`,
+            id: `${name}_trigger_${crypto.randomUUID()}`,
             name,
             data,
         });
@@ -225,7 +225,8 @@ export class JobsPlugin implements Plugin, IJobService {
             status: job.status === 'completed' ? 'success' as const
                  : job.status === 'running' ? 'running' as const
                  : job.status === 'failed' ? 'failed' as const
-                 : 'success' as const,
+                 : job.status === 'cancelled' ? 'timeout' as const
+                 : 'failed' as const,
             startedAt: (job.startedAt ?? job.createdAt ?? new Date()).toISOString(),
             completedAt: job.completedAt?.toISOString(),
             error: job.error,

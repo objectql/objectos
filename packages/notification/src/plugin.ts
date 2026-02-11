@@ -310,7 +310,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
   async send(message: SpecNotificationMessage): Promise<SpecNotificationResult>;
   async send(input: NotificationRequest | SpecNotificationMessage): Promise<NotificationResult | SpecNotificationResult> {
     // Adapt spec NotificationMessage to local NotificationRequest if needed
-    const request: NotificationRequest = 'recipient' in input
+    const request: NotificationRequest = ('recipient' in input && !('to' in input))
       ? input as NotificationRequest
       : {
           channel: (input as SpecNotificationMessage).channel as unknown as NotificationChannel,
