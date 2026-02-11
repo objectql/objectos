@@ -1,5 +1,7 @@
 # apps/web — Frontend Development Plan & Roadmap
 
+> **⚠️ This document has been consolidated into the main [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) (Section 15: Consolidated Frontend Roadmap). Please refer to that document for the latest frontend roadmap. This file is kept for historical reference.**
+
 > Complete plan for building the **ObjectOS Admin Console & Business App Shell** (`apps/web`).
 
 ## 1. Executive Summary

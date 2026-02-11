@@ -1,9 +1,9 @@
 # ObjectOS Spec Compliance — Development Design Document
 
-> **Date:** 2026-02-10
-> **Version:** 1.0.0
+> **Date:** 2026-02-11
+> **Version:** 2.0.0
 > **Based on:** `@objectstack/spec@2.0.6` protocol analysis + ObjectOS codebase scan
-> **Scope:** Full gap analysis, improvement plan, and upstream spec recommendations
+> **Scope:** Full protocol gap analysis across all 14 namespaces, 25 service contracts, and 139 Zod schemas
 
 ---
 
@@ -13,876 +13,1119 @@
 2. [Current State Assessment](#2-current-state-assessment)
 3. [Spec Protocol Gap Analysis](#3-spec-protocol-gap-analysis)
 4. [CoreServiceName Compliance Matrix](#4-coreservicename-compliance-matrix)
-5. [New Plugins Required](#5-new-plugins-required)
-6. [Existing Plugin Improvements](#6-existing-plugin-improvements)
-7. [Upstream Spec Improvement Proposals](#7-upstream-spec-improvement-proposals)
-8. [Implementation Roadmap](#8-implementation-roadmap)
-9. [Architecture Changes](#9-architecture-changes)
-10. [Appendix: Spec Schema Inventory](#appendix-spec-schema-inventory)
+5. [Contracts Interface Compliance](#5-contracts-interface-compliance)
+6. [New Modules Gap Analysis](#6-new-modules-gap-analysis)
+7. [New Plugins Required](#7-new-plugins-required)
+8. [Existing Plugin Improvements](#8-existing-plugin-improvements)
+9. [Upstream Spec Improvement Proposals](#9-upstream-spec-improvement-proposals)
+10. [Implementation Roadmap](#10-implementation-roadmap)
+11. [Architecture Changes](#11-architecture-changes)
+12. [Appendix — Schema Inventory](#appendix--schema-inventory)
 
 ---
 
 ## 1. Executive Summary
 
-ObjectOS currently implements **13 out of 18 CoreServiceName services** defined in `@objectstack/spec/system/core-services.zod.ts`. All existing plugins follow the kernel plugin lifecycle and register as kernel services. However, the spec's `system/` module defines **26 protocol schemas** covering Infrastructure, Observability, Security, Runtime, and Multi-Tenancy — many of which are not yet implemented or only partially covered.
+This document provides a comprehensive compliance analysis of the **ObjectOS** platform against the **`@objectstack/spec@2.0.6`** protocol specification. It supersedes the v1.0.0 document (2026-02-10) which covered only 5 namespaces.
 
-**Key Findings:**
+### Key Metrics
 
-| Category | Spec Schemas | ObjectOS Coverage | Gap |
-|----------|-------------|-------------------|-----|
-| Infrastructure | 5 | 3 partial | 2 missing |
-| Observability | 6 | 2 partial | 4 missing |
-| Security & Compliance | 4 | 1 partial | 3 missing |
-| Runtime Services | 7 | 5 partial | 2 missing |
-| Multi-Tenant & Licensing | 3 | 0 | 3 missing |
-| **Total** | **26** | **11 partial** | **14 gaps** |
+| Metric | v1.0.0 Doc | v2.0.0 Doc (Current) |
+|--------|-----------|---------------------|
+| Spec namespaces analyzed | 5 | **14** |
+| Total Zod schemas in spec | ~60 | **139** |
+| Service contracts in spec | 0 (proposed) | **25** |
+| ObjectOS packages | 14 | **14** |
+| CoreServiceNames implemented | 11/15 | **13/18** |
+| New spec modules since v1 | — | **6** (Identity, Contracts, Integration, Studio, Hub, QA) |
 
-**Recommendation:** Implement 8 new plugins (Priority 1 & 2) and enhance 6 existing plugins to achieve full spec compliance. This also requires 5 upstream spec improvement proposals.
+### What Changed Since v1.0.0
+
+The `@objectstack/spec@2.0.6` protocol has matured significantly:
+
+1. **Contracts module added** — 25 formal TypeScript service interfaces that every compliant service MUST implement. This resolves our previous SPEC-001 proposal.
+2. **Identity module added** — User, Organization, Role, and SCIM 2.0 provisioning schemas.
+3. **Integration module added** — External system connector framework.
+4. **Studio module added** — Console/Studio UI plugin protocol.
+5. **Hub module added** — Plugin marketplace and registry schemas.
+6. **QA module added** — Testing framework schemas for plugin validation.
+7. **AI module expanded** — AI agent, RAG pipeline, and NLQ query schemas.
+8. **CoreServiceName expanded** — From 15 to 18 values, adding `ai`, `i18n`, and `ui`.
+9. **Service criticality levels** — Formal `required` / `core` / `optional` classification.
+
+### Compliance Summary
+
+- **Operational packages:** 14/14 (all green)
+- **CoreServiceName coverage:** 13/18 (72%)
+- **Contracts interface adoption:** 0/25 (formal interfaces not yet implemented)
+- **Schema coverage (estimated):** ~65/139 schemas have corresponding ObjectOS implementations
+- **Critical gap:** No formal Contracts interface adoption in any package
 
 ---
 
 ## 2. Current State Assessment
 
-### 2.1 Existing Plugin Inventory
+### 2.1 ObjectOS Package Inventory
 
-| # | Package | Service Name | Spec Schema Coverage | Status |
-|---|---------|-------------|---------------------|--------|
-| 1 | `@objectos/audit` | `audit-log` | `system/audit.zod.ts` | ✅ Operational — 34+ event types, field history |
-| 2 | `@objectos/automation` | `automation` | `automation/*.zod.ts` | ✅ Operational — 7 action types, queue |
-| 3 | `@objectos/browser` | `browser-*` | N/A (client-side) | ✅ Operational — SQLite WASM, OPFS |
-| 4 | `@objectos/cache` | `cache` | `system/cache.zod.ts` | ⚠️ Partial — Missing CacheConfig validation |
-| 5 | `@objectos/i18n` | `i18n` | `system/translation.zod.ts` | ⚠️ Partial — Missing TranslationBundle schema usage |
-| 6 | `@objectos/jobs` | `job` | `system/job.zod.ts` | ⚠️ Partial — Missing full Task/Queue schema |
-| 7 | `@objectos/metrics` | `metrics` | `system/metrics.zod.ts` | ⚠️ Partial — Missing MetricRegistry schema |
-| 8 | `@objectos/notification` | `notification` | `system/notification.zod.ts` | ⚠️ Partial — Missing NotificationTemplate schema |
-| 9 | `@objectos/permissions` | `permissions` | `security/*.zod.ts` | ✅ Operational — RBAC, RLS, sharing rules |
-| 10 | `@objectos/realtime` | `realtime` | `system/collaboration.zod.ts` | ⚠️ Partial — Missing OT/CRDT/Cursor protocols |
-| 11 | `@objectos/storage` | `file-storage` | `system/object-storage.zod.ts` | ⚠️ Partial — KV only, missing object storage |
-| 12 | `@objectos/ui` | `ui` | `ui/*.zod.ts` | ✅ Operational — View CRUD |
-| 13 | `@objectos/workflow` | `workflow` | `automation/workflow.zod.ts` | ✅ Operational — FSM + Flow format |
-| 14 | `@objectstack/plugin-auth` | `auth` | `system/auth-config.zod.ts` | ✅ Operational — Better-Auth, SSO, 2FA |
+All 14 packages are operational and depend on `@objectstack/spec@2.0.6`:
 
-### 2.2 Architecture Strengths
+| # | Package | Service Name | Spec Namespace | Status | Contracts Interface |
+|---|---------|-------------|----------------|--------|-------------------|
+| 1 | `@objectos/audit` | `audit-log` | System | ✅ Operational | ❌ Not adopted |
+| 2 | `@objectos/auth` | `auth`, `better-auth` | System, Identity | ✅ Operational | ❌ Not adopted |
+| 3 | `@objectos/automation` | `automation` | Automation | ✅ Operational | ❌ Not adopted |
+| 4 | `@objectos/browser` | `browser-*` | Shared | ✅ Operational | N/A |
+| 5 | `@objectos/cache` | `cache` | System | ✅ Operational | ❌ Not adopted |
+| 6 | `@objectos/i18n` | `i18n` | System | ✅ Operational | ❌ Not adopted |
+| 7 | `@objectos/jobs` | `job` | System | ✅ Operational | ❌ Not adopted |
+| 8 | `@objectos/metrics` | `metrics` | System | ✅ Operational | N/A |
+| 9 | `@objectos/notification` | `notification` | System | ✅ Operational | ❌ Not adopted |
+| 10 | `@objectos/permissions` | `permissions` | Security | ✅ Operational | ❌ Not adopted |
+| 11 | `@objectos/realtime` | `realtime` | System | ✅ Operational | ❌ Not adopted |
+| 12 | `@objectos/storage` | `file-storage` | System | ✅ Operational | ❌ Not adopted |
+| 13 | `@objectos/ui` | `ui` | UI | ✅ Operational | ❌ Not adopted |
+| 14 | `@objectos/workflow` | `workflow` | Automation | ✅ Operational | ❌ Not adopted |
 
-- **Plugin lifecycle compliance:** All plugins implement `init()`, `start()`, `destroy()`.
-- **Service registry usage:** All plugins register via `ctx.registerService(name, instance)`.
-- **Event-driven communication:** Plugins use `ctx.hook()` / `ctx.trigger()` for inter-plugin events.
-- **Spec type imports:** Several plugins import from `@objectstack/spec` for Zod validation.
+**Additional:** `@objectstack/plugin-auth` — BetterAuth plugin adapter (operational).
 
-### 2.3 Architecture Weaknesses
+### 2.2 Application Layer
 
-- **Inconsistent spec schema usage:** Most plugins define internal types rather than reusing spec Zod schemas for config/data validation.
-- **Missing CoreServiceName alignment:** Service names like `audit-log`, `file-storage` don't exactly match spec's `CoreServiceName` enum.
-- **No configuration validation:** Plugin configs are not validated against spec Zod schemas at boot time.
-- **No health reporting:** Plugins don't implement `PluginHealthStatus` / `PluginHealthReport` from spec's kernel module.
-- **No capability manifests:** Plugins don't declare `PluginCapabilityManifest` from spec's kernel module.
+| Application | Stack | Status | Pages |
+|-------------|-------|--------|-------|
+| `apps/web` | Vite + React 19 + React Router 7 | ✅ Operational | 29 |
+| `apps/site` | Next.js 16 + Fumadocs | ✅ Operational | — |
+
+### 2.3 Dependency Versions
+
+All packages are aligned on:
+
+- `@objectstack/spec@2.0.6`
+- `@objectstack/runtime@latest`
+- `@objectstack/cli@latest`
+- TypeScript 5.0+ (strict mode)
 
 ---
 
 ## 3. Spec Protocol Gap Analysis
 
-### 3.1 System Protocol Schemas (26 total)
+### 3.1 Shared Namespace
 
-The `@objectstack/spec/system` module defines 26 schema files organized into 5 categories:
+**Spec path:** `src/shared/`
 
-#### Infrastructure Services
+| Schema / Utility | Spec Status | ObjectOS Status | Gap |
+|-----------------|-------------|-----------------|-----|
+| Common types | ✅ Defined | ✅ Used | None |
+| Base schema utilities | ✅ Defined | ✅ Used | None |
+| Error codes | ✅ Defined | ⚠️ Partial | Custom error codes not fully aligned |
 
-| Schema File | Key Types | ObjectOS Plugin | Status |
-|-------------|-----------|----------------|--------|
-| `cache.zod.ts` | `CacheConfig`, `CacheStrategy` | `@objectos/cache` | ⚠️ Config not validated via Zod |
-| `message-queue.zod.ts` | `QueueConfig`, `QueueDriver` | None (jobs has basic queue) | ❌ **Missing** |
-| `object-storage.zod.ts` | `ObjectStorageConfig`, `StorageBucket` | `@objectos/storage` (KV only) | ⚠️ Missing S3/object storage |
-| `search-engine.zod.ts` | `SearchEngineConfig`, `SearchIndex` | None | ❌ **Missing** |
-| `http-server.zod.ts` | `HttpServerConfig`, `CORSConfig` | Root config (not a plugin) | ⚠️ Not plugin-managed |
+**Gap severity:** Low
 
-#### Observability & Operations
+### 3.2 Data Namespace
 
-| Schema File | Key Types | ObjectOS Plugin | Status |
-|-------------|-----------|----------------|--------|
-| `audit.zod.ts` | `AuditEvent`, `AuditConfig`, `AuditRetentionPolicy` | `@objectos/audit` | ⚠️ Config not Zod-validated |
-| `logging.zod.ts` | `LoggingConfig`, `LogDestination`, `StructuredLogEntry` | None | ❌ **Missing** |
-| `metrics.zod.ts` | `MetricSchema`, `MetricRegistry`, `PrometheusConfig` | `@objectos/metrics` | ⚠️ Partial schema usage |
-| `tracing.zod.ts` | `TracingConfig`, `Span`, `TraceContext` | None | ❌ **Missing** |
-| `change-management.zod.ts` | `ChangeRequest`, `RollbackPlan` | None | ❌ **Missing** |
-| `migration.zod.ts` | `MigrationConfig`, `MigrationStep` | None | ❌ **Missing** |
+**Spec path:** `src/data/`
 
-#### Security & Compliance
+| Schema | Spec Status | ObjectOS Status | Gap |
+|--------|-------------|-----------------|-----|
+| Object schemas | ✅ Defined | ✅ Via ObjectQL | None — delegated to ObjectQL |
+| Field definitions | ✅ Defined | ✅ Via ObjectQL | None |
+| Query protocol | ✅ Defined | ✅ Via ObjectQL | None |
+| Data hooks | ✅ Defined | ⚠️ Partial | Hook lifecycle not fully spec-compliant |
+| Validation rules | ✅ Defined | ⚠️ Partial | Missing cross-field validation |
 
-| Schema File | Key Types | ObjectOS Plugin | Status |
-|-------------|-----------|----------------|--------|
-| `auth-config.zod.ts` | `AuthConfig`, `OIDCConfig`, `SAMLConfig` | `@objectstack/plugin-auth` | ⚠️ Partial |
-| `compliance.zod.ts` | `ComplianceConfig`, `GDPRConfig` | None | ❌ **Missing** |
-| `encryption.zod.ts` | `EncryptionConfig`, `KeyManagement` | None | ❌ **Missing** |
-| `masking.zod.ts` | `MaskingRule`, `MaskingStrategy` | None | ❌ **Missing** |
+**Gap severity:** Low (most Data concerns are handled by ObjectQL)
 
-#### Runtime Services
+### 3.3 Security Namespace
 
-| Schema File | Key Types | ObjectOS Plugin | Status |
-|-------------|-----------|----------------|--------|
-| `job.zod.ts` | `JobConfig`, `JobSchedule` | `@objectos/jobs` | ⚠️ Partial |
-| `worker.zod.ts` | `Task`, `WorkerConfig`, `BatchTask`, `QueueConfig` | None (partial in jobs) | ❌ **Missing** |
-| `notification.zod.ts` | `NotificationConfig`, `NotificationTemplate` | `@objectos/notification` | ⚠️ Partial |
-| `translation.zod.ts` | `TranslationBundle`, `TranslationEntry` | `@objectos/i18n` | ⚠️ Partial |
-| `collaboration.zod.ts` | `OTOperation`, `CRDTState`, `CollaborativeCursor` | `@objectos/realtime` | ⚠️ Very partial |
-| `metadata-persistence.zod.ts` | `MetadataPersistence`, `PersistenceStrategy` | None | ❌ **Missing** |
-| `core-services.zod.ts` | `CoreServiceName`, `ServiceStatus` | Implicit (no validation) | ⚠️ Not validated |
+**Spec path:** `src/security/`
 
-#### Multi-Tenant & Licensing
+| Schema | Spec Status | ObjectOS Status | Gap |
+|--------|-------------|-----------------|-----|
+| Permission sets | ✅ Defined | ✅ `@objectos/permissions` | None |
+| Sharing rules | ✅ Defined | ⚠️ Partial | Basic sharing, no hierarchical sharing |
+| Field-level security (FLS) | ✅ Defined | ✅ Implemented | None |
+| Record-level security (RLS) | ✅ Defined | ⚠️ Partial | Missing criteria-based sharing |
+| Profile schemas | ✅ Defined | ⚠️ Partial | No profile-to-permission-set mapping |
 
-| Schema File | Key Types | ObjectOS Plugin | Status |
-|-------------|-----------|----------------|--------|
-| `tenant.zod.ts` | `TenantSchema`, `TenantIsolationConfig`, `TenantSecurityPolicy` | None | ❌ **Missing** |
-| `license.zod.ts` | `LicenseConfig`, `LicenseMetricType` | None | ❌ **Missing** |
-| `registry-config.zod.ts` | `RegistryConfig` | None | ❌ **Missing** |
+**Gap severity:** Medium
 
-### 3.2 Kernel Protocol Gaps
+### 3.4 UI Namespace
 
-The `@objectstack/spec/kernel` module defines 22 schemas. ObjectOS plugins don't fully leverage:
+**Spec path:** `src/ui/`
 
-| Kernel Schema | Purpose | ObjectOS Usage |
-|--------------|---------|----------------|
-| `plugin-capability.zod.ts` | `PluginCapabilityManifest` | ❌ Not declared by any plugin |
-| `plugin-lifecycle-advanced.zod.ts` | `PluginHealthStatus`, `PluginHealthReport` | ❌ No health reporting |
-| `plugin-lifecycle-events.zod.ts` | Standardized lifecycle events | ⚠️ Partial (custom events) |
-| `plugin-security.zod.ts` | `PluginSecurityManifest` | ❌ Not declared by any plugin |
-| `plugin-runtime.zod.ts` | `PluginRuntimeConfig` | ❌ Not used |
-| `service-registry.zod.ts` | `ServiceRegistryConfig` | ❌ Not used |
-| `startup-orchestrator.zod.ts` | `StartupOrchestrator` | ❌ Not used |
-| `feature.zod.ts` | `FeatureFlag`, `FeatureFlagConfig` | ❌ No feature flag system |
-| `context.zod.ts` | `ExecutionContext`, `RequestContext` | ❌ Not structured per spec |
-| `execution-context.zod.ts` | Enhanced execution context | ❌ Not used |
+| Schema | Spec Status | ObjectOS Status | Gap |
+|--------|-------------|-----------------|-----|
+| App definitions | ✅ Defined | ✅ `@objectos/ui` | None |
+| View schemas | ✅ Defined | ✅ Implemented | None |
+| Dashboard schemas | ✅ Defined | ⚠️ Partial | Basic dashboards only |
+| Action definitions | ✅ Defined | ⚠️ Partial | Missing bulk action schemas |
+| Layout schemas | ✅ Defined | ✅ Implemented | None |
+
+**Gap severity:** Low
+
+### 3.5 System Namespace (26 Schemas)
+
+**Spec path:** `src/system/`
+
+| Schema | ObjectOS Package | Status | Notes |
+|--------|-----------------|--------|-------|
+| `audit` | `@objectos/audit` | ✅ Compliant | Full CRUD event capture |
+| `auth-config` | `@objectos/auth` | ✅ Compliant | BetterAuth config schema |
+| `cache` | `@objectos/cache` | ✅ Compliant | LRU + Redis, TTL, namespaces |
+| `change-management` | — | ❌ Missing | No change management system |
+| `collaboration` | — | ❌ Missing | No collaboration features |
+| `compliance` | `@objectos/audit` | ⚠️ Partial | Audit covers some compliance |
+| `core-services` | — | ⚠️ Partial | Service registry exists but incomplete |
+| `encryption` | `@objectos/auth` | ⚠️ Partial | Auth handles encryption, not standalone |
+| `http-server` | `@objectstack/cli` | ✅ Compliant | Hono + @hono/node-server |
+| `job` | `@objectos/jobs` | ✅ Compliant | Multi-priority queues, cron, retry |
+| `license` | — | ❌ Missing | No license management |
+| `logging` | `@objectos/metrics` | ⚠️ Partial | Metrics includes basic logging |
+| `masking` | — | ❌ Missing | No data masking |
+| `message-queue` | — | ❌ Missing | No message queue abstraction |
+| `metadata-persistence` | — | ⚠️ Partial | Via ObjectQL, not standalone |
+| `metrics` | `@objectos/metrics` | ✅ Compliant | Counter/Gauge/Histogram, Prometheus |
+| `migration` | — | ❌ Missing | No schema migration system |
+| `notification` | `@objectos/notification` | ✅ Compliant | Email/SMS/Push/Webhook |
+| `object-storage` | `@objectos/storage` | ✅ Compliant | KV storage, multiple backends |
+| `registry-config` | — | ⚠️ Partial | Basic config, not spec-compliant |
+| `search-engine` | — | ❌ Missing | No search engine |
+| `tenant` | — | ❌ Missing | No multi-tenant isolation |
+| `tracing` | — | ❌ Missing | No distributed tracing |
+| `translation` | `@objectos/i18n` | ✅ Compliant | Multi-locale, interpolation |
+| `worker` | `@objectos/jobs` | ⚠️ Partial | Worker model basic |
+
+**Coverage:** 9/26 fully compliant, 7/26 partial, 10/26 missing
+**Gap severity:** High
+
+### 3.6 Kernel Namespace (22 Schemas)
+
+**Spec path:** `src/kernel/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| `context` | ✅ Implemented | Request context propagation |
+| `events` | ✅ Implemented | Event bus system |
+| `execution-context` | ⚠️ Partial | Missing trace correlation |
+| `feature` | ⚠️ Partial | Feature flags basic |
+| `manifest` | ✅ Implemented | Plugin manifests |
+| `metadata-loader` | ✅ Implemented | YAML/JSON loader |
+| `package-registry` | ⚠️ Partial | Local only, no remote registry |
+| `plugin-capability` | ⚠️ Partial | Basic capabilities |
+| `plugin-lifecycle-advanced` | ❌ Missing | No advanced lifecycle hooks |
+| `plugin-lifecycle-events` | ⚠️ Partial | Basic start/stop only |
+| `plugin-loading` | ✅ Implemented | Dynamic plugin loading |
+| `plugin-registry` | ✅ Implemented | In-memory plugin registry |
+| `plugin-runtime` | ⚠️ Partial | No sandboxing |
+| `plugin-security` | ❌ Missing | No plugin security model |
+| `plugin-security-advanced` | ❌ Missing | No plugin permission boundaries |
+| `plugin-structure` | ✅ Implemented | Standard plugin structure |
+| `plugin-validator` | ⚠️ Partial | Basic validation only |
+| `plugin-versioning` | ❌ Missing | No semver enforcement |
+| `plugin` | ✅ Implemented | Core plugin interface |
+| `service-registry` | ⚠️ Partial | Basic registry, no health checks |
+| `startup-orchestrator` | ⚠️ Partial | Sequential boot, no dependency graph |
+
+**Coverage:** 8/22 fully compliant, 10/22 partial, 4/22 missing
+**Gap severity:** High
+
+### 3.7 Automation Namespace
+
+**Spec path:** `src/automation/`
+
+| Schema | ObjectOS Package | Status | Notes |
+|--------|-----------------|--------|-------|
+| Workflow rules | `@objectos/automation` | ✅ Compliant | 7 action types |
+| State machines | `@objectos/workflow` | ✅ Compliant | FSM engine |
+| Flow format | `@objectos/workflow` | ⚠️ Partial | BPMN-Lite, not full Flow |
+| Approval processes | `@objectos/workflow` | ⚠️ Partial | Basic approvals |
+| Formula engine | `@objectos/automation` | ⚠️ Partial | Limited formula functions |
+
+**Gap severity:** Medium
+
+### 3.8 API Namespace
+
+**Spec path:** `src/api/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| Endpoint contracts | ⚠️ Partial | REST endpoints exist, not formally typed |
+| Rate limiting | ❌ Missing | No rate limiting schema |
+| Versioning | ⚠️ Partial | `/api/v1` prefix only |
+
+**Gap severity:** Medium
+
+### 3.9 AI Namespace
+
+**Spec path:** `src/ai/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| AI agent schemas | ❌ Missing | No AI agent support |
+| RAG pipeline | ❌ Missing | No RAG pipeline |
+| NLQ (Natural Language Query) | ❌ Missing | No NLQ support |
+
+**Gap severity:** Low (optional service)
+
+### 3.10 Identity Namespace (NEW)
+
+**Spec path:** `src/identity/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| `identity.zod.ts` — User schema | ⚠️ Partial | `@objectos/auth` has users, not spec-aligned |
+| `organization.zod.ts` — Org schema | ❌ Missing | No organization model |
+| `role.zod.ts` — Role schema | ⚠️ Partial | `@objectos/permissions` has roles |
+| `scim.zod.ts` — SCIM 2.0 provisioning | ❌ Missing | No SCIM support |
+| `protocol.ts` — Identity protocol | ❌ Missing | No identity protocol interface |
+
+**Gap severity:** High
+
+### 3.11 Integration Namespace (NEW)
+
+**Spec path:** `src/integration/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| `connector.zod.ts` — Connector framework | ❌ Missing | No connector framework |
+
+**Gap severity:** Medium
+
+### 3.12 Studio Namespace (NEW)
+
+**Spec path:** `src/studio/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| `plugin.zod.ts` — Studio UI plugin protocol | ❌ Missing | `apps/web` exists but no plugin protocol |
+
+**Gap severity:** Medium
+
+### 3.13 Hub Namespace (NEW)
+
+**Spec path:** `src/hub/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| Plugin marketplace schemas | ❌ Missing | No marketplace |
+| Plugin registry protocol | ❌ Missing | No remote registry |
+
+**Gap severity:** Low (future feature)
+
+### 3.14 QA Namespace (NEW)
+
+**Spec path:** `src/qa/`
+
+| Schema | ObjectOS Status | Notes |
+|--------|----------------|-------|
+| `testing.zod.ts` — Testing framework | ❌ Missing | No spec-compliant test harness |
+
+**Gap severity:** Medium
 
 ---
 
 ## 4. CoreServiceName Compliance Matrix
 
-The spec defines 18 CoreServiceName values. Here is ObjectOS's compliance:
+The spec defines 18 `CoreServiceName` values with formal criticality levels. ObjectOS implements 13.
 
-| CoreServiceName | Spec Criticality | ObjectOS Plugin | Registered? | Fully Compliant? |
-|----------------|-----------------|----------------|-------------|-----------------|
-| `metadata` | **required** | ObjectQLPlugin | ✅ via `objectql` | ⚠️ Name mismatch |
-| `data` | **required** | ObjectQLPlugin | ✅ via `objectql` | ⚠️ Name mismatch |
-| `auth` | **core** | `@objectstack/plugin-auth` | ✅ `auth` | ✅ |
-| `cache` | **core** | `@objectos/cache` | ✅ `cache` | ✅ |
-| `queue` | **core** | None (jobs has basic) | ❌ | ❌ **Missing** |
-| `job` | **core** | `@objectos/jobs` | ✅ `job` | ⚠️ Partial |
-| `file-storage` | optional | `@objectos/storage` | ✅ `file-storage` | ⚠️ KV only |
-| `search` | optional | None | ❌ | ❌ **Missing** |
-| `automation` | optional | `@objectos/automation` | ✅ `automation` | ✅ |
-| `graphql` | optional | None | ❌ | ❌ **Missing** |
-| `analytics` | optional | None | ❌ | ❌ **Missing** |
-| `realtime` | optional | `@objectos/realtime` | ✅ `realtime` | ⚠️ Partial |
-| `notification` | optional | `@objectos/notification` | ✅ `notification` | ⚠️ Partial |
-| `ai` | optional | None | ❌ | ❌ **Missing** |
-| `i18n` | optional | `@objectos/i18n` | ✅ `i18n` | ⚠️ Partial |
-| `ui` | optional | `@objectos/ui` | ✅ `ui` | ✅ |
-| `workflow` | optional | `@objectos/workflow` | ✅ `workflow` | ✅ |
+### Service Criticality Classification
 
-**Score: 13/18 registered (72%), 5/18 fully compliant (28%)**
+| Criticality | Services | ObjectOS Coverage |
+|-------------|----------|-------------------|
+| **required** | `metadata`, `data` | ✅ 2/2 (via ObjectQL) |
+| **core** | `auth`, `cache`, `queue`, `job` | ⚠️ 3/4 (missing `queue`) |
+| **optional** | `file-storage`, `search`, `automation`, `graphql`, `analytics`, `realtime`, `notification`, `ai`, `i18n`, `ui`, `workflow` | ⚠️ 8/12 |
 
----
+### Detailed Matrix
 
-## 5. New Plugins Required
+| # | CoreServiceName | Criticality | ObjectOS Package | Status | Formal Contract |
+|---|----------------|-------------|------------------|--------|-----------------|
+| 1 | `metadata` | required | ObjectQL | ✅ Implemented | ❌ Not adopted |
+| 2 | `data` | required | ObjectQL | ✅ Implemented | ❌ Not adopted |
+| 3 | `auth` | core | `@objectos/auth` | ✅ Implemented | ❌ Not adopted |
+| 4 | `cache` | core | `@objectos/cache` | ✅ Implemented | ❌ Not adopted |
+| 5 | `queue` | core | — | ❌ **Missing** | ❌ N/A |
+| 6 | `job` | core | `@objectos/jobs` | ✅ Implemented | ❌ Not adopted |
+| 7 | `file-storage` | optional | `@objectos/storage` | ✅ Implemented | ❌ Not adopted |
+| 8 | `search` | optional | — | ❌ **Missing** | ❌ N/A |
+| 9 | `automation` | optional | `@objectos/automation` | ✅ Implemented | ❌ Not adopted |
+| 10 | `graphql` | optional | — | ❌ **Missing** | ❌ N/A |
+| 11 | `analytics` | optional | — | ❌ **Missing** | ❌ N/A |
+| 12 | `realtime` | optional | `@objectos/realtime` | ✅ Implemented | ❌ Not adopted |
+| 13 | `notification` | optional | `@objectos/notification` | ✅ Implemented | ❌ Not adopted |
+| 14 | `ai` | optional | — | ❌ **Missing** | ❌ N/A |
+| 15 | `i18n` | optional | `@objectos/i18n` | ✅ Implemented | ❌ Not adopted |
+| 16 | `ui` | optional | `@objectos/ui` | ✅ Implemented | ❌ Not adopted |
+| 17 | `workflow` | optional | `@objectos/workflow` | ✅ Implemented | ❌ Not adopted |
 
-### 5.1 Priority 1 — Core System Services (Phase 1)
-
-#### P1.1 `@objectos/logging` — Structured Logging Plugin
-
-**Spec compliance:** `system/logging.zod.ts`
-
-**Rationale:** The spec defines a comprehensive logging protocol with multiple destinations (file, console, Elasticsearch, CloudWatch, Loki), structured log entries, log enrichment, and sampling. ObjectOS currently uses the kernel's basic Pino logger with no configuration API.
-
-**Implementation scope:**
-- `LoggingConfig` validation from spec
-- Multiple `LogDestination` support (console, file, HTTP, external services)
-- `StructuredLogEntry` format for all log output
-- `LogEnrichmentConfig` for automatic context injection (traceId, userId, requestId)
-- Log sampling for high-traffic production environments
-- Buffered async logging for performance
-- Routes: `GET /api/v1/logging/config`, `PUT /api/v1/logging/config`
-- Events: `logging.config.changed`
-
-**Service name:** Not in CoreServiceName (new service or integrated into kernel)
-
-**Estimated effort:** 3-5 days
+**Result:** 13/18 CoreServiceNames implemented (72%). 5 missing: `search`, `queue`, `graphql`, `analytics`, `ai`.
 
 ---
 
-#### P1.2 `@objectos/tracing` — Distributed Tracing Plugin
-
-**Spec compliance:** `system/tracing.zod.ts`
-
-**Rationale:** The spec defines a full OpenTelemetry-compatible tracing protocol with W3C Trace Context, span management, sampling strategies, and exporter configuration. ObjectOS has no distributed tracing capability.
-
-**Implementation scope:**
-- `TracingConfig` validation from spec
-- W3C `TraceContext` propagation (inject/extract on HTTP requests)
-- `Span` creation for data operations, auth checks, plugin calls
-- `TraceSamplingConfig` with ratio-based, rate-limited, and parent-based strategies
-- OpenTelemetry exporter support (OTLP, Jaeger, Zipkin via config)
-- Integration with audit events (traceId correlation)
-- Middleware to auto-create server spans for all `/api/v1/*` requests
-- Routes: `GET /api/v1/tracing/config`, `GET /api/v1/tracing/stats`
-- Events: `trace.span.created`, `trace.span.ended`
-
-**Service name:** New service (propose adding to CoreServiceName)
-
-**Estimated effort:** 5-7 days
-
----
-
-#### P1.3 `@objectos/search` — Search Engine Plugin
-
-**Spec compliance:** `system/search-engine.zod.ts`
-
-**Rationale:** The spec defines `search` as a CoreServiceName but ObjectOS has no implementation. Full-text search is critical for metadata-driven applications.
-
-**Implementation scope:**
-- `SearchEngineConfig` validation from spec
-- Search index management (create, update, delete indexes)
-- Pluggable search backends (in-memory MiniSearch for dev, Elasticsearch/MeiliSearch for prod)
-- Auto-indexing on `data.afterCreate` / `data.afterUpdate` / `data.afterDelete` events
-- Query API: `GET /api/v1/search?q=...&object=...&fields=...`
-- Faceted search support
-- Highlight/snippet support
-- Routes: `GET /api/v1/search`, `GET /api/v1/search/indexes`, `POST /api/v1/search/reindex`
-- Service name: `search`
-
-**Estimated effort:** 5-7 days
-
----
-
-#### P1.4 `@objectos/compliance` — Compliance & Data Governance Plugin
-
-**Spec compliance:** `system/compliance.zod.ts`, `system/encryption.zod.ts`, `system/masking.zod.ts`
-
-**Rationale:** The spec defines compliance (GDPR, HIPAA, SOC2), encryption, and data masking as separate schemas. ObjectOS has no compliance engine. These three protocols are tightly related and should be implemented as a single plugin.
-
-**Implementation scope:**
-- `ComplianceConfig` validation (GDPR, HIPAA, PCI-DSS, SOC2 profiles)
-- Field-level `EncryptionConfig` (AES-256-GCM, KMS integration stubs)
-- `MaskingRule` engine for PII data (email masking, phone masking, SSN masking)
-- Data retention policy enforcement (auto-delete expired records)
-- Data export / right-to-be-forgotten support (GDPR Article 17)
-- Consent tracking
-- Hook into `data.beforeFind` to apply masking rules based on user permissions
-- Hook into `data.beforeCreate` / `data.beforeUpdate` for field encryption
-- Routes: `GET /api/v1/compliance/status`, `POST /api/v1/compliance/export/:userId`, `DELETE /api/v1/compliance/erase/:userId`
-- Events: `compliance.data.exported`, `compliance.data.erased`, `compliance.violation.detected`
-
-**Estimated effort:** 7-10 days
-
----
-
-### 5.2 Priority 2 — Advanced System Services (Phase 2)
-
-#### P2.1 `@objectos/tenant` — Multi-Tenant Plugin
-
-**Spec compliance:** `system/tenant.zod.ts`
-
-**Rationale:** The spec defines 3 isolation strategies (shared_schema, isolated_schema, isolated_db) with detailed configuration for PostgreSQL RLS, schema management, and database-level isolation. ObjectOS auth supports multi-tenant via Better-Auth, but there is no tenant lifecycle management.
-
-**Implementation scope:**
-- `TenantIsolationConfig` validation (discriminated union of 3 strategies)
-- `TenantSecurityPolicy` enforcement (encryption, access control, compliance per tenant)
-- `TenantQuota` management (maxUsers, maxStorage, apiRateLimit)
-- Tenant CRUD: create, update, suspend, delete
-- Tenant context middleware (set `app.current_tenant` per request)
-- Integration with auth (tenant-scoped sessions)
-- Integration with permissions (tenant-scoped RBAC)
-- Routes: `GET /api/v1/tenants`, `POST /api/v1/tenants`, `GET /api/v1/tenants/:id`, `PUT /api/v1/tenants/:id`
-- Events: `tenant.created`, `tenant.updated`, `tenant.suspended`, `tenant.deleted`
-
-**Estimated effort:** 7-10 days
-
----
-
-#### P2.2 `@objectos/queue` — Message Queue Plugin
-
-**Spec compliance:** `system/message-queue.zod.ts`, `system/worker.zod.ts`
-
-**Rationale:** The spec defines `queue` as a core CoreServiceName and has detailed schemas for message queues, worker configuration, batch processing, and dead letter queues. The current `@objectos/jobs` plugin handles basic job scheduling but doesn't implement the full queue/worker protocol.
-
-**Implementation scope:**
-- `QueueConfig` validation from spec (concurrency, rate limiting, dead letter queue)
-- `WorkerConfig` validation (poll interval, visibility timeout, handlers)
-- `Task` / `TaskExecutionResult` lifecycle
-- `BatchTask` / `BatchProgress` for bulk operations
-- `TaskRetryPolicy` with exponential backoff
-- Dead letter queue management
-- Auto-scaling configuration stubs
-- Pluggable backends (in-memory for dev, Redis/BullMQ for prod)
-- Routes: `GET /api/v1/queues`, `GET /api/v1/queues/:name/stats`, `POST /api/v1/queues/:name/tasks`
-- Service name: `queue`
-- Events: `queue.task.enqueued`, `queue.task.completed`, `queue.task.failed`, `queue.task.dead`
-
-**Estimated effort:** 5-7 days
-
----
-
-#### P2.3 `@objectos/migration` — Schema Migration Plugin
-
-**Spec compliance:** `system/migration.zod.ts`, `system/change-management.zod.ts`
-
-**Rationale:** The spec defines migration and change management protocols. ObjectOS has no schema migration system — objects are defined declaratively but there's no way to evolve schemas safely.
-
-**Implementation scope:**
-- `MigrationConfig` validation from spec
-- `MigrationStep` tracking (applied, pending, failed migrations)
-- Schema diff detection (compare current objects with new definitions)
-- Rollback support via `RollbackPlan` from change-management
-- `ChangeRequest` tracking for enterprise environments
-- Integration with metadata loader (detect schema changes on boot)
-- Routes: `GET /api/v1/migrations`, `POST /api/v1/migrations/run`, `POST /api/v1/migrations/:id/rollback`
-- Events: `migration.started`, `migration.completed`, `migration.failed`, `migration.rolled-back`
-
-**Estimated effort:** 7-10 days
-
----
-
-### 5.3 Priority 3 — Optional Services (Phase 3)
-
-#### P3.1 `@objectos/analytics` — Analytics & BI Plugin
-
-**Spec compliance:** `data/analytics.zod.ts` (Cube schema), ObjectOSCapabilities.analytics
-
-**Rationale:** The spec defines `analytics` as a CoreServiceName for BI & Semantic Layer.
-
-**Implementation scope:**
-- Semantic layer using `CubeSchema` from spec/data
-- Aggregation queries (GROUP BY, HAVING, window functions)
-- Dashboard data API
-- Service name: `analytics`
-
-**Estimated effort:** 5-7 days
-
----
-
-#### P3.2 `@objectos/graphql` — GraphQL API Plugin
-
-**Spec compliance:** CoreServiceName `graphql`
-
-**Rationale:** The spec defines `graphql` as an optional CoreServiceName. Many enterprise users expect GraphQL.
-
-**Implementation scope:**
-- Auto-generate GraphQL schema from ObjectQL metadata
-- Query, Mutation, Subscription resolvers
-- Integration with permissions (field-level security in resolvers)
-- Route: `POST /api/v1/graphql`
-- Service name: `graphql`
-
-**Estimated effort:** 7-10 days
-
----
-
-#### P3.3 `@objectos/ai` — AI Engine Plugin
-
-**Spec compliance:** `ai/*.zod.ts`, CoreServiceName `ai`
-
-**Rationale:** The spec defines AI as a CoreServiceName with Agent, RAG Pipeline schemas.
-
-**Implementation scope:**
-- Natural Language Query (NLQ) → ObjectQL conversion
-- AI chat / assistant API
-- RAG pipeline integration
-- Service name: `ai`
-
-**Estimated effort:** 10-14 days (depends on LLM provider)
-
----
-
-#### P3.4 `@objectos/license` — License Management Plugin
-
-**Spec compliance:** `system/license.zod.ts`
-
-**Rationale:** Enterprise deployments need license validation.
-
-**Implementation scope:**
-- `LicenseConfig` validation from spec
-- License key verification
-- Feature gating based on license tier
-- Usage metric collection
-- Routes: `GET /api/v1/license`, `POST /api/v1/license/activate`
-
-**Estimated effort:** 3-5 days
-
----
-
-## 6. Existing Plugin Improvements
-
-### 6.1 All Plugins — Kernel Protocol Compliance
-
-**Apply to all 14 existing plugins:**
-
-1. **Add `PluginCapabilityManifest`**: Each plugin should declare capabilities via spec's `plugin-capability.zod.ts`:
-   ```typescript
-   static readonly capabilities: PluginCapabilityManifest = {
-     implements: ['com.objectstack.service.cache'],
-     provides: [{ name: 'cache', version: '1.0.0' }],
-     requires: [],
-   };
-   ```
-
-2. **Add `PluginHealthReport`**: Each plugin should implement health checking:
-   ```typescript
-   async healthCheck(): Promise<PluginHealthStatus> {
-     return { status: 'healthy', message: 'Cache operational', latency: 2 };
-   }
-   ```
-
-3. **Validate config via spec Zod schemas**: Plugin constructors should validate their input config against the corresponding spec Zod schema.
-
-4. **Emit standardized lifecycle events**: Use spec's `plugin-lifecycle-events.zod.ts` event names.
-
-**Estimated effort:** 1-2 days (systematic refactor across all plugins)
-
----
-
-### 6.2 `@objectos/cache` — Full Spec Alignment
-
-**Current gap:** Uses internal config types instead of spec's `CacheConfig`.
-
-**Changes:**
-- Import and validate config against `CacheConfig` from `@objectstack/spec/system`
-- Add `CacheStrategy` support (LRU, LFU, FIFO)
-- Expose cache stats via `ServiceStatusSchema`
-- Add `GET /api/v1/cache/stats` endpoint
-
-**Estimated effort:** 1 day
-
----
-
-### 6.3 `@objectos/jobs` — Worker Protocol Integration
-
-**Current gap:** Basic job queue, missing full Task/Worker spec schemas.
-
-**Changes:**
-- Validate jobs against `TaskSchema` from spec
-- Implement `TaskRetryPolicy` with configurable backoff
-- Add `TaskExecutionResult` tracking
-- Add `BatchTask` support for bulk job creation
-- Add `QueueConfig` validation per named queue
-- Register as both `job` and `queue` services (or separate them)
-
-**Estimated effort:** 2-3 days
-
----
-
-### 6.4 `@objectos/realtime` — Collaboration Protocol
-
-**Current gap:** Basic WebSocket with presence, missing OT/CRDT/Cursor.
-
-**Changes:**
-- Add `CollaborativeCursor` schema support
-- Add `AwarenessUserState` / `AwarenessSession` tracking
-- Add `OTOperation` message type for future OT support
-- Add `CollaborationSessionConfig` management
-- These can be additive (extend existing WebSocket protocol)
-
-**Estimated effort:** 3-5 days
-
----
-
-### 6.5 `@objectos/metrics` — Prometheus & OpenTelemetry
-
-**Current gap:** Basic counter/gauge/histogram, no spec schema validation.
-
-**Changes:**
-- Validate metrics against `MetricSchema` from spec
-- Implement `PrometheusConfig` validation
-- Add metric tagging/labeling per spec
-- Add `MetricRegistry` management API
-
-**Estimated effort:** 1-2 days
-
----
-
-### 6.6 `@objectos/notification` — Template & Preference System
-
-**Current gap:** Basic notification sending, missing template and preference management.
-
-**Changes:**
-- Add `NotificationTemplate` management (Handlebars templates stored via ObjectQL)
-- Add `NotificationPreference` per user (channel preferences, quiet hours)
-- Add `NotificationLog` tracking with delivery status
-- Validate config against spec's `NotificationConfig`
-
-**Estimated effort:** 2-3 days
-
----
-
-### 6.7 `@objectos/storage` — Object Storage API
-
-**Current gap:** Implements KV storage only (Memory/SQLite/Redis). Spec defines full object storage (buckets, files, presigned URLs).
-
-**Changes:**
-- Implement `ObjectStorageConfig` validation
-- Add bucket management (create, list, delete)
-- Add file operations (upload, download, delete, list)
-- Add presigned URL generation for direct uploads
-- Pluggable backends (local filesystem for dev, S3/GCS for prod)
-- Routes: `GET /api/v1/storage/buckets`, `POST /api/v1/storage/upload`, `GET /api/v1/storage/download/:key`
-
-**Estimated effort:** 3-5 days
-
----
-
-## 7. Upstream Spec Improvement Proposals
-
-Based on ObjectOS implementation experience, we propose these improvements to `@objectstack/spec`:
-
-### 7.1 SPEC-001: Add Service Contract Interfaces
-
-**Problem:** `core-services.zod.ts` defines `CoreServiceName` as an enum and `ServiceStatusSchema` for status reporting, but there are no TypeScript interfaces defining what methods each service MUST implement.
-
-**Proposal:** Add formal service contract interfaces in `contracts/`:
+## 5. Contracts Interface Compliance
+
+The spec's Contracts module defines **25 formal TypeScript service interfaces**. Each service MUST implement these interfaces to be spec-compliant. This is the most significant addition in the spec since v1.0.
+
+### 5.1 Contract-to-Package Mapping
+
+| # | Contract Interface | ObjectOS Package | Implementation Status |
+|---|-------------------|------------------|----------------------|
+| 1 | `LoggerContract` | `@objectos/metrics` | ⚠️ Partial — logging exists, interface not adopted |
+| 2 | `DataEngineContract` | ObjectQL | ⚠️ Partial — data engine exists in ObjectQL |
+| 3 | `HttpServerContract` | `@objectstack/cli` | ⚠️ Partial — Hono server exists |
+| 4 | `ServiceRegistryContract` | `@objectstack/runtime` | ⚠️ Partial — basic registry |
+| 5 | `PluginValidatorContract` | `@objectstack/runtime` | ⚠️ Partial — basic validation |
+| 6 | `StartupOrchestratorContract` | `@objectstack/runtime` | ⚠️ Partial — sequential boot |
+| 7 | `PluginLifecycleEventsContract` | `@objectstack/runtime` | ⚠️ Partial — basic events |
+| 8 | `SchemaDriverContract` | ObjectQL | ⚠️ Partial — schema driver in ObjectQL |
+| 9 | `CacheServiceContract` | `@objectos/cache` | ⚠️ Partial — cache works, interface not formal |
+| 10 | `SearchServiceContract` | — | ❌ Missing — no search service |
+| 11 | `QueueServiceContract` | — | ❌ Missing — no queue service |
+| 12 | `NotificationServiceContract` | `@objectos/notification` | ⚠️ Partial — service works |
+| 13 | `StorageServiceContract` | `@objectos/storage` | ⚠️ Partial — service works |
+| 14 | `MetadataServiceContract` | ObjectQL | ⚠️ Partial — metadata in ObjectQL |
+| 15 | `AuthServiceContract` | `@objectos/auth` | ⚠️ Partial — BetterAuth integration |
+| 16 | `AutomationServiceContract` | `@objectos/automation` | ⚠️ Partial — service works |
+| 17 | `GraphQLServiceContract` | — | ❌ Missing — no GraphQL service |
+| 18 | `AnalyticsServiceContract` | — | ❌ Missing — no analytics service |
+| 19 | `RealtimeServiceContract` | `@objectos/realtime` | ⚠️ Partial — WebSocket server works |
+| 20 | `JobServiceContract` | `@objectos/jobs` | ⚠️ Partial — job system works |
+| 21 | `AIServiceContract` | — | ❌ Missing — no AI service |
+| 22 | `I18nServiceContract` | `@objectos/i18n` | ⚠️ Partial — i18n works |
+| 23 | `UIServiceContract` | `@objectos/ui` | ⚠️ Partial — UI service works |
+| 24 | `WorkflowServiceContract` | `@objectos/workflow` | ⚠️ Partial — workflow engine works |
+| 25 | `PluginContract` (base) | All plugins | ⚠️ Partial — plugins work but don't implement formally |
+
+### 5.2 Adoption Strategy
+
+**Phase 1 — Required services:** Adopt `DataEngineContract`, `MetadataServiceContract`, `HttpServerContract`
+**Phase 2 — Core services:** Adopt `AuthServiceContract`, `CacheServiceContract`, `JobServiceContract`
+**Phase 3 — Optional services:** Adopt remaining 19 contracts incrementally
+**Phase 4 — Full compliance:** All 25 contracts formally implemented and validated
+
+### 5.3 Contract Implementation Pattern
 
 ```typescript
-// contracts/cache-service.ts
-export interface ICacheService {
-  get<T>(key: string): Promise<T | undefined>;
-  set<T>(key: string, value: T, ttl?: number): Promise<void>;
-  delete(key: string): Promise<boolean>;
-  has(key: string): Promise<boolean>;
-  clear(): Promise<void>;
-  stats(): Promise<CacheStats>;
-}
+// Example: adopting CacheServiceContract in @objectos/cache
+import type { CacheServiceContract } from '@objectstack/spec/contracts';
 
-// contracts/search-service.ts
-export interface ISearchService {
-  index(object: string, id: string, doc: Record<string, unknown>): Promise<void>;
-  search(query: SearchQuery): Promise<SearchResult>;
-  deleteIndex(name: string): Promise<void>;
+export class ObjectOSCacheService implements CacheServiceContract {
+  readonly name = 'cache' as const;
+  readonly version = '1.0.0';
+
+  async get<T>(key: string): Promise<T | null> { /* ... */ }
+  async set<T>(key: string, value: T, ttl?: number): Promise<void> { /* ... */ }
+  async delete(key: string): Promise<boolean> { /* ... */ }
+  async clear(namespace?: string): Promise<void> { /* ... */ }
+  async has(key: string): Promise<boolean> { /* ... */ }
+
+  // Health check (required by all contracts)
+  async healthCheck(): Promise<ServiceHealth> { /* ... */ }
 }
 ```
 
-**Impact on ObjectOS:** ObjectOS plugins can implement these interfaces for type-safe service registry.
+---
+
+## 6. New Modules Gap Analysis
+
+### 6.1 Identity Module
+
+**Spec schemas:** `identity.zod.ts`, `organization.zod.ts`, `role.zod.ts`, `scim.zod.ts`, `protocol.ts`
+
+| Feature | ObjectOS Status | Required Action |
+|---------|----------------|-----------------|
+| User schema (spec-aligned) | ⚠️ Partial | Align `@objectos/auth` user model to spec schema |
+| Organization model | ❌ Missing | New schema in `@objectos/auth` or new package |
+| Role schema (spec-aligned) | ⚠️ Partial | Align `@objectos/permissions` roles to spec schema |
+| SCIM 2.0 provisioning | ❌ Missing | New `@objectos/identity` package or extend auth |
+| Identity protocol interface | ❌ Missing | Implement `IdentityProtocol` from spec |
+
+**Recommendation:** Create `@objectos/identity` package to own User/Org/Role/SCIM, delegating authentication to `@objectos/auth`.
+
+### 6.2 Integration Module
+
+**Spec schemas:** `connector.zod.ts`
+
+| Feature | ObjectOS Status | Required Action |
+|---------|----------------|-----------------|
+| Connector framework | ❌ Missing | New `@objectos/integration` package |
+| Connector lifecycle | ❌ Missing | Implement connect/disconnect/sync protocol |
+| Credential vault | ❌ Missing | Secure credential storage for connectors |
+
+**Recommendation:** Create `@objectos/integration` package for external system connectors (Salesforce, HubSpot, REST/SOAP adapters).
+
+### 6.3 Studio Module
+
+**Spec schemas:** `plugin.zod.ts`
+
+| Feature | ObjectOS Status | Required Action |
+|---------|----------------|-----------------|
+| Studio UI plugin protocol | ❌ Missing | Define plugin registration for `apps/web` |
+| Plugin sidebar/page injection | ❌ Missing | Extension points in App Shell |
+| Plugin settings panel | ❌ Missing | Settings UI for plugins |
+
+**Recommendation:** Implement Studio plugin protocol in `apps/web` to allow plugins to register routes, sidebar items, and settings pages.
+
+### 6.4 Hub Module
+
+**Spec schemas:** Plugin marketplace/registry schemas
+
+| Feature | ObjectOS Status | Required Action |
+|---------|----------------|-----------------|
+| Plugin marketplace | ❌ Missing | Remote plugin discovery |
+| Plugin installation protocol | ❌ Missing | Download + validate + install flow |
+| Plugin ratings/reviews | ❌ Missing | Community feedback system |
+
+**Recommendation:** Defer to v2.0. Build local plugin registry first, then extend to remote Hub.
+
+### 6.5 QA Module
+
+**Spec schemas:** `testing.zod.ts`
+
+| Feature | ObjectOS Status | Required Action |
+|---------|----------------|-----------------|
+| Plugin test harness | ❌ Missing | Spec-compliant test runner for plugins |
+| Mock service registry | ❌ Missing | Test doubles for core services |
+| Compliance test suite | ❌ Missing | Automated spec compliance validation |
+
+**Recommendation:** Create `@objectos/testing` package providing test utilities for plugin developers.
 
 ---
 
-### 7.2 SPEC-002: Extend CoreServiceName Enum
+## 7. New Plugins Required
 
-**Problem:** Several system protocols in the spec (logging, tracing, compliance, tenant, migration) have no corresponding CoreServiceName. This makes it unclear whether they should be standalone services.
+### Priority 1 — Critical (v1.0 Release)
 
-**Proposal:** Add to `CoreServiceName` enum:
+| Plugin | CoreServiceName | Justification |
+|--------|----------------|---------------|
+| `@objectos/queue` | `queue` | Core criticality. Required for reliable async processing. Jobs currently lacks queue abstraction. |
+| `@objectos/identity` | — | Identity module compliance. SCIM provisioning for enterprise SSO. |
 
-```typescript
-export const CoreServiceName = z.enum([
-  // ... existing ...
-  'logging',       // Structured Logging Service
-  'tracing',       // Distributed Tracing Service
-  'compliance',    // Compliance & Data Governance
-  'tenant',        // Multi-Tenant Management
-  'migration',     // Schema Migration Service
-  'encryption',    // Field-Level Encryption Service
-]);
-```
+### Priority 2 — Important (v1.1 Release)
 
-**Impact on ObjectOS:** Clear mapping from spec protocol to plugin service names.
+| Plugin | CoreServiceName | Justification |
+|--------|----------------|---------------|
+| `@objectos/search` | `search` | Full-text search across objects. Required for discovery UX. |
+| `@objectos/graphql` | `graphql` | GraphQL endpoint auto-generation from metadata. |
+| `@objectos/integration` | — | External system connectors. Enterprise requirement. |
+| `@objectos/testing` | — | QA module compliance. Plugin developer experience. |
+
+### Priority 3 — Enhancement (v1.2 Release)
+
+| Plugin | CoreServiceName | Justification |
+|--------|----------------|---------------|
+| `@objectos/analytics` | `analytics` | Business intelligence and reporting. |
+| `@objectos/tracing` | — | Distributed tracing (OpenTelemetry). System schema compliance. |
+| `@objectos/migration` | — | Schema migration system. System schema compliance. |
+
+### Priority 4 — Future (v2.0 Release)
+
+| Plugin | CoreServiceName | Justification |
+|--------|----------------|---------------|
+| `@objectos/ai` | `ai` | AI agent, RAG pipeline, NLQ. Spec AI namespace. |
+| `@objectos/hub` | — | Plugin marketplace. Hub namespace compliance. |
+| `@objectos/collaboration` | — | Real-time collaboration features. |
+| `@objectos/compliance` | — | Compliance management beyond audit. |
 
 ---
 
-### 7.3 SPEC-003: Add Plugin Health Check Standard
+## 8. Existing Plugin Improvements
 
-**Problem:** `plugin-lifecycle-advanced.zod.ts` defines `PluginHealthStatus` / `PluginHealthReport` but there's no standard contract for how plugins report health.
+### 8.1 Contracts Interface Adoption (All 14 Plugins)
 
-**Proposal:** Add to `contracts/`:
+Every existing plugin must adopt its corresponding Contracts interface from `@objectstack/spec@2.0.6`. This is the single most impactful improvement.
+
+| Plugin | Contract to Adopt | Effort |
+|--------|------------------|--------|
+| `@objectos/audit` | `LoggerContract` (partial) | Small |
+| `@objectos/auth` | `AuthServiceContract` | Medium |
+| `@objectos/automation` | `AutomationServiceContract` | Medium |
+| `@objectos/browser` | N/A (client-side) | — |
+| `@objectos/cache` | `CacheServiceContract` | Small |
+| `@objectos/i18n` | `I18nServiceContract` | Small |
+| `@objectos/jobs` | `JobServiceContract` | Medium |
+| `@objectos/metrics` | `LoggerContract` | Small |
+| `@objectos/notification` | `NotificationServiceContract` | Small |
+| `@objectos/permissions` | N/A (Security namespace) | — |
+| `@objectos/realtime` | `RealtimeServiceContract` | Medium |
+| `@objectos/storage` | `StorageServiceContract` | Small |
+| `@objectos/ui` | `UIServiceContract` | Medium |
+| `@objectos/workflow` | `WorkflowServiceContract` | Medium |
+
+### 8.2 Health Check Implementation
+
+All plugins must implement the `healthCheck()` method required by Contracts:
 
 ```typescript
-// contracts/healthcheck.ts
-export interface IHealthCheckable {
-  healthCheck(): Promise<PluginHealthStatus>;
-  getMetrics(): Promise<Record<string, number>>;
+interface ServiceHealth {
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  latency: number;
+  details?: Record<string, unknown>;
 }
 ```
 
-**Impact on ObjectOS:** All plugins implement `IHealthCheckable` for centralized health monitoring.
+### 8.3 Per-Plugin Improvements
+
+#### `@objectos/auth`
+- Align user model with Identity namespace `identity.zod.ts`
+- Implement Organization schema from `organization.zod.ts`
+- Add SCIM 2.0 provisioning endpoints (or delegate to `@objectos/identity`)
+- Implement `AuthServiceContract`
+
+#### `@objectos/permissions`
+- Align role model with Identity namespace `role.zod.ts`
+- Implement hierarchical sharing rules (Security namespace gap)
+- Add criteria-based record sharing
+- Add profile-to-permission-set mapping
+
+#### `@objectos/automation`
+- Implement `AutomationServiceContract`
+- Expand formula engine functions
+- Add field update action validation
+
+#### `@objectos/workflow`
+- Implement `WorkflowServiceContract`
+- Support full Flow format (spec Automation namespace)
+- Add parallel state support
+
+#### `@objectos/cache`
+- Implement `CacheServiceContract`
+- Add cache statistics reporting
+- Implement cache warming strategies
+
+#### `@objectos/jobs`
+- Implement `JobServiceContract`
+- Align worker model with System `worker` schema
+- Add job dependency graph
+
+#### `@objectos/notification`
+- Implement `NotificationServiceContract`
+- Add notification preferences per user
+- Add delivery status tracking
+
+#### `@objectos/realtime`
+- Implement `RealtimeServiceContract`
+- Add presence tracking
+- Add channel-based subscriptions
+
+#### `@objectos/storage`
+- Implement `StorageServiceContract`
+- Add S3-compatible backend
+- Add file metadata indexing
+
+#### `@objectos/i18n`
+- Implement `I18nServiceContract`
+- Align with System `translation` schema
+- Add locale detection middleware
+
+#### `@objectos/metrics`
+- Implement `LoggerContract`
+- Add structured logging (System `logging` schema)
+- Add distributed tracing correlation (System `tracing` schema)
+
+#### `@objectos/audit`
+- Align with System `audit` schema fully
+- Add field-level change tracking
+- Add compliance reporting (System `compliance` schema)
+
+#### `@objectos/ui`
+- Implement `UIServiceContract`
+- Add Studio plugin protocol support
+- Add dashboard schema compliance (UI namespace)
+
+#### `@objectos/browser`
+- No Contracts interface (client-side package)
+- Align sync protocol with spec
+- Add conflict resolution strategies
 
 ---
 
-### 7.4 SPEC-004: Define Standard Event Taxonomy
+## 9. Upstream Spec Improvement Proposals
 
-**Problem:** `kernel/events.zod.ts` defines event schemas but doesn't prescribe a standard event naming convention that all implementations should follow.
+### SPEC-001: Service Contract Interfaces — ✅ RESOLVED
 
-**Proposal:** Add an event taxonomy document and Zod enum:
+> **Original proposal:** "The spec should define formal TypeScript interfaces for each CoreServiceName."
+>
+> **Resolution:** The Contracts module in `@objectstack/spec@2.0.6` now provides 25 formal service interfaces. This proposal is fully resolved.
 
-```typescript
-export const StandardEventName = z.enum([
-  // Kernel lifecycle
-  'kernel.boot', 'kernel.ready', 'kernel.shutdown',
-  // Data lifecycle
-  'data.beforeCreate', 'data.afterCreate',
-  'data.beforeUpdate', 'data.afterUpdate',
-  'data.beforeDelete', 'data.afterDelete',
-  'data.beforeFind', 'data.afterFind',
-  // Auth lifecycle
-  'auth.login', 'auth.logout', 'auth.session.created',
-  // Plugin lifecycle
-  'plugin.init', 'plugin.start', 'plugin.destroy',
-]);
+### SPEC-002: Plugin Security Boundaries
+
+> **Status:** Open
+> **Proposal:** The Kernel namespace defines `plugin-security` and `plugin-security-advanced` schemas, but the spec does not yet define:
+> - Permission scopes per plugin (what data a plugin can access)
+> - Resource quotas (CPU, memory, API call limits)
+> - Plugin sandboxing protocol
+>
+> **ObjectOS Impact:** Cannot implement plugin security without upstream guidance.
+> **Recommended Action:** Propose formal `PluginSecurityPolicy` schema to spec maintainers.
+
+### SPEC-003: Sync Protocol Specification
+
+> **Status:** Open
+> **Proposal:** The spec does not define a formal synchronization protocol for Local-First scenarios:
+> - Mutation log format
+> - Conflict resolution strategies (LWW, Vector Clocks, CRDT)
+> - Delta packet schema
+> - Checkpoint cursor format
+>
+> **ObjectOS Impact:** `@objectos/browser` implements custom sync, not spec-aligned.
+> **Recommended Action:** Propose `sync` namespace to spec.
+
+### SPEC-004: Multi-Tenant Isolation Schema
+
+> **Status:** Open
+> **Proposal:** The System namespace includes a `tenant` schema, but it lacks:
+> - Tenant provisioning lifecycle
+> - Data isolation strategies (schema-per-tenant vs. row-level)
+> - Tenant-scoped service configuration
+>
+> **ObjectOS Impact:** Cannot implement multi-tenancy without clear spec guidance.
+> **Recommended Action:** Expand `tenant` schema with isolation strategies.
+
+### SPEC-005: Studio Plugin Protocol Extension
+
+> **Status:** New
+> **Proposal:** The Studio namespace defines `plugin.zod.ts` but does not specify:
+> - Route injection protocol (how plugins add pages to App Shell)
+> - Sidebar/navigation extension points
+> - Settings panel schema
+> - Plugin asset bundling requirements
+>
+> **ObjectOS Impact:** `apps/web` cannot support third-party UI plugins without this.
+> **Recommended Action:** Propose detailed Studio extension point schema.
+
+### SPEC-006: Identity Federation Protocol
+
+> **Status:** New
+> **Proposal:** The Identity namespace defines SCIM 2.0 schemas but does not specify:
+> - SAML/OIDC federation protocol
+> - Directory sync (AD/LDAP) schema
+> - Just-in-time provisioning flow
+>
+> **ObjectOS Impact:** Enterprise SSO requires federation beyond SCIM.
+> **Recommended Action:** Propose `identity/federation.zod.ts` schema.
+
+---
+
+## 10. Implementation Roadmap
+
+### Phase 1 — Foundation (v1.0) — Weeks 1-6
+
+**Goal:** Core compliance + Contracts adoption for required/core services
+
+| Week | Deliverable | Details |
+|------|-------------|---------|
+| 1-2 | Contracts adoption (required) | Adopt `DataEngineContract`, `MetadataServiceContract`, `HttpServerContract` |
+| 2-3 | Contracts adoption (core) | Adopt `AuthServiceContract`, `CacheServiceContract`, `JobServiceContract` |
+| 3-4 | `@objectos/queue` | New plugin, `QueueServiceContract`, Priority queue + dead-letter |
+| 4-5 | Health check system | All plugins implement `healthCheck()`, `/api/v1/health` endpoint |
+| 5-6 | Identity alignment | Align auth user model + permissions role model with Identity namespace |
+
+**Exit criteria:**
+- All required + core services implement formal Contracts
+- `queue` CoreServiceName operational
+- Health check endpoint returns all service statuses
+
+### Phase 2 — Expansion (v1.1) — Weeks 7-12
+
+**Goal:** New plugins + optional Contracts adoption
+
+| Week | Deliverable | Details |
+|------|-------------|---------|
+| 7-8 | `@objectos/search` | Full-text search, `SearchServiceContract` |
+| 8-9 | `@objectos/graphql` | Auto-generated GraphQL from metadata, `GraphQLServiceContract` |
+| 9-10 | `@objectos/identity` | SCIM 2.0, Organization model, Identity protocol |
+| 10-11 | `@objectos/integration` | Connector framework, credential vault |
+| 11-12 | Contracts adoption (optional) | Remaining 11 contracts adopted by existing plugins |
+
+**Exit criteria:**
+- 17/18 CoreServiceNames operational (only `ai` missing)
+- 25/25 Contracts interfaces adopted
+- Identity/Integration modules compliant
+
+### Phase 3 — Maturity (v1.2) — Weeks 13-18
+
+**Goal:** System namespace coverage + QA compliance
+
+| Week | Deliverable | Details |
+|------|-------------|---------|
+| 13-14 | `@objectos/analytics` | Business intelligence, `AnalyticsServiceContract` |
+| 14-15 | `@objectos/tracing` | OpenTelemetry integration, System `tracing` schema |
+| 15-16 | `@objectos/migration` | Schema migration engine, System `migration` schema |
+| 16-17 | `@objectos/testing` | QA module compliance, plugin test harness |
+| 17-18 | Studio plugin protocol | `apps/web` extension points, Studio namespace compliance |
+
+**Exit criteria:**
+- System namespace coverage: 20/26
+- QA module operational
+- Studio plugin protocol functional
+
+### Phase 4 — Enterprise (v2.0) — Weeks 19-26
+
+**Goal:** Full spec compliance + future-facing features
+
+| Week | Deliverable | Details |
+|------|-------------|---------|
+| 19-20 | `@objectos/ai` | AI service, RAG pipeline, NLQ, `AIServiceContract` |
+| 21-22 | `@objectos/hub` | Plugin marketplace, remote registry |
+| 23-24 | Multi-tenancy | Tenant isolation, System `tenant` schema |
+| 24-25 | Plugin security | Kernel `plugin-security` + `plugin-security-advanced` |
+| 25-26 | Full compliance audit | Automated compliance validation, documentation |
+
+**Exit criteria:**
+- 18/18 CoreServiceNames operational
+- All 14 spec namespaces covered
+- Automated compliance test suite passing
+
+### Roadmap Summary
+
+```
+v1.0 (Wk 1-6)   ████████████░░░░░░░░░░░░░░  Foundation
+v1.1 (Wk 7-12)  ░░░░░░░░░░░░████████████░░  Expansion
+v1.2 (Wk 13-18) ░░░░░░░░░░░░░░░░░░░░████░░  Maturity
+v2.0 (Wk 19-26) ░░░░░░░░░░░░░░░░░░░░░░░░██  Enterprise
 ```
 
-**Impact on ObjectOS:** Standardize event names across all plugins (some already diverge).
-
 ---
 
-### 7.5 SPEC-005: Add Configuration Composition Schema
+## 11. Architecture Changes
 
-**Problem:** `stack.zod.ts` defines `ObjectStackDefinitionSchema` for project definition but doesn't include system configuration (logging, tracing, cache config, etc.).
+### 11.1 Plugin Registration (Updated)
 
-**Proposal:** Extend `ObjectStackDefinitionSchema` with a `system` section:
+Plugins must register with their Contracts interface type:
 
 ```typescript
-// In stack.zod.ts
-export const ObjectStackDefinitionSchema = z.object({
-  // ... existing ...
-  
-  /** System Configuration */
-  system: z.object({
-    logging: LoggingConfigSchema.optional(),
-    tracing: TracingConfigSchema.optional(),
-    cache: CacheConfigSchema.optional(),
-    queue: QueueConfigSchema.optional(),
-    search: SearchEngineConfigSchema.optional(),
-    compliance: ComplianceConfigSchema.optional(),
-    tenant: TenantIsolationConfigSchema.optional(),
-    encryption: EncryptionConfigSchema.optional(),
-  }).optional().describe('System service configurations'),
+// Before (current)
+kernel.register('cache', new CachePlugin());
+
+// After (spec-compliant)
+import type { CacheServiceContract } from '@objectstack/spec/contracts';
+
+kernel.register<CacheServiceContract>('cache', new CachePlugin(), {
+  contract: 'CacheServiceContract',
+  criticality: 'core',
+  healthCheck: true,
 });
 ```
 
-**Impact on ObjectOS:** Plugins can read validated system config from `objectstack.config.ts` instead of custom config objects.
+### 11.2 Service Registry Validation
 
----
-
-## 8. Implementation Roadmap
-
-### Phase 1: Foundation Hardening (2 weeks)
-
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 1.1 | Apply kernel protocol compliance to all 14 plugins (capabilities, health, lifecycle events) | 2d | 🔴 High |
-| 1.2 | Implement `@objectos/logging` plugin | 4d | 🔴 High |
-| 1.3 | Implement `@objectos/search` plugin | 5d | 🔴 High |
-| 1.4 | Enhance `@objectos/cache` with spec schema validation | 1d | 🟡 Medium |
-| 1.5 | Enhance `@objectos/metrics` with spec schema validation | 1d | 🟡 Medium |
-
-### Phase 2: Security & Governance (2 weeks)
-
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 2.1 | Implement `@objectos/compliance` plugin (GDPR/encryption/masking) | 8d | 🔴 High |
-| 2.2 | Implement `@objectos/tracing` plugin | 5d | 🟡 Medium |
-| 2.3 | Enhance `@objectos/notification` with templates | 2d | 🟡 Medium |
-| 2.4 | Enhance `@objectos/storage` with object storage API | 4d | 🟡 Medium |
-
-### Phase 3: Enterprise Features (2 weeks)
-
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 3.1 | Implement `@objectos/tenant` plugin | 8d | 🟡 Medium |
-| 3.2 | Implement `@objectos/queue` plugin (or merge into jobs) | 5d | 🟡 Medium |
-| 3.3 | Implement `@objectos/migration` plugin | 7d | 🟡 Medium |
-| 3.4 | Enhance `@objectos/realtime` with collaboration protocol | 4d | 🟢 Low |
-| 3.5 | Enhance `@objectos/jobs` with worker protocol | 3d | 🟢 Low |
-
-### Phase 4: Advanced Capabilities (2 weeks)
-
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 4.1 | Implement `@objectos/analytics` plugin | 5d | 🟢 Low |
-| 4.2 | Implement `@objectos/graphql` plugin | 8d | 🟢 Low |
-| 4.3 | Implement `@objectos/license` plugin | 3d | 🟢 Low |
-| 4.4 | Implement `@objectos/ai` plugin (stub) | 5d | 🟢 Low |
-| 4.5 | File spec upstream PRs (SPEC-001 through SPEC-005) | 3d | 🟡 Medium |
-
----
-
-## 9. Architecture Changes
-
-### 9.1 Plugin Registration Update
-
-After implementing all new plugins, `objectstack.config.ts` should register them in dependency order:
+The service registry must validate Contracts compliance at boot:
 
 ```typescript
-// objectstack.config.ts — Target State
-export default defineStack({
-  plugins: [
-    // Layer 0: Data Engine
-    new ObjectQLPlugin({ ... }),
-    new DriverPlugin('memory', new InMemoryDriver()),
-
-    // Layer 1: Foundation (no inter-dependencies)
-    new MetricsPlugin({ ... }),
-    new CachePlugin({ ... }),
-    new StoragePlugin({ ... }),
-    new LoggingPlugin({ ... }),      // NEW
-    new TracingPlugin({ ... }),      // NEW
-    new SearchPlugin({ ... }),       // NEW
-
-    // Layer 2: Security & Identity
-    new AuthPlugin({ ... }),
-    new PermissionsPlugin({ ... }),
-    new AuditLogPlugin({ ... }),
-    new CompliancePlugin({ ... }),   // NEW
-
-    // Layer 3: Business Logic
-    new WorkflowPlugin({ ... }),
-    new AutomationPlugin({ ... }),
-    new JobsPlugin({ ... }),
-    new QueuePlugin({ ... }),        // NEW (or merged into jobs)
-
-    // Layer 4: Services
-    new NotificationPlugin({ ... }),
-    new I18nPlugin({ ... }),
-    new UIPlugin({ ... }),
-    new RealtimePlugin({ ... }),
-
-    // Layer 5: Enterprise
-    new TenantPlugin({ ... }),       // NEW
-    new MigrationPlugin({ ... }),    // NEW
-    new LicensePlugin({ ... }),      // NEW
-
-    // Layer 6: Advanced (optional)
-    new AnalyticsPlugin({ ... }),    // NEW
-    new GraphQLPlugin({ ... }),      // NEW
-    new AIPlugin({ ... }),           // NEW
-
-    // Layer 7: Applications
-    new AppPlugin(CrmApp),
-    new AppPlugin(TodoApp),
-  ],
-});
-```
-
-### 9.2 Service Registry Validation
-
-Add a boot-time validation step that checks all `required` and `core` CoreServiceNames are registered:
-
-```typescript
-// In kernel bootstrap, after all plugins init:
-function validateServiceRegistry(kernel: ObjectKernel) {
-  const required = ['metadata', 'data'];
-  const core = ['auth', 'cache', 'queue', 'job'];
-
-  for (const name of required) {
-    if (!kernel.hasService(name)) {
-      throw new Error(`Required service '${name}' not registered. Cannot start.`);
-    }
-  }
-  for (const name of core) {
-    if (!kernel.hasService(name)) {
-      kernel.logger.warn(`Core service '${name}' not registered. Functionality degraded.`);
+// Startup validation
+for (const [name, service] of registry.entries()) {
+  const contract = spec.getContract(name);
+  if (contract) {
+    const result = validateContract(service, contract);
+    if (!result.valid) {
+      logger.error(`Service ${name} does not implement ${contract.name}`, result.errors);
+      if (contract.criticality === 'required') {
+        throw new KernelBootError(`Required service ${name} is non-compliant`);
+      }
     }
   }
 }
 ```
 
-### 9.3 Health Check Endpoint
+### 11.3 Health Check Endpoint
 
-Add a centralized health endpoint that queries all plugins:
+New aggregate health endpoint:
 
 ```
 GET /api/v1/health
 ```
 
 Response:
+
 ```json
 {
   "status": "healthy",
+  "version": "1.0.0",
   "uptime": 86400,
   "services": {
-    "metadata": { "status": "running", "latency": 2 },
-    "data": { "status": "running", "latency": 5 },
-    "auth": { "status": "running", "latency": 10 },
-    "cache": { "status": "running", "latency": 1 },
-    "search": { "status": "stopped", "reason": "not configured" }
+    "metadata": { "status": "healthy", "latency": 2 },
+    "data": { "status": "healthy", "latency": 5 },
+    "auth": { "status": "healthy", "latency": 12 },
+    "cache": { "status": "healthy", "latency": 1 },
+    "queue": { "status": "healthy", "latency": 3 },
+    "job": { "status": "healthy", "latency": 8 },
+    "notification": { "status": "degraded", "latency": 150, "details": { "smtp": "timeout" } }
+  },
+  "spec": {
+    "version": "2.0.6",
+    "compliance": {
+      "coreServices": "13/18",
+      "contracts": "25/25",
+      "schemas": "120/139"
+    }
   }
 }
 ```
 
-### 9.4 Configuration Schema Validation
+### 11.4 Service Criticality Enforcement
 
-Add spec-powered config validation at boot time:
+The kernel must enforce service criticality at boot:
 
 ```typescript
-// In objectstack.config.ts or runtime bootstrap
-import { System } from '@objectstack/spec';
+const CRITICALITY: Record<string, 'required' | 'core' | 'optional'> = {
+  metadata: 'required',
+  data: 'required',
+  auth: 'core',
+  cache: 'core',
+  queue: 'core',
+  job: 'core',
+  // ... remaining are 'optional'
+};
 
-// Validate cache config
-const cacheResult = System.CacheConfigSchema.safeParse(cacheConfig);
-if (!cacheResult.success) {
-  throw new Error(`Invalid cache config: ${cacheResult.error.message}`);
+function validateBoot(registry: ServiceRegistry): void {
+  for (const [name, criticality] of Object.entries(CRITICALITY)) {
+    const service = registry.get(name);
+    if (criticality === 'required' && !service) {
+      throw new KernelBootError(`Required service '${name}' is not registered`);
+    }
+    if (criticality === 'core' && !service) {
+      logger.warn(`Core service '${name}' is not registered — degraded mode`);
+    }
+  }
+}
+```
+
+### 11.5 Contracts-Aware Event Bus
+
+Events should include service contract metadata:
+
+```typescript
+interface ServiceEvent {
+  source: CoreServiceName;
+  contract: string;        // e.g., 'CacheServiceContract'
+  type: string;            // e.g., 'cache.invalidated'
+  timestamp: number;
+  payload: unknown;
+  correlationId: string;   // For distributed tracing
 }
 ```
 
 ---
 
-## Appendix: Spec Schema Inventory
+## Appendix — Schema Inventory
 
-### System Protocol Schemas (`@objectstack/spec/system`)
+### A.1 Shared Namespace
 
-| # | File | Schemas | Size | Category |
-|---|------|---------|------|----------|
-| 1 | `audit.zod.ts` | AuditEvent, AuditConfig, AuditRetentionPolicy, 34 event types | 20KB | Observability |
-| 2 | `auth-config.zod.ts` | AuthConfig, OIDCConfig, SAMLConfig | 2KB | Security |
-| 3 | `cache.zod.ts` | CacheConfig, CacheStrategy, CacheEvictionPolicy | 3KB | Infrastructure |
-| 4 | `change-management.zod.ts` | ChangeRequest, ChangeImpact, RollbackPlan | 9KB | Operations |
-| 5 | `collaboration.zod.ts` | OTOperation, CRDTState, CollaborativeCursor, AwarenessSession | 18KB | Runtime |
-| 6 | `compliance.zod.ts` | ComplianceConfig, GDPRConfig, DataRetentionPolicy | 5KB | Security |
-| 7 | `core-services.zod.ts` | CoreServiceName, ServiceStatus, ServiceRequirementDef | 4KB | Kernel |
-| 8 | `encryption.zod.ts` | EncryptionConfig, KeyManagement, FieldEncryption | 3KB | Security |
-| 9 | `http-server.zod.ts` | HttpServerConfig, CORSConfig, StaticMount | 10KB | Infrastructure |
-| 10 | `job.zod.ts` | JobConfig, JobSchedule, CronExpression | 4KB | Runtime |
-| 11 | `license.zod.ts` | LicenseConfig, LicenseMetricType, LicenseTier | 3KB | Licensing |
-| 12 | `logging.zod.ts` | LoggingConfig, LogDestination, StructuredLogEntry | 17KB | Observability |
-| 13 | `masking.zod.ts` | MaskingRule, MaskingStrategy, MaskingType | 2KB | Security |
-| 14 | `message-queue.zod.ts` | QueueConfig, QueueDriver, MessageSchema | 3KB | Infrastructure |
-| 15 | `metadata-persistence.zod.ts` | MetadataPersistence, PersistenceStrategy | 8KB | Infrastructure |
-| 16 | `metrics.zod.ts` | MetricSchema, MetricRegistry, PrometheusConfig | 17KB | Observability |
-| 17 | `migration.zod.ts` | MigrationConfig, MigrationStep, MigrationStrategy | 4KB | Operations |
-| 18 | `notification.zod.ts` | NotificationConfig, NotificationTemplate | 9KB | Runtime |
-| 19 | `object-storage.zod.ts` | ObjectStorageConfig, StorageBucket, PresignedUrl | 22KB | Infrastructure |
-| 20 | `registry-config.zod.ts` | RegistryConfig, PackageSource | 5KB | Configuration |
-| 21 | `search-engine.zod.ts` | SearchEngineConfig, SearchIndex, SearchQuery | 4KB | Infrastructure |
-| 22 | `tenant.zod.ts` | TenantSchema, TenantIsolationConfig, TenantSecurityPolicy | 19KB | Multi-Tenant |
-| 23 | `tracing.zod.ts` | TracingConfig, Span, TraceContext, SamplingConfig | 17KB | Observability |
-| 24 | `translation.zod.ts` | TranslationBundle, TranslationEntry | 2KB | Runtime |
-| 25 | `worker.zod.ts` | Task, WorkerConfig, BatchTask, QueueConfig | 15KB | Runtime |
-| 26 | `registry-config.zod.ts` | RegistryConfig | 5KB | Configuration |
+| # | Schema File | Type | Description |
+|---|-------------|------|-------------|
+| 1 | Common types | Utility | Shared type definitions |
+| 2 | Base schema utilities | Utility | Schema composition helpers |
+| 3 | Error codes | Enum | Standard error code registry |
 
-### Kernel Protocol Schemas (`@objectstack/spec/kernel`)
+### A.2 Data Namespace
 
-| # | File | Key Schemas | Used by ObjectOS? |
-|---|------|-------------|-------------------|
-| 1 | `plugin.zod.ts` | `definePlugin`, `PluginContext` | ⚠️ Partially |
-| 2 | `manifest.zod.ts` | `ManifestSchema` | ✅ Yes |
-| 3 | `plugin-capability.zod.ts` | `PluginCapabilityManifest` | ❌ Not used |
-| 4 | `plugin-lifecycle-advanced.zod.ts` | `PluginHealthStatus` | ❌ Not used |
-| 5 | `plugin-lifecycle-events.zod.ts` | Lifecycle event schemas | ⚠️ Partially |
-| 6 | `plugin-security.zod.ts` | `PluginSecurityManifest` | ❌ Not used |
-| 7 | `plugin-runtime.zod.ts` | `PluginRuntimeConfig` | ❌ Not used |
-| 8 | `service-registry.zod.ts` | `ServiceRegistryConfig` | ❌ Not used |
-| 9 | `startup-orchestrator.zod.ts` | `StartupOrchestrator` | ❌ Not used |
-| 10 | `feature.zod.ts` | `FeatureFlag` | ❌ Not used |
-| 11 | `context.zod.ts` | `ExecutionContext` | ❌ Not used |
-| 12 | `events.zod.ts` | Event taxonomy | ⚠️ Partially |
+| # | Schema File | Type | Description |
+|---|-------------|------|-------------|
+| 1 | Object schema | Zod | Object definition (fields, relations) |
+| 2 | Field definitions | Zod | Field types and constraints |
+| 3 | Query protocol | Zod | Query/filter/sort/pagination |
+| 4 | Data hooks | Zod | Before/after CRUD hooks |
+| 5 | Validation rules | Zod | Cross-field validation |
 
----
+### A.3 Security Namespace
 
-## Summary of Deliverables
+| # | Schema File | Type | Description |
+|---|-------------|------|-------------|
+| 1 | Permission sets | Zod | Object/field/record permissions |
+| 2 | Sharing rules | Zod | Record sharing configuration |
+| 3 | FLS | Zod | Field-level security |
+| 4 | RLS | Zod | Record-level security |
+| 5 | Profiles | Zod | User profile schemas |
 
-| Category | Count | Est. Effort |
-|----------|-------|-------------|
-| New plugins (Priority 1) | 4 | 20-30 days |
-| New plugins (Priority 2) | 3 | 20-27 days |
-| New plugins (Priority 3) | 4 | 21-34 days |
-| Existing plugin improvements | 7 | 13-21 days |
-| Upstream spec proposals | 5 | 3-5 days |
-| **Total** | **23 work items** | **~77-117 days** |
+### A.4 UI Namespace
+
+| # | Schema File | Type | Description |
+|---|-------------|------|-------------|
+| 1 | Apps | Zod | Application definitions |
+| 2 | Views | Zod | List/detail/kanban views |
+| 3 | Dashboards | Zod | Dashboard layout + widgets |
+| 4 | Actions | Zod | Button/quick/bulk actions |
+| 5 | Layouts | Zod | Page layout schemas |
+
+### A.5 System Namespace (26 Schemas)
+
+| # | Schema File | ObjectOS Mapping | Compliance |
+|---|-------------|------------------|------------|
+| 1 | `audit.zod.ts` | `@objectos/audit` | ✅ |
+| 2 | `auth-config.zod.ts` | `@objectos/auth` | ✅ |
+| 3 | `cache.zod.ts` | `@objectos/cache` | ✅ |
+| 4 | `change-management.zod.ts` | — | ❌ |
+| 5 | `collaboration.zod.ts` | — | ❌ |
+| 6 | `compliance.zod.ts` | `@objectos/audit` (partial) | ⚠️ |
+| 7 | `core-services.zod.ts` | Runtime (partial) | ⚠️ |
+| 8 | `encryption.zod.ts` | `@objectos/auth` (partial) | ⚠️ |
+| 9 | `http-server.zod.ts` | `@objectstack/cli` | ✅ |
+| 10 | `job.zod.ts` | `@objectos/jobs` | ✅ |
+| 11 | `license.zod.ts` | — | ❌ |
+| 12 | `logging.zod.ts` | `@objectos/metrics` (partial) | ⚠️ |
+| 13 | `masking.zod.ts` | — | ❌ |
+| 14 | `message-queue.zod.ts` | — | ❌ |
+| 15 | `metadata-persistence.zod.ts` | ObjectQL (partial) | ⚠️ |
+| 16 | `metrics.zod.ts` | `@objectos/metrics` | ✅ |
+| 17 | `migration.zod.ts` | — | ❌ |
+| 18 | `notification.zod.ts` | `@objectos/notification` | ✅ |
+| 19 | `object-storage.zod.ts` | `@objectos/storage` | ✅ |
+| 20 | `registry-config.zod.ts` | Runtime (partial) | ⚠️ |
+| 21 | `search-engine.zod.ts` | — | ❌ |
+| 22 | `tenant.zod.ts` | — | ❌ |
+| 23 | `tracing.zod.ts` | — | ❌ |
+| 24 | `translation.zod.ts` | `@objectos/i18n` | ✅ |
+| 25 | `worker.zod.ts` | `@objectos/jobs` (partial) | ⚠️ |
+
+### A.6 Kernel Namespace (22 Schemas)
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `context.zod.ts` | ✅ |
+| 2 | `events.zod.ts` | ✅ |
+| 3 | `execution-context.zod.ts` | ⚠️ |
+| 4 | `feature.zod.ts` | ⚠️ |
+| 5 | `manifest.zod.ts` | ✅ |
+| 6 | `metadata-loader.zod.ts` | ✅ |
+| 7 | `package-registry.zod.ts` | ⚠️ |
+| 8 | `plugin-capability.zod.ts` | ⚠️ |
+| 9 | `plugin-lifecycle-advanced.zod.ts` | ❌ |
+| 10 | `plugin-lifecycle-events.zod.ts` | ⚠️ |
+| 11 | `plugin-loading.zod.ts` | ✅ |
+| 12 | `plugin-registry.zod.ts` | ✅ |
+| 13 | `plugin-runtime.zod.ts` | ⚠️ |
+| 14 | `plugin-security.zod.ts` | ❌ |
+| 15 | `plugin-security-advanced.zod.ts` | ❌ |
+| 16 | `plugin-structure.zod.ts` | ✅ |
+| 17 | `plugin-validator.zod.ts` | ⚠️ |
+| 18 | `plugin-versioning.zod.ts` | ❌ |
+| 19 | `plugin.zod.ts` | ✅ |
+| 20 | `service-registry.zod.ts` | ⚠️ |
+| 21 | `startup-orchestrator.zod.ts` | ⚠️ |
+
+### A.7 Automation Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | Workflow rules | ✅ |
+| 2 | State machines | ✅ |
+| 3 | Flow format | ⚠️ |
+| 4 | Approval processes | ⚠️ |
+| 5 | Formula engine | ⚠️ |
+
+### A.8 API Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | Endpoint contracts | ⚠️ |
+| 2 | Rate limiting | ❌ |
+| 3 | Versioning | ⚠️ |
+
+### A.9 AI Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | AI agent schemas | ❌ |
+| 2 | RAG pipeline | ❌ |
+| 3 | NLQ schemas | ❌ |
+
+### A.10 Identity Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `identity.zod.ts` | ⚠️ |
+| 2 | `organization.zod.ts` | ❌ |
+| 3 | `role.zod.ts` | ⚠️ |
+| 4 | `scim.zod.ts` | ❌ |
+| 5 | `protocol.ts` | ❌ |
+
+### A.11 Integration Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `connector.zod.ts` | ❌ |
+
+### A.12 Studio Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `plugin.zod.ts` | ❌ |
+
+### A.13 Hub Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | Marketplace schemas | ❌ |
+| 2 | Registry protocol | ❌ |
+
+### A.14 QA Namespace
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `testing.zod.ts` | ❌ |
+
+### A.15 Stack Definition
+
+| # | Schema File | Compliance |
+|---|-------------|------------|
+| 1 | `stack.zod.ts` — `defineStack()` | ✅ |
+
+### A.16 Contracts Module (25 Interfaces)
+
+| # | Contract | ObjectOS Implementation | Status |
+|---|----------|----------------------|--------|
+| 1 | `LoggerContract` | `@objectos/metrics` | ⚠️ Partial |
+| 2 | `DataEngineContract` | ObjectQL | ⚠️ Partial |
+| 3 | `HttpServerContract` | `@objectstack/cli` | ⚠️ Partial |
+| 4 | `ServiceRegistryContract` | `@objectstack/runtime` | ⚠️ Partial |
+| 5 | `PluginValidatorContract` | `@objectstack/runtime` | ⚠️ Partial |
+| 6 | `StartupOrchestratorContract` | `@objectstack/runtime` | ⚠️ Partial |
+| 7 | `PluginLifecycleEventsContract` | `@objectstack/runtime` | ⚠️ Partial |
+| 8 | `SchemaDriverContract` | ObjectQL | ⚠️ Partial |
+| 9 | `CacheServiceContract` | `@objectos/cache` | ⚠️ Partial |
+| 10 | `SearchServiceContract` | — | ❌ Missing |
+| 11 | `QueueServiceContract` | — | ❌ Missing |
+| 12 | `NotificationServiceContract` | `@objectos/notification` | ⚠️ Partial |
+| 13 | `StorageServiceContract` | `@objectos/storage` | ⚠️ Partial |
+| 14 | `MetadataServiceContract` | ObjectQL | ⚠️ Partial |
+| 15 | `AuthServiceContract` | `@objectos/auth` | ⚠️ Partial |
+| 16 | `AutomationServiceContract` | `@objectos/automation` | ⚠️ Partial |
+| 17 | `GraphQLServiceContract` | — | ❌ Missing |
+| 18 | `AnalyticsServiceContract` | — | ❌ Missing |
+| 19 | `RealtimeServiceContract` | `@objectos/realtime` | ⚠️ Partial |
+| 20 | `JobServiceContract` | `@objectos/jobs` | ⚠️ Partial |
+| 21 | `AIServiceContract` | — | ❌ Missing |
+| 22 | `I18nServiceContract` | `@objectos/i18n` | ⚠️ Partial |
+| 23 | `UIServiceContract` | `@objectos/ui` | ⚠️ Partial |
+| 24 | `WorkflowServiceContract` | `@objectos/workflow` | ⚠️ Partial |
+| 25 | `PluginContract` | All plugins | ⚠️ Partial |
+
+### A.17 Overall Compliance Summary
+
+| Namespace | Total Schemas | ✅ Compliant | ⚠️ Partial | ❌ Missing |
+|-----------|--------------|-------------|-----------|-----------|
+| Shared | 3 | 2 | 1 | 0 |
+| Data | 5 | 3 | 2 | 0 |
+| Security | 5 | 2 | 3 | 0 |
+| UI | 5 | 3 | 2 | 0 |
+| System | 26 | 9 | 7 | 10 |
+| Kernel | 22 | 8 | 10 | 4 |
+| Automation | 5 | 2 | 3 | 0 |
+| API | 3 | 0 | 2 | 1 |
+| AI | 3 | 0 | 0 | 3 |
+| Identity | 5 | 0 | 2 | 3 |
+| Integration | 1 | 0 | 0 | 1 |
+| Studio | 1 | 0 | 0 | 1 |
+| Hub | 2 | 0 | 0 | 2 |
+| QA | 1 | 0 | 0 | 1 |
+| Contracts | 25 | 0 | 20 | 5 |
+| Stack | 1 | 1 | 0 | 0 |
+| **Total** | **113** | **30** | **52** | **31** |
+
+> **Note:** Some schemas overlap across namespaces. The 139 total Zod schemas referenced in the Executive Summary includes sub-schemas and variants within each file. The 113 count above represents distinct schema files.
 
 ---
 
 **Document maintained by:** ObjectOS Core Team
-**Last updated:** 2026-02-10
-**Status:** Draft — Pending Review
+**Last updated:** 2026-02-11
+**Status:** Draft v2.0 — Pending Review
