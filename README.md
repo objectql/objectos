@@ -169,7 +169,7 @@ AUTH_SECRET=your-super-secret-key-change-this-in-production
 
 **Optional Configuration:**
 
-- **Database**: Defaults to SQLite (`objectos.db`). Set `OBJECTQL_DATABASE_URL` for PostgreSQL or MongoDB.
+- **Database**: Defaults to SQLite (`objectstack.db`). Set `OBJECTQL_DATABASE_URL` for PostgreSQL or MongoDB.
 - **OAuth Providers**: Configure `GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, etc. for social login.
 - **Enterprise SSO**: Set up Auth0, Okta, Keycloak, or Azure AD via environment variables.
 

@@ -67,7 +67,13 @@ export default defineStack({
 
     // Core
     new AuthPlugin({
-      secret: process.env.AUTH_SECRET || 'dev-secret-change-in-production-min-32-chars',
+      secret: process.env.AUTH_SECRET || (() => {
+        const defaultSecret = 'dev-secret-change-in-production-min-32-chars';
+        if (process.env.NODE_ENV === 'production') {
+          console.error('WARNING: Using default AUTH_SECRET in production! Set AUTH_SECRET environment variable.');
+        }
+        return defaultSecret;
+      })(),
       baseUrl: process.env.BETTER_AUTH_URL || 'http://localhost:5320',
     }),
     new PermissionsPlugin(),
