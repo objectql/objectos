@@ -1,8 +1,11 @@
 # ObjectOS Development Plan
 
 > **Last Updated**: February 2026  
-> **ObjectStack SDK**: v2.0.6  
-> **Status**: Phase G — Spec Protocol Alignment + Business App Shell — 14/14 Plugins Implemented, Admin Console Active, Spec v2.0.6 Compliance
+> **ObjectStack SDK**: v2.0.7  
+> **ObjectUI**: @object-ui/*@2.0.0  
+> **Status**: Phase H — @object-ui Driven Development — 14/14 Plugins Implemented, Admin Console Active, @object-ui Integrated
+>
+> **Full Roadmap**: See [ROADMAP.md](../../ROADMAP.md) for the consolidated roadmap.
 
 ---
 
@@ -10,10 +13,11 @@
 
 ### 1.1 Completed Core Features
 
-✅ **Microkernel Architecture** (`@objectstack/runtime` 2.0.6)
+✅ **Microkernel Architecture** (`@objectstack/runtime` 2.0.7)
 - Plugin lifecycle, service registry, event bus
 - 14/14 plugin packages implemented with lifecycle compliance
-- 100% `@objectstack/spec` 2.0.6 protocol compliance
+- 100% `@objectstack/spec` 2.0.7 protocol compliance
+- 10/14 plugins adopt spec contract interfaces
 
 ✅ **Identity & Access Management**
 - BetterAuth integration (Email/Password, OAuth, 2FA, Sessions, Organizations)
@@ -39,6 +43,12 @@
 - 29 pages (6 auth, 14 admin, business app shell)
 - Tailwind CSS 4 + shadcn/ui
 
+✅ **@object-ui Integration**
+- 6 packages installed: core, react, components, layout, fields, data-objectstack
+- ObjectStack data adapter configured
+- SchemaRenderer integration example working
+- Business App Shell pages: app, object-list, object-record
+
 ✅ **HTTP Server**
 - `@objectstack/cli` → Hono + `@hono/node-server`
 - REST `/api/v1/*`, WebSocket, static mounts
@@ -53,7 +63,8 @@
 | Test Files | 49 test files across 13 packages |
 | Frontend Source Code | 9,570 lines across 65 files |
 | Frontend Pages | 29 pages + 15 UI components |
-| ObjectStack SDK | `@objectstack/*` v2.0.6 |
+| ObjectStack SDK | `@objectstack/*` v2.0.7 |
+| ObjectUI Packages | `@object-ui/*` v2.0.0 (6 packages) |
 | Spec Protocol Namespaces | 14 |
 | Spec Service Contracts | 25 |
 
@@ -83,15 +94,14 @@
 
 ## 3. Current Phase
 
-### Phase G — Spec Protocol Alignment 🔄 IN PROGRESS
+### Phase H — @object-ui Driven Development 🔄 IN PROGRESS
 
 | Task | Status | Notes |
 |------|:------:|-------|
-| Update Spec Compliance Design Document (v2.0) | ✅ | Aligned with `@objectstack/spec` 2.0.6 |
-| Adopt Contracts interfaces for core plugins | 🔲 | 25 service contracts across 14 namespaces |
-| Business App Shell (Object List + Record views) | 🔲 | Metadata-driven business UI foundation |
-| API client layer integration | 🔲 | `@objectstack/client` integration |
-| Consolidate development plan documents | ✅ | Single source of truth in DEVELOPMENT_PLAN.md |
+| SchemaRenderer integration for business pages | 🔲 | Replace hand-built views with @object-ui SchemaRenderer |
+| Metadata-driven navigation | 🔲 | Sidebar generated from API metadata |
+| API client completion | 🔲 | Connect to live @objectstack/client, reduce mock data |
+| Bridge components (ObjectPage, ObjectToolbar) | 🔲 | Combine @object-ui with ObjectOS permissions |
 
 ---
 
@@ -109,23 +119,23 @@
 | Performance baseline (P95 < 100ms) | ✅ |
 | Docker deployment | ✅ |
 | E2E smoke tests | ✅ |
-| Spec Contracts adoption for core services | 🔲 |
-| Business App Shell Phase 1 | 🔲 |
+| Spec Contracts adoption (10/14 plugins) | ✅ |
+| @object-ui SchemaRenderer for business pages | 🔲 |
+| Business App Shell with live API data | 🔲 |
 
-### v1.1.0 — ObjectUI Integration + Identity (Target: April 2026)
+### v1.1.0 — Rich Business UI (Target: April 2026)
 
 | Task | Description |
 |------|-------------|
-| Install `@objectui/core` | Add ObjectUI as dependency to apps/web |
-| Metadata-driven routing | `/apps/:objectName` → fetch schema → render ObjectUI |
-| Schema Renderer integration | `<SchemaRenderer object="contacts" view="grid" />` |
-| Form Renderer integration | `<SchemaRenderer object="contacts" view="form" />` |
-| Plugin UI extension slots | Extension points for plugin-contributed UI |
-| SCIM 2.0 provisioning | Identity provisioning via SCIM 2.0 endpoints |
-| Identity protocol compliance | Align `@objectos/auth` with Identity namespace |
-| Studio plugin protocol | Enable Studio namespace for admin tooling |
+| Inline editing in grid view | Click-to-edit cells using @object-ui/fields |
+| Bulk record actions | Select multiple → delete, update field, change owner |
+| Saved filters / views | Persist filter configurations per user per object |
+| Visual Flow Editor | Drag-and-drop workflow designer |
+| Approval Inbox | Centralized pending approvals view |
+| Related lists | Child objects rendered as sub-tables on detail pages |
+| CSV import/export | Bulk data upload with field mapping |
 
-### v1.2.0 — Enterprise Features + Spec Full Compliance (Target: June 2026)
+### v1.2.0 — Enterprise Features (Target: June 2026)
 
 | Feature | Description |
 |---------|-------------|
@@ -134,9 +144,8 @@
 | OpenTelemetry integration | Distributed tracing, span collection |
 | Event bus persistence | Event replay, dead-letter queue, retry |
 | Schema migrations | Version-controlled schema evolution |
-| Search plugin | Full-text search across objects |
-| Queue plugin | Persistent job queue with priority scheduling |
-| Compliance plugin | Policy enforcement and compliance rules |
+| Offline & Sync | Service Worker, OPFS, mutation queue, conflict resolution |
+| Automation Rule Builder UI | Visual trigger + condition + action configuration |
 | Full Contracts interface compliance | Implement all `CoreServiceNames` contracts |
 
 ### v2.0.0 — Platform (Target: September 2026)
@@ -159,13 +168,20 @@
 
 | Dependency | Version | Role |
 |-----------|---------|------|
-| `@objectstack/runtime` | 2.0.6 | Microkernel — plugin lifecycle, service registry, event bus |
-| `@objectstack/spec` | 2.0.6 | Protocol contracts — Zod schemas, TypeScript interfaces |
-| `@objectstack/cli` | 2.0.6 | Server bootstrap — `objectstack serve` command |
-| `@objectstack/objectql` | 2.0.6 | ObjectQL plugin for metadata loading |
-| `@objectstack/client` | 2.0.6 | Frontend SDK for API integration |
-| `@objectstack/driver-memory` | 2.0.6 | In-memory data driver for development/serverless |
-| `@objectstack/plugin-hono-server` | 2.0.6 | Hono HTTP server plugin |
+| `@objectstack/runtime` | 2.0.7 | Microkernel — plugin lifecycle, service registry, event bus |
+| `@objectstack/spec` | 2.0.7 | Protocol contracts — Zod schemas, TypeScript interfaces |
+| `@objectstack/cli` | 2.0.7 | Server bootstrap — `objectstack serve` command |
+| `@objectstack/objectql` | 2.0.7 | ObjectQL plugin for metadata loading |
+| `@objectstack/client` | 2.0.7 | Frontend SDK for API integration |
+| `@objectstack/driver-memory` | 2.0.7 | In-memory data driver for development/serverless |
+| `@objectstack/plugin-hono-server` | 2.0.7 | Hono HTTP server plugin |
+| `@objectstack/plugin-auth` | 2.0.7 | Authentication plugin |
+| `@object-ui/core` | 2.0.0 | UI core logic, types, validation |
+| `@object-ui/react` | 2.0.0 | React bindings, SchemaRenderer |
+| `@object-ui/components` | 2.0.0 | Standard UI controls |
+| `@object-ui/fields` | 2.0.0 | Field renderers and registry |
+| `@object-ui/layout` | 2.0.0 | Application shell components |
+| `@object-ui/data-objectstack` | 2.0.0 | ObjectStack data adapter |
 | `@objectql/core` | 4.2.0 | Data engine — metadata registry, query compiler |
 
 ---
@@ -191,4 +207,4 @@
 - **ObjectUI**: https://github.com/objectstack-ai/objectui
 - **Issues**: https://github.com/objectstack-ai/objectos/issues
 
-> For the full development plan with architecture details, deployment diagrams, and risk assessment, see [DEVELOPMENT_PLAN.md](../../DEVELOPMENT_PLAN.md) in the repository root. For spec compliance details, see [SPEC_COMPLIANCE_DESIGN.md](../SPEC_COMPLIANCE_DESIGN.md).
+> For the full development plan with architecture details, deployment diagrams, and risk assessment, see [DEVELOPMENT_PLAN.md](../../DEVELOPMENT_PLAN.md) in the repository root. For the consolidated roadmap, see [ROADMAP.md](../../ROADMAP.md). For spec compliance details, see [SPEC_COMPLIANCE_DESIGN.md](../SPEC_COMPLIANCE_DESIGN.md).

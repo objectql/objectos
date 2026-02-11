@@ -154,10 +154,12 @@ ObjectUI supports multiple view types:
 
 ## Next Steps
 
-1. **Implement Custom Plugins** - Create @object-ui plugins for specialized views
-2. **Add Field Renderers** - Custom field types and renderers
-3. **Layout Customization** - Customize app shell and navigation
-4. **Offline Sync** - Integrate with @objectos/browser for offline support
+> See [ROADMAP.md](../../ROADMAP.md) for the full Phase H breakdown.
+
+1. **Replace hand-built views** - Use SchemaRenderer for grid/form/detail in business pages
+2. **Metadata-driven navigation** - Generate sidebar from API metadata
+3. **API client completion** - Connect to live ObjectStack API
+4. **Bridge components** - ObjectPage (permissions), ObjectToolbar, RelatedList, FilterPanel
 5. **Module Federation** - Load plugin UIs dynamically
 
 ## References
