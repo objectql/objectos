@@ -439,7 +439,7 @@ A comprehensive scan of the entire codebase identified the following improvement
 
 | #     | Task                                                              | Priority | Status |
 | ----- | ----------------------------------------------------------------- | :------: | :----: |
-| P.3.1 | Evaluate test framework unification (Jest vs Vitest) — choose one |    🟡    |   ⬜   |
+| P.3.1 | Evaluate test framework unification (Jest vs Vitest) — choose one |    🟡    |   ✅   |
 | P.3.2 | Add coverage reporting with minimum thresholds per package        |    🟡    |   ⬜   |
 | P.3.3 | Add test coverage aggregation to CI pipeline                      |    🟢    |   ⬜   |
 | P.3.4 | Add snapshot testing guidelines to CONTRIBUTING.md                |    🟢    |   ⬜   |
@@ -448,11 +448,11 @@ A comprehensive scan of the entire codebase identified the following improvement
 
 | #     | Task                                                                               | Priority | Status |
 | ----- | ---------------------------------------------------------------------------------- | :------: | :----: |
-| P.4.1 | Create `DEVELOPMENT.md` with step-by-step local setup guide                        |    🟡    |   ⬜   |
+| P.4.1 | Create `DEVELOPMENT.md` with step-by-step local setup guide                        |    🟡    |   ✅   |
 | P.4.2 | Add `pnpm create:plugin` template with README, test scaffold, and CI config        |    🟡    |   ⬜   |
 | P.4.3 | Add interactive `objectstack doctor` checks for common environment issues          |    🟢    |   ⬜   |
-| P.4.4 | Create architecture decision records (ADR) directory for key decisions             |    🟢    |   ⬜   |
-| P.4.5 | Add GitHub issue templates for bug reports, feature requests, and plugin proposals |    🟢    |   ⬜   |
+| P.4.4 | Create architecture decision records (ADR) directory for key decisions             |    🟢    |   ✅   |
+| P.4.5 | Add GitHub issue templates for bug reports, feature requests, and plugin proposals |    🟢    |   ✅   |
 
 ---
 
@@ -531,15 +531,16 @@ A comprehensive scan of the entire codebase identified the following improvement
 ### v2.3.0 — Developer Experience: Testing (Target: March 2026)
 
 - Phase P.3: Test Infrastructure Standardization
-  - Framework unification decision ⬜
+  - Framework unification decision: Vitest selected (ADR-001) ✅
   - Coverage reporting and CI integration ⬜
 
 ### v2.4.0 — Developer Experience: Onboarding (Target: April 2026)
 
 - Phase P.4: Developer Onboarding
-  - Step-by-step local setup guide ⬜
+  - DEVELOPMENT.md step-by-step local setup guide ✅
   - Plugin creation template improvements ⬜
-  - ADR directory for architecture decisions ⬜
+  - ADR directory with ADR-001 (Vitest standardization) ✅
+  - GitHub issue templates (bug report, feature request, plugin proposal) ✅
 
 ### Master Timeline
 
