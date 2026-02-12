@@ -607,6 +607,34 @@ importers:
         specifier: ^5.4.2
         version: 5.9.2
 
+  packages/federation:
+    dependencies:
+      '@objectstack/runtime':
+        specifier: ^3.0.0
+        version: 3.0.0(pino@10.3.0)
+      '@objectstack/spec':
+        specifier: 3.0.0
+        version: 3.0.0
+    devDependencies:
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^25.2.0
+        version: 25.2.0
+      jest:
+        specifier: ^30.2.0
+        version: 30.2.0(@types/node@25.2.0)(ts-node@10.9.2(@types/node@25.2.0)(typescript@5.9.3))
+      ts-jest:
+        specifier: ^29.4.6
+        version: 29.4.6(@babel/core@7.28.6)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.6))(esbuild@0.27.2)(jest-util@30.2.0)(jest@30.2.0(@types/node@25.2.0)(ts-node@10.9.2(@types/node@25.2.0)(typescript@5.9.3)))(typescript@5.9.3)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/graphql:
     dependencies:
       '@objectstack/runtime':
