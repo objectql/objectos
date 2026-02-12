@@ -382,6 +382,81 @@ describe('CachePlugin', () => {
 });
 ```
 
+### Coverage
+
+Each package has a `test:coverage` script that runs tests with coverage reporting:
+
+```bash
+# Run coverage for a specific package
+pnpm --filter @objectos/cache test:coverage
+
+# Run coverage for all packages (aggregated via Turborepo)
+pnpm test:coverage
+```
+
+**Coverage thresholds** are enforced per package:
+
+| Metric     | Server Packages | Frontend (apps/web) |
+|------------|:--------------:|:-------------------:|
+| Branches   | 70%            | 60%                 |
+| Functions  | 70%            | 60%                 |
+| Lines      | 80%            | 70%                 |
+| Statements | 80%            | 70%                 |
+
+CI automatically collects coverage from all packages and uploads to Codecov.
+
+### Snapshot Testing Guidelines
+
+Snapshot tests capture the output of a component or function and compare it against a stored reference. Use them judiciously:
+
+#### When to Use Snapshots
+
+- **Serialized output**: JSON responses, generated schema, config objects
+- **Error messages**: Validate that error messages remain consistent
+- **Complex transformations**: Metadata transforms, template rendering output
+
+#### When NOT to Use Snapshots
+
+- **Random/dynamic values**: Timestamps, UUIDs, incrementing IDs — these change every run
+- **Large objects**: Snapshots over ~50 lines become difficult to review in PRs
+- **UI components**: Prefer behavioral tests (`getByRole`, assertions on visible text) over HTML snapshots
+
+#### Best Practices
+
+```typescript
+// ✅ GOOD: Small, focused snapshot
+it('should generate correct schema for object', () => {
+  const schema = generateSchema(objectMeta);
+  expect(schema).toMatchSnapshot();
+});
+
+// ✅ GOOD: Inline snapshot for small expected values
+it('should format error message', () => {
+  const error = formatError({ code: 'NOT_FOUND', object: 'contacts' });
+  expect(error).toMatchInlineSnapshot(`"Object 'contacts' not found"`);
+});
+
+// ❌ BAD: Snapshot of a large, frequently-changing object
+it('should render the entire page', () => {
+  const html = render(<DashboardPage />);
+  expect(html).toMatchSnapshot(); // Too large, hard to review
+});
+```
+
+#### Updating Snapshots
+
+When a snapshot legitimately changes (e.g., you added a field to a schema):
+
+```bash
+# Jest
+pnpm --filter @objectos/graphql test -- -u
+
+# Vitest
+pnpm --filter @objectos/permissions test -- --update
+```
+
+**Always review snapshot diffs** in your PR before committing. Never blindly update snapshots.
+
 ## Documentation
 
 ### Building Docs
