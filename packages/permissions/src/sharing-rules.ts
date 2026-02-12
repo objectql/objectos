@@ -143,21 +143,25 @@ export class SharingRuleEngine {
                 if (!roleName) return false;
                 if (rule.sharedWithValues.includes(roleName)) return true;
                 // Check subordinate roles via hierarchy path
-                const hierarchyPath = metadata?.hierarchyPath as string | undefined;
-                if (hierarchyPath) {
-                    return rule.sharedWithValues.some(targetRole =>
-                        hierarchyPath.includes(targetRole)
-                    );
+                {
+                    const hierarchyPath = metadata?.hierarchyPath as string | undefined;
+                    if (hierarchyPath) {
+                        return rule.sharedWithValues.some(targetRole =>
+                            hierarchyPath.includes(targetRole)
+                        );
+                    }
                 }
                 return false;
 
-            case 'group':
+            case 'group': {
                 const userGroups = (metadata?.groups || []) as string[];
                 return rule.sharedWithValues.some(g => userGroups.includes(g));
+            }
 
-            case 'territory':
+            case 'territory': {
                 const userTerritories = (metadata?.territories || []) as string[];
                 return rule.sharedWithValues.some(t => userTerritories.includes(t));
+            }
 
             default:
                 return false;

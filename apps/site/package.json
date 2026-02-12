@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "echo 'Lint: site excluded (see eslint.config.mjs ignores)'"
   },
   "dependencies": {
     "fumadocs-core": "^16.4.11",

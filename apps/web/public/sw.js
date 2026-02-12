@@ -1,3 +1,4 @@
+/* global self, caches, fetch, URL, Response */
 /**
  * ObjectOS Service Worker — Offline-first PWA support.
  *

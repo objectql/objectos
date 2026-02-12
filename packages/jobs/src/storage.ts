@@ -70,11 +70,12 @@ export class InMemoryJobStorage implements JobStorage {
                         aVal = a.createdAt.getTime();
                         bVal = b.createdAt.getTime();
                         break;
-                    case 'priority':
+                    case 'priority': {
                         const priorityOrder: Record<string, number> = { critical: 4, high: 3, normal: 2, low: 1 };
                         aVal = priorityOrder[a.priority as string] || 0;
                         bVal = priorityOrder[b.priority as string] || 0;
                         break;
+                    }
                     case 'nextRun':
                         aVal = a.nextRun?.getTime() || 0;
                         bVal = b.nextRun?.getTime() || 0;
