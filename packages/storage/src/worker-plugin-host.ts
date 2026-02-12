@@ -48,7 +48,10 @@ export class WorkerThreadPluginHost implements PluginHost {
     constructor(config: PluginHostConfig, options?: { callTimeoutMs?: number; workerEntry?: string }) {
         this.config = { ...config, isolation: 'worker' };
         this.callTimeoutMs = options?.callTimeoutMs ?? 30_000;
-        this.workerEntry = options?.workerEntry ?? resolve(__dirname, 'worker-entry.js');
+        // Worker entry must be provided explicitly or resolved by the caller.
+        // In ESM, __dirname is not available — callers should use
+        // `new URL('./worker-entry.js', import.meta.url).pathname` to resolve.
+        this.workerEntry = options?.workerEntry ?? 'worker-entry.js';
     }
 
     /**

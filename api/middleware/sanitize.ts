@@ -11,17 +11,25 @@
  */
 import type { MiddlewareHandler } from 'hono';
 
-const SCRIPT_RE = /<script[\s\S]*?<\/script>/gi;
-const EVENT_HANDLER_RE = /\bon\w+\s*=\s*["'][^"']*["']/gi;
-const HTML_TAG_RE = /<\/?[a-z][\s\S]*?>/gi;
-
 /** Recursively sanitize a value (string → strip tags, object → recurse). */
 export function sanitizeValue(value: unknown): unknown {
   if (typeof value === 'string') {
-    return value
-      .replace(SCRIPT_RE, '')
-      .replace(EVENT_HANDLER_RE, '')
-      .replace(HTML_TAG_RE, '');
+    // Multi-pass approach for robust HTML/script removal:
+    // 1. Remove script tags (including variations with whitespace)
+    // 2. Remove event handler attributes
+    // 3. Strip remaining HTML tags
+    // 4. Re-run HTML strip to catch tags reconstructed from fragments
+    let result = value;
+    // Loop until stable — handles nested/reconstructed patterns
+    let previous: string;
+    do {
+      previous = result;
+      result = result
+        .replace(/<\s*script[\s\S]*?<\s*\/\s*script\s*>/gi, '')
+        .replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/<\/?[a-z][\s\S]*?>/gi, '');
+    } while (result !== previous);
+    return result;
   }
   if (Array.isArray(value)) {
     return value.map(sanitizeValue);

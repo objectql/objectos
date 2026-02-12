@@ -7,7 +7,6 @@
  */
 
 import { fork, type ChildProcess } from 'node:child_process';
-import { resolve } from 'node:path';
 import type { PluginHost, PluginHostConfig } from './types.js';
 
 interface PendingCall {
@@ -47,7 +46,10 @@ export class ChildProcessPluginHost implements PluginHost {
     constructor(config: PluginHostConfig, options?: { callTimeoutMs?: number; processEntry?: string }) {
         this.config = { ...config, isolation: 'process' };
         this.callTimeoutMs = options?.callTimeoutMs ?? 30_000;
-        this.processEntry = options?.processEntry ?? resolve(__dirname, 'process-entry.js');
+        // Process entry must be provided explicitly or resolved by the caller.
+        // In ESM, __dirname is not available — callers should use
+        // `new URL('./process-entry.js', import.meta.url).pathname` to resolve.
+        this.processEntry = options?.processEntry ?? 'process-entry.js';
     }
 
     /**
