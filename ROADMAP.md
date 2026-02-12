@@ -1,8 +1,8 @@
 # ObjectOS Roadmap
 
-> **Version**: 7.0.0
+> **Version**: 8.0.0
 > **Date**: February 12, 2026
-> **Status**: Phase M — Technical Debt Resolution
+> **Status**: Phase M — Technical Debt Resolution ✅ COMPLETE
 > **Spec SDK**: `@objectstack/spec@2.0.7`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
@@ -268,9 +268,9 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.3.1 | Worker Thread plugin host — Level 1 isolation via `worker_threads` | TD-7 | 🟢 | ⬜ |
-| M.3.2 | Child Process plugin host — Level 2 isolation via `child_process.fork()` | TD-7 | 🟢 | ⬜ |
-| M.3.3 | Plugin watchdog — auto-restart with backoff, resource limit enforcement | TD-7 | 🟢 | ⬜ |
+| M.3.1 | Worker Thread plugin host — Level 1 isolation via `worker_threads` | TD-7 | 🟢 | ✅ |
+| M.3.2 | Child Process plugin host — Level 2 isolation via `child_process.fork()` | TD-7 | 🟢 | ✅ |
+| M.3.3 | Plugin watchdog — auto-restart with backoff, resource limit enforcement | TD-7 | 🟢 | ✅ |
 
 ---
 
@@ -301,25 +301,25 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 ### v1.1.0 — Rich Business UI + Infrastructure (Target: April 2026)
 
-- Phase I: Rich Data Experience (inline editing, bulk actions, filters)
-- Phase J.1-J.2: Visual Flow Editor, Approval Inbox
-- Phase M.2: Infrastructure
-  - Event bus persistence + DLQ (TD-1) 🟡
-  - Schema migration engine (TD-2) 🟡
-  - Browser sync E2E tests (TD-6) 🟡
+- Phase I: Rich Data Experience (inline editing, bulk actions, filters) ✅
+- Phase J.1-J.2: Visual Flow Editor, Approval Inbox ✅
+- Phase M.2: Infrastructure ✅
+  - Event bus persistence + DLQ (TD-1) ✅
+  - Schema migration engine (TD-2) ✅
+  - Browser sync E2E tests (TD-6) ✅
 
 ### v1.2.0 — Enterprise Features (Target: June 2026)
 
-- Phase J.3-J.6: Full Workflow & Automation UI
-- Phase K: Offline & Sync
+- Phase J.3-J.6: Full Workflow & Automation UI ✅
+- Phase K: Offline & Sync ✅
 - Multi-tenancy data isolation
 - OpenTelemetry integration
 
 ### v2.0.0 — Platform (Target: September 2026)
 
-- Phase L: Polish & Performance
-- Phase M.3: Platform Hardening
-  - Plugin isolation (Worker Threads + Child Process) (TD-7) 🟢
+- Phase L: Polish & Performance ✅
+- Phase M.3: Platform Hardening ✅
+  - Plugin isolation (Worker Threads + Child Process) (TD-7) ✅
 - Plugin Marketplace
 - Dynamic Plugin Loading (Module Federation)
 - AI Agent Framework
@@ -446,7 +446,7 @@ User Action → React Component → @object-ui/react SchemaRenderer
 | 4 | Input sanitization | Body limit + XSS strip + content-type guard + Zod validate | 🔴 | M.1 | ✅ |
 | 5 | Realtime auth | WebSocket auth enforced via cookie/protocol/query token | 🟡 | M.1 | ✅ |
 | 6 | Browser sync E2E | 5 Playwright E2E test specs for sync lifecycle | 🟡 | M.2 | ✅ |
-| 7 | Plugin isolation | Plugins share process | 🟢 | M.3 | ⬜ |
+| 7 | Plugin isolation | `WorkerThreadPluginHost`, `ChildProcessPluginHost`, `PluginWatchdog` | 🟢 | M.3 | ✅ |
 | 8 | Mock data dependency | DevDataProvider + tree-shaking via `__mocks__/` | 🟡 | M.1 | ✅ |
 
 ---
