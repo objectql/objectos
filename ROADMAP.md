@@ -25,7 +25,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | Phase O — Platform Expansion complete | Phase O — Platform Expansion ✅ complete |
 | No DX improvement plan | Phase P — Developer Experience ⬜ planned |
 | CONTRIBUTING.md outdated (references non-existent packages) | CONTRIBUTING.md updated with accurate structure & commands |
-| 9 packages missing README.md | README.md added for all 20 packages |
+| 8 packages missing README.md | README.md added for all 20 packages |
 | No code quality tooling (linting, formatting) | Phase P.2 plans ESLint + Prettier standardization |
 
 ---
@@ -405,7 +405,7 @@ A comprehensive scan of the entire codebase identified the following improvement
 | Area | Finding | Severity |
 |------|---------|:--------:|
 | Documentation | CONTRIBUTING.md referenced non-existent packages (`kernel`, `server`, `presets`) and wrong prerequisites | 🔴 |
-| Documentation | 9 of 20 packages missing README.md files | 🔴 |
+| Documentation | 8 of 20 packages missing README.md files | 🔴 |
 | Documentation | No quickstart guide or troubleshooting guide in docs/ | 🟡 |
 | Tooling | No ESLint or Prettier configuration across the monorepo | 🔴 |
 | Tooling | No `.editorconfig` for consistent formatting | 🟡 |
@@ -419,7 +419,7 @@ A comprehensive scan of the entire codebase identified the following improvement
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
 | P.1.1 | Update CONTRIBUTING.md — fix project structure, prerequisites (Node 20+, pnpm 10+), and development commands | 🔴 | ✅ |
-| P.1.2 | Add README.md to all 9 missing packages (agent, analytics, federation, graphql, marketplace, metrics, realtime, telemetry, ui) | 🔴 | ✅ |
+| P.1.2 | Add README.md to all 8 missing packages (agent, analytics, federation, graphql, marketplace, realtime, telemetry, ui) | 🔴 | ✅ |
 | P.1.3 | Update ROADMAP.md — add Phase P, refresh version and timeline | 🔴 | ✅ |
 | P.1.4 | Add quickstart guide to docs/ for first-time contributors | 🟡 | ⬜ |
 | P.1.5 | Add troubleshooting guide to docs/ for common development issues | 🟡 | ⬜ |
