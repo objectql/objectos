@@ -1,35 +1,44 @@
 /**
  * XSS Sanitization Middleware for Hono
  *
- * Strips dangerous HTML / script content from JSON request bodies on
- * mutation methods (POST, PUT, PATCH).  The sanitized body is stored on
- * the Hono context variable `sanitizedBody` so downstream handlers can
- * retrieve it via `c.get('sanitizedBody')`.
+ * Encodes dangerous HTML characters in JSON request body strings on
+ * mutation methods (POST, PUT, PATCH).  Uses HTML entity encoding
+ * (`<` → `&lt;`, `>` → `&gt;`) which is safe for both storage and
+ * HTML rendering contexts.
+ *
+ * The sanitized body is stored on the Hono context variable
+ * `sanitizedBody` so downstream handlers can retrieve it via
+ * `c.get('sanitizedBody')`.
  *
  * @module api/middleware/sanitize
  * @see docs/guide/technical-debt-resolution.md — TD-4
  */
 import type { MiddlewareHandler } from 'hono';
 
-/** Recursively sanitize a value (string → strip tags, object → recurse). */
+/**
+ * HTML entity encoding map.
+ * Covers the minimal set of characters required to prevent XSS
+ * in both HTML element and attribute contexts.
+ */
+const HTML_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#x27;',
+};
+
+const ENTITY_RE = /[&<>"']/g;
+
+/** Encode HTML-significant characters to their entity equivalents. */
+function encodeEntities(str: string): string {
+  return str.replace(ENTITY_RE, (ch) => HTML_ENTITIES[ch] ?? ch);
+}
+
+/** Recursively sanitize a value (string → entity-encode, object → recurse). */
 export function sanitizeValue(value: unknown): unknown {
   if (typeof value === 'string') {
-    // Multi-pass approach for robust HTML/script removal:
-    // 1. Remove script tags (including variations with whitespace)
-    // 2. Remove event handler attributes
-    // 3. Strip remaining HTML tags
-    // 4. Re-run HTML strip to catch tags reconstructed from fragments
-    let result = value;
-    // Loop until stable — handles nested/reconstructed patterns
-    let previous: string;
-    do {
-      previous = result;
-      result = result
-        .replace(/<\s*script[\s\S]*?<\s*\/\s*script\s*>/gi, '')
-        .replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, '')
-        .replace(/<\/?[a-z][\s\S]*?>/gi, '');
-    } while (result !== previous);
-    return result;
+    return encodeEntities(value);
   }
   if (Array.isArray(value)) {
     return value.map(sanitizeValue);
