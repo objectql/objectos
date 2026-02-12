@@ -166,3 +166,72 @@ export type PluginStartupResult = SpecPluginStartupResult;
 
 /** Event bus configuration — from @objectstack/spec */
 export type EventBusConfig = SpecEventBusConfig;
+
+// ─── Schema Migration Types ────────────────────────────────────────────────────
+
+/**
+ * Column definition for schema operations
+ */
+export interface ColumnDef {
+    name: string;
+    type: 'text' | 'number' | 'boolean' | 'datetime' | 'json';
+    nullable?: boolean;
+    defaultValue?: unknown;
+}
+
+/**
+ * Index creation options
+ */
+export interface IndexOptions {
+    unique?: boolean;
+    name?: string;
+}
+
+/**
+ * Schema change operation
+ */
+export type SchemaChange =
+    | { type: 'add_column'; object: string; column: ColumnDef }
+    | { type: 'drop_column'; object: string; column: string }
+    | { type: 'alter_column'; object: string; column: string; from: ColumnDef; to: ColumnDef }
+    | { type: 'add_index'; object: string; columns: string[]; options?: IndexOptions }
+    | { type: 'drop_index'; object: string; columns: string[] };
+
+/**
+ * Diff result for a single object
+ */
+export interface SchemaDiff {
+    object: string;
+    changes: SchemaChange[];
+}
+
+/**
+ * A versioned schema migration with up/down operations
+ */
+export interface Migration {
+    version: string;
+    name: string;
+    up: (runner: MigrationRunner) => Promise<void>;
+    down: (runner: MigrationRunner) => Promise<void>;
+}
+
+/**
+ * Persisted record of an applied migration
+ */
+export interface MigrationRecord {
+    id: string;
+    version: string;
+    name: string;
+    appliedAt: string;
+    checksum: string;
+}
+
+/**
+ * Runner interface used inside migration up/down functions
+ */
+export interface MigrationRunner {
+    addColumn(object: string, column: ColumnDef): Promise<void>;
+    dropColumn(object: string, columnName: string): Promise<void>;
+    addIndex(object: string, columns: string[], options?: IndexOptions): Promise<void>;
+    dropIndex(object: string, columns: string[]): Promise<void>;
+}
