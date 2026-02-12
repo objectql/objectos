@@ -3,35 +3,39 @@
  * workflow status, approval actions, activity timeline, and related lists.
  *
  * Uses @object-ui SchemaRenderer for detail view rendering (Phase H.1.2).
- * Includes RelatedList components for child/lookup records (Phase H.4.3).
+ * Phase I additions: record cloning (I.5), enhanced related lists (I.4).
  *
  * Route: /apps/:appId/:objectName/:recordId
  */
 
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { SchemaRenderer } from '@object-ui/react';
 import { objectUIAdapter } from '@/lib/object-ui-adapter';
 import { useObjectDefinition } from '@/hooks/use-metadata';
-import { useRecord } from '@/hooks/use-records';
+import { useRecord, useCreateRecord } from '@/hooks/use-records';
 import { useWorkflowStatus, useActivities } from '@/hooks/use-workflow';
 import { objectStackClient } from '@/lib/api';
 import { WorkflowStatusBadge } from '@/components/workflow/WorkflowStatusBadge';
 import { ApprovalActions } from '@/components/workflow/ApprovalActions';
 import { ActivityTimeline } from '@/components/workflow/ActivityTimeline';
 import { RelatedList } from '@/components/objectui/RelatedList';
+import { CloneRecordDialog } from '@/components/objectui/CloneRecordDialog';
 import { Button } from '@/components/ui/button';
 import { mockObjectDefinitions } from '@/lib/mock-data';
+import type { RecordData } from '@/types/metadata';
 
 export default function ObjectRecordPage() {
   const { appId, objectName, recordId } = useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: objectDef, isLoading: metaLoading } = useObjectDefinition(objectName);
   const { data: record, isLoading: dataLoading } = useRecord({ objectName, recordId });
   const { data: workflowStatus } = useWorkflowStatus(recordId);
   const { data: activities } = useActivities(recordId);
+  const createMutation = useCreateRecord({ objectName: objectName! });
 
   const isLoading = metaLoading || dataLoading;
 
@@ -100,6 +104,20 @@ export default function ObjectRecordPage() {
     }
   };
 
+  // Clone record handler — I.5
+  const handleClone = (data: Partial<RecordData>) => {
+    createMutation.mutate(data, {
+      onSuccess: (clonedRecord) => {
+        const newId = clonedRecord?.id ?? '';
+        if (newId) {
+          navigate(`/apps/${appId}/${objectName}/${newId}`);
+        } else {
+          navigate(`/apps/${appId}/${objectName}`);
+        }
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Back link + title + workflow status */}
@@ -113,12 +131,21 @@ export default function ObjectRecordPage() {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
           {workflowStatus && <WorkflowStatusBadge status={workflowStatus} />}
-          <Button variant="outline" size="sm" className="ml-auto gap-1.5" asChild>
-            <Link to={`/apps/${appId}/${objectName}/${recordId}/edit`}>
-              <Pencil className="size-4" />
-              Edit
-            </Link>
-          </Button>
+          <div className="ml-auto flex items-center gap-2">
+            {/* Clone — I.5 */}
+            <CloneRecordDialog
+              objectDef={objectDef}
+              record={record}
+              onClone={handleClone}
+              isLoading={createMutation.isPending}
+            />
+            <Button variant="outline" size="sm" className="gap-1.5" asChild>
+              <Link to={`/apps/${appId}/${objectName}/${recordId}/edit`}>
+                <Pencil className="size-4" />
+                Edit
+              </Link>
+            </Button>
+          </div>
         </div>
         <p className="text-muted-foreground">{objectDef.label ?? objectName} Detail</p>
       </div>
