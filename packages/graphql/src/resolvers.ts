@@ -9,7 +9,7 @@
  * the Security Kernel intercepts every operation.
  */
 
-import type { GraphQLResolverContext, ResolvedGraphQLConfig, PaginatedResult } from './types.js';
+import type { GraphQLResolverContext, ResolvedGraphQLConfig, PaginatedResult, SubscriptionHooks } from './types.js';
 import type { ResolverCallbacks } from './schema-generator.js';
 
 /**
@@ -86,7 +86,7 @@ function sanitizeFilter(filter: Record<string, any> | undefined): Record<string,
 /**
  * Create resolver callbacks wired to the ObjectStack broker
  */
-export function createResolverCallbacks(config: ResolvedGraphQLConfig): ResolverCallbacks {
+export function createResolverCallbacks(config: ResolvedGraphQLConfig, hooks?: SubscriptionHooks): ResolverCallbacks {
   return {
     /**
      * Handle query operations: find (list) and findOne (get by ID)
@@ -156,6 +156,9 @@ export function createResolverCallbacks(config: ResolvedGraphQLConfig): Resolver
             after: args.input,
           });
 
+          // Publish subscription event (O.1.4)
+          hooks?.afterCreate(objectName, record, ctx);
+
           return record;
         }
 
@@ -170,6 +173,9 @@ export function createResolverCallbacks(config: ResolvedGraphQLConfig): Resolver
             after: args.input,
           });
 
+          // Publish subscription event (O.1.4)
+          hooks?.afterUpdate(objectName, record, ctx);
+
           return record;
         }
 
@@ -180,6 +186,9 @@ export function createResolverCallbacks(config: ResolvedGraphQLConfig): Resolver
           });
 
           await logAuditEvent(ctx.broker, 'delete', objectName, args.id, ctx);
+
+          // Publish subscription event (O.1.4)
+          hooks?.afterDelete(objectName, args.id, ctx);
 
           return { success: true, message: `${objectName} record deleted` };
         }

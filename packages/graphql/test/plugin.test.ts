@@ -2,13 +2,17 @@
  * GraphQL Plugin Tests
  *
  * Tests for O.1.1 (schema generation), O.1.2 (permission enforcement),
- * and O.1.3 (audit logging) functionality.
+ * O.1.3 (audit logging), O.1.4 (subscriptions), O.1.5 (DataLoader),
+ * and O.1.6 (enhanced playground) functionality.
  */
 
 import { graphql, printSchema, GraphQLSchema } from 'graphql';
-import { generateSchema, toPascalCase } from '../src/schema-generator.js';
+import { generateSchema, toPascalCase, buildObjectType } from '../src/schema-generator.js';
 import { createResolverCallbacks } from '../src/resolvers.js';
 import { GraphQLPlugin } from '../src/plugin.js';
+import { PubSub } from '../src/pubsub.js';
+import { buildSubscriptionType, createSubscriptionHooks } from '../src/subscriptions.js';
+import { DataLoader, createDataLoaderFactory } from '../src/dataloader.js';
 import type { ObjectDef, GraphQLResolverContext, ResolvedGraphQLConfig } from '../src/types.js';
 
 // ─── Test Fixtures ─────────────────────────────────────────────────
@@ -544,5 +548,412 @@ describe('GraphQLPlugin', () => {
     expect(sec.permissions).toContain('graphql.execute');
     expect(sec.dataAccess).toContain('read');
     expect(sec.dataAccess).toContain('create');
+  });
+
+  test('provides subscriptions capability', () => {
+    const plugin = new GraphQLPlugin();
+    const caps = plugin.getCapabilities();
+    expect(caps.provides).toContain('graphql.subscriptions');
+  });
+
+  test('exposes PubSub instance', () => {
+    const plugin = new GraphQLPlugin();
+    expect(plugin.getPubSub()).toBeInstanceOf(PubSub);
+  });
+});
+
+// ─── O.1.4: Subscription Support ────────────────────────────────
+
+describe('O.1.4 — PubSub', () => {
+  test('subscribes and receives published messages', () => {
+    const pubsub = new PubSub();
+    const received: any[] = [];
+    pubsub.subscribe('test.channel', (payload) => received.push(payload));
+
+    pubsub.publish('test.channel', { id: '1' });
+    pubsub.publish('test.channel', { id: '2' });
+
+    expect(received).toEqual([{ id: '1' }, { id: '2' }]);
+  });
+
+  test('unsubscribe stops receiving messages', () => {
+    const pubsub = new PubSub();
+    const received: any[] = [];
+    const unsub = pubsub.subscribe('test.channel', (payload) => received.push(payload));
+
+    pubsub.publish('test.channel', { id: '1' });
+    unsub();
+    pubsub.publish('test.channel', { id: '2' });
+
+    expect(received).toEqual([{ id: '1' }]);
+  });
+
+  test('getSubscriberCount returns correct count', () => {
+    const pubsub = new PubSub();
+    expect(pubsub.getSubscriberCount('ch')).toBe(0);
+
+    const unsub1 = pubsub.subscribe('ch', () => {});
+    const unsub2 = pubsub.subscribe('ch', () => {});
+    expect(pubsub.getSubscriberCount('ch')).toBe(2);
+
+    unsub1();
+    expect(pubsub.getSubscriberCount('ch')).toBe(1);
+  });
+
+  test('clear removes all subscribers', () => {
+    const pubsub = new PubSub();
+    pubsub.subscribe('ch1', () => {});
+    pubsub.subscribe('ch2', () => {});
+    pubsub.clear();
+
+    expect(pubsub.getSubscriberCount('ch1')).toBe(0);
+    expect(pubsub.getSubscriberCount('ch2')).toBe(0);
+  });
+
+  test('asyncIterator yields published values', async () => {
+    const pubsub = new PubSub();
+    const iterator = pubsub.asyncIterator('test.iter');
+
+    // Publish after a microtask
+    queueMicrotask(() => {
+      pubsub.publish('test.iter', { value: 'first' });
+    });
+
+    const result = await iterator.next();
+    expect(result).toEqual({ value: { value: 'first' }, done: false });
+  });
+
+  test('asyncIterator returns queued values immediately', async () => {
+    const pubsub = new PubSub();
+    const iterator = pubsub.asyncIterator('test.queue');
+
+    // Publish before consuming
+    pubsub.publish('test.queue', 'a');
+    pubsub.publish('test.queue', 'b');
+
+    const r1 = await iterator.next();
+    const r2 = await iterator.next();
+    expect(r1.value).toBe('a');
+    expect(r2.value).toBe('b');
+  });
+
+  test('asyncIterator return() completes the iterator', async () => {
+    const pubsub = new PubSub();
+    const iterator = pubsub.asyncIterator('test.return');
+
+    const result = await iterator.return!();
+    expect(result).toEqual({ value: undefined, done: true });
+  });
+
+  test('publishing to unknown channel is a no-op', () => {
+    const pubsub = new PubSub();
+    expect(() => pubsub.publish('nonexistent', {})).not.toThrow();
+  });
+});
+
+describe('O.1.4 — Subscription Schema Generation', () => {
+  test('builds subscription type from object definitions', () => {
+    const pubsub = new PubSub();
+    const objectTypes = new Map();
+    objectTypes.set('account', buildObjectType(accountObject));
+
+    const subType = buildSubscriptionType([accountObject], objectTypes, pubsub);
+
+    expect(subType).toBeDefined();
+    expect(subType!.name).toBe('Subscription');
+    const fields = subType!.getFields();
+    expect(fields.onAccountCreated).toBeDefined();
+    expect(fields.onAccountUpdated).toBeDefined();
+    expect(fields.onAccountDeleted).toBeDefined();
+  });
+
+  test('returns undefined for empty object list', () => {
+    const pubsub = new PubSub();
+    const result = buildSubscriptionType([], new Map(), pubsub);
+    expect(result).toBeUndefined();
+  });
+
+  test('schema includes subscription type when provided', () => {
+    const pubsub = new PubSub();
+    const callbacks = createResolverCallbacks(testConfig);
+    const schema = generateSchema([accountObject], testConfig, callbacks, { pubsub });
+
+    const schemaStr = printSchema(schema);
+    expect(schemaStr).toContain('type Subscription');
+    expect(schemaStr).toContain('onAccountCreated');
+    expect(schemaStr).toContain('onAccountUpdated');
+    expect(schemaStr).toContain('onAccountDeleted');
+  });
+
+  test('delete event type has correct fields', () => {
+    const pubsub = new PubSub();
+    const callbacks = createResolverCallbacks(testConfig);
+    const schema = generateSchema([accountObject], testConfig, callbacks, { pubsub });
+
+    const schemaStr = printSchema(schema);
+    expect(schemaStr).toContain('type AccountDeleteEvent');
+    expect(schemaStr).toContain('deletedAt: String!');
+    expect(schemaStr).toContain('deletedBy: String');
+  });
+});
+
+describe('O.1.4 — Subscription Hooks Integration', () => {
+  test('mutation resolvers fire subscription hooks on create', async () => {
+    const pubsub = new PubSub();
+    const hooks = createSubscriptionHooks(pubsub);
+    const received: any[] = [];
+    pubsub.subscribe('account.created', (p) => received.push(p));
+
+    const broker = createMockBroker();
+    const callbacks = createResolverCallbacks(testConfig, hooks);
+    const schema = generateSchema([accountObject], testConfig, callbacks);
+
+    await graphql({
+      schema,
+      source: `mutation { createAccount(input: { name: "Hook Corp" }) { _id name } }`,
+      contextValue: createContext(broker),
+    });
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual(expect.objectContaining({ _id: 'new-1', name: 'Hook Corp' }));
+  });
+
+  test('mutation resolvers fire subscription hooks on update', async () => {
+    const pubsub = new PubSub();
+    const hooks = createSubscriptionHooks(pubsub);
+    const received: any[] = [];
+    pubsub.subscribe('account.updated', (p) => received.push(p));
+
+    const broker = createMockBroker();
+    const callbacks = createResolverCallbacks(testConfig, hooks);
+    const schema = generateSchema([accountObject], testConfig, callbacks);
+
+    await graphql({
+      schema,
+      source: `mutation { updateAccount(id: "1", input: { name: "Updated" }) { _id name } }`,
+      contextValue: createContext(broker),
+    });
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual(expect.objectContaining({ _id: '1', name: 'Updated' }));
+  });
+
+  test('mutation resolvers fire subscription hooks on delete', async () => {
+    const pubsub = new PubSub();
+    const hooks = createSubscriptionHooks(pubsub);
+    const received: any[] = [];
+    pubsub.subscribe('account.deleted', (p) => received.push(p));
+
+    const broker = createMockBroker();
+    const callbacks = createResolverCallbacks(testConfig, hooks);
+    const schema = generateSchema([accountObject], testConfig, callbacks);
+
+    await graphql({
+      schema,
+      source: `mutation { deleteAccount(id: "1") { success message } }`,
+      contextValue: createContext(broker),
+    });
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual(expect.objectContaining({
+      id: '1',
+      objectName: 'account',
+      deletedBy: 'user-1',
+    }));
+    expect(received[0].deletedAt).toBeDefined();
+  });
+});
+
+// ─── O.1.5: DataLoader Tests ────────────────────────────────────
+
+describe('O.1.5 — DataLoader', () => {
+  test('batches multiple load calls into a single batch function call', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn);
+
+    const [r1, r2, r3] = await Promise.all([
+      loader.load('a'),
+      loader.load('b'),
+      loader.load('c'),
+    ]);
+
+    expect(r1).toEqual({ id: 'a' });
+    expect(r2).toEqual({ id: 'b' });
+    expect(r3).toEqual({ id: 'c' });
+    expect(batchFn).toHaveBeenCalledTimes(1);
+    expect(batchFn).toHaveBeenCalledWith(['a', 'b', 'c']);
+  });
+
+  test('caches results across sequential loads', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn);
+
+    await loader.load('x');
+    const second = await loader.load('x');
+
+    expect(second).toEqual({ id: 'x' });
+    // Second call should be from cache, not a new batch
+    expect(batchFn).toHaveBeenCalledTimes(1);
+  });
+
+  test('does not cache when cache is disabled', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn, { cache: false });
+
+    await loader.load('x');
+    await loader.load('x');
+
+    expect(batchFn).toHaveBeenCalledTimes(2);
+  });
+
+  test('loadMany loads multiple keys', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn);
+
+    const results = await loader.loadMany(['a', 'b']);
+    expect(results).toEqual([{ id: 'a' }, { id: 'b' }]);
+  });
+
+  test('returns null for missing keys', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(() => null));
+    const loader = new DataLoader(batchFn);
+
+    const result = await loader.load('missing');
+    expect(result).toBeNull();
+  });
+
+  test('handles batch function errors', async () => {
+    const batchFn = jest.fn(async () => { throw new Error('Batch failed'); });
+    const loader = new DataLoader(batchFn);
+
+    await expect(loader.load('x')).rejects.toThrow('Batch failed');
+  });
+
+  test('clearCache removes cached entries', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn);
+
+    await loader.load('x');
+    expect(loader.getCacheSize()).toBe(1);
+
+    loader.clearCache();
+    expect(loader.getCacheSize()).toBe(0);
+  });
+
+  test('prime pre-populates the cache', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader<string, Record<string, any>>(batchFn);
+
+    loader.prime('primed', { id: 'primed', extra: true });
+    const result = await loader.load('primed');
+
+    expect(result).toEqual({ id: 'primed', extra: true });
+    expect(batchFn).not.toHaveBeenCalled();
+  });
+
+  test('respects maxBatchSize', async () => {
+    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const loader = new DataLoader(batchFn, { maxBatchSize: 2 });
+
+    const results = await Promise.all([
+      loader.load('a'),
+      loader.load('b'),
+      loader.load('c'),
+    ]);
+
+    expect(results).toHaveLength(3);
+    // Should have been split into at least 2 batches
+    expect(batchFn).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('O.1.5 — DataLoader Factory', () => {
+  test('creates per-object loaders', () => {
+    const broker = createMockBroker();
+    const factory = createDataLoaderFactory(broker);
+
+    const loader1 = factory.getLoader('account');
+    const loader2 = factory.getLoader('account');
+    const loader3 = factory.getLoader('contact');
+
+    expect(loader1).toBe(loader2); // Same object, same loader
+    expect(loader1).not.toBe(loader3); // Different object, different loader
+  });
+
+  test('clearAll clears all loaders', () => {
+    const broker = createMockBroker();
+    const factory = createDataLoaderFactory(broker);
+
+    factory.getLoader('account');
+    factory.getLoader('contact');
+    // Should not throw
+    expect(() => factory.clearAll()).not.toThrow();
+  });
+
+  test('loader batches broker calls', async () => {
+    const broker = createMockBroker({
+      records: [
+        { _id: '1', name: 'First' },
+        { _id: '2', name: 'Second' },
+      ],
+    });
+    const factory = createDataLoaderFactory(broker);
+    const loader = factory.getLoader('account');
+
+    const [r1, r2] = await Promise.all([
+      loader.load('1'),
+      loader.load('2'),
+    ]);
+
+    expect(r1).toEqual({ _id: '1', name: 'First' });
+    expect(r2).toEqual({ _id: '2', name: 'Second' });
+    // Only one broker.call for data.find should have been made
+    const findCalls = broker.call.mock.calls.filter((c: any) => c[0] === 'data.find');
+    expect(findCalls).toHaveLength(1);
+  });
+});
+
+// ─── O.1.6: Enhanced Playground Tests ────────────────────────────
+
+describe('O.1.6 — Enhanced GraphQL Playground', () => {
+  test('plugin serves enhanced playground when enabled', async () => {
+    const plugin = new GraphQLPlugin({ playground: true });
+    let playgroundHTML = '';
+
+    const mockApp = {
+      post: jest.fn(),
+      get: jest.fn((path: string, handler: any) => {
+        if (!path.endsWith('/schema')) {
+          // Capture playground handler
+          const mockContext = {
+            html: (html: string) => { playgroundHTML = html; return html; },
+          };
+          handler(mockContext);
+        }
+      }),
+    };
+
+    const mockContext: any = {
+      registerService: jest.fn(),
+      trigger: jest.fn(),
+      logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
+      getService: (name: string) => {
+        if (name === 'http.server') return { getRawApp: () => mockApp };
+        return null;
+      },
+    };
+
+    await plugin.init!(mockContext);
+    await plugin.start(mockContext);
+
+    // Verify playground HTML has enhanced features
+    expect(playgroundHTML).toContain('ObjectOS GraphQL');
+    expect(playgroundHTML).toContain('Variables');
+    expect(playgroundHTML).toContain('Headers');
+    expect(playgroundHTML).toContain('Schema');
+    expect(playgroundHTML).toContain('History');
+    expect(playgroundHTML).toContain('Prettify');
+    expect(playgroundHTML).toContain('Ctrl+Enter');
+    expect(playgroundHTML).toContain('subscriptionType');
   });
 });

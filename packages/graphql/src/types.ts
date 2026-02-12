@@ -88,6 +88,8 @@ export interface GraphQLResolverContext {
   userAgent?: string;
   /** Session ID */
   sessionId?: string;
+  /** Per-request DataLoader factory (O.1.5) */
+  dataLoaders?: DataLoaderFactory;
 }
 
 /**
@@ -133,4 +135,21 @@ export interface PluginSecurityManifest {
 export interface PluginStartupResult {
   success: boolean;
   message?: string;
+}
+
+/**
+ * Subscription hooks — fired after mutation operations to publish events
+ */
+export interface SubscriptionHooks {
+  afterCreate(objectName: string, record: any, ctx: GraphQLResolverContext): void;
+  afterUpdate(objectName: string, record: any, ctx: GraphQLResolverContext): void;
+  afterDelete(objectName: string, id: string, ctx: GraphQLResolverContext): void;
+}
+
+/**
+ * DataLoader factory for per-request batching/caching
+ */
+export interface DataLoaderFactory {
+  getLoader(objectName: string): { load(key: string): Promise<any>; loadMany(keys: string[]): Promise<any[]> };
+  clearAll(): void;
 }
