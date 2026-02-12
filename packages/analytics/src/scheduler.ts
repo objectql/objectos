@@ -186,9 +186,8 @@ export class ReportScheduler {
       next.setMinutes(next.getMinutes() + 1);
     }
 
-    // Fallback: 24h from now
-    const fallback = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    return fallback.toISOString();
+    // No matching time found within 366 days — cron will never trigger
+    throw new Error(`Cron expression "${cron}" does not match any time within the next 366 days`);
   }
 
   /**
