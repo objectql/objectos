@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src/",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit"
