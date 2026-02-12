@@ -53,7 +53,6 @@ export function TriggerMonitorDashboard({
   const totalCount = executions.length;
   const successCount = executions.filter((e) => e.status === 'success').length;
   const failureCount = executions.filter((e) => e.status === 'failure').length;
-  const skippedCount = executions.filter((e) => e.status === 'skipped').length;
   const successRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 0;
   const avgExecTime =
     totalCount > 0
