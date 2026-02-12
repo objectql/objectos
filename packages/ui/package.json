@@ -10,7 +10,8 @@
     "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
     "test": "jest --forceExit --passWithNoTests",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "@objectstack/runtime": "^3.0.0",

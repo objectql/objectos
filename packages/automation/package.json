@@ -8,7 +8,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@objectstack/runtime": "^3.0.0",
