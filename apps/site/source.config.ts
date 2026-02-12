@@ -5,7 +5,7 @@ import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
 import { transformerTwoslash } from 'fumadocs-twoslash';
 
 export const { docs, meta } = defineDocs({
-  dir: 'content/docs',
+  dir: '../../content/docs',
 });
 
 export const blog = defineCollections({
@@ -27,10 +27,7 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark',
       },
-      transformers: [
-        ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
-      ],
+      transformers: [...(rehypeCodeDefaultOptions.transformers ?? []), transformerTwoslash()],
     },
   },
 });

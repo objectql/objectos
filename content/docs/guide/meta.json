@@ -2,6 +2,7 @@
   "title": "Guide",
   "pages": [
     "index",
+    "quickstart",
     "architecture",
     "platform-components",
     "data-modeling",
@@ -10,7 +11,13 @@
     "logic-hooks",
     "logic-actions",
     "ui-framework",
+    "cli-usage",
+    "api-reference",
+    "plugin-development",
+    "migration-from-kernel",
+    "troubleshooting",
     "development-plan",
-    "contributing-development"
+    "contributing-development",
+    "technical-debt-resolution"
   ]
 }
