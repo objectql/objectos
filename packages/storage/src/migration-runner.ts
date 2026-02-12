@@ -38,7 +38,10 @@ function simpleHash(input: string): string {
  */
 export class MigrationRunnerImpl implements IMigrationRunner {
     private backend: StorageBackend;
-    /** Accumulated operations recorded during a migration run. */
+    /**
+     * Accumulated operations recorded during the current migration run.
+     * Useful for dry-run mode and operation logging in future iterations.
+     */
     private operations: Array<{
         type: 'addColumn' | 'dropColumn' | 'addIndex' | 'dropIndex';
         object: string;
@@ -105,7 +108,7 @@ export class MigrationRunnerImpl implements IMigrationRunner {
             version: migration.version,
             name: migration.name,
             appliedAt: new Date().toISOString(),
-            checksum: simpleHash(migration.up.toString() + migration.down.toString()),
+            checksum: simpleHash(`${migration.version}:${migration.name}`),
         };
 
         await this.backend.set(`${MIGRATIONS_PREFIX}${migration.version}`, record);
