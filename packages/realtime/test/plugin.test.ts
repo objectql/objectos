@@ -91,7 +91,7 @@ describe('Realtime Plugin', () => {
         mockContext = mock.context;
         mockKernel = mock.kernel;
         testPort = getPort();
-        plugin = createRealtimePlugin({ port: testPort });
+        plugin = createRealtimePlugin({ port: testPort, auth: { required: false } });
     });
 
     afterEach(async () => {
@@ -930,5 +930,119 @@ describe('Contract Compliance (IRealtimeService)', () => {
                 data: { foo: 'bar' },
             })).resolves.toBeUndefined();
         });
+    });
+});
+
+// ─── WebSocket Auth Enforcement Tests (TD-5 / M.1.3) ─────────────────────────
+
+describe('Realtime Plugin — Auth Enforcement', () => {
+    let authPlugin: any;
+    let mockContext: PluginContext;
+    let testPort: number;
+
+    beforeEach(() => {
+        const mock = createMockContext();
+        mockContext = mock.context;
+        testPort = getPort();
+    });
+
+    afterEach(async () => {
+        if (authPlugin) await authPlugin.destroy();
+    });
+
+    it('should reject connections when auth is required and no token is provided', async () => {
+        authPlugin = createRealtimePlugin({ port: testPort, auth: { required: true } });
+        await authPlugin.init(mockContext);
+        await authPlugin.start(mockContext);
+
+        const client = new WebSocket(`ws://localhost:${testPort}`);
+        const closePromise = new Promise<{ code: number; reason: string }>((resolve) => {
+            client.on('close', (code, reason) => resolve({ code, reason: reason.toString() }));
+        });
+
+        const result = await closePromise;
+        expect(result.code).toBe(4401);
+        expect(result.reason).toContain('Authentication required');
+    });
+
+    it('should reject connections when auth service fails verification', async () => {
+        // Register a mock auth service that rejects
+        mockContext.registerService('auth', {
+            verify: jest.fn().mockResolvedValue(null),
+        });
+
+        authPlugin = createRealtimePlugin({ port: testPort, auth: { required: true } });
+        await authPlugin.init(mockContext);
+        await authPlugin.start(mockContext);
+
+        const client = new WebSocket(`ws://localhost:${testPort}?token=bad-token`);
+        const closePromise = new Promise<{ code: number; reason: string }>((resolve) => {
+            client.on('close', (code, reason) => resolve({ code, reason: reason.toString() }));
+        });
+
+        const result = await closePromise;
+        expect(result.code).toBe(4401);
+    });
+
+    it('should accept connections when auth is disabled', async () => {
+        authPlugin = createRealtimePlugin({ port: testPort, auth: { required: false } });
+        await authPlugin.init(mockContext);
+        await authPlugin.start(mockContext);
+
+        const client = new WebSocket(`ws://localhost:${testPort}`);
+        await waitForOpen(client);
+        expect(client.readyState).toBe(WebSocket.OPEN);
+        client.close();
+    });
+
+    it('should accept connections with valid custom validator', async () => {
+        const validator = jest.fn().mockResolvedValue({
+            authenticated: true,
+            userId: 'user-123',
+            roles: ['admin'],
+        });
+
+        authPlugin = createRealtimePlugin({
+            port: testPort,
+            auth: { required: true, validator },
+        });
+        await authPlugin.init(mockContext);
+        await authPlugin.start(mockContext);
+
+        const client = new WebSocket(`ws://localhost:${testPort}?token=valid-token`);
+
+        // Set up message listener BEFORE open, then wait for both
+        const welcomePromise = waitForMessage(client, 5000);
+        await waitForOpen(client);
+        const welcome = await welcomePromise;
+
+        expect(welcome.type).toBe('ack');
+        expect(welcome.success).toBe(true);
+        expect(client.readyState).toBe(WebSocket.OPEN);
+        expect(validator).toHaveBeenCalledWith('valid-token');
+        client.close();
+    }, 10000);
+
+    it('should reject connections when custom validator returns unauthenticated', async () => {
+        const validator = jest.fn().mockResolvedValue({
+            authenticated: false,
+            error: 'Token expired',
+        });
+
+        authPlugin = createRealtimePlugin({
+            port: testPort,
+            auth: { required: true, validator },
+        });
+        await authPlugin.init(mockContext);
+        await authPlugin.start(mockContext);
+
+        const client = new WebSocket(`ws://localhost:${testPort}?token=expired-token`);
+        const closePromise = new Promise<{ code: number; reason: string }>((resolve) => {
+            client.on('close', (code, reason) => resolve({ code, reason: reason.toString() }));
+        });
+
+        const result = await closePromise;
+        expect(result.code).toBe(4401);
+        expect(result.reason).toContain('Token expired');
     });
 });

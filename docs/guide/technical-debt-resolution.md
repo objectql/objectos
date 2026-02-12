@@ -983,14 +983,14 @@ const records = useMocks && serverError ? mockData?.records : apiData;
 
 ### Phase M — Technical Debt Resolution
 
-#### M.1 — Critical Security (v1.0.1 — Target: March 2026)
+#### M.1 — Critical Security (v1.0.1 — Target: March 2026) ✅
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.1.1 | Rate limiting middleware | TD-3 | 🔴 | ⬜ |
-| M.1.2 | Input sanitization middleware | TD-4 | 🔴 | ⬜ |
-| M.1.3 | WebSocket auth enforcement | TD-5 | 🟡 | ⬜ |
-| M.1.4 | Mock data tree-shaking | TD-8 | 🟡 | ⬜ |
+| M.1.1 | Rate limiting middleware | TD-3 | 🔴 | ✅ |
+| M.1.2 | Input sanitization middleware | TD-4 | 🔴 | ✅ |
+| M.1.3 | WebSocket auth enforcement | TD-5 | 🟡 | ✅ |
+| M.1.4 | Mock data tree-shaking | TD-8 | 🟡 | ✅ |
 
 #### M.2 — Infrastructure (v1.1.0 — Target: April 2026)
 

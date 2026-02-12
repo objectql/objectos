@@ -249,10 +249,10 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.1.1 | Rate limiting middleware — sliding-window counter on `/api/v1/*` with per-IP/per-user throttling | TD-3 | 🔴 | ⬜ |
-| M.1.2 | Input sanitization middleware — body size limit, XSS stripping, Zod validation factory | TD-4 | 🔴 | ⬜ |
-| M.1.3 | WebSocket auth enforcement — token extraction from cookie/protocol header, session verification | TD-5 | 🟡 | ⬜ |
-| M.1.4 | Mock data tree-shaking — `DevDataProvider`, dynamic imports, `VITE_USE_MOCK_DATA` env flag | TD-8 | 🟡 | ⬜ |
+| M.1.1 | Rate limiting middleware — sliding-window counter on `/api/v1/*` with per-IP/per-user throttling | TD-3 | 🔴 | ✅ |
+| M.1.2 | Input sanitization middleware — body size limit, XSS stripping, Zod validation factory | TD-4 | 🔴 | ✅ |
+| M.1.3 | WebSocket auth enforcement — token extraction from cookie/protocol header, session verification | TD-5 | 🟡 | ✅ |
+| M.1.4 | Mock data tree-shaking — `DevDataProvider`, dynamic imports, `VITE_USE_MOCK_DATA` env flag | TD-8 | 🟡 | ✅ |
 
 ### M.2 — Infrastructure (v1.1.0 — Target: April 2026)
 
@@ -293,11 +293,11 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 ### v1.0.1 — Security Hardening (Target: March 2026)
 
-- Phase M.1: Critical Security
-  - Rate limiting middleware (TD-3) 🔴
-  - Input sanitization middleware (TD-4) 🔴
-  - WebSocket auth enforcement (TD-5) 🟡
-  - Mock data tree-shaking (TD-8) 🟡
+- Phase M.1: Critical Security ✅
+  - Rate limiting middleware (TD-3) ✅
+  - Input sanitization middleware (TD-4) ✅
+  - WebSocket auth enforcement (TD-5) ✅
+  - Mock data tree-shaking (TD-8) ✅
 
 ### v1.1.0 — Rich Business UI + Infrastructure (Target: April 2026)
 
@@ -442,12 +442,12 @@ User Action → React Component → @object-ui/react SchemaRenderer
 |---|------|---------|:--------:|:-----:|:------:|
 | 1 | Event bus persistence | In-memory only; no DLQ or replay | 🟡 | M.2 | ⬜ |
 | 2 | Schema migrations | No version-controlled schema evolution | 🟡 | M.2 | ⬜ |
-| 3 | Rate limiting | Not implemented at HTTP layer | 🔴 | M.1 | ⬜ |
-| 4 | Input sanitization | Zod schema validation only; no HTTP-level protection | 🔴 | M.1 | ⬜ |
-| 5 | Realtime auth | WebSocket auth not enforced | 🟡 | M.1 | ⬜ |
+| 3 | Rate limiting | Sliding-window counter on `/api/v1/*` | 🔴 | M.1 | ✅ |
+| 4 | Input sanitization | Body limit + XSS strip + content-type guard + Zod validate | 🔴 | M.1 | ✅ |
+| 5 | Realtime auth | WebSocket auth enforced via cookie/protocol/query token | 🟡 | M.1 | ✅ |
 | 6 | Browser sync E2E | Sync protocol needs E2E testing | 🟡 | M.2 | ⬜ |
 | 7 | Plugin isolation | Plugins share process | 🟢 | M.3 | ⬜ |
-| 8 | Mock data dependency | UI relies on mock data when server is down | 🟡 | M.1 | ⬜ |
+| 8 | Mock data dependency | DevDataProvider + tree-shaking via `__mocks__/` | 🟡 | M.1 | ✅ |
 
 ---
 
