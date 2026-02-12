@@ -27,6 +27,9 @@ import {
   GraphQLInputType,
 } from 'graphql';
 import type { ObjectDef, ObjectFieldDef, GraphQLResolverContext, ResolvedGraphQLConfig } from './types.js';
+import type { PubSub } from './pubsub.js';
+import { buildSubscriptionType } from './subscriptions.js';
+import { toPascalCase } from './utils.js';
 
 /**
  * Map ObjectStack field type to GraphQL output type
@@ -92,17 +95,6 @@ function mapFieldToGraphQLInputType(field: ObjectFieldDef): GraphQLInputType {
     default:
       return GraphQLString;
   }
-}
-
-/**
- * Convert object name to PascalCase GraphQL type name
- * e.g., "audit_log" → "AuditLog", "permission_set" → "PermissionSet"
- */
-function toPascalCase(name: string): string {
-  return name
-    .split(/[_\s-]+/)
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join('');
 }
 
 /**
@@ -260,6 +252,7 @@ export function generateSchema(
   objects: ObjectDef[],
   config: ResolvedGraphQLConfig,
   callbacks: ResolverCallbacks,
+  options?: { pubsub?: PubSub },
 ): GraphQLSchema {
   if (objects.length === 0) {
     // Return minimal schema with a placeholder query
@@ -278,10 +271,12 @@ export function generateSchema(
 
   const queryFields: GraphQLFieldConfigMap<any, GraphQLResolverContext> = {};
   const mutationFields: GraphQLFieldConfigMap<any, GraphQLResolverContext> = {};
+  const objectTypes = new Map<string, GraphQLObjectType>();
 
   for (const objectDef of objects) {
     const typeName = toPascalCase(objectDef.name);
     const objectType = buildObjectType(objectDef);
+    objectTypes.set(objectDef.name, objectType);
     const createInput = buildInputType(objectDef, 'CreateInput');
     const updateInput = buildInputType(objectDef, 'UpdateInput');
     const filterInput = buildFilterInputType(objectDef);
@@ -352,6 +347,12 @@ export function generateSchema(
     };
   }
 
+  // Build subscription type if PubSub is provided (O.1.4)
+  let subscriptionType: GraphQLObjectType | undefined;
+  if (options?.pubsub) {
+    subscriptionType = buildSubscriptionType(objects, objectTypes, options.pubsub);
+  }
+
   return new GraphQLSchema({
     query: new GraphQLObjectType({
       name: 'Query',
@@ -361,7 +362,8 @@ export function generateSchema(
       name: 'Mutation',
       fields: mutationFields,
     }),
+    subscription: subscriptionType,
   });
 }
 
-export { toPascalCase, mapFieldToGraphQLType, mapFieldToGraphQLInputType };
+export { toPascalCase, buildObjectType, mapFieldToGraphQLType, mapFieldToGraphQLInputType };
