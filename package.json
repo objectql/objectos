@@ -82,6 +82,7 @@
     "@objectstack/plugin-auth": "3.0.0",
     "@objectos/automation": "workspace:*",
     "@objectos/cache": "workspace:*",
+    "@objectos/graphql": "workspace:*",
     "@objectos/i18n": "workspace:*",
     "@objectos/jobs": "workspace:*",
     "@objectos/metrics": "workspace:*",

@@ -23,6 +23,7 @@ import { StoragePlugin } from '@objectos/storage';
 import { TelemetryPlugin } from '@objectos/telemetry';
 import { UIPlugin } from '@objectos/ui';
 import { WorkflowPlugin } from '@objectos/workflow';
+import { GraphQLPlugin } from '@objectos/graphql';
 import { resolve } from 'path';
 
 // ─── Example App Bundles ─────────────────────────────────────────
@@ -101,6 +102,9 @@ export default defineStack({
     new I18nPlugin(),
     new UIPlugin(),
     // createRealtimePlugin(),
+
+    // GraphQL Layer (Phase O.1)
+    new GraphQLPlugin(),
 
     // Example Apps
     new AppPlugin(CrmApp),

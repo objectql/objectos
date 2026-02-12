@@ -30,7 +30,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 
 ## Current State (February 2026)
 
-### Server — ✅ Complete (14 Plugins)
+### Server — ✅ Complete (15 Plugins)
 
 | Plugin | Package | Status |
 |--------|---------|:------:|
@@ -39,6 +39,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | Automation | `@objectos/automation` | ✅ |
 | Browser Runtime | `@objectos/browser` | ✅ |
 | Cache | `@objectos/cache` | ✅ |
+| **GraphQL** | **`@objectos/graphql`** | **✅** |
 | i18n | `@objectos/i18n` | ✅ |
 | Jobs | `@objectos/jobs` | ✅ |
 | Metrics | `@objectos/metrics` | ✅ |
@@ -330,9 +331,9 @@ Complete GraphQL API alongside existing REST endpoints.
 
 | # | Task | Priority | Status |
 |---|------|:--------:|:------:|
-| O.1.1 | GraphQL schema generation from ObjectStack metadata | 🔴 | ⬜ |
-| O.1.2 | Query resolvers with permission enforcement | 🔴 | ⬜ |
-| O.1.3 | Mutation resolvers with audit logging | 🔴 | ⬜ |
+| O.1.1 | GraphQL schema generation from ObjectStack metadata | 🔴 | ✅ |
+| O.1.2 | Query resolvers with permission enforcement | 🔴 | ✅ |
+| O.1.3 | Mutation resolvers with audit logging | 🔴 | ✅ |
 | O.1.4 | Subscription support via WebSocket | 🟡 | ⬜ |
 | O.1.5 | DataLoader pattern for N+1 prevention | 🟡 | ⬜ |
 | O.1.6 | GraphQL Playground / Explorer integration | 🟢 | ⬜ |
