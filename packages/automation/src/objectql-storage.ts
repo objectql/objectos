@@ -71,7 +71,7 @@ export class ObjectQLAutomationStorage implements AutomationStorage {
 
         // Filter by trigger type if specified (post-query filtering)
         if (filter?.triggerType) {
-            rules = rules.filter(r => r.trigger.type === filter.triggerType);
+            rules = rules.filter((r: AutomationRule) => r.trigger.type === filter.triggerType);
         }
 
         return rules;
@@ -84,9 +84,10 @@ export class ObjectQLAutomationStorage implements AutomationStorage {
         const docUpdates: any = {};
 
         if (updates.name !== undefined) docUpdates.name = updates.name;
-        if (updates.objectName !== undefined) docUpdates.object_name = updates.objectName;
-        if (updates.trigger !== undefined) docUpdates.trigger = updates.trigger;
-        if (updates.conditions !== undefined) docUpdates.conditions = updates.conditions;
+        if (updates.trigger !== undefined) {
+            docUpdates.trigger = updates.trigger;
+            docUpdates.object_name = (updates.trigger as any).objectName;
+        }
         if (updates.actions !== undefined) docUpdates.actions = updates.actions;
         if (updates.status !== undefined) docUpdates.status = updates.status;
         if (updates.priority !== undefined) docUpdates.priority = updates.priority;
@@ -205,9 +206,8 @@ export class ObjectQLAutomationStorage implements AutomationStorage {
             _id: rule.id,
             id: rule.id,
             name: rule.name,
-            object_name: rule.objectName,
+            object_name: (rule.trigger as any).objectName,
             trigger: rule.trigger,
-            conditions: rule.conditions,
             actions: rule.actions,
             status: rule.status,
             priority: rule.priority,
@@ -226,11 +226,9 @@ export class ObjectQLAutomationStorage implements AutomationStorage {
         return {
             id: doc.id || doc._id,
             name: doc.name,
-            objectName: doc.object_name,
-            trigger: doc.trigger,
-            conditions: doc.conditions,
-            actions: doc.actions,
             status: doc.status,
+            trigger: doc.trigger,
+            actions: doc.actions,
             priority: doc.priority,
             executionCount: doc.execution_count || 0,
             lastExecutedAt: doc.last_executed_at ? new Date(doc.last_executed_at) : undefined,

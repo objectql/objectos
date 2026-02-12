@@ -56,10 +56,14 @@ fields:
     type: number
     label: Retry Attempts
     default: 0
-  max_attempts:
+  max_retries:
     type: number
     label: Max Retry Attempts
     default: 3
+  retry_delay:
+    type: number
+    label: Retry Delay (ms)
+    default: 1000
   timeout:
     type: number
     label: Timeout (ms)

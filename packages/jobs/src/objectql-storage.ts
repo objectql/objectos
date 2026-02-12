@@ -50,7 +50,8 @@ export class ObjectQLJobStorage implements JobStorage {
         if (updates.result !== undefined) docUpdates.result = updates.result;
         if (updates.error !== undefined) docUpdates.error = updates.error;
         if (updates.attempts !== undefined) docUpdates.attempts = updates.attempts;
-        if (updates.maxAttempts !== undefined) docUpdates.max_attempts = updates.maxAttempts;
+        if (updates.maxRetries !== undefined) docUpdates.max_retries = updates.maxRetries;
+        if (updates.retryDelay !== undefined) docUpdates.retry_delay = updates.retryDelay;
         if (updates.timeout !== undefined) docUpdates.timeout = updates.timeout;
         if (updates.nextRun !== undefined) docUpdates.next_run = updates.nextRun;
         if (updates.cronExpression !== undefined) docUpdates.cron_expression = updates.cronExpression;
@@ -205,7 +206,8 @@ export class ObjectQLJobStorage implements JobStorage {
             result: job.result,
             error: job.error,
             attempts: job.attempts,
-            max_attempts: job.maxAttempts,
+            max_retries: job.maxRetries,
+            retry_delay: job.retryDelay,
             timeout: job.timeout,
             next_run: job.nextRun,
             cron_expression: job.cronExpression,
@@ -228,7 +230,8 @@ export class ObjectQLJobStorage implements JobStorage {
             result: doc.result,
             error: doc.error,
             attempts: doc.attempts || 0,
-            maxAttempts: doc.max_attempts,
+            maxRetries: doc.max_retries || 3,
+            retryDelay: doc.retry_delay || 1000,
             timeout: doc.timeout,
             nextRun: doc.next_run ? new Date(doc.next_run) : undefined,
             cronExpression: doc.cron_expression,
