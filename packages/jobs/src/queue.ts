@@ -17,6 +17,7 @@ import type {
     JobQueueStats,
 } from './types.js';
 import { InMemoryJobStorage } from './storage.js';
+import { PersistentJobStorage } from './persistent-storage.js';
 
 export class JobQueue {
     private handlers: Map<string, JobHandler> = new Map();
@@ -232,6 +233,12 @@ export class JobQueue {
             failedAt: new Date(),
             error,
         });
+
+        // Move to dead letter queue when using persistent storage
+        if (this.storage instanceof PersistentJobStorage) {
+            await this.storage.moveToDeadLetter(job, error);
+        }
+
         this.logger.error(`[JobQueue] Job failed permanently: ${job.id} - ${error}`);
     }
 

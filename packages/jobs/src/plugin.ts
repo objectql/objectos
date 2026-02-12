@@ -26,6 +26,7 @@ import type {
 } from './types.js';
 import { InMemoryJobStorage } from './storage.js';
 import { ObjectQLJobStorage } from './objectql-storage.js';
+import { PersistentJobStorage } from './persistent-storage.js';
 import { JobQueue } from './queue.js';
 import { JobScheduler } from './scheduler.js';
 import {
@@ -81,29 +82,52 @@ export class JobsPlugin implements Plugin, IJobService {
     }
 
     /**
+     * Rebuild queue and scheduler after a storage upgrade.
+     */
+    private rebuildQueueAndScheduler(): void {
+        this.queue = new JobQueue({
+            storage: this.storage,
+            concurrency: this.config.concurrency,
+            defaultMaxRetries: this.config.defaultMaxRetries,
+            defaultRetryDelay: this.config.defaultRetryDelay,
+            defaultTimeout: this.config.defaultTimeout,
+        });
+        this.scheduler = new JobScheduler({
+            storage: this.storage,
+            queue: this.queue,
+        });
+    }
+
+    /**
      * Initialize plugin - Register services and subscribe to events
      */
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.startedAt = Date.now();
 
-        // Upgrade storage to ObjectQL if not explicitly provided and broker is available
-        // We do this in init because we need the context
-        if (!this.config.storage && (context as any).broker) {
-            this.storage = new ObjectQLJobStorage(context);
-            // Reinitialize queue and scheduler with new storage
-            this.queue = new JobQueue({
-                storage: this.storage,
-                concurrency: this.config.concurrency,
-                defaultMaxRetries: this.config.defaultMaxRetries,
-                defaultRetryDelay: this.config.defaultRetryDelay,
-                defaultTimeout: this.config.defaultTimeout,
-            });
-            this.scheduler = new JobScheduler({
-                storage: this.storage,
-                queue: this.queue,
-            });
-            context.logger.info('[Jobs Plugin] Upgraded to ObjectQL storage');
+        // Upgrade storage based on persistence config
+        if (!this.config.storage) {
+            if (this.config.persistence === 'persistent') {
+                // Use PersistentJobStorage if a storage service is available
+                try {
+                    const storageService = context.getService('storage') as any;
+                    if (storageService) {
+                        const backend = storageService.getBackend?.() ?? storageService;
+                        this.storage = new PersistentJobStorage(backend);
+                        this.rebuildQueueAndScheduler();
+                        context.logger.info('[Jobs Plugin] Upgraded to persistent KV storage');
+                    }
+                } catch {
+                    context.logger.warn('[Jobs Plugin] Persistent storage requested but storage service unavailable, falling back to memory');
+                }
+            }
+
+            // Fall back to ObjectQL storage if broker is available and not already upgraded
+            if (!(this.storage instanceof PersistentJobStorage) && (context as any).broker) {
+                this.storage = new ObjectQLJobStorage(context);
+                this.rebuildQueueAndScheduler();
+                context.logger.info('[Jobs Plugin] Upgraded to ObjectQL storage');
+            }
         }
 
         // Update loggers
