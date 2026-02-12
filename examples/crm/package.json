@@ -17,7 +17,7 @@
     "test": "echo 'skipped — example project'"
   },
   "dependencies": {
-    "@objectstack/spec": "3.0.0"
+    "@objectstack/spec": "3.0.1"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

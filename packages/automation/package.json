@@ -15,8 +15,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@objectstack/runtime": "^3.0.0",
-    "@objectstack/spec": "3.0.0",
+    "@objectstack/runtime": "^3.0.1",
+    "@objectstack/spec": "3.0.1",
     "cron-parser": "^4.9.0"
   },
   "devDependencies": {

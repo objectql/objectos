@@ -15,8 +15,8 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@objectstack/runtime": "^3.0.0",
-    "@objectstack/spec": "3.0.0"
+    "@objectstack/runtime": "^3.0.1",
+    "@objectstack/spec": "3.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
