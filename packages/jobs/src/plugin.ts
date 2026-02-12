@@ -25,6 +25,7 @@ import type {
     PluginStartupResult,
 } from './types.js';
 import { InMemoryJobStorage } from './storage.js';
+import { ObjectQLJobStorage } from './objectql-storage.js';
 import { JobQueue } from './queue.js';
 import { JobScheduler } from './scheduler.js';
 import {
@@ -85,6 +86,25 @@ export class JobsPlugin implements Plugin, IJobService {
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.startedAt = Date.now();
+
+        // Upgrade storage to ObjectQL if not explicitly provided and broker is available
+        // We do this in init because we need the context
+        if (!this.config.storage && (context as any).broker) {
+            this.storage = new ObjectQLJobStorage(context);
+            // Reinitialize queue and scheduler with new storage
+            this.queue = new JobQueue({
+                storage: this.storage,
+                concurrency: this.config.concurrency,
+                defaultMaxRetries: this.config.defaultMaxRetries,
+                defaultRetryDelay: this.config.defaultRetryDelay,
+                defaultTimeout: this.config.defaultTimeout,
+            });
+            this.scheduler = new JobScheduler({
+                storage: this.storage,
+                queue: this.queue,
+            });
+            context.logger.info('[Jobs Plugin] Upgraded to ObjectQL storage');
+        }
 
         // Update loggers
         (this.queue as any).logger = context.logger;

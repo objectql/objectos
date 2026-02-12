@@ -88,3 +88,6 @@ export class InMemoryPermissionStorage implements PermissionStorage {
         this.objectIndex.clear();
     }
 }
+
+// Re-export ObjectQL storage
+export { ObjectQLPermissionStorage } from './objectql-storage.js';
