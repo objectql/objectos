@@ -1,0 +1,57 @@
+# ADR-001: Standardize on Vitest for Test Framework
+
+**Status:** Accepted
+**Date:** February 12, 2026
+**Deciders:** ObjectOS Core Team
+
+## Context
+
+The ObjectOS monorepo currently uses two different test frameworks:
+
+| Framework                     |     Package Count     | Notes                                |
+| ----------------------------- | :-------------------: | ------------------------------------ |
+| Jest (via ts-jest ESM preset) |      17 packages      | `jest --forceExit --passWithNoTests` |
+| Vitest                        | 3 packages + apps/web | `vitest run`                         |
+
+Both frameworks work, but having two test runners creates friction:
+
+- Contributors must understand both frameworks' APIs and configuration
+- CI configuration differs between packages
+- Coverage reporting cannot be unified easily
+- Jest's ESM support via ts-jest requires extensive configuration (`extensionsToTreatAsEsm`, `moduleNameMapper`, `transform`)
+- Vitest natively supports ESM and TypeScript without additional transforms
+
+## Decision
+
+**Standardize on Vitest** for all packages and applications.
+
+### Rationale
+
+1. **Native ESM + TypeScript:** Vitest runs `.ts` files directly — no `ts-jest` transform, no `moduleNameMapper` hacks.
+2. **Vite Ecosystem Alignment:** `apps/web` already uses Vite; Vitest shares the same config pipeline.
+3. **Jest-Compatible API:** Vitest's `describe`/`it`/`expect` API is almost identical to Jest, minimizing migration effort.
+4. **Performance:** Vitest uses Vite's dev server for faster test startup and HMR-like watch mode.
+5. **Modern Defaults:** Built-in TypeScript, ESM, coverage (via `@vitest/coverage-v8`), and snapshot support.
+6. **Single Configuration:** One `vitest.config.ts` per package (or shared workspace config).
+
+### Migration Plan
+
+1. Migrate packages in batches (low-risk packages first: cache, i18n, metrics, storage)
+2. Replace `jest.config.cjs` with `vitest.config.ts` per package
+3. Update test scripts from `jest --forceExit` to `vitest run`
+4. Replace `jest.fn()` with `vi.fn()`, `jest.spyOn()` with `vi.spyOn()` etc.
+5. Remove `ts-jest`, `@types/jest` devDependencies, add `vitest`
+6. Update root `turbo.json` test inputs to include `vitest.config.ts`
+
+### What We Keep
+
+- Test file locations: `test/**/*.test.ts`
+- Test structure: `describe` / `it` / `expect` pattern
+- Coverage config: maintained per-package
+
+## Consequences
+
+- **Positive:** Unified test infrastructure, simpler configuration, faster test runs
+- **Positive:** One framework to learn for new contributors
+- **Negative:** One-time migration effort (~17 packages)
+- **Negative:** Some Jest-specific patterns (e.g., `jest.mock()` hoisting) behave differently in Vitest
