@@ -1,0 +1,208 @@
+# 🚀 Quickstart Guide
+
+Welcome to ObjectOS! This guide gets first-time contributors from zero to a running dev environment in minutes.
+
+ObjectOS is a **metadata-driven enterprise runtime platform** built on the ObjectStack protocol. It's organized as a PNPM monorepo with 20 packages and 2 apps.
+
+## 📋 Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+| Tool        | Version | Check     |
+| ----------- | ------- | --------- |
+| **Node.js** | 20+     | `node -v` |
+| **pnpm**    | 10+     | `pnpm -v` |
+| **Git**     | 2.x+    | `git -v`  |
+
+> **Tip:** Install pnpm via Corepack (ships with Node.js):
+>
+> ```bash
+> corepack enable
+> corepack prepare pnpm@10.28.2 --activate
+> ```
+
+## 📥 Clone & Install
+
+**1. Fork and clone the repo:**
+
+```bash
+git clone https://github.com/<your-username>/objectos.git
+cd objectos
+```
+
+**2. Install all dependencies:**
+
+```bash
+pnpm install
+```
+
+This installs dependencies for all 20 packages and 2 apps via PNPM workspaces.
+
+**3. Build the project:**
+
+```bash
+pnpm build
+```
+
+The build runs through [Turbo](https://turbo.build/) and uses `tsup` for bundling and `tsc` for type declarations across all packages.
+
+## 🏃 Running in Development
+
+Start the full development stack (API server + Admin Console):
+
+```bash
+pnpm dev
+```
+
+This launches two servers concurrently:
+
+| Service           | URL                     | Description          |
+| ----------------- | ----------------------- | -------------------- |
+| **API Server**    | `http://localhost:5320` | ObjectStack Hono API |
+| **Admin Console** | `http://localhost:3001` | Vite + React 19 SPA  |
+
+The Admin Console proxies API requests to the backend automatically via the Vite dev server.
+
+> **Tip:** If you only need to work on a specific app, you can run it individually:
+>
+> ```bash
+> # API server only
+> pnpm objectstack:dev
+>
+> # Admin Console only (needs API server running)
+> cd apps/web && pnpm dev
+>
+> # Documentation site only
+> cd apps/site && pnpm dev
+> ```
+
+## 🧪 Running Tests
+
+Run the full test suite across all packages:
+
+```bash
+pnpm test
+```
+
+Tests run via Turbo and use **Jest** or **Vitest** depending on the package.
+
+**Run tests for a specific package:**
+
+```bash
+pnpm --filter @objectos/auth test
+pnpm --filter @objectos/workflow test
+```
+
+**Run E2E tests** (requires the dev servers to be running):
+
+```bash
+cd e2e
+pnpm test
+```
+
+## ✏️ Making Changes
+
+### 1. Create a feature branch
+
+```bash
+git checkout -b feat/my-change
+```
+
+### 2. Pick a package to work on
+
+The `packages/` directory contains 20 independent modules:
+
+```
+packages/
+├── agent/          # AI Agent Framework
+├── analytics/      # Analytics Engine
+├── audit/          # Audit Logging
+├── auth/           # Authentication (BetterAuth)
+├── automation/     # Triggers & Rules
+├── browser/        # Offline Runtime (SQLite WASM)
+├── cache/          # LRU + Redis Cache
+├── federation/     # Module Federation
+├── graphql/        # GraphQL API
+├── i18n/           # Localization
+├── jobs/           # Background Jobs & Cron
+├── marketplace/    # Plugin Marketplace
+├── metrics/        # Prometheus Metrics
+├── notification/   # Email/SMS/Push/Webhook
+├── permissions/    # RBAC Engine
+├── realtime/       # WebSocket Server
+├── storage/        # KV Storage Backends
+├── telemetry/      # OpenTelemetry Tracing
+├── ui/             # Admin Console shared components
+└── workflow/       # State Machine Engine
+```
+
+### 3. Edit, build, and test your changes
+
+```bash
+# Build only the package you changed
+pnpm --filter @objectos/<package> build
+
+# Run its tests
+pnpm --filter @objectos/<package> test
+```
+
+### 4. Lint your code
+
+```bash
+pnpm lint
+```
+
+This runs **ESLint** (flat config in `eslint.config.mjs`) and **Prettier** (config in `.prettierrc`) across the repo.
+
+> **Note:** The project uses **Husky + lint-staged** for pre-commit hooks, so linting runs automatically when you commit. Fix any issues before pushing.
+
+### 5. Type-check
+
+All packages use **TypeScript 5.x** in strict mode. Verify types with:
+
+```bash
+pnpm --filter @objectos/<package> build
+```
+
+The build step includes `tsc` type-checking via `tsup`.
+
+## 📤 Submitting a Pull Request
+
+**1. Commit your changes:**
+
+```bash
+git add .
+git commit -m "feat(auth): add SSO support for SAML providers"
+```
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/) format: `type(scope): description`.
+
+Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
+
+**2. Push and open a PR:**
+
+```bash
+git push origin feat/my-change
+```
+
+Then open a Pull Request on GitHub against the `main` branch.
+
+**3. PR checklist:**
+
+- [ ] Code builds without errors (`pnpm build`)
+- [ ] All tests pass (`pnpm test`)
+- [ ] Linting passes (`pnpm lint`)
+- [ ] New code has tests where applicable
+- [ ] PR description explains **what** and **why**
+
+## 📚 Next Steps
+
+- **[Architecture Guide](./architecture.md)** — Understand the kernel/driver/server separation
+- **[Contributing Guide](../../CONTRIBUTING.md)** — Code style, conventions, and workflow details
+- **[Plugin Development](./plugin-development.md)** — Build your first ObjectOS plugin
+- **[CLI Usage](./cli-usage.md)** — All available CLI commands
+- **[Security Guide](./security-guide.md)** — Security best practices
+
+---
+
+> **Questions?** Open a [GitHub Discussion](https://github.com/objectql/objectos/discussions) or check the existing issues for guidance. Happy hacking! 🎉

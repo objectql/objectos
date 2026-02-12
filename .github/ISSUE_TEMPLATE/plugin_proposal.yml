@@ -1,0 +1,67 @@
+name: 🔌 Plugin Proposal
+description: Propose a new ObjectOS plugin
+title: '[Plugin]: '
+labels: ['plugin', 'proposal']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposing a new plugin for the ObjectOS platform? Please describe it below.
+        See the [Plugin Development Guide](../docs/guide/plugin-development.md) for reference.
+
+  - type: input
+    id: name
+    attributes:
+      label: Plugin Name
+      description: The proposed package name.
+      placeholder: e.g., @objectos/sms, @objectos/payment
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: What does this plugin do? What problem does it solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: Describe the plugin's public API surface (methods, events, config options).
+      value: |
+        ```typescript
+        // Example plugin config
+        interface PluginConfig {
+          // ...
+        }
+
+        // Example events emitted
+        // plugin.event_name
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What existing ObjectOS packages does this plugin depend on?
+      placeholder: e.g., @objectos/auth, @objectos/jobs, @objectos/notification
+
+  - type: textarea
+    id: endpoints
+    attributes:
+      label: API Endpoints
+      description: What REST/GraphQL/WebSocket endpoints will this plugin expose?
+      placeholder: |
+        GET /api/v1/plugin-name/...
+        POST /api/v1/plugin-name/...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, diagrams, or references.

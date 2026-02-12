@@ -1,0 +1,551 @@
+# 📡 API Reference
+
+This guide documents the ObjectOS REST API, GraphQL endpoint, and WebSocket interface. All endpoints are served by the ObjectStack Hono server and follow a consistent request/response contract.
+
+## 🏗️ Architecture Overview
+
+ObjectOS exposes a unified API surface under the `/api/v1` prefix. The server is built on **Hono.js** running via `@hono/node-server`, launched by `objectstack serve`.
+
+| Layer              | Technology            | Purpose                           |
+| ------------------ | --------------------- | --------------------------------- |
+| **HTTP Server**    | Hono + Node.js        | Request routing and middleware    |
+| **Authentication** | BetterAuth            | Cookie-based session management   |
+| **Authorization**  | @objectos/permissions | RBAC enforcement on every request |
+| **Data Access**    | ObjectQL              | Metadata-driven CRUD operations   |
+| **Realtime**       | WebSocket             | Live data subscriptions           |
+| **GraphQL**        | Auto-generated        | Schema derived from metadata      |
+
+**Base URL:**
+
+```
+http://localhost:5320/api/v1
+```
+
+> **Note:** In production, the API is served from the same origin as the Admin Console via `staticMounts`. In development, the Vite dev server proxies `/api/v1` requests to the backend automatically.
+
+## 🔒 Middleware Stack
+
+Every request passes through the following middleware chain in order:
+
+| Order | Middleware             | Description                                             |
+| ----- | ---------------------- | ------------------------------------------------------- |
+| 1     | **CORS**               | Validates `Origin` header against allowed origins       |
+| 2     | **Secure Headers**     | Sets security headers (CSP, HSTS, etc.)                 |
+| 3     | **Rate Limiting**      | Token-bucket rate limiter per IP                        |
+| 4     | **Body Limit**         | Rejects request bodies larger than **1 MB**             |
+| 5     | **Input Sanitization** | Strips dangerous characters from input                  |
+| 6     | **Content-Type Guard** | Requires `Content-Type: application/json` for mutations |
+
+### Rate Limiting
+
+The API enforces rate limits per client IP address:
+
+| Tier              | Limit         | Window   |
+| ----------------- | ------------- | -------- |
+| **Anonymous**     | 60 requests   | 1 minute |
+| **Authenticated** | 300 requests  | 1 minute |
+| **Admin**         | 1000 requests | 1 minute |
+
+Rate limit headers are included in every response:
+
+```
+X-RateLimit-Limit: 300
+X-RateLimit-Remaining: 297
+X-RateLimit-Reset: 1719500000
+```
+
+When the limit is exceeded, the server responds with `429 Too Many Requests`.
+
+## 🔑 Authentication (`/api/v1/auth/*`)
+
+Authentication is handled by **BetterAuth** via `@objectstack/plugin-auth`. Sessions are cookie-based — the server sets an `HttpOnly` secure cookie on sign-in.
+
+### Sign Up
+
+```bash
+curl -X POST http://localhost:5320/api/v1/auth/sign-up/email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "password": "securePassword123"
+  }'
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "user": {
+    "id": "usr_abc123",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "createdAt": "2025-01-15T10:00:00.000Z"
+  },
+  "session": {
+    "id": "ses_xyz789",
+    "expiresAt": "2025-01-22T10:00:00.000Z"
+  }
+}
+```
+
+### Sign In
+
+```bash
+curl -X POST http://localhost:5320/api/v1/auth/sign-in/email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "securePassword123"
+  }'
+```
+
+The response sets a `Set-Cookie` header with the session token. All subsequent requests include this cookie automatically.
+
+### Get Session
+
+```bash
+curl http://localhost:5320/api/v1/auth/get-session \
+  -b "better-auth.session_token=<token>"
+```
+
+### Sign Out
+
+```bash
+curl -X POST http://localhost:5320/api/v1/auth/sign-out \
+  -b "better-auth.session_token=<token>"
+```
+
+> **Tip:** In the Admin Console, the `better-auth/react` client handles cookie management automatically. You never need to manage tokens manually in frontend code.
+
+## 📦 Data / CRUD (`/api/v1/data/*`)
+
+The data API provides metadata-driven CRUD operations through ObjectQL. The `:object` parameter refers to a metadata object name (e.g., `accounts`, `contacts`, `orders`).
+
+All data endpoints enforce **RBAC** — the authenticated user's permission set determines which objects, fields, and records are accessible.
+
+### List Records
+
+```bash
+curl http://localhost:5320/api/v1/data/accounts?limit=20&offset=0 \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": [
+    {
+      "id": "acc_001",
+      "name": "Acme Corp",
+      "industry": "Technology",
+      "createdAt": "2025-01-10T08:00:00.000Z"
+    },
+    {
+      "id": "acc_002",
+      "name": "Globex Inc",
+      "industry": "Manufacturing",
+      "createdAt": "2025-01-11T09:30:00.000Z"
+    }
+  ],
+  "meta": {
+    "total": 142,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
+
+**Query Parameters:**
+
+| Parameter      | Type     | Description                                   |
+| -------------- | -------- | --------------------------------------------- |
+| `limit`        | `number` | Max records to return (default: 20, max: 100) |
+| `offset`       | `number` | Number of records to skip (default: 0)        |
+| `sort`         | `string` | Sort field and direction (e.g., `name:asc`)   |
+| `filter`       | `string` | JSON-encoded filter expression                |
+| `fields`       | `string` | Comma-separated list of fields to return      |
+| `since_cursor` | `string` | Cursor for incremental sync                   |
+
+### Get Record
+
+```bash
+curl http://localhost:5320/api/v1/data/accounts/acc_001 \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "id": "acc_001",
+    "name": "Acme Corp",
+    "industry": "Technology",
+    "website": "https://acme.example.com",
+    "createdAt": "2025-01-10T08:00:00.000Z",
+    "updatedAt": "2025-01-12T14:20:00.000Z"
+  }
+}
+```
+
+### Create Record
+
+```bash
+curl -X POST http://localhost:5320/api/v1/data/accounts \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{
+    "name": "NewCo Ltd",
+    "industry": "Finance"
+  }'
+```
+
+**Response** `201 Created`:
+
+```json
+{
+  "data": {
+    "id": "acc_003",
+    "name": "NewCo Ltd",
+    "industry": "Finance",
+    "createdAt": "2025-01-15T12:00:00.000Z",
+    "updatedAt": "2025-01-15T12:00:00.000Z"
+  }
+}
+```
+
+### Update Record
+
+```bash
+curl -X PUT http://localhost:5320/api/v1/data/accounts/acc_003 \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{
+    "industry": "FinTech"
+  }'
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "id": "acc_003",
+    "name": "NewCo Ltd",
+    "industry": "FinTech",
+    "createdAt": "2025-01-15T12:00:00.000Z",
+    "updatedAt": "2025-01-15T13:45:00.000Z"
+  }
+}
+```
+
+### Delete Record
+
+```bash
+curl -X DELETE http://localhost:5320/api/v1/data/accounts/acc_003 \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `204 No Content` (empty body).
+
+> **Note:** Every create, update, and delete operation automatically generates an **Audit Log** entry via `@objectos/audit`.
+
+## 🗂️ Metadata (`/api/v1/metadata/*`)
+
+The metadata API provides introspection into the ObjectQL schema — the objects, fields, and views that define your data model.
+
+### List Objects
+
+```bash
+curl http://localhost:5320/api/v1/metadata/objects \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": [
+    { "name": "accounts", "label": "Accounts", "fieldsCount": 12 },
+    { "name": "contacts", "label": "Contacts", "fieldsCount": 8 }
+  ]
+}
+```
+
+### Get Object Schema
+
+```bash
+curl http://localhost:5320/api/v1/metadata/objects/accounts \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "name": "accounts",
+    "label": "Accounts",
+    "fields": [
+      { "name": "id", "type": "id", "required": true },
+      { "name": "name", "type": "string", "required": true, "maxLength": 255 },
+      { "name": "industry", "type": "string", "required": false },
+      { "name": "website", "type": "url", "required": false }
+    ]
+  }
+}
+```
+
+### List Views
+
+```bash
+curl http://localhost:5320/api/v1/metadata/views \
+  -b "better-auth.session_token=<token>"
+```
+
+## 🔮 GraphQL (`/api/v1/graphql`)
+
+ObjectOS auto-generates a GraphQL schema from your ObjectQL metadata. Use this endpoint for complex queries, nested data fetching, and batch operations.
+
+### Query Example
+
+```bash
+curl -X POST http://localhost:5320/api/v1/graphql \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{
+    "query": "query { accounts(limit: 5) { id name industry contacts { id name email } } }"
+  }'
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "accounts": [
+      {
+        "id": "acc_001",
+        "name": "Acme Corp",
+        "industry": "Technology",
+        "contacts": [{ "id": "con_001", "name": "John Smith", "email": "john@acme.com" }]
+      }
+    ]
+  }
+}
+```
+
+### Mutation Example
+
+```bash
+curl -X POST http://localhost:5320/api/v1/graphql \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{
+    "query": "mutation { createAccount(input: { name: \"NewCo\", industry: \"SaaS\" }) { id name } }"
+  }'
+```
+
+> **Tip:** Use the GraphQL endpoint when you need to fetch related records in a single request, avoiding multiple REST round-trips.
+
+## ⚡ Realtime (WebSocket at `/api/v1/realtime`)
+
+The realtime API provides live data subscriptions over WebSocket, powered by `@objectos/realtime`.
+
+### Connecting
+
+```javascript
+const ws = new WebSocket('ws://localhost:5320/api/v1/realtime');
+
+ws.onopen = () => {
+  // Subscribe to changes on the "accounts" object
+  ws.send(
+    JSON.stringify({
+      type: 'subscribe',
+      channel: 'data:accounts',
+    }),
+  );
+};
+
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  console.log('Change received:', message);
+  // { type: "change", object: "accounts", action: "update", record: { id: "acc_001", ... } }
+};
+```
+
+### Message Types
+
+| Type          | Direction | Description                 |
+| ------------- | --------- | --------------------------- |
+| `subscribe`   | Client →  | Subscribe to a data channel |
+| `unsubscribe` | Client →  | Unsubscribe from a channel  |
+| `change`      | → Client  | Data change notification    |
+| `presence`    | → Client  | User presence update        |
+| `error`       | → Client  | Subscription error          |
+
+## ⏱️ Jobs (`/api/v1/jobs/*`)
+
+Background job management powered by `@objectos/jobs`.
+
+```bash
+# List jobs
+curl http://localhost:5320/api/v1/jobs?status=pending \
+  -b "better-auth.session_token=<token>"
+
+# Get job status
+curl http://localhost:5320/api/v1/jobs/job_abc123 \
+  -b "better-auth.session_token=<token>"
+```
+
+**Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "id": "job_abc123",
+    "type": "email.send",
+    "status": "completed",
+    "priority": "normal",
+    "attempts": 1,
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "completedAt": "2025-01-15T10:00:02.000Z"
+  }
+}
+```
+
+## 🔄 Workflows (`/api/v1/workflows/*`)
+
+State machine operations powered by `@objectos/workflow`.
+
+```bash
+# List workflow definitions
+curl http://localhost:5320/api/v1/workflows \
+  -b "better-auth.session_token=<token>"
+
+# Get workflow instance
+curl http://localhost:5320/api/v1/workflows/instances/wfi_xyz \
+  -b "better-auth.session_token=<token>"
+
+# Trigger a transition
+curl -X POST http://localhost:5320/api/v1/workflows/instances/wfi_xyz/transition \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{ "action": "approve" }'
+```
+
+**Transition Response** `200 OK`:
+
+```json
+{
+  "data": {
+    "instanceId": "wfi_xyz",
+    "previousState": "pending_approval",
+    "currentState": "approved",
+    "transitionedAt": "2025-01-15T14:00:00.000Z"
+  }
+}
+```
+
+## 🔔 Notifications (`/api/v1/notifications/*`)
+
+Notification preferences and history via `@objectos/notification`.
+
+```bash
+# List notification history
+curl http://localhost:5320/api/v1/notifications?limit=10 \
+  -b "better-auth.session_token=<token>"
+
+# Update notification preferences
+curl -X PUT http://localhost:5320/api/v1/notifications/preferences \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{ "email": true, "push": true, "sms": false }'
+```
+
+## 📊 Metrics (`/api/v1/metrics`)
+
+Prometheus-format metrics export via `@objectos/metrics`. This endpoint is typically consumed by a Prometheus scraper.
+
+```bash
+curl http://localhost:5320/api/v1/metrics
+```
+
+**Response** `200 OK` (`text/plain`):
+
+```
+# HELP http_requests_total Total HTTP requests
+# TYPE http_requests_total counter
+http_requests_total{method="GET",path="/api/v1/data",status="200"} 1542
+http_requests_total{method="POST",path="/api/v1/data",status="201"} 87
+
+# HELP http_request_duration_seconds HTTP request duration
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{le="0.1"} 1420
+http_request_duration_seconds_bucket{le="0.5"} 1600
+```
+
+> **Note:** The metrics endpoint does not require authentication by default, allowing Prometheus to scrape it without session cookies.
+
+## 💾 Storage (`/api/v1/storage/*`)
+
+Key-value storage operations via `@objectos/storage`. Supports Memory, Redis, and SQLite backends.
+
+```bash
+# Set a value
+curl -X PUT http://localhost:5320/api/v1/storage/my-key \
+  -H "Content-Type: application/json" \
+  -b "better-auth.session_token=<token>" \
+  -d '{ "value": "my-data", "ttl": 3600 }'
+
+# Get a value
+curl http://localhost:5320/api/v1/storage/my-key \
+  -b "better-auth.session_token=<token>"
+
+# Delete a value
+curl -X DELETE http://localhost:5320/api/v1/storage/my-key \
+  -b "better-auth.session_token=<token>"
+```
+
+## ❌ Error Responses
+
+All API errors return a consistent JSON format:
+
+```json
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "status": 403,
+    "message": "You do not have permission to access this resource.",
+    "requestId": "req_abc123"
+  }
+}
+```
+
+**Standard Error Codes:**
+
+| Status | Code                | Description                              |
+| ------ | ------------------- | ---------------------------------------- |
+| `400`  | `BAD_REQUEST`       | Invalid request body or parameters       |
+| `401`  | `UNAUTHORIZED`      | Missing or expired session               |
+| `403`  | `FORBIDDEN`         | Authenticated but lacking permissions    |
+| `404`  | `NOT_FOUND`         | Resource does not exist                  |
+| `409`  | `CONFLICT`          | Record version conflict (sync scenarios) |
+| `413`  | `PAYLOAD_TOO_LARGE` | Request body exceeds 1 MB limit          |
+| `415`  | `UNSUPPORTED_MEDIA` | Missing `Content-Type: application/json` |
+| `429`  | `RATE_LIMITED`      | Too many requests — retry after cooldown |
+| `500`  | `INTERNAL_ERROR`    | Unexpected server error                  |
+
+## 📚 Next Steps
+
+- **[Quickstart Guide](./quickstart.md)** — Set up the dev environment
+- **[Architecture Guide](./architecture.md)** — Understand the kernel/driver/server separation
+- **[Data Modeling](./data-modeling.md)** — Define objects and fields with ObjectQL
+- **[Security Guide](./security-guide.md)** — Authentication, RBAC, and audit logging
+- **[Plugin Development](./plugin-development.md)** — Build plugins that register API routes
+
+---
+
+> **Questions?** Open a [GitHub Discussion](https://github.com/objectql/objectos/discussions) or check the existing issues for guidance.

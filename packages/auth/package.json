@@ -9,7 +9,10 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
     "test": "jest --forceExit --passWithNoTests",
-    "test:integration": "vitest run"
+    "test:integration": "vitest run",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@objectstack/runtime": "^3.0.0",
