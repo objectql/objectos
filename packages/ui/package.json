@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration",
     "test": "jest --forceExit --passWithNoTests",
+    "test:coverage": "jest --coverage --forceExit --passWithNoTests",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
     "lint": "eslint src/"

@@ -29,9 +29,8 @@ jobs:
       - name: Check TypeScript
         run: pnpm run build
 
-      # Placeholder for ESLint/Prettier when added
-      # - name: Run ESLint
-      #   run: pnpm run lint
-      
-      # - name: Check Formatting
-      #   run: pnpm run format:check
+      - name: Run ESLint
+        run: pnpm run lint
+
+      - name: Check Formatting
+        run: pnpm run format:check
