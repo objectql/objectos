@@ -89,6 +89,7 @@
     "@objectos/permissions": "workspace:*",
     "@objectos/realtime": "workspace:*",
     "@objectos/storage": "workspace:*",
+    "@objectos/telemetry": "workspace:*",
     "@objectos/ui": "workspace:*",
     "@objectos/workflow": "workspace:*",
     "@objectql/core": "^4.2.0",

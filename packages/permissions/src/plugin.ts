@@ -56,6 +56,8 @@ export class PermissionsPlugin implements Plugin {
             defaultDeny: true,
             permissionsDir: './permissions',
             cachePermissions: true,
+            tenantIsolation: false,
+            tenantField: '_organizationId',
             ...config,
         };
 
@@ -236,21 +238,69 @@ export class PermissionsPlugin implements Plugin {
         // Hook into data operations for permission checking (PRE-Operation)
         context.hook('data.beforeCreate', async (data: any) => {
             await this.checkDataPermission(data, 'create');
+            this.applyTenantToWrite(data);
         });
 
         context.hook('data.beforeUpdate', async (data: any) => {
             await this.checkDataPermission(data, 'update');
+            this.applyTenantToWrite(data);
         });
 
         context.hook('data.beforeDelete', async (data: any) => {
             await this.checkDataPermission(data, 'delete');
+            this.applyTenantFilter(data);
         });
 
         context.hook('data.beforeFind', async (data: any) => {
             await this.applyRecordLevelSecurity(data);
+            this.applyTenantFilter(data);
         });
 
         this.context?.logger.info('[Permissions Plugin] Event listeners registered');
+
+        if (this.config.tenantIsolation) {
+            this.context?.logger.info(`[Permissions Plugin] Tenant isolation enabled (field: ${this.config.tenantField})`);
+        }
+    }
+
+    /**
+     * Apply tenant ID to write operations (create/update).
+     * Stamps the tenant field on the record data so it belongs to the user's organization.
+     */
+    private applyTenantToWrite(data: any): void {
+        if (!this.config.tenantIsolation) return;
+
+        const organizationId = data.organizationId || data.metadata?.organizationId;
+        if (!organizationId) return;
+
+        const tenantField = this.config.tenantField || '_organizationId';
+
+        // Stamp the tenant field on the record being written
+        if (data.doc) {
+            data.doc[tenantField] = organizationId;
+        }
+        if (data.record) {
+            data.record[tenantField] = organizationId;
+        }
+    }
+
+    /**
+     * Apply tenant filter to read/delete operations.
+     * Ensures queries are automatically scoped to the user's organization.
+     */
+    private applyTenantFilter(data: any): void {
+        if (!this.config.tenantIsolation) return;
+
+        const organizationId = data.organizationId || data.metadata?.organizationId;
+        if (!organizationId) return;
+
+        const tenantField = this.config.tenantField || '_organizationId';
+
+        // Merge tenant filter into existing query filters
+        data.filters = {
+            ...data.filters,
+            [tenantField]: organizationId,
+        };
     }
 
     /**
@@ -266,6 +316,7 @@ export class PermissionsPlugin implements Plugin {
 
         const permissionContext: PermissionContext = {
             userId,
+            organizationId: data.organizationId || data.metadata?.organizationId,
             profiles: userProfiles || [],
             metadata: data.metadata,
         };
@@ -302,6 +353,7 @@ export class PermissionsPlugin implements Plugin {
 
         const permissionContext: PermissionContext = {
             userId,
+            organizationId: data.organizationId || data.metadata?.organizationId,
             profiles: userProfiles || [],
             metadata: data.metadata,
         };

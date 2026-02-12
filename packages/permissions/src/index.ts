@@ -53,6 +53,8 @@ export type {
     // Runtime
     PermissionContext,
     PermissionCheckResult,
+    // Multi-tenancy
+    TenantContext,
     // Plugin Config
     PermissionPluginConfig,
 } from './types.js';

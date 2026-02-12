@@ -344,6 +344,8 @@ export interface RLSEvaluationResult {
 export interface PermissionContext {
     /** User ID */
     userId: string;
+    /** Organization / Tenant ID for multi-tenancy data isolation */
+    organizationId?: string;
     /** User's profile name */
     profileName?: string;
     /** User's profiles (array of profile names) */
@@ -354,6 +356,21 @@ export interface PermissionContext {
     permissionSetNames?: string[];
     /** Additional metadata (e.g., team, department, territory) */
     metadata?: Record<string, any>;
+}
+
+/**
+ * Tenant context — extracted from authenticated session for data isolation.
+ * Used by the tenant middleware to scope all data queries to a specific organization.
+ */
+export interface TenantContext {
+    /** Organization / Tenant ID */
+    organizationId: string;
+    /** Organization slug (for URL routing) */
+    slug?: string;
+    /** User ID within the organization */
+    userId: string;
+    /** User's role within the organization (e.g., 'owner', 'admin', 'member') */
+    role?: string;
 }
 
 /**
@@ -384,6 +401,10 @@ export interface PermissionPluginConfig {
     cachePermissions?: boolean;
     /** Custom storage implementation */
     storage?: any; // PermissionStorage
+    /** Enable multi-tenancy data isolation — automatically scopes data queries to the user's organization */
+    tenantIsolation?: boolean;
+    /** Field name used to store the tenant/organization ID on data records (default: '_organizationId') */
+    tenantField?: string;
 }
 
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────
