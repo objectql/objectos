@@ -1,8 +1,8 @@
 # ObjectOS Roadmap
 
-> **Version**: 6.0.0
-> **Date**: February 11, 2026
-> **Status**: Phase J — Workflow & Automation UI
+> **Version**: 7.0.0
+> **Date**: February 12, 2026
+> **Status**: Phase M — Technical Debt Resolution
 > **Spec SDK**: `@objectstack/spec@2.0.7`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
@@ -10,13 +10,15 @@
 
 ## Executive Summary
 
-ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 13 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), Phases H and I are now complete — the Business App Shell is fully powered by @object-ui SchemaRenderer with rich data manipulation features.
+ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 13 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–L are complete**. The platform now enters **Phase M — Technical Debt Resolution**, addressing 8 identified technical debt items critical for production readiness.
 
 The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift: the Admin Console's Business App Shell now leverages @object-ui's `SchemaRenderer` for metadata-driven UI rendering, replacing hand-built components with protocol-compliant controls.
 
+> **Technical Debt Resolution**: Detailed technical proposals for all 8 debt items are documented in [Technical Debt Resolution Guide](docs/guide/technical-debt-resolution.md).
+
 ### What Changed
 
-| Before (Plan v5.0) | After (Plan v6.0 — This Roadmap) |
+| Before (Plan v5.0) | After (Plan v7.0 — This Roadmap) |
 |---|---|
 | @object-ui listed as v1.1 future work | @object-ui v2.0.0 already installed and integrated |
 | Hand-built DataGrid, MetadataForm, KanbanBoard | @object-ui SchemaRenderer as primary rendering engine |
@@ -24,6 +26,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | Business App Shell was Phase 1 "foundation" | Business App Shell upgraded to @object-ui powered |
 | Custom field renderers for each type | @object-ui/fields provides field registry |
 | @objectstack/* packages at v2.0.6 | @objectstack/* packages upgraded to v2.0.7 |
+| Technical debt deferred | Phase M — Technical Debt Resolution with detailed proposals |
 
 ---
 
@@ -94,6 +97,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | J | Workflow & Automation UI | Feb 2026 | ✅ |
 | K | Offline & Sync | Feb 2026 | ✅ |
 | L | Polish & Performance | Feb 2026 | ✅ |
+| **M** | **Technical Debt Resolution** | **Feb–Sep 2026** | **🔄 In Progress** |
 
 ### Phase G Outcomes
 
@@ -237,6 +241,39 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 ---
 
+## Phase M — Technical Debt Resolution (Current — Feb–Sep 2026)
+
+> Detailed technical proposals: [Technical Debt Resolution Guide](docs/guide/technical-debt-resolution.md)
+
+### M.1 — Critical Security (v1.0.1 — Target: March 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.1.1 | Rate limiting middleware — sliding-window counter on `/api/v1/*` with per-IP/per-user throttling | TD-3 | 🔴 | ⬜ |
+| M.1.2 | Input sanitization middleware — body size limit, XSS stripping, Zod validation factory | TD-4 | 🔴 | ⬜ |
+| M.1.3 | WebSocket auth enforcement — token extraction from cookie/protocol header, session verification | TD-5 | 🟡 | ⬜ |
+| M.1.4 | Mock data tree-shaking — `DevDataProvider`, dynamic imports, `VITE_USE_MOCK_DATA` env flag | TD-8 | 🟡 | ⬜ |
+
+### M.2 — Infrastructure (v1.1.0 — Target: April 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.2.1 | Event bus persistence — `PersistentJobStorage` backed by SQLite via `@objectos/storage` | TD-1 | 🟡 | ⬜ |
+| M.2.2 | Dead Letter Queue + Replay API — DLQ table, `replayEvent()`, admin endpoint | TD-1 | 🟡 | ⬜ |
+| M.2.3 | Schema migration engine — `SchemaDiffer`, `MigrationGenerator`, `MigrationRunner` | TD-2 | 🟡 | ⬜ |
+| M.2.4 | `objectstack migrate` CLI — up/down/status commands | TD-2 | 🟡 | ⬜ |
+| M.2.5 | Browser sync E2E tests — 5 Playwright tests covering full sync lifecycle | TD-6 | 🟡 | ⬜ |
+
+### M.3 — Platform Hardening (v2.0.0 — Target: September 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.3.1 | Worker Thread plugin host — Level 1 isolation via `worker_threads` | TD-7 | 🟢 | ⬜ |
+| M.3.2 | Child Process plugin host — Level 2 isolation via `child_process.fork()` | TD-7 | 🟢 | ⬜ |
+| M.3.3 | Plugin watchdog — auto-restart with backoff, resource limit enforcement | TD-7 | 🟢 | ⬜ |
+
+---
+
 ## Release Timeline
 
 ### v1.0.0 — Production Release (Target: March 2026)
@@ -254,22 +291,35 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 | @object-ui integration (SchemaRenderer for grid/form/detail) | ✅ Phase H |
 | Business App Shell with live API data | ✅ Phase H |
 
-### v1.1.0 — Rich Business UI (Target: April 2026)
+### v1.0.1 — Security Hardening (Target: March 2026)
+
+- Phase M.1: Critical Security
+  - Rate limiting middleware (TD-3) 🔴
+  - Input sanitization middleware (TD-4) 🔴
+  - WebSocket auth enforcement (TD-5) 🟡
+  - Mock data tree-shaking (TD-8) 🟡
+
+### v1.1.0 — Rich Business UI + Infrastructure (Target: April 2026)
 
 - Phase I: Rich Data Experience (inline editing, bulk actions, filters)
 - Phase J.1-J.2: Visual Flow Editor, Approval Inbox
+- Phase M.2: Infrastructure
+  - Event bus persistence + DLQ (TD-1) 🟡
+  - Schema migration engine (TD-2) 🟡
+  - Browser sync E2E tests (TD-6) 🟡
 
 ### v1.2.0 — Enterprise Features (Target: June 2026)
 
 - Phase J.3-J.6: Full Workflow & Automation UI
 - Phase K: Offline & Sync
 - Multi-tenancy data isolation
-- Rate limiting middleware
 - OpenTelemetry integration
 
 ### v2.0.0 — Platform (Target: September 2026)
 
 - Phase L: Polish & Performance
+- Phase M.3: Platform Hardening
+  - Plugin isolation (Worker Threads + Child Process) (TD-7) 🟢
 - Plugin Marketplace
 - Dynamic Plugin Loading (Module Federation)
 - AI Agent Framework
@@ -286,8 +336,14 @@ Feb 2026                                                    Sep 2026
   │                                             ▼              │
   │                                      v1.0.0 Release       │
   │                                             │              │
+  ├── Phase M.1: Critical Security ─────────────┤              │
+  │   (Rate limit, sanitize, WS auth)          │              │
+  │                                      v1.0.1 Release       │
+  │                                             │              │
   ├── Phase I: Rich Data Experience ────────────┤              │
   ├── Phase J: Workflow & Automation UI ────────┤              │
+  ├── Phase M.2: Infrastructure ────────────────┤              │
+  │   (Event bus, migrations, sync E2E)        │              │
   │                                             ▼              │
   │                                      v1.1.0 Release       │
   │                                             │              │
@@ -296,6 +352,8 @@ Feb 2026                                                    Sep 2026
   │                                      v1.2.0 Release       │
   │                                             │              │
   ├── Phase L: Polish & Performance ────────────┤              │
+  ├── Phase M.3: Platform Hardening ────────────┤              │
+  │   (Plugin isolation)                       │              │
   │                                             ▼              │
   │                                      v2.0.0 Release       │
   ▼                                             ▼              ▼
@@ -378,16 +436,18 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 ## Technical Debt
 
-| # | Area | Details | Priority |
-|---|------|---------|:--------:|
-| 1 | Event bus persistence | In-memory only; no DLQ or replay | 🟡 |
-| 2 | Schema migrations | No version-controlled schema evolution | 🟡 |
-| 3 | Rate limiting | Not implemented at HTTP layer | 🔴 |
-| 4 | Input sanitization | Zod schema validation only; no HTTP-level protection | 🔴 |
-| 5 | Realtime auth | WebSocket auth not enforced | 🟡 |
-| 6 | Browser sync E2E | Sync protocol needs E2E testing | 🟡 |
-| 7 | Plugin isolation | Plugins share process | 🟢 |
-| 8 | Mock data dependency | UI relies on mock data when server is down | 🟡 |
+> **Resolution Plan**: See [Technical Debt Resolution Guide](docs/guide/technical-debt-resolution.md) for detailed proposals.
+
+| # | Area | Details | Priority | Phase | Status |
+|---|------|---------|:--------:|:-----:|:------:|
+| 1 | Event bus persistence | In-memory only; no DLQ or replay | 🟡 | M.2 | ⬜ |
+| 2 | Schema migrations | No version-controlled schema evolution | 🟡 | M.2 | ⬜ |
+| 3 | Rate limiting | Not implemented at HTTP layer | 🔴 | M.1 | ⬜ |
+| 4 | Input sanitization | Zod schema validation only; no HTTP-level protection | 🔴 | M.1 | ⬜ |
+| 5 | Realtime auth | WebSocket auth not enforced | 🟡 | M.1 | ⬜ |
+| 6 | Browser sync E2E | Sync protocol needs E2E testing | 🟡 | M.2 | ⬜ |
+| 7 | Plugin isolation | Plugins share process | 🟢 | M.3 | ⬜ |
+| 8 | Mock data dependency | UI relies on mock data when server is down | 🟡 | M.1 | ⬜ |
 
 ---
 
@@ -436,5 +496,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v6.0.0 Roadmap — @object-ui Driven Development | Built with @objectstack/spec@2.0.7</sub>
+<sub>ObjectOS v7.0.0 Roadmap — Technical Debt Resolution | Built with @objectstack/spec@2.0.7</sub>
 </div>

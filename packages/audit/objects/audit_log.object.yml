@@ -1,0 +1,62 @@
+name: audit_log
+label: Audit Log
+icon: history
+hidden: false
+fields:
+  event_type:
+    type: select
+    label: Event Type
+    required: true
+    options:
+      - label: Create
+        value: create
+      - label: Update
+        value: update
+      - label: Delete
+        value: delete
+      - label: Read
+        value: read
+      - label: Login
+        value: login
+      - label: Logout
+        value: logout
+      - label: Permission Change
+        value: permission_change
+      - label: Custom
+        value: custom
+    index: true
+  object_name:
+    type: text
+    label: Object Name
+    index: true
+  record_id:
+    type: text
+    label: Record ID
+    index: true
+  user_id:
+    type: text
+    label: User ID
+    index: true
+  timestamp:
+    type: datetime
+    label: Timestamp
+    required: true
+    index: true
+  ip_address:
+    type: text
+    label: IP Address
+  user_agent:
+    type: text
+    label: User Agent
+  session_id:
+    type: text
+    label: Session ID
+    index: true
+  changes:
+    type: object
+    label: Field Changes
+    blackbox: true
+  metadata:
+    type: object
+    label: Additional Metadata
+    blackbox: true

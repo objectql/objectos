@@ -1,0 +1,1065 @@
+# Technical Debt Resolution
+
+> **Version**: 1.0.0
+> **Date**: February 12, 2026
+> **Status**: Phase M — Technical Debt Resolution
+> **Applies to**: ObjectOS v1.0.0+
+
+---
+
+## Overview
+
+This document provides concrete technical solutions for the 8 identified technical debt items tracked in the ObjectOS roadmap. Each section includes the current state, proposed architecture, implementation plan, affected files, and acceptance criteria.
+
+### Priority Matrix
+
+| # | Area | Priority | Effort | Target Release |
+|---|------|:--------:|:------:|:--------------:|
+| 1 | Event bus persistence | 🟡 Medium | M | v1.1.0 |
+| 2 | Schema migrations | 🟡 Medium | L | v1.1.0 |
+| 3 | **Rate limiting** | 🔴 High | S | **v1.0.1** |
+| 4 | **Input sanitization** | 🔴 High | S | **v1.0.1** |
+| 5 | Realtime auth | 🟡 Medium | S | v1.0.1 |
+| 6 | Browser sync E2E | 🟡 Medium | M | v1.1.0 |
+| 7 | Plugin isolation | 🟢 Low | XL | v2.0.0 |
+| 8 | Mock data dependency | 🟡 Medium | S | v1.0.1 |
+
+**Effort key**: S = 1–3 days, M = 1–2 weeks, L = 2–4 weeks, XL = 1+ month
+
+---
+
+## TD-1: Event Bus Persistence
+
+### Current State
+
+- The kernel event system uses `context.trigger(event, data)` — an in-memory `EventEmitter` pattern.
+- `InMemoryQueue` in `packages/automation/src/queue.ts` and `packages/jobs/src/queue.ts` stores jobs in a `Map`.
+- Failed jobs are marked `status: 'failed'` but never moved to a Dead Letter Queue.
+- No event replay capability exists; events are fire-and-forget.
+
+### Problem
+
+1. If the process crashes, all pending/in-flight jobs are lost.
+2. Failed events cannot be retried or inspected after the fact.
+3. No audit trail of events for debugging or compliance.
+
+### Proposed Solution
+
+Introduce a **Persistent Event Log** backed by the existing `@objectos/storage` plugin, with an optional DLQ.
+
+#### Architecture
+
+```
+  Producer                   Event Log                 Consumer
+  ────────                   ─────────                 ────────
+  context.trigger() ──▶  StorageBackend (SQLite/Redis)  ──▶  Subscribers
+                              │
+                              ├── event_log table
+                              │   (id, event, payload, status, created_at, processed_at)
+                              │
+                              └── dead_letter_queue table
+                                  (id, event, payload, error, failed_at, retry_count)
+```
+
+#### Implementation Plan
+
+**File**: `packages/jobs/src/storage.ts` — Replace `InMemoryJobStorage` default
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Add `PersistentJobStorage` class backed by `@objectos/storage` SQLite backend | `packages/jobs/src/persistent-storage.ts` (new) |
+| 2 | Add DLQ table schema and `moveToDeadLetter()` method | `packages/jobs/src/persistent-storage.ts` |
+| 3 | Add `replayEvent(eventId)` and `replayAll(filter)` methods | `packages/jobs/src/persistent-storage.ts` |
+| 4 | Update `JobQueue` to accept `PersistentJobStorage` | `packages/jobs/src/queue.ts` |
+| 5 | Update `InMemoryQueue` in automation to delegate to `JobQueue` | `packages/automation/src/queue.ts` |
+| 6 | Add configuration option: `persistence: 'memory' \| 'sqlite' \| 'redis'` | `packages/jobs/src/types.ts` |
+| 7 | Wire configuration through `JobsPlugin` and `AutomationPlugin` | `packages/jobs/src/plugin.ts`, `packages/automation/src/plugin.ts` |
+
+**DLQ Schema** (SQLite):
+
+```sql
+CREATE TABLE IF NOT EXISTS event_log (
+  id          TEXT PRIMARY KEY,
+  event_name  TEXT NOT NULL,
+  payload     TEXT NOT NULL,  -- JSON
+  status      TEXT NOT NULL DEFAULT 'pending',  -- pending | processing | completed | failed | dead
+  created_at  TEXT NOT NULL,
+  processed_at TEXT,
+  error       TEXT,
+  retry_count INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS dead_letter_queue (
+  id            TEXT PRIMARY KEY,
+  original_id   TEXT NOT NULL,
+  event_name    TEXT NOT NULL,
+  payload       TEXT NOT NULL,
+  error         TEXT NOT NULL,
+  failed_at     TEXT NOT NULL,
+  retry_count   INTEGER NOT NULL,
+  FOREIGN KEY (original_id) REFERENCES event_log(id)
+);
+
+CREATE INDEX idx_event_log_status ON event_log(status);
+CREATE INDEX idx_event_log_event_name ON event_log(event_name);
+CREATE INDEX idx_dlq_event_name ON dead_letter_queue(event_name);
+```
+
+**Replay API** (exposed via `IJobService`):
+
+```typescript
+interface IJobService {
+  // ... existing methods
+  replayEvent(eventId: string): Promise<void>;
+  replayDeadLetters(filter?: { eventName?: string; since?: Date }): Promise<number>;
+  getDeadLetters(options?: { limit?: number; offset?: number }): Promise<DeadLetterEntry[]>;
+  purgeDeadLetters(olderThan: Date): Promise<number>;
+}
+```
+
+### Acceptance Criteria
+
+- [ ] Jobs survive process restart when `persistence: 'sqlite'` is configured
+- [ ] Failed jobs auto-move to DLQ after `maxAttempts` exhausted
+- [ ] `replayEvent()` re-enqueues a DLQ entry
+- [ ] DLQ entries are visible via admin API (`GET /api/v1/jobs/dead-letters`)
+- [ ] Backward compatible: `persistence: 'memory'` remains the default
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `packages/jobs/src/persistent-storage.ts` | **New** — SQLite-backed job storage |
+| `packages/jobs/src/types.ts` | Add `PersistenceBackend` type, DLQ types |
+| `packages/jobs/src/queue.ts` | Accept `PersistentJobStorage` option |
+| `packages/jobs/src/plugin.ts` | Wire persistence config |
+| `packages/automation/src/queue.ts` | Delegate to jobs queue for persistence |
+| `packages/automation/src/plugin.ts` | Forward persistence config |
+
+---
+
+## TD-2: Schema Migrations
+
+### Current State
+
+- Object schemas are defined in YAML (`.object.yml`) and loaded at startup.
+- `@objectstack/plugin-auth` runs `authCtx.runMigrations()` via Better-Auth's built-in migration system.
+- No general-purpose migration framework exists for ObjectQL-managed objects.
+- Adding/removing/renaming fields requires manual database changes.
+
+### Problem
+
+1. Schema changes in YAML don't propagate to existing databases.
+2. No rollback capability if a schema change causes issues.
+3. Multi-environment deployments have no migration tracking.
+
+### Proposed Solution
+
+Introduce a **Schema Migration Engine** as part of `@objectos/workflow` or a new `@objectos/migrations` package that tracks schema versions and generates/applies DDL.
+
+#### Architecture
+
+```
+  .object.yml (v2)         Migration Engine          Database
+  ──────────────           ────────────────          ────────
+  New field added  ──▶  Diff against snapshot  ──▶  ALTER TABLE ...
+                              │
+                              ├── _migrations table
+                              │   (id, version, name, applied_at, checksum)
+                              │
+                              └── _schema_snapshots table
+                                  (object_name, version, schema_json, created_at)
+```
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Create migration tracking schema (`_migrations`, `_schema_snapshots`) | `packages/jobs/src/built-in-jobs.ts` (extend) |
+| 2 | Implement `SchemaDiffer` — compare YAML schema to DB snapshot | `packages/storage/src/schema-differ.ts` (new) |
+| 3 | Implement `MigrationGenerator` — produce DDL from diffs | `packages/storage/src/migration-generator.ts` (new) |
+| 4 | Implement `MigrationRunner` — apply/rollback with transaction safety | `packages/storage/src/migration-runner.ts` (new) |
+| 5 | Add CLI command: `objectstack migrate` (up/down/status) | Upstream: `@objectstack/cli` |
+| 6 | Auto-detect pending migrations at kernel startup (warning mode) | `packages/storage/src/plugin.ts` |
+| 7 | Generate migration files in `migrations/` directory | Convention: `migrations/YYYYMMDDHHMMSS_description.ts` |
+
+**Migration File Format**:
+
+```typescript
+// migrations/20260212010000_add_email_to_contacts.ts
+import type { Migration } from '@objectos/storage';
+
+export const migration: Migration = {
+  version: '20260212010000',
+  name: 'add_email_to_contacts',
+  
+  up: async (runner) => {
+    await runner.addColumn('contacts', {
+      name: 'email',
+      type: 'text',
+      nullable: true,
+    });
+    await runner.addIndex('contacts', ['email'], { unique: true });
+  },
+  
+  down: async (runner) => {
+    await runner.dropIndex('contacts', ['email']);
+    await runner.dropColumn('contacts', 'email');
+  },
+};
+```
+
+**SchemaDiffer Output**:
+
+```typescript
+interface SchemaDiff {
+  object: string;
+  changes: Array<
+    | { type: 'add_column'; column: ColumnDef }
+    | { type: 'drop_column'; column: string }
+    | { type: 'alter_column'; column: string; from: ColumnDef; to: ColumnDef }
+    | { type: 'add_index'; columns: string[]; options?: IndexOptions }
+    | { type: 'drop_index'; columns: string[] }
+  >;
+}
+```
+
+### Acceptance Criteria
+
+- [ ] `objectstack migrate status` shows pending migrations
+- [ ] `objectstack migrate up` applies all pending migrations in order
+- [ ] `objectstack migrate down` rolls back the last migration
+- [ ] Migration checksums prevent re-running modified migrations
+- [ ] Auto-generated migrations from YAML diff (optional, can be hand-written)
+- [ ] Transaction safety: failed migration rolls back cleanly
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `packages/storage/src/schema-differ.ts` | **New** — YAML-to-DB schema comparison |
+| `packages/storage/src/migration-generator.ts` | **New** — DDL generation from diffs |
+| `packages/storage/src/migration-runner.ts` | **New** — Apply/rollback runner |
+| `packages/storage/src/types.ts` | Add `Migration`, `SchemaDiff`, `ColumnDef` types |
+| `packages/storage/src/plugin.ts` | Add migration detection at startup |
+
+---
+
+## TD-3: Rate Limiting
+
+### Current State
+
+- `api/index.ts` registers CORS and security headers on `/api/v1/*` but **no rate limiting middleware**.
+- The security guide (`docs/guide/security-guide.md`) references `RateLimitPlugin` but it does not exist.
+- Hono has no built-in rate limiter; a middleware must be added.
+
+### Problem
+
+1. Any client can make unlimited requests, enabling DoS and brute-force attacks.
+2. Auth endpoints (`/api/v1/auth/*`) are especially vulnerable without rate limiting.
+3. No per-user or per-IP throttling.
+
+### Proposed Solution
+
+Add a **Hono rate-limiting middleware** using a sliding-window counter backed by `@objectos/cache` (in-memory LRU / Redis).
+
+#### Architecture
+
+```
+  HTTP Request  ──▶  Rate Limit Middleware  ──▶  Route Handler
+                          │
+                          ├── Check counter: cache.get(`rl:${ip}:${path}`)
+                          ├── If over limit → 429 Too Many Requests
+                          └── Else → increment counter, set TTL, proceed
+```
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Create Hono rate-limit middleware factory | `api/middleware/rate-limit.ts` (new) |
+| 2 | Register on `/api/v1/*` with default limits | `api/index.ts` |
+| 3 | Register stricter limits on `/api/v1/auth/*` | `api/index.ts` |
+| 4 | Add configuration via `objectstack.config.ts` | `objectstack.config.ts` |
+| 5 | Add `X-RateLimit-*` response headers | `api/middleware/rate-limit.ts` |
+| 6 | Add Redis backend option for multi-instance deployments | `api/middleware/rate-limit.ts` |
+
+**Middleware Implementation**:
+
+```typescript
+// api/middleware/rate-limit.ts
+import type { MiddlewareHandler } from 'hono';
+
+interface RateLimitConfig {
+  windowMs: number;       // Time window in ms (default: 60_000)
+  maxRequests: number;    // Max requests per window (default: 100)
+  keyGenerator?: (c: Context) => string; // Custom key (default: IP)
+  skipSuccessfulRequests?: boolean;
+  skipFailedRequests?: boolean;
+  handler?: MiddlewareHandler; // Custom 429 response
+}
+
+export function rateLimit(config: RateLimitConfig): MiddlewareHandler {
+  const store = new Map<string, { count: number; resetAt: number }>();
+  
+  return async (c, next) => {
+    const key = config.keyGenerator?.(c)
+      ?? c.req.header('x-forwarded-for')
+      ?? c.req.header('x-real-ip')
+      ?? 'unknown';
+    
+    const now = Date.now();
+    const entry = store.get(key);
+    
+    if (!entry || now > entry.resetAt) {
+      store.set(key, { count: 1, resetAt: now + config.windowMs });
+    } else if (entry.count >= config.maxRequests) {
+      c.header('X-RateLimit-Limit', String(config.maxRequests));
+      c.header('X-RateLimit-Remaining', '0');
+      c.header('X-RateLimit-Reset', String(Math.ceil(entry.resetAt / 1000)));
+      c.header('Retry-After', String(Math.ceil((entry.resetAt - now) / 1000)));
+      return c.json({ error: 'Too many requests' }, 429);
+    } else {
+      entry.count++;
+    }
+    
+    const current = store.get(key)!;
+    c.header('X-RateLimit-Limit', String(config.maxRequests));
+    c.header('X-RateLimit-Remaining', String(config.maxRequests - current.count));
+    c.header('X-RateLimit-Reset', String(Math.ceil(current.resetAt / 1000)));
+    
+    await next();
+  };
+}
+```
+
+**Registration** (in `api/index.ts`):
+
+```typescript
+import { rateLimit } from './middleware/rate-limit.js';
+
+// General API: 100 requests per minute
+honoApp.use('/api/v1/*', rateLimit({
+  windowMs: 60_000,
+  maxRequests: 100,
+}));
+
+// Auth endpoints: 10 requests per minute (brute-force protection)
+honoApp.use('/api/v1/auth/*', rateLimit({
+  windowMs: 60_000,
+  maxRequests: 10,
+}));
+
+// Data mutation: 30 requests per minute
+honoApp.use('/api/v1/data/*', rateLimit({
+  windowMs: 60_000,
+  maxRequests: 30,
+}));
+```
+
+### Acceptance Criteria
+
+- [ ] 429 response returned when limit exceeded
+- [ ] `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` headers on every response
+- [ ] Auth endpoints have stricter limits (10/min) than data endpoints (30/min)
+- [ ] Per-IP by default; per-user when authenticated
+- [ ] Configurable via `objectstack.config.ts`
+- [ ] Cleanup of expired entries to prevent memory leaks
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `api/middleware/rate-limit.ts` | **New** — Hono rate-limit middleware |
+| `api/index.ts` | Register rate-limit middleware on API routes |
+| `objectstack.config.ts` | Add `rateLimit` section to config |
+| `docs/guide/security-guide.md` | Update rate limiting section with real implementation |
+
+---
+
+## TD-4: Input Sanitization
+
+### Current State
+
+- Security headers (CSP, X-Frame-Options, etc.) are set in `api/index.ts`.
+- SQL injection is mitigated by ObjectQL's parameterized queries.
+- No HTTP-level input sanitization: request bodies are passed raw to handlers.
+- Zod schema validation is minimal (only in `apps/site/source.config.ts`).
+- The security guide mentions `sanitizeHtml` from `@objectos/security` but this module does not exist.
+
+### Problem
+
+1. XSS attacks via stored payloads (e.g., `<script>` in a text field).
+2. NoSQL injection via crafted filter objects.
+3. Oversized payloads can cause memory exhaustion.
+4. No request body schema validation at the HTTP layer.
+
+### Proposed Solution
+
+Add a **multi-layer input sanitization middleware** to the Hono pipeline.
+
+#### Architecture
+
+```
+  HTTP Request  ──▶  Body Size Limit  ──▶  Content-Type Guard  ──▶  Schema Validation  ──▶  XSS Sanitize  ──▶  Handler
+```
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Create body-size limiting middleware (default 1MB) | `api/middleware/body-limit.ts` (new) |
+| 2 | Create content-type validation middleware | `api/middleware/content-type-guard.ts` (new) |
+| 3 | Create XSS sanitization middleware (strip HTML tags from string fields) | `api/middleware/sanitize.ts` (new) |
+| 4 | Create Zod schema validation middleware factory | `api/middleware/validate.ts` (new) |
+| 5 | Register all middleware in correct order | `api/index.ts` |
+| 6 | Add Zod schemas for core endpoints | `api/schemas/` (new directory) |
+
+**XSS Sanitizer**:
+
+```typescript
+// api/middleware/sanitize.ts
+import type { MiddlewareHandler } from 'hono';
+
+const HTML_TAG_RE = /<\/?[a-z][\s\S]*?>/gi;
+const SCRIPT_RE = /<script[\s\S]*?<\/script>/gi;
+const EVENT_HANDLER_RE = /\bon\w+\s*=\s*["'][^"']*["']/gi;
+
+function sanitizeValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value
+      .replace(SCRIPT_RE, '')
+      .replace(EVENT_HANDLER_RE, '')
+      .replace(HTML_TAG_RE, '');
+  }
+  if (Array.isArray(value)) {
+    return value.map(sanitizeValue);
+  }
+  if (value && typeof value === 'object') {
+    return sanitizeObject(value as Record<string, unknown>);
+  }
+  return value;
+}
+
+function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(obj)) {
+    result[key] = sanitizeValue(val);
+  }
+  return result;
+}
+
+export function sanitize(): MiddlewareHandler {
+  return async (c, next) => {
+    if (['POST', 'PUT', 'PATCH'].includes(c.req.method)) {
+      const contentType = c.req.header('content-type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          const body = await c.req.json();
+          const sanitized = sanitizeObject(body);
+          // Replace request body with sanitized version
+          c.set('sanitizedBody', sanitized);
+        } catch {
+          // Body parsing failed — let downstream handle it
+        }
+      }
+    }
+    await next();
+  };
+}
+```
+
+**Body Size Limit**:
+
+```typescript
+// api/middleware/body-limit.ts
+import type { MiddlewareHandler } from 'hono';
+
+export function bodyLimit(maxSize: number = 1_048_576): MiddlewareHandler { // 1MB default
+  return async (c, next) => {
+    const contentLength = c.req.header('content-length');
+    if (contentLength && parseInt(contentLength, 10) > maxSize) {
+      return c.json({ error: 'Payload too large' }, 413);
+    }
+    await next();
+  };
+}
+```
+
+**Zod Validation Middleware**:
+
+```typescript
+// api/middleware/validate.ts
+import type { MiddlewareHandler } from 'hono';
+import type { ZodSchema } from 'zod';
+
+export function validate(schema: ZodSchema): MiddlewareHandler {
+  return async (c, next) => {
+    if (['POST', 'PUT', 'PATCH'].includes(c.req.method)) {
+      try {
+        const body = await c.req.json();
+        const result = schema.safeParse(body);
+        if (!result.success) {
+          return c.json({
+            error: 'Validation failed',
+            details: result.error.issues.map(i => ({
+              path: i.path.join('.'),
+              message: i.message,
+            })),
+          }, 400);
+        }
+        c.set('validatedBody', result.data);
+      } catch {
+        return c.json({ error: 'Invalid JSON body' }, 400);
+      }
+    }
+    await next();
+  };
+}
+```
+
+### Acceptance Criteria
+
+- [ ] Requests > 1MB rejected with 413 Payload Too Large
+- [ ] `<script>` tags stripped from all string fields in request bodies
+- [ ] Non-JSON content types rejected on API routes (except file upload endpoints)
+- [ ] Zod schemas defined for auth endpoints (`/api/v1/auth/sign-in`, `/api/v1/auth/sign-up`)
+- [ ] Invalid Zod payloads return 400 with structured error details
+- [ ] No regression in existing API behavior
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `api/middleware/rate-limit.ts` | **New** — (see TD-3) |
+| `api/middleware/body-limit.ts` | **New** — Payload size guard |
+| `api/middleware/sanitize.ts` | **New** — XSS sanitization |
+| `api/middleware/validate.ts` | **New** — Zod schema validation factory |
+| `api/middleware/content-type-guard.ts` | **New** — Content-Type enforcement |
+| `api/index.ts` | Register sanitization middleware stack |
+| `docs/guide/security-guide.md` | Update input validation section |
+
+---
+
+## TD-5: Realtime Auth
+
+### Current State
+
+- `packages/realtime/src/types.ts` defines `WebSocketAuthConfig` with `strategy`, `tokenHeader`, `validator` fields.
+- `packages/realtime/src/plugin.ts` line 223: `wss.on('connection', (ws) => { ... })` — **no auth check**.
+- WebSocket connections are accepted without any token validation.
+- The auth plugin (`packages/auth/src/plugin.ts`) provides `verify()` method for session validation.
+
+### Problem
+
+1. Any unauthenticated client can subscribe to all events.
+2. Sensitive data (CRUD events, presence) exposed without identity check.
+3. No per-user subscription filtering (user A can see user B's events).
+
+### Proposed Solution
+
+Add a **connection-time auth handshake** in the WebSocket upgrade handler, using `@objectos/auth`'s session verification.
+
+#### Architecture
+
+```
+  Client                    Server
+  ──────                    ──────
+  ws = new WebSocket(url)
+  → HTTP Upgrade request
+  → Cookie: better-auth.session_token=xxx   OR
+  → Sec-WebSocket-Protocol: auth, <token>
+
+                            ← Verify token via auth.verify()
+                            ← If invalid → close(4401, "Unauthorized")
+                            ← If valid → accept, store userId in clientState
+```
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Extract auth token from upgrade request (cookie or protocol header) | `packages/realtime/src/plugin.ts` |
+| 2 | Call `auth.verify(token)` during WebSocket `connection` event | `packages/realtime/src/plugin.ts` |
+| 3 | Store `userId` in `clientStates` Map | `packages/realtime/src/plugin.ts` |
+| 4 | Close connection with `4401` if token is invalid/missing | `packages/realtime/src/plugin.ts` |
+| 5 | Filter broadcasts: only send events the user has permission to see | `packages/realtime/src/plugin.ts` |
+| 6 | Add periodic session re-validation (heartbeat) | `packages/realtime/src/plugin.ts` |
+| 7 | Add `auth.required` config option (default: `true`) | `packages/realtime/src/types.ts` |
+
+**Connection Auth** (in `plugin.ts`):
+
+```typescript
+wss.on('connection', async (ws, req) => {
+  // 1. Extract token
+  const token = extractToken(req); // from cookie or Sec-WebSocket-Protocol
+  
+  if (authConfig.required !== false) {
+    if (!token) {
+      ws.close(4401, 'Authentication required');
+      return;
+    }
+    
+    // 2. Verify via auth service
+    try {
+      const authService = context.getService('auth');
+      const session = await authService.verify(token);
+      if (!session?.userId) {
+        ws.close(4401, 'Invalid session');
+        return;
+      }
+      
+      // 3. Store user identity
+      clientStates.set(ws, {
+        subscriptions: new Map(),
+        userId: session.userId,
+        roles: session.roles || [],
+      });
+    } catch {
+      ws.close(4401, 'Authentication failed');
+      return;
+    }
+  } else {
+    clientStates.set(ws, { subscriptions: new Map() });
+  }
+  
+  ctx.logger.debug('[Realtime] Authenticated client connected');
+});
+```
+
+**Token Extraction**:
+
+```typescript
+function extractToken(req: IncomingMessage): string | null {
+  // 1. Check cookie
+  const cookies = req.headers.cookie || '';
+  const match = cookies.match(/better-auth\.session_token=([^;]+)/);
+  if (match) return match[1];
+  
+  // 2. Check Sec-WebSocket-Protocol
+  const protocols = req.headers['sec-websocket-protocol'];
+  if (protocols) {
+    const parts = protocols.split(',').map(p => p.trim());
+    const tokenIdx = parts.indexOf('auth');
+    if (tokenIdx >= 0 && parts[tokenIdx + 1]) {
+      return parts[tokenIdx + 1];
+    }
+  }
+  
+  // 3. Check query parameter (fallback)
+  const url = new URL(req.url || '', `http://${req.headers.host}`);
+  return url.searchParams.get('token');
+}
+```
+
+### Acceptance Criteria
+
+- [ ] Unauthenticated connections closed with code `4401`
+- [ ] Valid session tokens accepted from cookies and protocol headers
+- [ ] `userId` stored in client state and available for event filtering
+- [ ] Broadcast events filtered by user permissions
+- [ ] `auth.required: false` config option disables auth (development mode)
+- [ ] Heartbeat re-validates session every 5 minutes
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `packages/realtime/src/plugin.ts` | Add auth handshake in `wss.on('connection')` |
+| `packages/realtime/src/types.ts` | Add `userId`, `roles` to client state type |
+
+---
+
+## TD-6: Browser Sync E2E Testing
+
+### Current State
+
+- `packages/browser/src/plugin.ts` implements `BrowserRuntimePlugin` with SQLite WASM + OPFS.
+- Service Worker intercepts API calls; mutation queue buffers offline writes.
+- Frontend components: `SyncStatusBar`, `SelectiveSyncPanel`, `ConflictResolutionDialog`.
+- E2E tests exist only for: `admin.spec.ts`, `app-shell.spec.ts`, `auth.spec.ts`.
+- No E2E test covers the offline/sync flow.
+
+### Problem
+
+1. Sync protocol correctness is unverified end-to-end.
+2. Conflict resolution logic is untested in browser context.
+3. Service Worker registration/interception is untested.
+4. Regression risk is high for any sync changes.
+
+### Proposed Solution
+
+Add Playwright E2E tests covering the complete sync lifecycle, including offline simulation.
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Add Playwright test for Service Worker registration | `e2e/sync-registration.spec.ts` (new) |
+| 2 | Add test for online CRUD → sync to server | `e2e/sync-online.spec.ts` (new) |
+| 3 | Add test for offline mutation queue | `e2e/sync-offline.spec.ts` (new) |
+| 4 | Add test for conflict resolution (LWW + manual) | `e2e/sync-conflict.spec.ts` (new) |
+| 5 | Add test for selective sync configuration | `e2e/sync-selective.spec.ts` (new) |
+| 6 | Add helper fixtures for offline simulation | `e2e/fixtures/sync-helpers.ts` (new) |
+
+**Offline Simulation** (Playwright):
+
+```typescript
+// e2e/fixtures/sync-helpers.ts
+import { test as base, Page } from '@playwright/test';
+
+export async function goOffline(page: Page) {
+  await page.context().setOffline(true);
+}
+
+export async function goOnline(page: Page) {
+  await page.context().setOffline(false);
+}
+
+export async function waitForSync(page: Page) {
+  await page.waitForSelector('[data-testid="sync-status-synced"]', {
+    timeout: 10_000,
+  });
+}
+```
+
+**Example Test** — Offline Mutation Queue:
+
+```typescript
+// e2e/sync-offline.spec.ts
+import { test, expect } from '@playwright/test';
+import { goOffline, goOnline, waitForSync } from './fixtures/sync-helpers';
+
+test.describe('Offline Sync', () => {
+  test('queues mutations while offline and syncs on reconnect', async ({ page }) => {
+    // 1. Login and navigate to a record
+    await page.goto('/console/apps/crm/contacts');
+    
+    // 2. Go offline
+    await goOffline(page);
+    
+    // 3. Create a record while offline
+    await page.click('[data-testid="new-record-button"]');
+    await page.fill('[data-testid="field-name"]', 'Offline Contact');
+    await page.click('[data-testid="save-button"]');
+    
+    // 4. Verify offline indicator shows
+    await expect(page.locator('[data-testid="offline-indicator"]')).toBeVisible();
+    
+    // 5. Go back online
+    await goOnline(page);
+    
+    // 6. Wait for sync
+    await waitForSync(page);
+    
+    // 7. Verify record was synced to server
+    await page.reload();
+    await expect(page.locator('text=Offline Contact')).toBeVisible();
+  });
+});
+```
+
+### Acceptance Criteria
+
+- [ ] Service Worker registration test passes
+- [ ] Online CRUD operations sync correctly
+- [ ] Offline mutations are queued and synced on reconnect
+- [ ] Conflict resolution dialog appears on conflicting edits
+- [ ] Selective sync respects object inclusion/exclusion settings
+- [ ] Tests run in CI (`pnpm exec playwright test e2e/sync-*.spec.ts`)
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `e2e/sync-registration.spec.ts` | **New** — SW registration test |
+| `e2e/sync-online.spec.ts` | **New** — Online sync test |
+| `e2e/sync-offline.spec.ts` | **New** — Offline queue test |
+| `e2e/sync-conflict.spec.ts` | **New** — Conflict resolution test |
+| `e2e/sync-selective.spec.ts` | **New** — Selective sync test |
+| `e2e/fixtures/sync-helpers.ts` | **New** — Playwright helpers |
+| `playwright.config.ts` | Ensure `webServer` config starts both API and frontend |
+
+---
+
+## TD-7: Plugin Isolation
+
+### Current State
+
+- All 13 plugins run in the same Node.js process.
+- `ScopedStorage` in `packages/storage/src/plugin.ts` provides **key-level** namespace isolation.
+- Plugin errors are caught at initialization (`try/catch` in `api/index.ts`) but not sandboxed at runtime.
+- A crashing plugin can take down the entire kernel.
+
+### Problem
+
+1. A misbehaving plugin can crash the entire process.
+2. Memory leaks in one plugin affect all others.
+3. CPU-intensive plugins block the event loop for all.
+4. No resource limits per plugin (CPU, memory, file handles).
+
+### Proposed Solution
+
+Implement a **tiered isolation model** with three levels:
+
+1. **Level 0 (Current)** — Shared process, scoped storage. For trusted first-party plugins.
+2. **Level 1 (Worker Threads)** — Node.js `worker_threads` with message passing. For semi-trusted plugins.
+3. **Level 2 (Child Process)** — Separate process with IPC. For untrusted third-party plugins.
+
+#### Architecture
+
+```
+  Main Process (Kernel)
+  ├── Level 0 Plugins (in-process)
+  │   ├── @objectos/auth
+  │   ├── @objectos/permissions
+  │   └── @objectos/audit
+  │
+  ├── Level 1 Plugins (Worker Thread)
+  │   ├── @objectos/workflow    ←  worker_threads
+  │   └── @objectos/automation  ←  worker_threads
+  │
+  └── Level 2 Plugins (Child Process)
+      └── community-plugin-x    ←  child_process.fork()
+```
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Define `PluginIsolationLevel` type in plugin manifest | Upstream: `@objectstack/spec` |
+| 2 | Create `WorkerThreadPluginHost` — loads plugin in `worker_threads` | `packages/storage/src/worker-plugin-host.ts` (new) |
+| 3 | Create `ChildProcessPluginHost` — loads plugin via `child_process.fork()` | `packages/storage/src/process-plugin-host.ts` (new) |
+| 4 | Implement `PluginProxy` — serializes method calls over MessagePort/IPC | `packages/storage/src/plugin-proxy.ts` (new) |
+| 5 | Add resource limits: `workerData.resourceLimits` for Worker Threads | `packages/storage/src/worker-plugin-host.ts` |
+| 6 | Add watchdog: kill unresponsive plugins after timeout | `packages/storage/src/plugin-watchdog.ts` (new) |
+| 7 | Update kernel plugin loader to route by isolation level | Upstream: `@objectstack/runtime` |
+
+**Manifest Extension**:
+
+```typescript
+interface PluginManifest {
+  id: string;
+  version: string;
+  isolation?: 'shared' | 'worker' | 'process'; // default: 'shared'
+  resourceLimits?: {
+    maxOldGenerationSizeMb?: number; // Worker Thread heap limit
+    maxYoungGenerationSizeMb?: number;
+    codeRangeSizeMb?: number;
+    stackSizeMb?: number;
+  };
+}
+```
+
+> **Note**: This is the highest-effort item and targets v2.0.0. Level 0 (current behavior) remains the default. Levels 1–2 are opt-in via the plugin manifest.
+
+### Acceptance Criteria
+
+- [ ] Level 1 (Worker Thread) plugins can call kernel services via `MessagePort`
+- [ ] Level 2 (Child Process) plugins communicate via IPC channel
+- [ ] Crashing worker/process does not crash the main kernel
+- [ ] Resource limits enforced (memory, CPU timeout)
+- [ ] Watchdog restarts failed plugins with backoff
+- [ ] Default `isolation: 'shared'` preserves current behavior
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| Upstream: `@objectstack/spec` | Add `PluginIsolationLevel` to manifest type |
+| Upstream: `@objectstack/runtime` | Plugin loader routes by isolation level |
+| `packages/storage/src/worker-plugin-host.ts` | **New** — Worker Thread host |
+| `packages/storage/src/process-plugin-host.ts` | **New** — Child Process host |
+| `packages/storage/src/plugin-proxy.ts` | **New** — Serialized method calls |
+| `packages/storage/src/plugin-watchdog.ts` | **New** — Health monitoring |
+
+---
+
+## TD-8: Mock Data Dependency
+
+### Current State
+
+- `apps/web/src/lib/mock-data.ts` provides `mockAppDefinitions`, `mockObjectDefinitions`, `mockRecords`.
+- `apps/web/src/lib/mock-workflow-data.ts` provides workflow/automation mock data.
+- Hooks like `useRecords` fall back to mock data when the server is unreachable (development mode).
+- Pattern: `if (!USE_MOCK_FALLBACK) throw new Error(...); return mockData;`
+- Mock data is bundled into production builds even though it's only used in development.
+
+### Problem
+
+1. Production bundles include ~10KB of unused mock data.
+2. Mock data may silently mask API failures in staging/production.
+3. Mock data diverges from actual API contracts over time.
+4. No clear boundary between "dev mode" and "real data" mode.
+
+### Proposed Solution
+
+1. **Tree-shake mock data from production builds** using Vite's `import.meta.env.DEV` and dynamic imports.
+2. **Add a `DevDataProvider` component** that wraps mock injection in development only.
+3. **Validate mock data against API schemas** to prevent contract drift.
+
+#### Implementation Plan
+
+| Step | Task | File(s) |
+|------|------|---------|
+| 1 | Move mock files to `apps/web/src/lib/__mocks__/` directory | `apps/web/src/lib/__mocks__/` (move) |
+| 2 | Convert static imports to `await import()` behind `import.meta.env.DEV` | All consumers of mock data |
+| 3 | Create `DevDataProvider` context component | `apps/web/src/providers/dev-data-provider.tsx` (new) |
+| 4 | Add `VITE_USE_MOCK_DATA` env variable for explicit opt-in | `apps/web/.env.development` |
+| 5 | Add Zod schemas for API responses; validate mock data in test suite | `apps/web/src/lib/__mocks__/mock-data.test.ts` (new) |
+| 6 | Update Vite config to exclude `__mocks__/` in production | `apps/web/vite.config.ts` |
+
+**DevDataProvider**:
+
+```typescript
+// apps/web/src/providers/dev-data-provider.tsx
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+
+interface DevDataContextType {
+  useMocks: boolean;
+  mockData: Record<string, unknown> | null;
+}
+
+const DevDataContext = createContext<DevDataContextType>({
+  useMocks: false,
+  mockData: null,
+});
+
+export function DevDataProvider({ children }: { children: ReactNode }) {
+  const [mockData, setMockData] = useState<Record<string, unknown> | null>(null);
+  const useMocks = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_DATA === 'true';
+
+  useEffect(() => {
+    if (useMocks) {
+      import('../lib/__mocks__/mock-data').then(m => setMockData(m));
+    }
+  }, [useMocks]);
+
+  return (
+    <DevDataContext.Provider value={{ useMocks, mockData }}>
+      {children}
+    </DevDataContext.Provider>
+  );
+}
+
+export const useDevData = () => useContext(DevDataContext);
+```
+
+**Updated Hook Pattern**:
+
+```typescript
+// Before (mock data always bundled):
+import { mockRecords } from '@/lib/mock-data';
+const records = serverError ? mockRecords : apiData;
+
+// After (mock data tree-shaken in production):
+import { useDevData } from '@/providers/dev-data-provider';
+const { useMocks, mockData } = useDevData();
+const records = useMocks && serverError ? mockData?.records : apiData;
+```
+
+### Acceptance Criteria
+
+- [ ] Production bundle does not include mock data (verify with `vite-bundle-visualizer`)
+- [ ] `VITE_USE_MOCK_DATA=true` enables mock fallback in development
+- [ ] Mock data validates against API response Zod schemas
+- [ ] No change in development experience when server is down
+- [ ] Clear console warning when mock data is active
+
+### Project Changes Required
+
+| File | Change |
+|------|--------|
+| `apps/web/src/lib/__mocks__/` | **New** directory — relocated mock data |
+| `apps/web/src/providers/dev-data-provider.tsx` | **New** — Mock data context provider |
+| `apps/web/src/lib/mock-data.ts` | Re-export from `__mocks__/` for backward compat |
+| `apps/web/src/lib/mock-workflow-data.ts` | Re-export from `__mocks__/` for backward compat |
+| `apps/web/vite.config.ts` | Exclude `__mocks__/` from production build |
+| `apps/web/.env.development` | Add `VITE_USE_MOCK_DATA=true` |
+
+---
+
+## Implementation Roadmap
+
+### Phase M — Technical Debt Resolution
+
+#### M.1 — Critical Security (v1.0.1 — Target: March 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.1.1 | Rate limiting middleware | TD-3 | 🔴 | ⬜ |
+| M.1.2 | Input sanitization middleware | TD-4 | 🔴 | ⬜ |
+| M.1.3 | WebSocket auth enforcement | TD-5 | 🟡 | ⬜ |
+| M.1.4 | Mock data tree-shaking | TD-8 | 🟡 | ⬜ |
+
+#### M.2 — Infrastructure (v1.1.0 — Target: April 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.2.1 | Event bus persistence (SQLite) | TD-1 | 🟡 | ⬜ |
+| M.2.2 | Dead Letter Queue + Replay API | TD-1 | 🟡 | ⬜ |
+| M.2.3 | Schema migration engine | TD-2 | 🟡 | ⬜ |
+| M.2.4 | `objectstack migrate` CLI command | TD-2 | 🟡 | ⬜ |
+| M.2.5 | Browser sync E2E tests | TD-6 | 🟡 | ⬜ |
+
+#### M.3 — Platform Hardening (v2.0.0 — Target: September 2026)
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.3.1 | Worker Thread plugin host | TD-7 | 🟢 | ⬜ |
+| M.3.2 | Child Process plugin host | TD-7 | 🟢 | ⬜ |
+| M.3.3 | Plugin watchdog and auto-restart | TD-7 | 🟢 | ⬜ |
+
+---
+
+## Summary of All Project Changes
+
+### New Files
+
+| File | Description |
+|------|-------------|
+| `api/middleware/rate-limit.ts` | Hono rate-limiting middleware |
+| `api/middleware/body-limit.ts` | Payload size guard |
+| `api/middleware/sanitize.ts` | XSS input sanitization |
+| `api/middleware/validate.ts` | Zod schema validation factory |
+| `api/middleware/content-type-guard.ts` | Content-Type enforcement |
+| `packages/jobs/src/persistent-storage.ts` | SQLite-backed job storage + DLQ |
+| `packages/storage/src/schema-differ.ts` | YAML→DB schema comparison |
+| `packages/storage/src/migration-generator.ts` | DDL generation |
+| `packages/storage/src/migration-runner.ts` | Migration apply/rollback |
+| `packages/storage/src/worker-plugin-host.ts` | Worker Thread plugin isolation |
+| `packages/storage/src/process-plugin-host.ts` | Child Process plugin isolation |
+| `packages/storage/src/plugin-proxy.ts` | Cross-boundary method serialization |
+| `packages/storage/src/plugin-watchdog.ts` | Plugin health monitoring |
+| `apps/web/src/providers/dev-data-provider.tsx` | Mock data context provider |
+| `e2e/sync-*.spec.ts` | Browser sync E2E tests (5 files) |
+| `e2e/fixtures/sync-helpers.ts` | Playwright sync helpers |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `api/index.ts` | Register rate-limit, body-limit, sanitize middleware |
+| `objectstack.config.ts` | Add `rateLimit` configuration section |
+| `packages/realtime/src/plugin.ts` | Add WebSocket auth handshake |
+| `packages/realtime/src/types.ts` | Add `userId`, `roles` to client state |
+| `packages/jobs/src/queue.ts` | Accept persistent storage backend |
+| `packages/jobs/src/types.ts` | Add DLQ and persistence types |
+| `packages/jobs/src/plugin.ts` | Wire persistence configuration |
+| `packages/automation/src/queue.ts` | Delegate persistence to jobs queue |
+| `packages/automation/src/plugin.ts` | Forward persistence configuration |
+| `packages/storage/src/plugin.ts` | Add migration detection at startup |
+| `packages/storage/src/types.ts` | Add migration types |
+| `apps/web/src/lib/mock-data.ts` | Re-export from `__mocks__/` |
+| `apps/web/vite.config.ts` | Exclude `__mocks__/` from production |
+| `docs/guide/security-guide.md` | Update rate-limit + sanitization sections |
+| `ROADMAP.md` | Add Phase M to roadmap |
+
+---
+
+## Related Documentation
+
+- [Security Guide](./security-guide.md) — Authentication, authorization, audit
+- [Plugin Development](./plugin-development.md) — Plugin lifecycle and manifest
+- [SDK Reference](./sdk-reference.md) — Kernel API reference
+- [HTTP Protocol](../spec/http-protocol.md) — REST API specification

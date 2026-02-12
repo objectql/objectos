@@ -1,0 +1,38 @@
+name: workflow_task
+label: Workflow Task
+icon: task
+hidden: false
+fields:
+  instance_id:
+    type: text
+    required: true
+    label: Workflow Instance ID
+    index: true
+  name:
+    type: text
+    required: true
+    label: Task Name
+  assigned_to:
+    type: text
+    label: Assigned To User ID
+    index: true
+  status:
+    type: select
+    label: Status
+    options:
+      - label: Pending
+        value: pending
+      - label: In Progress
+        value: in_progress
+      - label: Completed
+        value: completed
+      - label: Failed
+        value: failed
+    default: pending
+  data:
+    type: object
+    label: Task Data
+    blackbox: true
+  completed_at:
+    type: datetime
+    label: Completed At

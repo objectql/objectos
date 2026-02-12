@@ -22,6 +22,7 @@ import type {
     PluginStartupResult,
 } from './types.js';
 import { InMemoryAutomationStorage } from './storage.js';
+import { ObjectQLAutomationStorage } from './objectql-storage.js';
 import { TriggerEngine } from './triggers.js';
 import { ActionExecutor } from './actions.js';
 import { FormulaEngine } from './formulas.js';
@@ -80,6 +81,13 @@ export class AutomationPlugin implements Plugin, IAutomationService {
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.startedAt = Date.now();
+
+        // Upgrade storage to ObjectQL if not explicitly provided and broker is available
+        // We do this in init because we need the context
+        if (!this.config.storage && (context as any).broker) {
+            this.storage = new ObjectQLAutomationStorage(context);
+            context.logger.info('[Automation Plugin] Upgraded to ObjectQL storage');
+        }
 
         // Update loggers
         (this.triggerEngine as any).logger = context.logger;

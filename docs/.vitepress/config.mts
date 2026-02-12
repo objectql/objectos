@@ -57,6 +57,7 @@ export default defineConfig({
           text: 'Project Planning',
           items: [
             { text: 'Development Plan (Q1 2026)', link: '/guide/development-plan' },
+            { text: 'Technical Debt Resolution', link: '/guide/technical-debt-resolution' },
             { text: 'Contributing to Development', link: '/guide/contributing-development' }
           ]
         }

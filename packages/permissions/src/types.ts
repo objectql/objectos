@@ -382,6 +382,8 @@ export interface PermissionPluginConfig {
     permissionsDir?: string;
     /** Cache permission sets */
     cachePermissions?: boolean;
+    /** Custom storage implementation */
+    storage?: any; // PermissionStorage
 }
 
 // ─── Kernel Compliance Types (from @objectstack/spec) ──────────────────────────

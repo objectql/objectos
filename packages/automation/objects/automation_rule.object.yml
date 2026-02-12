@@ -15,10 +15,6 @@ fields:
     type: object
     label: Trigger Configuration
     blackbox: true
-  conditions:
-    type: object
-    label: Conditions
-    blackbox: true
   actions:
     type: object
     label: Actions
