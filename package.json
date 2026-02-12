@@ -48,7 +48,7 @@
     "generate:agent": "objectstack generate agent",
     "generate:dashboard": "objectstack generate dashboard",
     "generate:app": "objectstack generate app",
-    "create:plugin": "objectstack create plugin",
+    "create:plugin": "node scripts/create-plugin.mjs",
     "create:example": "objectstack create example",
     "web:dev": "pnpm --filter @objectos/web dev",
     "web:build": "pnpm --filter @objectos/web build",
