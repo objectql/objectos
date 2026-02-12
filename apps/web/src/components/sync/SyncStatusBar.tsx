@@ -22,7 +22,9 @@ interface SyncStatusBarProps {
 
 export function SyncStatusBar({ position = 'bottom', onOpenConflicts }: SyncStatusBarProps) {
   const { isOnline } = useOfflineStatus();
-  const { pendingCount, conflictCount, status, lastSyncAt } = useSyncEngine();
+  const { pendingCount, conflicts, status, lastSyncedAt } = useSyncEngine();
+  const conflictCount = conflicts.length;
+  const lastSyncAt = lastSyncedAt;
 
   // Don't show bar when everything is fine
   if (isOnline && pendingCount === 0 && conflictCount === 0 && status === 'idle') {

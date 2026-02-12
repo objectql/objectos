@@ -29,7 +29,7 @@ export function usePrefetch() {
     (objectName: string) => {
       void queryClient.prefetchQuery({
         queryKey: ['records', objectName, { page: 1, pageSize: 20 }],
-        queryFn: () => objectStackClient.data.list(objectName, { limit: 20, skip: 0 }),
+        queryFn: () => objectStackClient.data.find(objectName, { top: 20, skip: 0 }),
         staleTime: 30_000, // 30 seconds
       });
     },

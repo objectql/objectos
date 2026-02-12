@@ -25,7 +25,7 @@ export function useLookupSearch({
 }: UseLookupSearchOptions) {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const { data: objectDef } = useObjectDefinition(referencedObject);
   const primaryField = objectDef?.primaryField ?? 'name';
