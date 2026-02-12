@@ -1,0 +1,18 @@
+name: formula_field
+label: Formula Field
+icon: calculator
+hidden: true
+fields:
+  object_name:
+    type: text
+    required: true
+    label: Object Name
+    index: true
+  name:
+    type: text
+    required: true
+    label: Field Name
+  formula:
+    type: object
+    label: Formula Definition
+    blackbox: true

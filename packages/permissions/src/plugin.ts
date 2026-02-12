@@ -27,6 +27,7 @@ import type {
     PluginStartupResult,
 } from './types.js';
 import { InMemoryPermissionStorage, PermissionStorage } from './storage.js';
+import { ObjectQLPermissionStorage } from './objectql-storage.js';
 import { PermissionEngine } from './engine.js';
 import { SharingRuleEngine } from './sharing-rules.js';
 import { RLSEvaluator } from './rls-evaluator.js';
@@ -58,7 +59,7 @@ export class PermissionsPlugin implements Plugin {
             ...config,
         };
 
-        this.storage = new InMemoryPermissionStorage();
+        this.storage = config.storage || new InMemoryPermissionStorage();
         this.engine = new PermissionEngine(this.storage, {
             defaultDeny: this.config.defaultDeny,
             enableCache: this.config.cachePermissions,
@@ -73,6 +74,17 @@ export class PermissionsPlugin implements Plugin {
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.startedAt = Date.now();
+
+        // Upgrade storage to ObjectQL if not explicitly provided
+        // We do this in init because we need the context
+        if (!this.config.storage) {
+            this.storage = new ObjectQLPermissionStorage(context);
+            this.engine = new PermissionEngine(this.storage, {
+                defaultDeny: this.config.defaultDeny,
+                enableCache: this.config.cachePermissions,
+            });
+            context.logger.info('[Permissions Plugin] Upgraded to ObjectQL storage');
+        }
 
         // Load permission sets from YAML files
         await this.loadPermissionSets();

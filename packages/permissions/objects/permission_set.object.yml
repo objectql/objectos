@@ -1,0 +1,21 @@
+name: permission_set
+label: Permission Set
+icon: shield
+hidden: false
+fields:
+  name:
+    type: text
+    required: true
+    label: Permission Set Name
+    unique: true
+  object_name:
+    type: text
+    label: Object Name
+    index: true
+  description:
+    type: text
+    label: Description
+  permissions:
+    type: object
+    label: Permissions
+    blackbox: true

@@ -27,6 +27,7 @@ import type {
     PluginStartupResult,
 } from './types.js';
 import { InMemoryAuditStorage } from './storage.js';
+import { ObjectQLAuditStorage } from './objectql-storage.js';
 
 /**
  * Audit Log Plugin
@@ -60,6 +61,13 @@ export class AuditLogPlugin implements Plugin {
     init = async (context: PluginContext): Promise<void> => {
         this.context = context;
         this.startedAt = Date.now();
+
+        // Upgrade storage to ObjectQL if not explicitly provided
+        // We do this in init because we need the context
+        if (!this.config.storage) {
+            this.storage = new ObjectQLAuditStorage(context);
+            context.logger.info('[Audit Log] Upgraded to ObjectQL storage');
+        }
 
         // Register audit log service
         context.registerService('audit-log', this);

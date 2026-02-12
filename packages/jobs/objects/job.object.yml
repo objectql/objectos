@@ -1,0 +1,78 @@
+name: job
+label: Job
+icon: briefcase
+hidden: false
+fields:
+  name:
+    type: text
+    required: true
+    label: Job Name
+    index: true
+  status:
+    type: select
+    label: Status
+    required: true
+    options:
+      - label: Pending
+        value: pending
+      - label: Running
+        value: running
+      - label: Completed
+        value: completed
+      - label: Failed
+        value: failed
+      - label: Cancelled
+        value: cancelled
+      - label: Scheduled
+        value: scheduled
+    default: pending
+    index: true
+  priority:
+    type: select
+    label: Priority
+    options:
+      - label: Critical
+        value: critical
+      - label: High
+        value: high
+      - label: Normal
+        value: normal
+      - label: Low
+        value: low
+    default: normal
+    index: true
+  data:
+    type: object
+    label: Job Data
+    blackbox: true
+  result:
+    type: object
+    label: Job Result
+    blackbox: true
+  error:
+    type: text
+    label: Error Message
+  attempts:
+    type: number
+    label: Retry Attempts
+    default: 0
+  max_attempts:
+    type: number
+    label: Max Retry Attempts
+    default: 3
+  timeout:
+    type: number
+    label: Timeout (ms)
+  next_run:
+    type: datetime
+    label: Next Run
+    index: true
+  cron_expression:
+    type: text
+    label: Cron Expression
+  started_at:
+    type: datetime
+    label: Started At
+  completed_at:
+    type: datetime
+    label: Completed At
