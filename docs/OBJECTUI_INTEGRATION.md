@@ -170,9 +170,9 @@ ObjectUI supports multiple view types:
 
 ## Upgrade Notes
 
-### ObjectStack 2.0.6 → 2.0.7
+### ObjectStack 2.0.6 → 3.0.0
 
-All @objectstack packages have been upgraded to version 2.0.7:
+All @objectstack packages have been upgraded to version 3.0.0:
 - @objectstack/cli
 - @objectstack/runtime
 - @objectstack/spec

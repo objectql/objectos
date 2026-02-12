@@ -18,7 +18,7 @@ export function usePrefetch() {
     (objectName: string) => {
       void queryClient.prefetchQuery({
         queryKey: ['objectDefinition', objectName],
-        queryFn: () => objectStackClient.meta.getObject(objectName),
+        queryFn: () => objectStackClient.meta.getItem('object', objectName),
         staleTime: 60_000, // 1 minute
       });
     },

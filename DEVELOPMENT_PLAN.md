@@ -3,7 +3,7 @@
 > **Version**: 6.0.0
 > **Date**: February 11, 2026
 > **Status**: Phase H — @object-ui Driven Development
-> **Spec SDK**: `@objectstack/spec@2.0.7`
+> **Spec SDK**: `@objectstack/spec@3.0.0`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 >
 > **Roadmap**: See [ROADMAP.md](./ROADMAP.md) for the consolidated roadmap reassessed around @object-ui integration.
@@ -40,7 +40,7 @@
 |--------|-------|
 | **Plugin Packages** | 13/13 (100%) — All implemented with lifecycle compliance |
 | **Spec Compliance** | ✅ 100% — All packages pass `@objectstack/spec` audit |
-| **ObjectStack SDK** | `v2.0.7` |
+| **ObjectStack SDK** | `v3.0.0` |
 | **ObjectUI Packages** | 6 packages at `v2.0.0` |
 | **Spec Protocol Namespaces** | 14 |
 | **Spec Service Contracts** | 25 |
@@ -70,7 +70,7 @@
 - ✅ `@objectstack/spec` protocol compliance audit passed
 - ✅ Vercel serverless deployment configured and operational
 - ✅ 10/14 plugins adopt `@objectstack/spec/contracts` interfaces
-- ✅ @objectstack/* packages upgraded to v2.0.7
+- ✅ @objectstack/* packages upgraded to v3.0.0
 - ✅ @object-ui v2.0.0 packages integrated (6 packages: core, react, components, layout, fields, data-objectstack)
 - ✅ ObjectStack data adapter for @object-ui configured
 - ✅ Business App Shell pages created (app, object-list, object-record)
@@ -312,13 +312,13 @@ All packages are at version `0.1.0`, licensed under `AGPL-3.0`, and output ESM v
 
 | Dependency | Version | Role | Consumers |
 |-----------|---------|------|-----------|
-| `@objectstack/runtime` | 2.0.7 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
-| `@objectstack/spec` | 2.0.7 | Protocol contracts — Zod schemas, TypeScript interfaces, Contracts module | audit, automation, auth, jobs, permissions, workflow, browser |
-| `@objectstack/cli` | 2.0.7 | Server bootstrap — `objectstack serve` command | Root devDependency |
-| `@objectstack/objectql` | 2.0.7 | ObjectQL plugin for metadata loading | Root dependency |
-| `@objectstack/driver-memory` | 2.0.7 | In-memory data driver for development/serverless | Root dependency |
-| `@objectstack/plugin-hono-server` | 2.0.7 | Hono HTTP server plugin | Root dependency |
-| `@objectstack/client` | 2.0.7 | Frontend SDK for API integration | apps/web |
+| `@objectstack/runtime` | 3.0.0 | Microkernel — plugin lifecycle, service registry, event bus | All 13 plugins |
+| `@objectstack/spec` | 3.0.0 | Protocol contracts — Zod schemas, TypeScript interfaces, Contracts module | audit, automation, auth, jobs, permissions, workflow, browser |
+| `@objectstack/cli` | 3.0.0 | Server bootstrap — `objectstack serve` command | Root devDependency |
+| `@objectstack/objectql` | 3.0.0 | ObjectQL plugin for metadata loading | Root dependency |
+| `@objectstack/driver-memory` | 3.0.0 | In-memory data driver for development/serverless | Root dependency |
+| `@objectstack/plugin-hono-server` | 3.0.0 | Hono HTTP server plugin | Root dependency |
+| `@objectstack/client` | 3.0.0 | Frontend SDK for API integration | apps/web |
 | `@objectql/core` | 4.2.0 | Data engine — metadata registry, query compiler | Root dependency |
 | `@objectql/driver-sql` | 4.2.0 | SQL database driver (PostgreSQL, MySQL, SQLite) | Root dependency |
 | `@objectql/driver-mongo` | 4.2.0 | MongoDB database driver | Root dependency |
@@ -546,7 +546,7 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Build optimization (Vite code splitting) | ✅ | Vendor, router, query manual chunks + lazy routes |
 | Docker build pipeline | ✅ | Multi-stage Dockerfile + docker-compose.yml (ObjectOS + PostgreSQL + Redis) |
 | E2E smoke tests (Playwright) | ✅ | Auth, Admin, and App Shell smoke tests (`e2e/*.spec.ts`) with Playwright config |
-| @objectstack/* packages upgrade to v2.0.7 | ✅ | All packages updated |
+| @objectstack/* packages upgrade to v3.0.0 | ✅ | All packages updated |
 | @object-ui v2.0.0 integration | ✅ | 6 packages installed, adapter configured, demo page functional |
 | Spec Contracts adoption (10/14 plugins) | ✅ | ICacheService, II18nService, INotificationService, IJobService, IAuthService, IAutomationService, IWorkflowService, IRealtimeService, IUIService, IStorageService |
 | Business App Shell pages | ✅ | app.tsx, object-list.tsx, object-record.tsx with TanStack Query hooks |
@@ -585,10 +585,10 @@ The microkernel architecture (`@objectstack/runtime`) provides:
 | Plugin Interface | All plugins implement `Plugin` from `@objectstack/runtime` | ✅ |
 | Runtime Dependency | All plugins declare `@objectstack/runtime` as dependency | ✅ |
 | Spec Dependency | Packages importing from `@objectstack/spec` declare it | ✅ |
-| Version Consistency | `@objectstack/spec: 2.0.7`, `@objectstack/runtime: ^2.0.7` | ✅ |
+| Version Consistency | `@objectstack/spec: 3.0.0`, `@objectstack/runtime: ^3.0.0` | ✅ |
 | Lifecycle Methods | All plugins implement `init()`, `start()`, `destroy()` | ✅ |
 
-### Spec v2.0.7 — Capabilities
+### Spec v3.0.0 — Capabilities
 
 **Contracts Module** — 25 service interfaces (`@objectstack/spec/contracts`):
 - Typed service contracts for all `CoreServiceNames` (metadata, data, auth, cache, etc.)
@@ -920,7 +920,7 @@ states:
 | G.2 | Adopt Contracts interfaces for core plugins | 🔴 | ✅ (10/14) |
 | G.3 | @object-ui v2.0.0 package integration | 🔴 | ✅ |
 | G.4 | Business App Shell pages (app, object-list, object-record) | 🔴 | ✅ |
-| G.5 | @objectstack/* packages upgrade to v2.0.7 | 🔴 | ✅ |
+| G.5 | @objectstack/* packages upgrade to v3.0.0 | 🔴 | ✅ |
 | G.6 | Consolidate development plan documents | 🟡 | ✅ |
 
 ### 12.3 Phase H — @object-ui Driven Development (Complete — February 2026)
@@ -983,7 +983,7 @@ states:
 | 2.0.4 | Sync Protocol | Client-server delta sync with conflict resolution |
 | 2.0.5 | AI Agent Framework | LLM-powered automation actions and data extraction |
 | 2.0.6 | Module Federation | Dynamic CDN loading of plugin UIs |
-| 2.0.7 | Offline Admin Console | Service Worker + @objectos/browser for offline access |
+| 3.0.0 | Offline Admin Console | Service Worker + @objectos/browser for offline access |
 | 2.0.8 | GraphQL plugin | Full GraphQL resolver layer with schema stitching |
 | 2.0.9 | Analytics plugin | Business analytics and reporting engine |
 | 2.0.10 | AI plugin | AI-powered data extraction, classification, suggestions |
@@ -1170,5 +1170,5 @@ Keep Next.js only for `apps/site` (Fumadocs documentation framework dependency).
 ---
 
 <div align="center">
-<sub>ObjectOS v6.0.0 — The Enterprise Operating System | Built with @objectstack/spec@2.0.7 + @object-ui@2.0.0</sub>
+<sub>ObjectOS v6.0.0 — The Enterprise Operating System | Built with @objectstack/spec@3.0.0 + @object-ui@2.0.0</sub>
 </div>

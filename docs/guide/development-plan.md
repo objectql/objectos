@@ -1,7 +1,7 @@
 # ObjectOS Development Plan
 
 > **Last Updated**: February 2026  
-> **ObjectStack SDK**: v2.0.7  
+> **ObjectStack SDK**: v3.0.0  
 > **ObjectUI**: @object-ui/*@2.0.0  
 > **Status**: Phase H — @object-ui Driven Development — 14/14 Plugins Implemented, Admin Console Active, @object-ui Integrated
 >
@@ -13,10 +13,10 @@
 
 ### 1.1 Completed Core Features
 
-✅ **Microkernel Architecture** (`@objectstack/runtime` 2.0.7)
+✅ **Microkernel Architecture** (`@objectstack/runtime` 3.0.0)
 - Plugin lifecycle, service registry, event bus
 - 14/14 plugin packages implemented with lifecycle compliance
-- 100% `@objectstack/spec` 2.0.7 protocol compliance
+- 100% `@objectstack/spec` 3.0.0 protocol compliance
 - 10/14 plugins adopt spec contract interfaces
 
 ✅ **Identity & Access Management**
@@ -63,7 +63,7 @@
 | Test Files | 49 test files across 13 packages |
 | Frontend Source Code | 9,570 lines across 65 files |
 | Frontend Pages | 29 pages + 15 UI components |
-| ObjectStack SDK | `@objectstack/*` v2.0.7 |
+| ObjectStack SDK | `@objectstack/*` v3.0.0 |
 | ObjectUI Packages | `@object-ui/*` v2.0.0 (6 packages) |
 | Spec Protocol Namespaces | 14 |
 | Spec Service Contracts | 25 |
@@ -168,14 +168,14 @@
 
 | Dependency | Version | Role |
 |-----------|---------|------|
-| `@objectstack/runtime` | 2.0.7 | Microkernel — plugin lifecycle, service registry, event bus |
-| `@objectstack/spec` | 2.0.7 | Protocol contracts — Zod schemas, TypeScript interfaces |
-| `@objectstack/cli` | 2.0.7 | Server bootstrap — `objectstack serve` command |
-| `@objectstack/objectql` | 2.0.7 | ObjectQL plugin for metadata loading |
-| `@objectstack/client` | 2.0.7 | Frontend SDK for API integration |
-| `@objectstack/driver-memory` | 2.0.7 | In-memory data driver for development/serverless |
-| `@objectstack/plugin-hono-server` | 2.0.7 | Hono HTTP server plugin |
-| `@objectstack/plugin-auth` | 2.0.7 | Authentication plugin |
+| `@objectstack/runtime` | 3.0.0 | Microkernel — plugin lifecycle, service registry, event bus |
+| `@objectstack/spec` | 3.0.0 | Protocol contracts — Zod schemas, TypeScript interfaces |
+| `@objectstack/cli` | 3.0.0 | Server bootstrap — `objectstack serve` command |
+| `@objectstack/objectql` | 3.0.0 | ObjectQL plugin for metadata loading |
+| `@objectstack/client` | 3.0.0 | Frontend SDK for API integration |
+| `@objectstack/driver-memory` | 3.0.0 | In-memory data driver for development/serverless |
+| `@objectstack/plugin-hono-server` | 3.0.0 | Hono HTTP server plugin |
+| `@objectstack/plugin-auth` | 3.0.0 | Authentication plugin |
 | `@object-ui/core` | 2.0.0 | UI core logic, types, validation |
 | `@object-ui/react` | 2.0.0 | React bindings, SchemaRenderer |
 | `@object-ui/components` | 2.0.0 | Standard UI controls |
