@@ -16,24 +16,50 @@ This is a Monorepo managed by PNPM workspaces and organized as follows:
 ```
 objectos/
 ├── packages/
-│   ├── kernel/          # @objectos/kernel - Core runtime engine
-│   ├── server/          # @objectos/server - NestJS HTTP server
-│   └── presets/         # @objectos/preset-* - Standard metadata
+│   ├── agent/           # @objectos/agent - AI Agent Framework
+│   ├── analytics/       # @objectos/analytics - Analytics Engine
+│   ├── audit/           # @objectos/audit - Audit Logging
+│   ├── auth/            # @objectos/auth - Authentication (BetterAuth)
+│   ├── automation/      # @objectos/automation - Triggers & Rules
+│   ├── browser/         # @objectos/browser - Offline Runtime (SQLite WASM)
+│   ├── cache/           # @objectos/cache - LRU + Redis Cache
+│   ├── federation/      # @objectos/federation - Module Federation
+│   ├── graphql/         # @objectos/graphql - GraphQL API
+│   ├── i18n/            # @objectos/i18n - Localization
+│   ├── jobs/            # @objectos/jobs - Background Jobs & Cron
+│   ├── marketplace/     # @objectos/marketplace - Plugin Marketplace
+│   ├── metrics/         # @objectos/metrics - Prometheus Metrics
+│   ├── notification/    # @objectos/notification - Email/SMS/Push/Webhook
+│   ├── permissions/     # @objectos/permissions - RBAC Engine
+│   ├── realtime/        # @objectos/realtime - WebSocket Server
+│   ├── storage/         # @objectos/storage - KV Storage Backends
+│   ├── telemetry/       # @objectos/telemetry - OpenTelemetry Tracing
+│   ├── ui/              # @objectos/ui - Admin Console shared components
+│   └── workflow/        # @objectos/workflow - State Machine Engine
 ├── apps/
-│   └── site/            # @objectos/site - Documentation site
-├── examples/            # Example applications
-└── docs/                # VitePress documentation
+│   ├── web/             # @objectos/web - Admin Console (Vite + React 19)
+│   └── site/            # @objectos/site - Documentation (Next.js + Fumadocs)
+├── api/                 # Hono API routes & middleware
+├── examples/            # Example applications (CRM, Todo)
+├── docs/                # VitePress documentation (guides, spec)
+├── e2e/                 # Playwright E2E tests
+└── scripts/             # Build & maintenance scripts
 ```
-
-**Note**: The UI package (`@objectos/ui`) has been moved to a separate repository and is developed independently.
 
 ### Package Responsibilities
 
-| Package | Role | Can Import | Cannot Import |
-|---------|------|------------|---------------|
-| `@objectos/kernel` | Core logic, object registry, hooks | `@objectql/types`, `@objectql/core` | `pg`, `express`, `nest` |
-| `@objectos/server` | HTTP layer, REST API | `@objectos/kernel`, `@nestjs/*` | `knex`, direct SQL |
-| `@objectos/preset-*` | Metadata YAML files | None | No .ts files allowed |
+| Package | Role | Dependencies |
+|---------|------|-------------|
+| `@objectos/auth` | Identity — BetterAuth, SSO, 2FA, Sessions | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/permissions` | Authorization — RBAC, Permission Sets | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/audit` | Compliance — CRUD events, field history | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/workflow` | Flow — FSM engine, approval processes | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/automation` | Triggers — WorkflowRule, action types | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/jobs` | Background — queues, cron, retry | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/realtime` | Sync — WebSocket, presence | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/graphql` | GraphQL API — schema generation, subscriptions | `@objectstack/spec`, `graphql` |
+| `@objectos/agent` | AI — LLM agents, tools, orchestration | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/analytics` | Analytics — aggregation, reports, dashboards | `@objectstack/spec`, `@objectstack/runtime` |
 
 ## Development Standards
 
@@ -166,9 +192,9 @@ describe('ObjectOS.insert', () => {
 
 ### Prerequisites
 
-- Node.js 18+ (LTS recommended)
-- PNPM 8+
-- PostgreSQL 13+ (for integration tests)
+- Node.js 20+ (LTS recommended — see `.node-version`)
+- PNPM 10+ (exact version managed via `packageManager` field in `package.json`)
+- PostgreSQL or MongoDB (optional — SQLite by default)
 
 ### Setup
 
@@ -180,41 +206,55 @@ cd objectos
 # Install dependencies
 pnpm install
 
+# Copy and configure environment variables
+cp .env.example .env
+# Edit .env to set AUTH_SECRET (required)
+
 # Build all packages
-pnpm run build
+pnpm build
 
 # Run tests
-pnpm run test
+pnpm test
 ```
 
 ### Development Workflow
 
 ```bash
-# Start the full stack development environment
-# - Server runs in watch mode on http://localhost:3000
-# - Web runs in build watch mode (changes auto-compile)
-pnpm run dev
+# Start API server (:5320) + Admin Console (:5321)
+pnpm dev
 
-# Start only the server (without frontend build watch)
-pnpm run server
+# Start everything including docs site
+pnpm dev:all
 
-# Start only the frontend build watch
-pnpm run web:watch
+# Start only the API server
+pnpm objectstack:serve
 
-# Build for production (compiles both server and web)
-pnpm run build
+# Start only the Admin Console
+pnpm web:dev
 
-# Run the production build (starts server serving built web assets)
-pnpm run start
+# Start only the docs site
+pnpm site:dev
 
-# Run tests in watch mode
-pnpm run test --watch
+# Build for production
+pnpm build
 
-# Build documentation
-pnpm run docs:dev
+# Run the production build
+pnpm start
 
-# Lint code
-pnpm run lint  # (TODO: Add lint script)
+# Run all tests (via Turborepo)
+pnpm test
+
+# Lint all packages
+pnpm lint
+
+# Type-check all packages
+pnpm type-check
+
+# Validate ObjectStack configuration
+pnpm objectstack:validate
+
+# Check development environment health
+pnpm objectstack:doctor
 ```
 
 ## How to Contribute
@@ -261,8 +301,8 @@ Use conventional commits:
 
 ```bash
 # Format: <type>(<scope>): <subject>
-git commit -m "feat(kernel): add hook priority support"
-git commit -m "fix(server): handle null values in query"
+git commit -m "feat(workflow): add hook priority support"
+git commit -m "fix(graphql): handle null values in query"
 git commit -m "docs(guide): add architecture examples"
 ```
 
@@ -302,87 +342,42 @@ Before submitting, ensure:
 ### Running Tests
 
 ```bash
-# All tests
-pnpm run test
+# All tests (via Turborepo, concurrency=3)
+pnpm test
 
 # Specific package
-pnpm --filter @objectos/kernel test
+pnpm --filter @objectos/permissions test
 
-# With coverage
-pnpm run test --coverage
-
-# Watch mode
-pnpm run test --watch
+# E2E tests (Playwright)
+pnpm e2e
 ```
+
+> **Note**: Most packages use **Jest** (with `ts-jest` ESM preset). Some packages (`permissions`, `automation`, `workflow`) use **Vitest**. Both frameworks use the same `describe`/`it`/`expect` API — check each package's `package.json` for the exact test runner.
 
 ### Writing Tests
 
-#### Unit Test Example (Kernel)
-
 ```typescript
-// packages/kernel/src/__tests__/registry.test.ts
-import { ObjectRegistry } from '../registry';
+// packages/cache/test/plugin.test.ts
+import { CachePlugin } from '../src/plugin';
 
-describe('ObjectRegistry', () => {
-  let registry: ObjectRegistry;
-  
+describe('CachePlugin', () => {
+  let plugin: CachePlugin;
+
   beforeEach(() => {
-    registry = new ObjectRegistry();
+    plugin = new CachePlugin({ maxSize: 100, ttl: 60000 });
   });
-  
-  it('should register an object', () => {
-    registry.register({
-      name: 'contacts',
-      fields: { email: { type: 'email' } }
-    });
-    
-    expect(registry.has('contacts')).toBe(true);
-  });
-  
-  it('should throw if object not found', () => {
-    expect(() => {
-      registry.get('nonexistent');
-    }).toThrow('Object not found: nonexistent');
-  });
-});
-```
 
-#### Integration Test Example (Server)
-
-```typescript
-// packages/server/test/api.e2e-spec.ts
-import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-
-describe('ObjectDataController (e2e)', () => {
-  let app;
-  
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    
-    app = moduleRef.createNestApplication();
-    await app.init();
+  it('should store and retrieve values', async () => {
+    await plugin.set('key', 'value');
+    const result = await plugin.get('key');
+    expect(result).toBe('value');
   });
-  
-  it('POST /api/data/contacts should create contact', () => {
-    return request(app.getHttpServer())
-      .post('/api/data/contacts')
-      .send({
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'john@example.com'
-      })
-      .expect(201)
-      .expect((res) => {
-        expect(res.body).toHaveProperty('id');
-      });
-  });
-  
-  afterAll(async () => {
-    await app.close();
+
+  it('should return undefined for expired keys', async () => {
+    await plugin.set('key', 'value', { ttl: 1 });
+    await new Promise(r => setTimeout(r, 10));
+    const result = await plugin.get('key');
+    expect(result).toBeUndefined();
   });
 });
 ```
@@ -392,14 +387,14 @@ describe('ObjectDataController (e2e)', () => {
 ### Building Docs
 
 ```bash
-# Start docs dev server
-pnpm run docs:dev
+# Start docs site in development mode
+pnpm site:dev
 
-# Build static docs
-pnpm run docs:build
+# Build docs site for production
+pnpm site:build
 
-# Preview built docs
-pnpm run docs:preview
+# Preview the built docs site
+pnpm site:preview
 ```
 
 ### Documentation Structure
