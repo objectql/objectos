@@ -12,8 +12,8 @@
     "test": "jest --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^2.0.7",
-    "@objectstack/spec": "2.0.7",
+    "@objectstack/runtime": "^3.0.0",
+    "@objectstack/spec": "3.0.0",
     "comlink": "^4.4.1",
     "idb": "^8.0.0",
     "sql.js": "^1.11.0"

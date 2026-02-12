@@ -58,7 +58,7 @@ export function useObjectDefinition(objectName: string | undefined) {
     queryFn: async () => {
       if (!objectName) return undefined;
       try {
-        const result = await objectStackClient.meta.getObject(objectName);
+        const result = await objectStackClient.meta.getItem('object', objectName);
         if (result) return result as ObjectDefinition;
       } catch {
         if (!USE_MOCK_FALLBACK) throw new Error(`Failed to fetch object: ${objectName}`);
@@ -83,7 +83,7 @@ export function useAppObjects(appId: string | undefined) {
       const objectNames = appQuery.data?.objects ?? [];
       const settled = await Promise.allSettled(
         objectNames.map((name) =>
-          objectStackClient.meta.getObject(name).then((r) =>
+          objectStackClient.meta.getItem('object', name).then((r) =>
             r ? (r as ObjectDefinition) : getMockObjectDefinition(name),
           ).catch(() => getMockObjectDefinition(name)),
         ),
