@@ -680,14 +680,14 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 | Dependency                        | Version | Role                           |
 | --------------------------------- | ------- | ------------------------------ |
-| `@objectstack/runtime`            | 3.0.0   | Microkernel — plugin lifecycle |
-| `@objectstack/spec`               | 3.0.0   | Protocol contracts             |
-| `@objectstack/cli`                | 3.0.0   | Server bootstrap               |
+| `@objectstack/runtime`            | 3.0.1   | Microkernel — plugin lifecycle |
+| `@objectstack/spec`               | 3.0.1   | Protocol contracts             |
+| `@objectstack/cli`                | 3.0.1   | Server bootstrap               |
 | `@objectstack/client`             | 3.0.0   | Frontend SDK                   |
-| `@objectstack/objectql`           | 3.0.0   | ObjectQL plugin                |
-| `@objectstack/driver-memory`      | 3.0.0   | In-memory driver               |
-| `@objectstack/plugin-hono-server` | 3.0.0   | Hono HTTP server               |
-| `@objectstack/plugin-auth`        | 3.0.0   | Authentication                 |
+| `@objectstack/objectql`           | 3.0.1   | ObjectQL plugin                |
+| `@objectstack/driver-memory`      | 3.0.1   | In-memory driver               |
+| `@objectstack/plugin-hono-server` | 3.0.1   | Hono HTTP server               |
+| `@objectstack/plugin-auth`        | 3.0.1   | Authentication                 |
 | `@object-ui/core`                 | 2.0.0   | UI core logic                  |
 | `@object-ui/react`                | 2.0.0   | React components               |
 | `@object-ui/components`           | 2.0.0   | Standard controls              |
@@ -721,5 +721,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v14.0.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.0</sub>
+<sub>ObjectOS v14.1.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.1</sub>
 </div>
