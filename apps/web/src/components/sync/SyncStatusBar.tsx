@@ -24,7 +24,6 @@ export function SyncStatusBar({ position = 'bottom', onOpenConflicts }: SyncStat
   const { isOnline } = useOfflineStatus();
   const { pendingCount, conflicts, status, lastSyncedAt } = useSyncEngine();
   const conflictCount = conflicts.length;
-  const lastSyncAt = lastSyncedAt;
 
   // Don't show bar when everything is fine
   if (isOnline && pendingCount === 0 && conflictCount === 0 && status === 'idle') {
@@ -103,10 +102,10 @@ export function SyncStatusBar({ position = 'bottom', onOpenConflicts }: SyncStat
 
         {/* Last sync time */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {lastSyncAt && (
+          {lastSyncedAt && (
             <span className="flex items-center gap-1">
               <CheckCircle2 className="size-3" />
-              Last sync: {new Date(lastSyncAt).toLocaleTimeString()}
+              Last sync: {new Date(lastSyncedAt).toLocaleTimeString()}
             </span>
           )}
         </div>
