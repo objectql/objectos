@@ -88,6 +88,7 @@ export {
 // Export storage
 export {
     InMemoryPermissionStorage,
+    ObjectQLPermissionStorage,
 } from './storage.js';
 export type {
     PermissionStorage,

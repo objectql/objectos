@@ -5,7 +5,8 @@
  */
 
 import type { PluginContext } from '@objectstack/runtime';
-import type { PermissionStorage, PermissionSet } from './types.js';
+import type { PermissionSet } from './types.js';
+import type { PermissionStorage } from './storage.js';
 
 export class ObjectQLPermissionStorage implements PermissionStorage {
     private context: PluginContext;
