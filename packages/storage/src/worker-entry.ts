@@ -24,6 +24,14 @@ type InboundMessage = CallMessage | HeartbeatMessage;
 async function main(): Promise<void> {
     const { pluginPath } = workerData as { pluginPath: string };
 
+    // Validate plugin path — must be absolute to prevent path traversal
+    if (!pluginPath || typeof pluginPath !== 'string') {
+        throw new Error('worker-entry requires a valid pluginPath in workerData');
+    }
+    if (!require('node:path').isAbsolute(pluginPath)) {
+        throw new Error('pluginPath must be an absolute path');
+    }
+
     // Dynamic import of the plugin module
     const pluginModule = await import(pluginPath);
     const plugin = pluginModule.default ?? pluginModule;

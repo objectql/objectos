@@ -25,6 +25,11 @@ async function main(): Promise<void> {
         throw new Error('process-entry requires a plugin path as the first argument');
     }
 
+    // Validate plugin path — must be absolute to prevent path traversal
+    if (!require('node:path').isAbsolute(pluginPath)) {
+        throw new Error('pluginPath must be an absolute path');
+    }
+
     // Dynamic import of the plugin module
     const pluginModule = await import(pluginPath);
     const plugin = pluginModule.default ?? pluginModule;
