@@ -10,6 +10,10 @@
 import { handle } from '@hono/node-server/vercel';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
+import { rateLimit } from './middleware/rate-limit.js';
+import { bodyLimit } from './middleware/body-limit.js';
+import { sanitize } from './middleware/sanitize.js';
+import { contentTypeGuard } from './middleware/content-type-guard.js';
 
 /* ------------------------------------------------------------------ */
 /*  Bootstrap (runs once per cold-start)                               */
@@ -62,6 +66,32 @@ async function bootstrapKernel(): Promise<void> {
         xContentTypeOptions: 'nosniff',
         xFrameOptions: 'DENY',
       }),
+    );
+
+    // ── Body size limit (1 MB default) ────────────────────────
+    honoApp.use('/api/v1/*', bodyLimit({ maxSize: 1_048_576 }));
+
+    // ── Content-Type guard (mutation routes must send JSON) ──
+    honoApp.use(
+      '/api/v1/*',
+      contentTypeGuard({
+        excludePaths: ['/api/v1/storage/upload'],
+      }),
+    );
+
+    // ── XSS sanitization (strips HTML/script from JSON bodies) ──
+    honoApp.use('/api/v1/*', sanitize());
+
+    // ── Rate limiting — General API (100 req/min per IP) ─────
+    honoApp.use(
+      '/api/v1/*',
+      rateLimit({ windowMs: 60_000, maxRequests: 100 }),
+    );
+
+    // ── Rate limiting — Auth endpoints (10 req/min — brute-force protection) ──
+    honoApp.use(
+      '/api/v1/auth/*',
+      rateLimit({ windowMs: 60_000, maxRequests: 10 }),
     );
 
     // Health-check (always available)

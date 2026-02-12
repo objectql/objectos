@@ -2,7 +2,7 @@
 
 > **Version**: 1.0.0
 > **Date**: February 12, 2026
-> **Status**: Phase M — Technical Debt Resolution
+> **Status**: Phase M — Technical Debt Resolution ✅ COMPLETE
 > **Applies to**: ObjectOS v1.0.0+
 
 ---
@@ -983,32 +983,32 @@ const records = useMocks && serverError ? mockData?.records : apiData;
 
 ### Phase M — Technical Debt Resolution
 
-#### M.1 — Critical Security (v1.0.1 — Target: March 2026)
+#### M.1 — Critical Security (v1.0.1 — Target: March 2026) ✅
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.1.1 | Rate limiting middleware | TD-3 | 🔴 | ⬜ |
-| M.1.2 | Input sanitization middleware | TD-4 | 🔴 | ⬜ |
-| M.1.3 | WebSocket auth enforcement | TD-5 | 🟡 | ⬜ |
-| M.1.4 | Mock data tree-shaking | TD-8 | 🟡 | ⬜ |
+| M.1.1 | Rate limiting middleware | TD-3 | 🔴 | ✅ |
+| M.1.2 | Input sanitization middleware | TD-4 | 🔴 | ✅ |
+| M.1.3 | WebSocket auth enforcement | TD-5 | 🟡 | ✅ |
+| M.1.4 | Mock data tree-shaking | TD-8 | 🟡 | ✅ |
 
-#### M.2 — Infrastructure (v1.1.0 — Target: April 2026)
-
-| # | Task | TD | Priority | Status |
-|---|------|:--:|:--------:|:------:|
-| M.2.1 | Event bus persistence (SQLite) | TD-1 | 🟡 | ⬜ |
-| M.2.2 | Dead Letter Queue + Replay API | TD-1 | 🟡 | ⬜ |
-| M.2.3 | Schema migration engine | TD-2 | 🟡 | ⬜ |
-| M.2.4 | `objectstack migrate` CLI command | TD-2 | 🟡 | ⬜ |
-| M.2.5 | Browser sync E2E tests | TD-6 | 🟡 | ⬜ |
-
-#### M.3 — Platform Hardening (v2.0.0 — Target: September 2026)
+#### M.2 — Infrastructure (v1.1.0 — Target: April 2026) ✅
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.3.1 | Worker Thread plugin host | TD-7 | 🟢 | ⬜ |
-| M.3.2 | Child Process plugin host | TD-7 | 🟢 | ⬜ |
-| M.3.3 | Plugin watchdog and auto-restart | TD-7 | 🟢 | ⬜ |
+| M.2.1 | Event bus persistence (`PersistentJobStorage`) | TD-1 | 🟡 | ✅ |
+| M.2.2 | Dead Letter Queue + Replay API | TD-1 | 🟡 | ✅ |
+| M.2.3 | Schema migration engine (`SchemaDiffer`, `MigrationRunnerImpl`) | TD-2 | 🟡 | ✅ |
+| M.2.4 | `objectstack migrate` CLI (`MigrationCLI`) | TD-2 | 🟡 | ✅ |
+| M.2.5 | Browser sync E2E tests (5 Playwright specs) | TD-6 | 🟡 | ✅ |
+
+#### M.3 — Platform Hardening (v2.0.0 — Target: September 2026) ✅
+
+| # | Task | TD | Priority | Status |
+|---|------|:--:|:--------:|:------:|
+| M.3.1 | Worker Thread plugin host (`WorkerThreadPluginHost`) | TD-7 | 🟢 | ✅ |
+| M.3.2 | Child Process plugin host (`ChildProcessPluginHost`) | TD-7 | 🟢 | ✅ |
+| M.3.3 | Plugin watchdog (`PluginWatchdog`) with auto-restart and backoff | TD-7 | 🟢 | ✅ |
 
 ---
 

@@ -71,6 +71,14 @@ export {
 } from './storage.js';
 
 export {
+    PersistentJobStorage,
+} from './persistent-storage.js';
+
+export type {
+    StorageBackend,
+} from './persistent-storage.js';
+
+export {
     JobQueue,
 } from './queue.js';
 
@@ -103,4 +111,6 @@ export type {
     TaskRetryPolicy,
     TaskExecutionResult,
     QueueConfig,
+    PersistenceBackend,
+    DeadLetterEntry,
 } from './types.js';

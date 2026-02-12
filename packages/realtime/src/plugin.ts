@@ -1,12 +1,15 @@
 import type { Plugin, PluginContext } from '@objectstack/runtime';
 import type { IRealtimeService, RealtimeEventPayload as SpecRealtimeEventPayload, RealtimeEventHandler as SpecRealtimeEventHandler, RealtimeSubscriptionOptions as SpecRealtimeSubscriptionOptions } from '@objectstack/spec/contracts';
-import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, CollaborationSession } from './types.js';
+import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, CollaborationSession, WebSocketAuthConfig } from './types.js';
 import { WebSocketServer, WebSocket } from 'ws';
 import { randomUUID } from 'crypto';
+import type { IncomingMessage } from 'http';
 
 export interface RealtimePluginOptions {
   port?: number;
   path?: string;
+  /** Authentication configuration for WebSocket connections */
+  auth?: WebSocketAuthConfig;
 }
 
 // Interfaces based on @objectstack/spec/api/websocket.zod
@@ -67,6 +70,10 @@ interface PresenceMessage extends BaseMessage {
 
 interface ClientState {
     subscriptions: Map<string, SubscribeMessage['subscription']>;
+    /** Authenticated user ID (set during connection handshake) */
+    userId?: string;
+    /** Authenticated user roles */
+    roles?: string[];
 }
 
 export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugin & IRealtimeService => {
@@ -75,6 +82,36 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
   let startedAt: number | undefined;
   let pluginCtx: PluginContext | undefined;
   const collaborationSessions = new Map<string, CollaborationSession>();
+  const authConfig: WebSocketAuthConfig = options.auth ?? { required: true };
+
+  // ── Auth: Token extraction from HTTP upgrade request ─────────────────────
+  const extractToken = (req: IncomingMessage): string | null => {
+    // 1. Check cookie (better-auth session token)
+    const cookies = req.headers.cookie ?? '';
+    const match = cookies.match(/better-auth\.session_token=([^;]+)/);
+    if (match) return match[1];
+
+    // 2. Check Sec-WebSocket-Protocol: auth, <token>
+    const protocols = req.headers['sec-websocket-protocol'];
+    if (protocols) {
+      const parts = protocols.split(',').map((p) => p.trim());
+      const tokenIdx = parts.indexOf('auth');
+      if (tokenIdx >= 0 && parts[tokenIdx + 1]) {
+        return parts[tokenIdx + 1];
+      }
+    }
+
+    // 3. Check query parameter (fallback)
+    try {
+      const url = new URL(req.url ?? '', `http://${req.headers.host ?? 'localhost'}`);
+      return url.searchParams.get('token');
+    } catch {
+      return null;
+    }
+  };
+
+  // ── Auth: Session heartbeat re-validation interval (5 minutes) ───────────
+  let heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 
   // In-memory handler registry for IRealtimeService.subscribe / unsubscribe
   const handlerRegistry = new Map<string, { channel: string; handler: SpecRealtimeEventHandler; options?: SpecRealtimeSubscriptionOptions }>();
@@ -220,11 +257,60 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
       
       wss = new WebSocketServer({ port });
 
-      wss.on('connection', (ws) => {
-        ctx.logger.debug('[Realtime] Client connected');
-        
-        // Initialize State
-        clientStates.set(ws, { subscriptions: new Map() });
+      wss.on('connection', async (ws, req) => {
+        ctx.logger.debug('[Realtime] Client connecting...');
+
+        // ── Auth handshake ─────────────────────────────────────────────────
+        if (authConfig.required !== false) {
+          const token = extractToken(req);
+
+          if (!token) {
+            ws.close(4401, 'Authentication required');
+            ctx.logger.debug('[Realtime] Connection rejected: no token');
+            return;
+          }
+
+          try {
+            let userId: string | undefined;
+            let roles: string[] | undefined;
+
+            // Custom validator takes precedence
+            if (authConfig.validator) {
+              const result = await authConfig.validator(token);
+              if (!result.authenticated || !result.userId) {
+                ws.close(4401, result.error ?? 'Invalid session');
+                return;
+              }
+              userId = result.userId;
+              roles = result.roles;
+            } else {
+              // Use kernel auth service when available
+              try {
+                const authService = ctx.getService('auth') as any;
+                const session = await authService.verify(token);
+                if (!session?.userId) {
+                  ws.close(4401, 'Invalid session');
+                  return;
+                }
+                userId = session.userId;
+                roles = session.roles;
+              } catch {
+                ws.close(4401, 'Authentication failed');
+                return;
+              }
+            }
+
+            clientStates.set(ws, { subscriptions: new Map(), userId, roles });
+            ctx.logger.debug(`[Realtime] Authenticated client connected: ${userId}`);
+          } catch {
+            ws.close(4401, 'Authentication failed');
+            return;
+          }
+        } else {
+          // Auth not required (development mode)
+          clientStates.set(ws, { subscriptions: new Map() });
+          ctx.logger.debug('[Realtime] Client connected (auth disabled)');
+        }
 
         ws.on('message', (rawMessage) => {
             try {
@@ -364,10 +450,44 @@ export const createRealtimePlugin = (options: RealtimePluginOptions = {}): Plugi
       });
 
       ctx.logger.info('[Realtime] WebSocket Server started');
+
+      // ── Heartbeat: re-validate sessions every 5 minutes ───────────────
+      if (authConfig.required !== false) {
+        heartbeatInterval = setInterval(async () => {
+          for (const [ws, state] of clientStates) {
+            if (!state.userId || ws.readyState !== WebSocket.OPEN) continue;
+            try {
+              if (authConfig.validator) {
+                // Cannot re-validate without the original token — skip
+                continue;
+              }
+              const authService = ctx.getService('auth') as any;
+              if (authService?.verifySession) {
+                const session = await authService.verifySession(state.userId);
+                if (!session) {
+                  ws.close(4401, 'Session expired');
+                  clientStates.delete(ws);
+                }
+              }
+            } catch {
+              // Non-fatal: keep connection alive
+            }
+          }
+        }, 300_000); // 5 minutes
+
+        if (heartbeatInterval && typeof heartbeatInterval === 'object' && 'unref' in heartbeatInterval) {
+          (heartbeatInterval as NodeJS.Timeout).unref();
+        }
+      }
+
       await ctx.trigger('plugin.started', { pluginId: '@objectos/realtime' });
     },
 
     async destroy() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = undefined;
+      }
       if (wss) {
         wss.clients.forEach(client => client.close());
         wss.close();

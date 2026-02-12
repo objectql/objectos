@@ -194,6 +194,31 @@ export interface JobStorage {
 }
 
 /**
+ * Persistence backend type
+ */
+export type PersistenceBackend = 'memory' | 'persistent';
+
+/**
+ * Dead letter queue entry
+ */
+export interface DeadLetterEntry {
+  /** Unique DLQ entry ID */
+  id: string;
+  /** Original job ID that failed */
+  originalJobId: string;
+  /** Job name/type */
+  name: string;
+  /** Job data payload */
+  data: any;
+  /** Error message from final failure */
+  error: string;
+  /** Timestamp when the job was moved to DLQ */
+  failedAt: Date;
+  /** Number of retry attempts exhausted */
+  retryCount: number;
+}
+
+/**
  * Job plugin configuration
  */
 export interface JobPluginConfig {
@@ -213,6 +238,8 @@ export interface JobPluginConfig {
   storage?: JobStorage;
   /** Whether to enable built-in jobs */
   enableBuiltInJobs?: boolean;
+  /** Persistence backend type */
+  persistence?: PersistenceBackend;
 }
 
 /**
