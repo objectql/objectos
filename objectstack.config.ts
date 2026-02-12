@@ -20,6 +20,7 @@ import { NotificationPlugin } from '@objectos/notification';
 import { PermissionsPlugin } from '@objectos/permissions';
 import { createRealtimePlugin } from '@objectos/realtime';
 import { StoragePlugin } from '@objectos/storage';
+import { TelemetryPlugin } from '@objectos/telemetry';
 import { UIPlugin } from '@objectos/ui';
 import { WorkflowPlugin } from '@objectos/workflow';
 import { resolve } from 'path';
@@ -64,6 +65,15 @@ export default defineStack({
     new MetricsPlugin(),
     new CachePlugin(),
     new StoragePlugin(),
+    new TelemetryPlugin({
+      serviceName: 'objectos',
+      serviceVersion: '0.1.0',
+      environment: process.env.NODE_ENV || 'development',
+      exporter: {
+        protocol: (process.env.OTEL_EXPORTER_PROTOCOL as any) || 'none',
+        endpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318/v1/traces',
+      },
+    }),
 
     // Core
     new AuthPlugin({
@@ -76,7 +86,9 @@ export default defineStack({
       })(),
       baseUrl: process.env.BETTER_AUTH_URL || 'http://localhost:5320',
     }),
-    new PermissionsPlugin(),
+    new PermissionsPlugin({
+      tenantIsolation: true,
+    }),
     new AuditLogPlugin(),
 
     // Logic
