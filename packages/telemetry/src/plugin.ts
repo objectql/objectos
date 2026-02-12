@@ -28,7 +28,7 @@ import type {
     PluginSecurityManifest,
     PluginStartupResult,
 } from './types.js';
-import { SpanManager, SpanBuilder, extractTraceContext, injectTraceContext } from './span-manager.js';
+import { SpanManager, SpanBuilder, NOOP_SPAN_BUILDER, extractTraceContext, injectTraceContext } from './span-manager.js';
 import { createExporter } from './exporters.js';
 
 /**
@@ -166,7 +166,7 @@ export class TelemetryPlugin implements Plugin {
         options?: { kind?: 'internal' | 'server' | 'client'; attributes?: SpanAttributes; parentContext?: SpanContext },
     ): Promise<T> {
         if (!this.config.enabled || !this.spanManager.shouldSample()) {
-            return fn(null as any); // pass null when not sampled; fn should handle gracefully
+            return fn(NOOP_SPAN_BUILDER);
         }
 
         const span = this.spanManager.startSpan(name, options?.parentContext);

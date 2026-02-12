@@ -190,6 +190,44 @@ export class SpanBuilder {
     }
 }
 
+// ─── No-op Span Builder ────────────────────────────────────────────────────────
+
+const NOOP_SPAN: Span = {
+    traceId: '0'.repeat(32),
+    spanId: '0'.repeat(16),
+    name: 'noop',
+    kind: 'internal',
+    startTime: 0,
+    endTime: 0,
+    duration: 0,
+    status: 'unset',
+    attributes: {},
+    events: [],
+    links: [],
+    resource: {},
+};
+
+/**
+ * No-op SpanBuilder — all methods are safe to call but do nothing.
+ * Used when sampling is disabled to avoid null-checks in caller code.
+ */
+export class NoopSpanBuilder extends SpanBuilder {
+    constructor() {
+        super('noop', {}, () => {});
+    }
+
+    override setKind(): this { return this; }
+    override setAttribute(): this { return this; }
+    override setAttributes(): this { return this; }
+    override addEvent(): this { return this; }
+    override addLink(): this { return this; }
+    override getContext(): SpanContext { return { traceId: '0'.repeat(32), spanId: '0'.repeat(16), traceFlags: 0 }; }
+    override end(): Span { return NOOP_SPAN; }
+}
+
+/** Singleton no-op span builder */
+export const NOOP_SPAN_BUILDER = new NoopSpanBuilder();
+
 // ─── Span Manager ──────────────────────────────────────────────────────────────
 
 /**
@@ -199,7 +237,7 @@ export class SpanManager {
     private buffer: Span[] = [];
     private exporter?: SpanExporter;
     private resource: SpanAttributes;
-    private config: Required<Pick<TelemetryConfig, 'samplingRate' | 'maxBufferSize' | 'maxAttributes' | 'maxEvents'>>;
+    private config: Required<Pick<TelemetryConfig, 'samplingRate' | 'maxBufferSize' | 'maxAttributes' | 'maxEvents'>> & { batchSize: number };
     private exportTimer?: ReturnType<typeof setInterval>;
     private totalSpansCreated = 0;
     private totalSpansExported = 0;
@@ -212,6 +250,7 @@ export class SpanManager {
             maxBufferSize: config.maxBufferSize ?? 2048,
             maxAttributes: config.maxAttributes ?? 128,
             maxEvents: config.maxEvents ?? 128,
+            batchSize: config.exporter?.batchSize ?? 512,
         };
 
         this.resource = {
@@ -275,8 +314,7 @@ export class SpanManager {
         this.buffer.push(span);
 
         // Auto-flush when batch size is reached
-        const batchSize = 512;
-        if (this.buffer.length >= batchSize && this.exporter) {
+        if (this.buffer.length >= this.config.batchSize && this.exporter) {
             this.flush().catch(() => { /* swallow */ });
         }
     }

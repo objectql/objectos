@@ -48,6 +48,8 @@ export {
 export {
     SpanManager,
     SpanBuilder,
+    NoopSpanBuilder,
+    NOOP_SPAN_BUILDER,
     generateTraceId,
     generateSpanId,
     parseTraceparent,
