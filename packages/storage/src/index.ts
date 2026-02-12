@@ -10,3 +10,4 @@ export * from './plugin.js';
 export * from './schema-differ.js';
 export * from './migration-runner.js';
 export * from './migration-generator.js';
+export * from './migration-cli.js';

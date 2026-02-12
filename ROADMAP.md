@@ -258,11 +258,11 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 | # | Task | TD | Priority | Status |
 |---|------|:--:|:--------:|:------:|
-| M.2.1 | Event bus persistence — `PersistentJobStorage` backed by SQLite via `@objectos/storage` | TD-1 | 🟡 | ⬜ |
-| M.2.2 | Dead Letter Queue + Replay API — DLQ table, `replayEvent()`, admin endpoint | TD-1 | 🟡 | ⬜ |
-| M.2.3 | Schema migration engine — `SchemaDiffer`, `MigrationGenerator`, `MigrationRunner` | TD-2 | 🟡 | ⬜ |
-| M.2.4 | `objectstack migrate` CLI — up/down/status commands | TD-2 | 🟡 | ⬜ |
-| M.2.5 | Browser sync E2E tests — 5 Playwright tests covering full sync lifecycle | TD-6 | 🟡 | ⬜ |
+| M.2.1 | Event bus persistence — `PersistentJobStorage` backed by `@objectos/storage` | TD-1 | 🟡 | ✅ |
+| M.2.2 | Dead Letter Queue + Replay API — DLQ, `replayDeadLetter()`, `purgeDeadLetters()` | TD-1 | 🟡 | ✅ |
+| M.2.3 | Schema migration engine — `SchemaDiffer`, `MigrationGenerator`, `MigrationRunnerImpl` | TD-2 | 🟡 | ✅ |
+| M.2.4 | `objectstack migrate` CLI — `MigrationCLI` with up/down/status commands | TD-2 | 🟡 | ✅ |
+| M.2.5 | Browser sync E2E tests — 5 Playwright specs covering sync lifecycle | TD-6 | 🟡 | ✅ |
 
 ### M.3 — Platform Hardening (v2.0.0 — Target: September 2026)
 
@@ -440,12 +440,12 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 | # | Area | Details | Priority | Phase | Status |
 |---|------|---------|:--------:|:-----:|:------:|
-| 1 | Event bus persistence | In-memory only; no DLQ or replay | 🟡 | M.2 | ⬜ |
-| 2 | Schema migrations | No version-controlled schema evolution | 🟡 | M.2 | ⬜ |
+| 1 | Event bus persistence | `PersistentJobStorage` with DLQ and replay | 🟡 | M.2 | ✅ |
+| 2 | Schema migrations | `SchemaDiffer` + `MigrationRunnerImpl` + `MigrationCLI` | 🟡 | M.2 | ✅ |
 | 3 | Rate limiting | Sliding-window counter on `/api/v1/*` | 🔴 | M.1 | ✅ |
 | 4 | Input sanitization | Body limit + XSS strip + content-type guard + Zod validate | 🔴 | M.1 | ✅ |
 | 5 | Realtime auth | WebSocket auth enforced via cookie/protocol/query token | 🟡 | M.1 | ✅ |
-| 6 | Browser sync E2E | Sync protocol needs E2E testing | 🟡 | M.2 | ⬜ |
+| 6 | Browser sync E2E | 5 Playwright E2E test specs for sync lifecycle | 🟡 | M.2 | ✅ |
 | 7 | Plugin isolation | Plugins share process | 🟢 | M.3 | ⬜ |
 | 8 | Mock data dependency | DevDataProvider + tree-shaking via `__mocks__/` | 🟡 | M.1 | ✅ |
 
