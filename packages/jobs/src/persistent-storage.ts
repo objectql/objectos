@@ -1,8 +1,8 @@
 /**
  * Persistent Job Storage
  * 
- * SQLite-backed implementation of JobStorage using the @objectos/storage
- * StorageBackend interface for KV persistence. Also provides Dead Letter Queue
+ * KV-backed implementation of JobStorage using the @objectos/storage
+ * StorageBackend interface for persistence. Also provides Dead Letter Queue
  * functionality for jobs that exhaust all retries.
  */
 
