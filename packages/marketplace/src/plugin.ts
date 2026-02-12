@@ -72,7 +72,7 @@ export class MarketplacePlugin implements Plugin {
   constructor(config: MarketplaceConfig = {}) {
     this.config = resolveConfig(config);
     this.registry = new PluginRegistry();
-    this.installer = new PluginInstaller(this.registry);
+    this.installer = new PluginInstaller(this.registry, { objectos: '0.1.0' });
     this.sandbox = new PluginSandbox();
   }
 
@@ -82,6 +82,10 @@ export class MarketplacePlugin implements Plugin {
   init = async (context: PluginContext): Promise<void> => {
     this.context = context;
     this.startedAt = Date.now();
+
+    // Re-initialize installer with runtime version from context if available
+    const runtimeVersion = (context as any).broker?.version ?? this.version;
+    this.installer = new PluginInstaller(this.registry, { objectos: runtimeVersion });
 
     // Register marketplace service
     context.registerService('marketplace', this);
