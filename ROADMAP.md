@@ -1,8 +1,8 @@
 # ObjectOS Roadmap
 
-> **Version**: 8.0.0
+> **Version**: 9.0.0
 > **Date**: February 12, 2026
-> **Status**: Phase M — Technical Debt Resolution ✅ COMPLETE
+> **Status**: Phase N — Enterprise Features 🔄 In Progress
 > **Spec SDK**: `@objectstack/spec@2.0.7`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
@@ -48,6 +48,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | Permissions | `@objectos/permissions` | ✅ |
 | Realtime | `@objectos/realtime` | ✅ |
 | Storage | `@objectos/storage` | ✅ |
+| Telemetry | `@objectos/telemetry` | ✅ |
 | Workflow | `@objectos/workflow` | ✅ |
 
 **Server Metrics**: 21,947 source lines · 107 TypeScript files · 47 test files · 350+ tests
@@ -97,7 +98,8 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | J | Workflow & Automation UI | Feb 2026 | ✅ |
 | K | Offline & Sync | Feb 2026 | ✅ |
 | L | Polish & Performance | Feb 2026 | ✅ |
-| **M** | **Technical Debt Resolution** | **Feb–Sep 2026** | **🔄 In Progress** |
+| **M** | **Technical Debt Resolution** | **Feb–Sep 2026** | **✅ Complete** |
+| **N** | **Enterprise Features** | **Feb 2026** | **🔄 In Progress** |
 
 ### Phase G Outcomes
 
@@ -274,6 +276,42 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 ---
 
+## Phase N — Enterprise Features (Current — Feb 2026)
+
+Enterprise-grade capabilities for production multi-tenant deployments and observability.
+
+### N.1 — OpenTelemetry Integration (`@objectos/telemetry`)
+
+New plugin providing OpenTelemetry-compatible distributed tracing.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| N.1.1 | TelemetryPlugin with span management and buffered export | 🔴 | ✅ |
+| N.1.2 | W3C Trace Context propagation (traceparent / tracestate) | 🔴 | ✅ |
+| N.1.3 | Automatic HTTP request instrumentation (Hono middleware) | 🔴 | ✅ |
+| N.1.4 | Data operation span creation (CRUD hooks) | 🟡 | ✅ |
+| N.1.5 | Plugin lifecycle tracing (load/enable hooks) | 🟡 | ✅ |
+| N.1.6 | OTLP HTTP exporter (Jaeger, Zipkin, Grafana Tempo compatible) | 🔴 | ✅ |
+| N.1.7 | Console exporter for development | 🟢 | ✅ |
+| N.1.8 | Probabilistic sampling with configurable rate | 🟡 | ✅ |
+| N.1.9 | Telemetry stats API (`/api/v1/telemetry/stats`) | 🟢 | ✅ |
+
+### N.2 — Multi-tenancy Data Isolation
+
+Extend permissions system with organization-scoped data access control.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| N.2.1 | Add `organizationId` to `PermissionContext` | 🔴 | ✅ |
+| N.2.2 | Add `TenantContext` type for middleware integration | 🔴 | ✅ |
+| N.2.3 | Automatic tenant field stamping on write operations (create/update) | 🔴 | ✅ |
+| N.2.4 | Automatic tenant filter on read operations (find/delete) | 🔴 | ✅ |
+| N.2.5 | Configurable tenant field name (`tenantIsolation`, `tenantField`) | 🟡 | ✅ |
+| N.2.6 | Metadata fallback for `organizationId` extraction | 🟡 | ✅ |
+| N.2.7 | 12 tenant isolation tests (write, read, custom field, disabled) | 🟡 | ✅ |
+
+---
+
 ## Release Timeline
 
 ### v1.0.0 — Production Release (Target: March 2026)
@@ -312,8 +350,8 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 - Phase J.3-J.6: Full Workflow & Automation UI ✅
 - Phase K: Offline & Sync ✅
-- Multi-tenancy data isolation
-- OpenTelemetry integration
+- Multi-tenancy data isolation ✅ Phase N.2
+- OpenTelemetry integration ✅ Phase N.1
 
 ### v2.0.0 — Platform (Target: September 2026)
 

@@ -97,6 +97,11 @@ export class PermissionsPlugin implements Plugin {
         // Subscribe to data.* hooks for permission checking
         await this.setupEventListeners(context);
 
+        // Set up tenant isolation hooks (independent of permission checking)
+        if (this.config.tenantIsolation) {
+            await this.setupTenantIsolation(context);
+        }
+
         context.logger.info('[Permissions Plugin] Initialized successfully');
 
         await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
@@ -238,29 +243,45 @@ export class PermissionsPlugin implements Plugin {
         // Hook into data operations for permission checking (PRE-Operation)
         context.hook('data.beforeCreate', async (data: any) => {
             await this.checkDataPermission(data, 'create');
-            this.applyTenantToWrite(data);
         });
 
         context.hook('data.beforeUpdate', async (data: any) => {
             await this.checkDataPermission(data, 'update');
-            this.applyTenantToWrite(data);
         });
 
         context.hook('data.beforeDelete', async (data: any) => {
             await this.checkDataPermission(data, 'delete');
-            this.applyTenantFilter(data);
         });
 
         context.hook('data.beforeFind', async (data: any) => {
             await this.applyRecordLevelSecurity(data);
-            this.applyTenantFilter(data);
         });
 
         this.context?.logger.info('[Permissions Plugin] Event listeners registered');
+    }
 
-        if (this.config.tenantIsolation) {
-            this.context?.logger.info(`[Permissions Plugin] Tenant isolation enabled (field: ${this.config.tenantField})`);
-        }
+    /**
+     * Set up tenant isolation hooks — separate from permission checking.
+     * These hooks run independently and enforce organization-scoped data access.
+     */
+    private async setupTenantIsolation(context: PluginContext): Promise<void> {
+        context.hook('data.beforeCreate', async (data: any) => {
+            this.applyTenantToWrite(data);
+        });
+
+        context.hook('data.beforeUpdate', async (data: any) => {
+            this.applyTenantToWrite(data);
+        });
+
+        context.hook('data.beforeDelete', async (data: any) => {
+            this.applyTenantFilter(data);
+        });
+
+        context.hook('data.beforeFind', async (data: any) => {
+            this.applyTenantFilter(data);
+        });
+
+        context.logger.info(`[Permissions Plugin] Tenant isolation enabled (field: ${this.config.tenantField})`);
     }
 
     /**
