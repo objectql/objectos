@@ -11,6 +11,12 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.0
         version: 1.19.9(hono@4.11.7)
+      '@objectos/agent':
+        specifier: workspace:*
+        version: link:packages/agent
+      '@objectos/analytics':
+        specifier: workspace:*
+        version: link:packages/analytics
       '@objectos/audit':
         specifier: workspace:*
         version: link:packages/audit
@@ -20,6 +26,9 @@ importers:
       '@objectos/cache':
         specifier: workspace:*
         version: link:packages/cache
+      '@objectos/federation':
+        specifier: workspace:*
+        version: link:packages/federation
       '@objectos/graphql':
         specifier: workspace:*
         version: link:packages/graphql
@@ -29,6 +38,9 @@ importers:
       '@objectos/jobs':
         specifier: workspace:*
         version: link:packages/jobs
+      '@objectos/marketplace':
+        specifier: workspace:*
+        version: link:packages/marketplace
       '@objectos/metrics':
         specifier: workspace:*
         version: link:packages/metrics
