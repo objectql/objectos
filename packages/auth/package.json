@@ -16,8 +16,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@objectstack/runtime": "^3.0.0",
-    "@objectstack/spec": "3.0.0",
+    "@objectstack/runtime": "^3.0.1",
+    "@objectstack/spec": "3.0.1",
     "better-auth": "^1.4.18",
     "better-sqlite3": "^12.6.0",
     "mongodb": "^7.0.0",

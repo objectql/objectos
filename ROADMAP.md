@@ -1,9 +1,9 @@
 # ObjectOS Roadmap
 
-> **Version**: 14.0.0
+> **Version**: 14.1.0
 > **Date**: February 12, 2026
 > **Status**: Phase P — Developer Experience ✅ Complete
-> **Spec SDK**: `@objectstack/spec@3.0.0`
+> **Spec SDK**: `@objectstack/spec@3.0.1`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
 ---
@@ -16,15 +16,14 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 
 **All roadmap phases are now complete.** The platform is production-ready with comprehensive developer tooling, coverage reporting, plugin scaffolding, and environment health checks.
 
-> **@objectstack/\* v3.0.0 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.0 — the new major version aligns the protocol spec, runtime, CLI, client, and all plugins to the 3.x series.
+> **@objectstack/\* v3.0.1 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.1 — the latest patch release of the 3.x series, bringing bug fixes and performance improvements while maintaining full protocol compatibility.
 
 ### What Changed
 
-| Before (Plan v13.0)                              | After (Plan v14.0 — This Roadmap)                                                            |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| P.3.2–P.3.4 incomplete (coverage, CI, snapshots) | Phase P.3 Test Infrastructure ✅ complete (coverage thresholds, CI aggregation, guidelines)   |
-| P.4.2–P.4.3 incomplete (plugin template, doctor) | Phase P.4 Developer Onboarding ✅ complete (plugin scaffold, doctor checks)                  |
-| Phase P still in progress                        | **All phases A–P complete** — platform fully developed                                       |
+| Before (Plan v14.0)                | After (Plan v14.1 — This Roadmap)                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| @objectstack/\* packages at v3.0.0 | **@objectstack/\* packages upgraded to v3.0.1** — latest patch release with bug fixes and improvements |
+| Spec SDK at 3.0.0                  | Spec SDK updated to 3.0.1 — full protocol compatibility maintained                                     |
 
 ---
 
@@ -87,24 +86,24 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 
 ## Completed Phases
 
-| Phase | Focus                                                  |     Timeline     |       Status       |
-| :---: | ------------------------------------------------------ | :--------------: | :----------------: |
-|   A   | Kernel Compliance Baseline                             |     Oct 2025     |         ✅         |
-|   B   | Security & Audit Parity                                |     Nov 2025     |         ✅         |
-|   C   | Workflow & Automation Spec Execution                   |     Nov 2025     |         ✅         |
-|   D   | Realtime Protocol Compliance                           |     Dec 2025     |         ✅         |
-|   E   | Operational Readiness                                  |     Dec 2025     |         ✅         |
-|   F   | Release Candidate (Security, Performance, Docker, E2E) |     Jan 2026     |         ✅         |
-|   G   | Spec Protocol Alignment + Admin Console                |     Feb 2026     |         ✅         |
-|   H   | @object-ui Driven Development                          |     Feb 2026     |         ✅         |
-|   I   | Rich Data Experience                                   |     Feb 2026     |         ✅         |
-|   J   | Workflow & Automation UI                               |     Feb 2026     |         ✅         |
-|   K   | Offline & Sync                                         |     Feb 2026     |         ✅         |
-|   L   | Polish & Performance                                   |     Feb 2026     |         ✅         |
-| **M** | **Technical Debt Resolution**                          | **Feb–Sep 2026** |  **✅ Complete**   |
-| **N** | **Enterprise Features**                                |   **Feb 2026**   |  **✅ Complete**   |
-| **O** | **Platform Expansion**                                 |   **Feb 2026**   |  **✅ Complete**   |
-| **P** | **Developer Experience**                               | **Feb–Apr 2026** | **✅ Complete**    |
+| Phase | Focus                                                  |     Timeline     |     Status      |
+| :---: | ------------------------------------------------------ | :--------------: | :-------------: |
+|   A   | Kernel Compliance Baseline                             |     Oct 2025     |       ✅        |
+|   B   | Security & Audit Parity                                |     Nov 2025     |       ✅        |
+|   C   | Workflow & Automation Spec Execution                   |     Nov 2025     |       ✅        |
+|   D   | Realtime Protocol Compliance                           |     Dec 2025     |       ✅        |
+|   E   | Operational Readiness                                  |     Dec 2025     |       ✅        |
+|   F   | Release Candidate (Security, Performance, Docker, E2E) |     Jan 2026     |       ✅        |
+|   G   | Spec Protocol Alignment + Admin Console                |     Feb 2026     |       ✅        |
+|   H   | @object-ui Driven Development                          |     Feb 2026     |       ✅        |
+|   I   | Rich Data Experience                                   |     Feb 2026     |       ✅        |
+|   J   | Workflow & Automation UI                               |     Feb 2026     |       ✅        |
+|   K   | Offline & Sync                                         |     Feb 2026     |       ✅        |
+|   L   | Polish & Performance                                   |     Feb 2026     |       ✅        |
+| **M** | **Technical Debt Resolution**                          | **Feb–Sep 2026** | **✅ Complete** |
+| **N** | **Enterprise Features**                                |   **Feb 2026**   | **✅ Complete** |
+| **O** | **Platform Expansion**                                 |   **Feb 2026**   | **✅ Complete** |
+| **P** | **Developer Experience**                               | **Feb–Apr 2026** | **✅ Complete** |
 
 ### Phase G Outcomes
 
@@ -400,17 +399,17 @@ Metadata-driven analytics and reporting engine.
 
 A comprehensive scan of the entire codebase identified the following improvement areas:
 
-| Area          | Finding                                                                                                  | Severity |  Status  |
-| ------------- | -------------------------------------------------------------------------------------------------------- | :------: | :------: |
-| Documentation | CONTRIBUTING.md referenced non-existent packages (`kernel`, `server`, `presets`) and wrong prerequisites |    🔴    | ✅ Fixed |
-| Documentation | 8 of 20 packages missing README.md files                                                                 |    🔴    | ✅ Fixed |
-| Documentation | No quickstart guide or troubleshooting guide in docs/                                                    |    🟡    | ✅ Fixed |
-| Tooling       | No ESLint or Prettier configuration across the monorepo                                                  |    🔴    | ✅ Fixed |
-| Tooling       | No `.editorconfig` for consistent formatting                                                             |    🟡    | ✅ Fixed |
-| Tooling       | No pre-commit hooks (Husky/lint-staged)                                                                  |    🟡    | ✅ Fixed |
+| Area          | Finding                                                                                                  | Severity |                             Status                              |
+| ------------- | -------------------------------------------------------------------------------------------------------- | :------: | :-------------------------------------------------------------: |
+| Documentation | CONTRIBUTING.md referenced non-existent packages (`kernel`, `server`, `presets`) and wrong prerequisites |    🔴    |                            ✅ Fixed                             |
+| Documentation | 8 of 20 packages missing README.md files                                                                 |    🔴    |                            ✅ Fixed                             |
+| Documentation | No quickstart guide or troubleshooting guide in docs/                                                    |    🟡    |                            ✅ Fixed                             |
+| Tooling       | No ESLint or Prettier configuration across the monorepo                                                  |    🔴    |                            ✅ Fixed                             |
+| Tooling       | No `.editorconfig` for consistent formatting                                                             |    🟡    |                            ✅ Fixed                             |
+| Tooling       | No pre-commit hooks (Husky/lint-staged)                                                                  |    🟡    |                            ✅ Fixed                             |
 | Consistency   | Mixed test frameworks — 16 packages use Jest, 4 use Vitest                                               |    🟡    | ⬜ P.3 (ADR-001: Vitest selected, migration tracked separately) |
-| Consistency   | Only 1 package has `clean`/`type-check` scripts; others missing                                          |    🟡    | ✅ Fixed |
-| Consistency   | No package has a `lint` script defined                                                                   |    🟡    | ✅ Fixed |
+| Consistency   | Only 1 package has `clean`/`type-check` scripts; others missing                                          |    🟡    |                            ✅ Fixed                             |
+| Consistency   | No package has a `lint` script defined                                                                   |    🟡    |                            ✅ Fixed                             |
 
 ### P.1 — Documentation Accuracy (v2.1.0 — Target: February 2026)
 
@@ -681,14 +680,14 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 | Dependency                        | Version | Role                           |
 | --------------------------------- | ------- | ------------------------------ |
-| `@objectstack/runtime`            | 3.0.0   | Microkernel — plugin lifecycle |
-| `@objectstack/spec`               | 3.0.0   | Protocol contracts             |
-| `@objectstack/cli`                | 3.0.0   | Server bootstrap               |
+| `@objectstack/runtime`            | 3.0.1   | Microkernel — plugin lifecycle |
+| `@objectstack/spec`               | 3.0.1   | Protocol contracts             |
+| `@objectstack/cli`                | 3.0.1   | Server bootstrap               |
 | `@objectstack/client`             | 3.0.0   | Frontend SDK                   |
-| `@objectstack/objectql`           | 3.0.0   | ObjectQL plugin                |
-| `@objectstack/driver-memory`      | 3.0.0   | In-memory driver               |
-| `@objectstack/plugin-hono-server` | 3.0.0   | Hono HTTP server               |
-| `@objectstack/plugin-auth`        | 3.0.0   | Authentication                 |
+| `@objectstack/objectql`           | 3.0.1   | ObjectQL plugin                |
+| `@objectstack/driver-memory`      | 3.0.1   | In-memory driver               |
+| `@objectstack/plugin-hono-server` | 3.0.1   | Hono HTTP server               |
+| `@objectstack/plugin-auth`        | 3.0.1   | Authentication                 |
 | `@object-ui/core`                 | 2.0.0   | UI core logic                  |
 | `@object-ui/react`                | 2.0.0   | React components               |
 | `@object-ui/components`           | 2.0.0   | Standard controls              |
@@ -722,5 +721,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v14.0.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.0</sub>
+<sub>ObjectOS v14.1.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.1</sub>
 </div>
