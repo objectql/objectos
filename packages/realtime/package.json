@@ -11,8 +11,8 @@
     "test": "jest --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^2.0.7",
-    "@objectstack/spec": "2.0.7",
+    "@objectstack/runtime": "^3.0.0",
+    "@objectstack/spec": "3.0.0",
     "ws": "^8.16.0"
   },
   "devDependencies": {

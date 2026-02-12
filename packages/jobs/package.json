@@ -11,8 +11,8 @@
     "test": "jest --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@objectstack/runtime": "^2.0.7",
-    "@objectstack/spec": "2.0.7",
+    "@objectstack/runtime": "^3.0.0",
+    "@objectstack/spec": "3.0.0",
     "cron-parser": "^4.9.0"
   },
   "devDependencies": {

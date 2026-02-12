@@ -1,38 +1,36 @@
 # ObjectOS Roadmap
 
-> **Version**: 9.0.0
+> **Version**: 10.0.0
 > **Date**: February 12, 2026
-> **Status**: Phase N — Enterprise Features 🔄 In Progress
-> **Spec SDK**: `@objectstack/spec@2.0.7`
+> **Status**: Phase O — Platform Expansion 🔄 In Progress
+> **Spec SDK**: `@objectstack/spec@3.0.0`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
 ---
 
 ## Executive Summary
 
-ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 13 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–L are complete**. The platform now enters **Phase M — Technical Debt Resolution**, addressing 8 identified technical debt items critical for production readiness.
+ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 14 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–N are complete**. The platform now enters **Phase O — Platform Expansion**, focusing on GraphQL, Plugin Marketplace, and AI Agent Framework.
 
 The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift: the Admin Console's Business App Shell now leverages @object-ui's `SchemaRenderer` for metadata-driven UI rendering, replacing hand-built components with protocol-compliant controls.
 
-> **Technical Debt Resolution**: Detailed technical proposals for all 8 debt items are documented in [Technical Debt Resolution Guide](docs/guide/technical-debt-resolution.md).
+> **@objectstack/* v3.0.0 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.0 — the new major version aligns the protocol spec, runtime, CLI, client, and all plugins to the 3.x series.
 
 ### What Changed
 
-| Before (Plan v5.0) | After (Plan v7.0 — This Roadmap) |
+| Before (Plan v9.0) | After (Plan v10.0 — This Roadmap) |
 |---|---|
-| @object-ui listed as v1.1 future work | @object-ui v2.0.0 already installed and integrated |
-| Hand-built DataGrid, MetadataForm, KanbanBoard | @object-ui SchemaRenderer as primary rendering engine |
-| ObjectUI integration planned for April 2026 | ObjectUI integration active **now** — February 2026 |
-| Business App Shell was Phase 1 "foundation" | Business App Shell upgraded to @object-ui powered |
-| Custom field renderers for each type | @object-ui/fields provides field registry |
-| @objectstack/* packages at v2.0.6 | @objectstack/* packages upgraded to v2.0.7 |
-| Technical debt deferred | Phase M — Technical Debt Resolution with detailed proposals |
+| @objectstack/* packages at v2.0.7 | @objectstack/* packages upgraded to v3.0.0 |
+| Phase N — Enterprise Features in progress | Phase N — Enterprise Features ✅ complete |
+| Telemetry + Multi-tenancy planned | Telemetry + Multi-tenancy fully implemented |
+| Platform Expansion deferred | Phase O — Platform Expansion 🔄 in progress |
+| @object-ui v2.0.0 installed | @object-ui v2.0.0 (no change) |
 
 ---
 
 ## Current State (February 2026)
 
-### Server — ✅ Complete (13 Plugins)
+### Server — ✅ Complete (14 Plugins)
 
 | Plugin | Package | Status |
 |--------|---------|:------:|
@@ -51,7 +49,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | Telemetry | `@objectos/telemetry` | ✅ |
 | Workflow | `@objectos/workflow` | ✅ |
 
-**Server Metrics**: 21,947 source lines · 107 TypeScript files · 47 test files · 350+ tests
+**Server Metrics**: 22,000+ source lines · 110+ TypeScript files · 50+ test files · 370+ tests
 
 ### Frontend — ✅ Phase I Complete
 
@@ -99,12 +97,13 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | K | Offline & Sync | Feb 2026 | ✅ |
 | L | Polish & Performance | Feb 2026 | ✅ |
 | **M** | **Technical Debt Resolution** | **Feb–Sep 2026** | **✅ Complete** |
-| **N** | **Enterprise Features** | **Feb 2026** | **🔄 In Progress** |
+| **N** | **Enterprise Features** | **Feb 2026** | **✅ Complete** |
+| **O** | **Platform Expansion** | **Feb 2026** | **🔄 In Progress** |
 
 ### Phase G Outcomes
 
 - ✅ All 10 core plugins adopt `@objectstack/spec/contracts` interfaces
-- ✅ @objectstack/* packages upgraded to v2.0.7
+- ✅ @objectstack/* packages upgraded to v3.0.0
 - ✅ @object-ui v2.0.0 packages installed in apps/web
 - ✅ ObjectStack data adapter created (`object-ui-adapter.ts`)
 - ✅ SchemaRenderer integration example working
@@ -276,7 +275,7 @@ Integrate `@objectos/browser` with the Admin Console for offline-first capabilit
 
 ---
 
-## Phase N — Enterprise Features (Current — Feb 2026)
+## Phase N — Enterprise Features (✅ Complete — Feb 2026)
 
 Enterprise-grade capabilities for production multi-tenant deployments and observability.
 
@@ -310,6 +309,81 @@ Extend permissions system with organization-scoped data access control.
 | N.2.6 | Metadata fallback for `organizationId` extraction | 🟡 | ✅ |
 | N.2.7 | 12 tenant isolation tests (write, read, custom field, disabled) | 🟡 | ✅ |
 
+### N.3 — @objectstack/* v3.0.0 Upgrade
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| N.3.1 | Upgrade all @objectstack/* packages from v2.0.7 to v3.0.0 | 🔴 | ✅ |
+| N.3.2 | Update pnpm-lock.yaml with new dependency tree | 🔴 | ✅ |
+| N.3.3 | Verify build and test compatibility with v3.0.0 | 🔴 | ✅ |
+| N.3.4 | Update documentation references (ROADMAP, DEVELOPMENT_PLAN) | 🟡 | ✅ |
+
+---
+
+## Phase O — Platform Expansion (Current — Feb 2026)
+
+Building towards the v2.0.0 platform release with extensibility, AI, and advanced query capabilities.
+
+### O.1 — Full GraphQL Layer
+
+Complete GraphQL API alongside existing REST endpoints.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| O.1.1 | GraphQL schema generation from ObjectStack metadata | 🔴 | ⬜ |
+| O.1.2 | Query resolvers with permission enforcement | 🔴 | ⬜ |
+| O.1.3 | Mutation resolvers with audit logging | 🔴 | ⬜ |
+| O.1.4 | Subscription support via WebSocket | 🟡 | ⬜ |
+| O.1.5 | DataLoader pattern for N+1 prevention | 🟡 | ⬜ |
+| O.1.6 | GraphQL Playground / Explorer integration | 🟢 | ⬜ |
+
+### O.2 — Plugin Marketplace
+
+Enable discovery, installation, and management of community plugins.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| O.2.1 | Plugin registry API (`/api/v1/plugins/registry`) | 🔴 | ⬜ |
+| O.2.2 | Plugin manifest validation and dependency resolution | 🔴 | ⬜ |
+| O.2.3 | Dynamic plugin installation from registry | 🟡 | ⬜ |
+| O.2.4 | Plugin versioning and upgrade paths | 🟡 | ⬜ |
+| O.2.5 | Admin Console marketplace UI page | 🟡 | ⬜ |
+| O.2.6 | Plugin sandboxing and security review | 🟢 | ⬜ |
+
+### O.3 — AI Agent Framework
+
+Integrate LLM-powered agents into the ObjectOS kernel.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| O.3.1 | Agent plugin interface and lifecycle hooks | 🔴 | ⬜ |
+| O.3.2 | Tool registry for agent actions (CRUD, workflow, notification) | 🔴 | ⬜ |
+| O.3.3 | Conversation context with tenant isolation | 🟡 | ⬜ |
+| O.3.4 | Agent orchestration (multi-step reasoning) | 🟡 | ⬜ |
+| O.3.5 | Admin Console AI assistant page | 🟢 | ⬜ |
+| O.3.6 | Agent audit logging and cost tracking | 🟢 | ⬜ |
+
+### O.4 — Analytics Plugin
+
+Metadata-driven analytics and reporting engine.
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| O.4.1 | Analytics plugin with aggregation pipeline | 🔴 | ⬜ |
+| O.4.2 | Report definition format (YAML/JSON) | 🟡 | ⬜ |
+| O.4.3 | Dashboard widget system | 🟡 | ⬜ |
+| O.4.4 | Scheduled report generation via Jobs | 🟢 | ⬜ |
+| O.4.5 | Admin Console analytics dashboard page | 🟢 | ⬜ |
+
+### O.5 — Dynamic Plugin Loading (Module Federation)
+
+| # | Task | Priority | Status |
+|---|------|:--------:|:------:|
+| O.5.1 | Module Federation host configuration | 🔴 | ⬜ |
+| O.5.2 | Remote plugin loading at runtime | 🔴 | ⬜ |
+| O.5.3 | Shared dependency management | 🟡 | ⬜ |
+| O.5.4 | Hot-reload support for development | 🟢 | ⬜ |
+
 ---
 
 ## Release Timeline
@@ -318,9 +392,9 @@ Extend permissions system with organization-scoped data access control.
 
 | Criterion | Status |
 |-----------|:------:|
-| All 13 plugins implemented | ✅ |
+| All 14 plugins implemented | ✅ |
 | Spec compliance 100% | ✅ |
-| Admin Console operational (29 pages) | ✅ |
+| Admin Console operational (31 pages) | ✅ |
 | Security review passed | ✅ |
 | Integration test suite | ✅ |
 | Performance baseline (P95 < 100ms) | ✅ |
@@ -358,11 +432,12 @@ Extend permissions system with organization-scoped data access control.
 - Phase L: Polish & Performance ✅
 - Phase M.3: Platform Hardening ✅
   - Plugin isolation (Worker Threads + Child Process) (TD-7) ✅
-- Plugin Marketplace
-- Dynamic Plugin Loading (Module Federation)
-- AI Agent Framework
-- Full GraphQL layer
-- Analytics plugin
+- @objectstack/* v3.0.0 upgrade ✅ Phase N.3
+- Phase O.1: Full GraphQL layer
+- Phase O.2: Plugin Marketplace
+- Phase O.3: AI Agent Framework
+- Phase O.4: Analytics plugin
+- Phase O.5: Dynamic Plugin Loading (Module Federation)
 
 ### Master Timeline
 
@@ -386,12 +461,16 @@ Feb 2026                                                    Sep 2026
   │                                      v1.1.0 Release       │
   │                                             │              │
   ├── Phase K: Offline & Sync ──────────────────┤              │
+  ├── Phase N: Enterprise Features ─────────────┤              │
+  │   (Telemetry, Multi-tenancy, SDK v3.0.0)   │              │
   │                                             ▼              │
   │                                      v1.2.0 Release       │
   │                                             │              │
   ├── Phase L: Polish & Performance ────────────┤              │
   ├── Phase M.3: Platform Hardening ────────────┤              │
   │   (Plugin isolation)                       │              │
+  ├── Phase O: Platform Expansion ──────────────┤              │
+  │   (GraphQL, Marketplace, AI, Analytics)    │              │
   │                                             ▼              │
   │                                      v2.0.0 Release       │
   ▼                                             ▼              ▼
@@ -493,14 +572,14 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 | Dependency | Version | Role |
 |-----------|---------|------|
-| `@objectstack/runtime` | 2.0.7 | Microkernel — plugin lifecycle |
-| `@objectstack/spec` | 2.0.7 | Protocol contracts |
-| `@objectstack/cli` | 2.0.7 | Server bootstrap |
-| `@objectstack/client` | 2.0.7 | Frontend SDK |
-| `@objectstack/objectql` | 2.0.7 | ObjectQL plugin |
-| `@objectstack/driver-memory` | 2.0.7 | In-memory driver |
-| `@objectstack/plugin-hono-server` | 2.0.7 | Hono HTTP server |
-| `@objectstack/plugin-auth` | 2.0.7 | Authentication |
+| `@objectstack/runtime` | 3.0.0 | Microkernel — plugin lifecycle |
+| `@objectstack/spec` | 3.0.0 | Protocol contracts |
+| `@objectstack/cli` | 3.0.0 | Server bootstrap |
+| `@objectstack/client` | 3.0.0 | Frontend SDK |
+| `@objectstack/objectql` | 3.0.0 | ObjectQL plugin |
+| `@objectstack/driver-memory` | 3.0.0 | In-memory driver |
+| `@objectstack/plugin-hono-server` | 3.0.0 | Hono HTTP server |
+| `@objectstack/plugin-auth` | 3.0.0 | Authentication |
 | `@object-ui/core` | 2.0.0 | UI core logic |
 | `@object-ui/react` | 2.0.0 | React components |
 | `@object-ui/components` | 2.0.0 | Standard controls |
@@ -534,5 +613,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v7.0.0 Roadmap — Technical Debt Resolution | Built with @objectstack/spec@2.0.7</sub>
+<sub>ObjectOS v10.0.0 Roadmap — Platform Expansion | Built with @objectstack/spec@3.0.0</sub>
 </div>
