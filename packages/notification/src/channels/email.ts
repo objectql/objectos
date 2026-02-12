@@ -93,7 +93,7 @@ export class EmailChannel implements NotificationChannelInterface {
         throw new Error('nodemailer is not installed. Install with: npm install nodemailer');
       }
 
-      let body = options.body;
+      const body = options.body;
       let html = options.html;
 
       // Render template if provided
@@ -140,7 +140,7 @@ export class EmailChannel implements NotificationChannelInterface {
    * Build email options from notification request
    */
   private buildEmailOptions(request: NotificationRequest): any {
-    let body = request.body || '';
+    const body = request.body || '';
     let html: string | undefined;
 
     // Render template if provided

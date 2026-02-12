@@ -15,7 +15,7 @@ export const StandardActions = {
      */
     log: (context: WorkflowContext, params?: any) => {
         // Handle direct string param (backward compat) or object (new style)
-        let message = '';
+        let message: string;
         if (typeof params === 'string') {
             message = params;
         } else if (params && params.message) {

@@ -121,7 +121,7 @@ export class AgentOrchestrator {
     const steps: AgentOrchestrationStep[] = [];
     const tools = this.toolRegistry.getToolDefinitions();
     let totalTokens = 0;
-    let currentMessages = [...messages];
+    const currentMessages = [...messages];
     let turn = 0;
 
     const completionOptions: LLMCompletionOptions = {

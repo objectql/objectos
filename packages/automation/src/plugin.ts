@@ -361,8 +361,8 @@ export class AutomationPlugin implements Plugin, IAutomationService {
             try {
                 logData.triggered_by = logData.triggered_by || 'auto';
                 (this.context as any).broker.call('data.create', { object: 'automation_log', doc: logData })
-                    .catch((e: any) => {}); // fire and forget
-            } catch (ignore) {}
+                    .catch((_e: any) => { /* fire and forget */ }); // fire and forget
+            } catch (_ignore) { /* fire and forget */ }
         }
     }
 
