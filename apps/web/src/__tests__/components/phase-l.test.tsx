@@ -10,7 +10,12 @@ import { usePrefetch } from '@/hooks/use-prefetch';
 import { useVirtualScroll } from '@/hooks/use-virtual-scroll';
 import { ErrorBoundaryPage } from '@/components/ui/error-boundary-page';
 import { EmptyState } from '@/components/ui/empty-state';
-import { TableSkeleton, CardGridSkeleton, FormSkeleton, DetailSkeleton } from '@/components/ui/loading-skeleton';
+import {
+  TableSkeleton,
+  CardGridSkeleton,
+  FormSkeleton,
+  DetailSkeleton,
+} from '@/components/ui/loading-skeleton';
 
 describe('Phase L hook exports', () => {
   it('exports useDebounce (L.3)', () => {

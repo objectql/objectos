@@ -1,4 +1,4 @@
-name: "PR Size Labeler"
+name: 'PR Size Labeler'
 
 on:
   pull_request:
@@ -22,25 +22,25 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number
             });
-            
+
             const additions = pr.data.additions;
             const deletions = pr.data.deletions;
             const totalChanges = additions + deletions;
-            
+
             let sizeLabel = '';
             if (totalChanges <= 10) sizeLabel = 'size/xs';
             else if (totalChanges <= 100) sizeLabel = 'size/s';
             else if (totalChanges <= 500) sizeLabel = 'size/m';
             else if (totalChanges <= 1000) sizeLabel = 'size/l';
             else sizeLabel = 'size/xl';
-            
+
             // Remove existing size labels
             const labels = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number
             });
-            
+
             for (const label of labels.data) {
               if (label.name.startsWith('size/')) {
                 await github.rest.issues.removeLabel({
@@ -51,7 +51,7 @@ jobs:
                 });
               }
             }
-            
+
             // Add new size label
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
@@ -59,7 +59,7 @@ jobs:
               issue_number: context.issue.number,
               labels: [sizeLabel]
             });
-            
+
             // Comment if XL
             if (sizeLabel === 'size/xl') {
               await github.rest.issues.createComment({

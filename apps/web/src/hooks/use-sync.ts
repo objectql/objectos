@@ -16,14 +16,23 @@ export function useSyncEngine() {
   }, []);
 
   const pushMutation = useCallback(
-    (objectName: string, recordId: string, type: 'create' | 'update' | 'delete', data: Record<string, unknown>) => {
+    (
+      objectName: string,
+      recordId: string,
+      type: 'create' | 'update' | 'delete',
+      data: Record<string, unknown>,
+    ) => {
       return syncEngine.pushMutation(objectName, recordId, type, data);
     },
     [],
   );
 
   const resolveConflict = useCallback(
-    (conflictId: string, resolution: 'local' | 'server' | 'manual', manualData?: Record<string, unknown>) => {
+    (
+      conflictId: string,
+      resolution: 'local' | 'server' | 'manual',
+      manualData?: Record<string, unknown>,
+    ) => {
       syncEngine.resolveConflict(conflictId, resolution, manualData);
     },
     [],

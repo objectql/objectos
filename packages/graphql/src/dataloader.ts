@@ -42,7 +42,7 @@ export class DataLoader<K = string, V = any> {
   }
 
   async loadMany(keys: K[]): Promise<(V | null)[]> {
-    return Promise.all(keys.map(key => this.load(key)));
+    return Promise.all(keys.map((key) => this.load(key)));
   }
 
   private async dispatchBatch(): Promise<void> {
@@ -50,7 +50,7 @@ export class DataLoader<K = string, V = any> {
     const batch = this.batch.splice(0, this.maxBatchSize);
     if (batch.length === 0) return;
 
-    const keys = batch.map(item => item.key);
+    const keys = batch.map((item) => item.key);
     try {
       const results = await this.batchFn(keys);
       for (let i = 0; i < batch.length; i++) {
@@ -105,10 +105,10 @@ export function createDataLoaderFactory(broker: any) {
               options: { limit: ids.length },
             });
             const recordMap = new Map<string, any>();
-            for (const r of (Array.isArray(records) ? records : [])) {
+            for (const r of Array.isArray(records) ? records : []) {
               if (r?._id) recordMap.set(r._id, r);
             }
-            return ids.map(id => recordMap.get(id) ?? null);
+            return ids.map((id) => recordMap.get(id) ?? null);
           } catch {
             return ids.map(() => null);
           }

@@ -35,12 +35,14 @@ packages/plugins/audit-log/
 #### 1. Audit Event Recording (审计事件记录)
 
 **Implementation:**
+
 - Listens to data events (`data.create`, `data.update`, `data.delete`, `data.find`)
 - Automatically captures all CRUD operations
 - Records comprehensive metadata for each event
 - Event-driven architecture using ObjectOS EventBus
 
 **Event Structure:**
+
 ```typescript
 {
   id: string,
@@ -58,6 +60,7 @@ packages/plugins/audit-log/
 ```
 
 **Supported Event Types:**
+
 - `data.create` - Record creation
 - `data.update` - Record modification
 - `data.delete` - Record deletion
@@ -66,6 +69,7 @@ packages/plugins/audit-log/
 #### 2. Audit Tracking (审计跟踪)
 
 **Implementation:**
+
 - Tracks WHO: User ID, user name, actor type
 - Tracks WHEN: ISO 8601 timestamp
 - Tracks WHAT: Event type, action, resource
@@ -73,6 +77,7 @@ packages/plugins/audit-log/
 - Tracks WHY: Success status, metadata
 
 **Query Capabilities:**
+
 ```typescript
 queryEvents({
   objectName?: string,
@@ -88,6 +93,7 @@ queryEvents({
 ```
 
 **Features:**
+
 - Multi-filter support
 - Date range queries
 - Pagination
@@ -97,12 +103,14 @@ queryEvents({
 #### 3. Field History (字段历史)
 
 **Implementation:**
+
 - Captures before/after values for all field changes
 - Field-level granularity
 - Complete change timeline
 - Excludes sensitive fields (configurable)
 
 **Field Change Structure:**
+
 ```typescript
 {
   field: string,
@@ -114,12 +122,13 @@ queryEvents({
 ```
 
 **API Methods:**
+
 ```typescript
 // Get all changes to a specific field
-getFieldHistory(objectName, recordId, fieldName)
+getFieldHistory(objectName, recordId, fieldName);
 
 // Get complete audit trail for a record
-getAuditTrail(objectName, recordId)
+getAuditTrail(objectName, recordId);
 ```
 
 ### Configuration Options
@@ -128,22 +137,22 @@ getAuditTrail(objectName, recordId)
 createAuditLogPlugin({
   // Enable/disable audit logging
   enabled: true,
-  
+
   // Track field-level changes
   trackFieldChanges: true,
-  
+
   // Audit specific objects only
   auditedObjects: ['users', 'orders', 'payments'],
-  
+
   // Exclude sensitive fields
   excludedFields: ['password', 'token', 'secret'],
-  
+
   // Retention period in days
   retentionDays: 90,
-  
+
   // Custom storage implementation
-  storage: new CustomAuditStorage()
-})
+  storage: new CustomAuditStorage(),
+});
 ```
 
 ### Plugin Lifecycle
@@ -158,11 +167,13 @@ Implements all standard ObjectOS plugin lifecycle hooks:
 ### Storage Architecture
 
 **In-Memory Storage (Default):**
+
 - Simple implementation for development and testing
 - Full feature support
 - No external dependencies
 
 **Custom Storage Interface:**
+
 ```typescript
 interface AuditStorage {
   logEvent(entry: AuditLogEntry): Promise<void>
@@ -174,6 +185,7 @@ interface AuditStorage {
 
 **Production Recommendation:**
 Implement custom storage backed by:
+
 - PostgreSQL
 - MongoDB
 - Elasticsearch
@@ -184,6 +196,7 @@ Implement custom storage backed by:
 **Total: 37 tests, 100% passing**
 
 **Plugin Tests (16 tests):**
+
 - Plugin manifest validation
 - Lifecycle hook execution
 - Event recording (create, update, delete)
@@ -196,6 +209,7 @@ Implement custom storage backed by:
 - Audit trail retrieval
 
 **Storage Tests (21 tests):**
+
 - Event storage
 - Timestamp auto-generation
 - Event clearing
@@ -209,6 +223,7 @@ Implement custom storage backed by:
 ### Documentation
 
 **README.md (352 lines):**
+
 - Quick start guide
 - Configuration examples
 - API reference
@@ -219,6 +234,7 @@ Implement custom storage backed by:
 - Compliance use cases (GDPR, SOX)
 
 **INTEGRATION.md (407 lines):**
+
 - Installation steps
 - Configuration guide
 - API usage examples
@@ -229,6 +245,7 @@ Implement custom storage backed by:
 - Troubleshooting
 
 **CHANGELOG.md:**
+
 - Version 0.1.0 release notes
 - Feature list
 - Notes on implementation
@@ -241,7 +258,7 @@ Implement custom storage backed by:
 import { AuditLogPlugin } from '@objectos/plugin-audit-log';
 
 const os = new ObjectOS({
-  plugins: [AuditLogPlugin]
+  plugins: [AuditLogPlugin],
 });
 ```
 
@@ -255,7 +272,7 @@ const auditPlugin = createAuditLogPlugin({
   trackFieldChanges: true,
   auditedObjects: ['users', 'orders'],
   excludedFields: ['password', 'token'],
-  retentionDays: 90
+  retentionDays: 90,
 });
 ```
 
@@ -271,7 +288,7 @@ const events = await auditAPI.queryEvents({
   userId: 'user123',
   eventType: 'data.update',
   startDate: '2026-01-01T00:00:00Z',
-  limit: 100
+  limit: 100,
 });
 
 // Get audit trail
@@ -284,18 +301,21 @@ const history = await auditAPI.getFieldHistory('orders', '12345', 'status');
 ## Compliance Support
 
 ### GDPR (Data Protection)
+
 - Track all access to personal data
 - Provide users with their audit history
 - Field-level change tracking
 - Configurable retention policies
 
 ### SOX (Financial Compliance)
+
 - Complete audit trail for financial transactions
 - Who accessed/modified what and when
 - Immutable audit logs
 - Date range reporting
 
 ### HIPAA (Healthcare)
+
 - Track access to protected health information
 - User identification and authentication logs
 - Audit trail for all PHI changes

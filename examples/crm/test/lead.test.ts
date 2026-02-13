@@ -11,7 +11,7 @@ describe('CRM Domain - Lead', () => {
 
   it('should have a configured state machine via stateMachines (plural)', () => {
     expect(Lead.stateMachines).toBeDefined();
-    
+
     const lifecycle = Lead.stateMachines!.lifecycle;
     expect(lifecycle).toBeDefined();
     expect(lifecycle.id).toBe('lead_process');
@@ -22,7 +22,7 @@ describe('CRM Domain - Lead', () => {
 
   it('should have strict AI instructions in states', () => {
     const lifecycle = Lead.stateMachines!.lifecycle;
-    
+
     const newMeta = lifecycle.states['new'].meta;
     expect(newMeta?.aiInstructions).toContain('Verify email');
 

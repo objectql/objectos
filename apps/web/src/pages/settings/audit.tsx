@@ -62,7 +62,7 @@ export default function AuditPage() {
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
       params.append('limit', '100');
-      
+
       const response = await fetch(`/api/v1/audit/events?${params}`);
       if (!response.ok) throw new Error('Failed to fetch audit events');
       return response.json();
@@ -164,9 +164,7 @@ export default function AuditPage() {
               <div className="animate-spin rounded-full size-8 border-2 border-muted border-t-primary" />
             </div>
           ) : events.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No audit events found
-            </div>
+            <div className="text-center py-8 text-muted-foreground">No audit events found</div>
           ) : (
             <Table>
               <TableHeader>
@@ -186,7 +184,7 @@ export default function AuditPage() {
                       {new Date(event.timestamp).toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={eventTypeColors[event.eventType] as any || 'secondary'}>
+                      <Badge variant={(eventTypeColors[event.eventType] as any) || 'secondary'}>
                         {event.eventType}
                       </Badge>
                     </TableCell>

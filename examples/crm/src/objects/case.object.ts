@@ -6,37 +6,37 @@ export const Case = ObjectSchema.create({
   pluralLabel: 'Cases',
   icon: 'life-buoy',
   description: 'Customer support cases and service requests',
-  
+
   fields: {
     // Case Information
     case_number: Field.autonumber({
       label: 'Case Number',
       format: 'CASE-{00000}',
     }),
-    
+
     subject: Field.text({
       label: 'Subject',
       required: true,
       searchable: true,
       maxLength: 255,
     }),
-    
+
     description: Field.markdown({
       label: 'Description',
       required: true,
     }),
-    
+
     // Relationships
     account: Field.lookup('account', {
       label: 'Account',
     }),
-    
+
     contact: Field.lookup('contact', {
       label: 'Contact',
       required: true,
       referenceFilters: ['account = {case.account}'],
     }),
-    
+
     // Case Management
     status: Field.select({
       label: 'Status',
@@ -49,9 +49,9 @@ export const Case = ObjectSchema.create({
         { label: 'Escalated', value: 'escalated', color: '#FF0000' },
         { label: 'Resolved', value: 'resolved', color: '#00AA00' },
         { label: 'Closed', value: 'closed', color: '#006400' },
-      ]
+      ],
     }),
-    
+
     priority: Field.select({
       label: 'Priority',
       required: true,
@@ -60,98 +60,98 @@ export const Case = ObjectSchema.create({
         { label: 'Medium', value: 'medium', color: '#FFA500' },
         { label: 'High', value: 'high', color: '#FF4500' },
         { label: 'Critical', value: 'critical', color: '#FF0000' },
-      ]
+      ],
     }),
-    
+
     type: Field.select(['Question', 'Problem', 'Feature Request', 'Bug'], {
       label: 'Case Type',
     }),
-    
+
     origin: Field.select(['Email', 'Phone', 'Web', 'Chat', 'Social Media'], {
       label: 'Case Origin',
     }),
-    
+
     // Assignment
     owner: Field.lookup('user', {
       label: 'Case Owner',
       required: true,
     }),
-    
+
     // SLA and Metrics
     created_date: Field.datetime({
       label: 'Created Date',
       readonly: true,
     }),
-    
+
     closed_date: Field.datetime({
       label: 'Closed Date',
       readonly: true,
     }),
-    
+
     first_response_date: Field.datetime({
       label: 'First Response Date',
       readonly: true,
     }),
-    
+
     resolution_time_hours: Field.number({
       label: 'Resolution Time (Hours)',
       readonly: true,
       scale: 2,
     }),
-    
+
     sla_due_date: Field.datetime({
       label: 'SLA Due Date',
     }),
-    
+
     is_sla_violated: Field.boolean({
       label: 'SLA Violated',
       defaultValue: false,
       readonly: true,
     }),
-    
+
     // Escalation
     is_escalated: Field.boolean({
       label: 'Escalated',
       defaultValue: false,
     }),
-    
+
     escalation_reason: Field.textarea({
       label: 'Escalation Reason',
     }),
-    
+
     // Related case
     parent_case: Field.lookup('case', {
       label: 'Parent Case',
       description: 'Related parent case',
     }),
-    
+
     // Resolution
     resolution: Field.markdown({
       label: 'Resolution',
     }),
-    
+
     // Customer satisfaction
     customer_rating: Field.rating(5, {
       label: 'Customer Satisfaction',
       description: 'Customer satisfaction rating (1-5 stars)',
     }),
-    
+
     customer_feedback: Field.textarea({
       label: 'Customer Feedback',
     }),
-    
+
     // Customer signature (for case resolution acknowledgment)
     customer_signature: Field.signature({
       label: 'Customer Signature',
       description: 'Digital signature acknowledging case resolution',
     }),
-    
+
     // Internal notes
     internal_notes: Field.markdown({
       label: 'Internal Notes',
       description: 'Internal notes not visible to customer',
     }),
-    
+
     // Flags
     is_closed: Field.boolean({
       label: 'Is Closed',
@@ -159,7 +159,7 @@ export const Case = ObjectSchema.create({
       readonly: true,
     }),
   },
-  
+
   // Database indexes for performance
   indexes: [
     { fields: ['case_number'], unique: true },
@@ -168,23 +168,23 @@ export const Case = ObjectSchema.create({
     { fields: ['status'], unique: false },
     { fields: ['priority'], unique: false },
   ],
-  
+
   enable: {
     trackHistory: true,
     searchable: true,
     apiEnabled: true,
     files: true,
-    feeds: true,            // Enable social feed, comments, and mentions
-    activities: true,       // Enable tasks and events tracking
+    feeds: true, // Enable social feed, comments, and mentions
+    activities: true, // Enable tasks and events tracking
     trash: true,
-    mru: true,              // Track Most Recently Used
+    mru: true, // Track Most Recently Used
   },
-  
+
   titleFormat: '{case_number} - {subject}',
   compactLayout: ['case_number', 'subject', 'account', 'status', 'priority'],
-  
+
   // Removed: list_views and form_views belong in UI configuration, not object definition
-  
+
   validations: [
     {
       name: 'resolution_required_for_closed',
@@ -207,17 +207,17 @@ export const Case = ObjectSchema.create({
       message: 'Invalid status transition',
       field: 'status',
       transitions: {
-        'new': ['in_progress', 'waiting_customer', 'closed'],
-        'in_progress': ['waiting_customer', 'waiting_support', 'escalated', 'resolved'],
-        'waiting_customer': ['in_progress', 'closed'],
-        'waiting_support': ['in_progress', 'escalated'],
-        'escalated': ['in_progress', 'resolved'],
-        'resolved': ['closed', 'in_progress'],  // Can reopen
-        'closed': ['in_progress'],  // Can reopen
-      }
+        new: ['in_progress', 'waiting_customer', 'closed'],
+        in_progress: ['waiting_customer', 'waiting_support', 'escalated', 'resolved'],
+        waiting_customer: ['in_progress', 'closed'],
+        waiting_support: ['in_progress', 'escalated'],
+        escalated: ['in_progress', 'resolved'],
+        resolved: ['closed', 'in_progress'], // Can reopen
+        closed: ['in_progress'], // Can reopen
+      },
     },
   ],
-  
+
   workflows: [
     {
       name: 'set_closed_flag',
@@ -231,7 +231,7 @@ export const Case = ObjectSchema.create({
           type: 'field_update',
           field: 'is_closed',
           value: 'status = "closed"',
-        }
+        },
       ],
     },
     {
@@ -246,7 +246,7 @@ export const Case = ObjectSchema.create({
           type: 'field_update',
           field: 'closed_date',
           value: 'NOW()',
-        }
+        },
       ],
     },
     {
@@ -261,7 +261,7 @@ export const Case = ObjectSchema.create({
           type: 'field_update',
           field: 'resolution_time_hours',
           value: 'HOURS(created_date, closed_date)',
-        }
+        },
       ],
     },
     {
@@ -276,7 +276,7 @@ export const Case = ObjectSchema.create({
           type: 'email_alert',
           template: 'critical_case_alert',
           recipients: ['support_manager@example.com'],
-        }
+        },
       ],
     },
     {
@@ -291,7 +291,7 @@ export const Case = ObjectSchema.create({
           type: 'email_alert',
           template: 'case_escalation_alert',
           recipients: ['escalation_team@example.com'],
-        }
+        },
       ],
     },
   ],

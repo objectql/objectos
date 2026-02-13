@@ -78,5 +78,4 @@ export const mockApps: AppRegistryEntry[] = [
   },
 ];
 
-export const getAppById = (appId: string | undefined) =>
-  mockApps.find((app) => app.id === appId);
+export const getAppById = (appId: string | undefined) => mockApps.find((app) => app.id === appId);

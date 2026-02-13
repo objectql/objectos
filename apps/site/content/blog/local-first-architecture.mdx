@@ -1,8 +1,8 @@
 ---
-title: "Client-Side Storage Engines: Optimizing SQLite WASM for ObjectOS"
-description: "A deep dive into how ObjectOS bridges the gap between ObjectQL and local storage engines like SQLite WASM and IndexedDB."
+title: 'Client-Side Storage Engines: Optimizing SQLite WASM for ObjectOS'
+description: 'A deep dive into how ObjectOS bridges the gap between ObjectQL and local storage engines like SQLite WASM and IndexedDB.'
 date: 2024-02-15
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # Client-Side Storage Engines: Optimizing SQLite WASM for ObjectOS
@@ -14,9 +14,10 @@ This article explores how we implemented the storage layer using `SQLite WASM` a
 ## 1. The Storage Abstraction Interface
 
 We do not bind directly to SQLite. Instead, we defined a generic `StorageAdapter` interface. This allows ObjectOS to run on:
-*   **Web:** SQLite WASM (OPFS) or RxDB (IndexedDB).
-*   **React Native:** `react-native-quick-sqlite` (JSI).
-*   **Electron:** Native `better-sqlite3`.
+
+- **Web:** SQLite WASM (OPFS) or RxDB (IndexedDB).
+- **React Native:** `react-native-quick-sqlite` (JSI).
+- **Electron:** Native `better-sqlite3`.
 
 ### OPFS (Origin Private File System)
 
@@ -40,8 +41,11 @@ The core challenge: **ObjectQL acts as an ORM.** The client sends:
 
 ```typescript
 const leads = await objectos.find('lead', {
-  filters: [['status', '=', 'new'], ['owner.name', 'contains', 'John']],
-  fields: ['name', 'amount', 'owner.email']
+  filters: [
+    ['status', '=', 'new'],
+    ['owner.name', 'contains', 'John'],
+  ],
+  fields: ['name', 'amount', 'owner.email'],
 });
 ```
 
@@ -52,14 +56,15 @@ On the client, we must compile this into a SQL query.
 1.  **AST Transformation:** The JSON filter is parsed into an Abstract Syntax Tree.
 2.  **Schema Resolution:** We check the local metadata cache to resolve `owner.name`. We see that `owner` is a `ManyToOne` to `users`.
 3.  **Join Strategy:**
-    *   **Server-Side:** We might use huge JOINs.
-    *   **Client-Side:** We prefer **Lazy Loading** or **Sub-Selects** because keeping huge indices in browser memory is expensive.
+    - **Server-Side:** We might use huge JOINs.
+    - **Client-Side:** We prefer **Lazy Loading** or **Sub-Selects** because keeping huge indices in browser memory is expensive.
 
 Eventually, it emits:
+
 ```sql
-SELECT t0.name, t0.amount, t1.email 
-FROM leads AS t0 
-LEFT JOIN users AS t1 ON t0.owner = t1._id 
+SELECT t0.name, t0.amount, t1.email
+FROM leads AS t0
+LEFT JOIN users AS t1 ON t0.owner = t1._id
 WHERE t0.status = 'new' AND t1.name LIKE '%John%'
 ```
 
@@ -73,6 +78,7 @@ indices:
 ```
 
 When the specific plugin loads on the client, the Kernel runs a schema migration on the encapsulated SQLite instance:
+
 ```sql
 CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads (status, created_at);
 ```
@@ -80,8 +86,9 @@ CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads (status, created_at
 ### Performance Metrics
 
 We benchmarked 10,000 records on a mid-range Android device:
-*   **Insert 1k records:** 120ms (WASM) vs 800ms (IndexedDB).
-*   **Complex Query (Join + Sort):** 15ms (WASM) vs 400ms (IndexedDB scan).
+
+- **Insert 1k records:** 120ms (WASM) vs 800ms (IndexedDB).
+- **Complex Query (Join + Sort):** 15ms (WASM) vs 400ms (IndexedDB scan).
 
 This performance gap is why we mandate SQLite WASM for data-heavy enterprise plugins.
 

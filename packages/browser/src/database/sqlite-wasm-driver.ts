@@ -1,6 +1,6 @@
 /**
  * SQLite WASM Database Driver for Browser
- * 
+ *
  * This driver uses sql.js (SQLite compiled to WebAssembly) to provide
  * a browser-based SQL database compatible with ObjectQL.
  */
@@ -16,17 +16,17 @@ export interface SQLiteWASMConfig {
    * Database name
    */
   name?: string;
-  
+
   /**
    * Use OPFS for persistence
    */
   useOPFS?: boolean;
-  
+
   /**
    * Initial SQL scripts
    */
   initScripts?: string[];
-  
+
   /**
    * Path to sql-wasm.wasm file
    */
@@ -62,12 +62,12 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
           }
           // Default CDN path
           return `https://sql.js.org/dist/${file}`;
-        }
+        },
       });
 
       // Try to load existing database from OPFS
       let existingData: Uint8Array | undefined;
-      
+
       if (this.config.useOPFS && typeof navigator !== 'undefined' && 'storage' in navigator) {
         try {
           existingData = await this.loadFromOPFS();
@@ -107,11 +107,11 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
       if (this.config.useOPFS) {
         await this.saveToOPFS();
       }
-      
+
       this.db.close();
       this.db = null;
     }
-    
+
     this.SQL = null;
     console.log('[SQLiteWASM] Disconnected');
   }
@@ -126,13 +126,13 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
 
     try {
       const results = this.db.exec(sql, params);
-      
+
       if (results.length === 0) {
         return [];
       }
 
       const { columns, values } = results[0];
-      
+
       // Convert array results to objects
       return values.map((row: any[]) => {
         const obj: Record<string, any> = {};
@@ -157,7 +157,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
 
     try {
       this.db.run(sql, params);
-      
+
       // Auto-save after mutations if using OPFS
       if (this.config.useOPFS && !this.inTransaction) {
         await this.saveToOPFS();
@@ -223,7 +223,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
     if (!this.db) {
       return null;
     }
-    
+
     return this.db.export();
   }
 
@@ -240,7 +240,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
       const fileHandle = await root.getFileHandle(this.dbName, { create: false });
       const file = await fileHandle.getFile();
       const buffer = await file.arrayBuffer();
-      
+
       console.log(`[SQLiteWASM] Loaded database from OPFS (${buffer.byteLength} bytes)`);
       return new Uint8Array(buffer);
     } catch (error) {
@@ -262,11 +262,11 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
       const root = await navigator.storage.getDirectory();
       const fileHandle = await root.getFileHandle(this.dbName, { create: true });
       const writable = await fileHandle.createWritable();
-      
+
       // Convert to Blob for writable stream
       await writable.write(new Blob([data.buffer as ArrayBuffer]));
       await writable.close();
-      
+
       console.log(`[SQLiteWASM] Saved database to OPFS (${data.byteLength} bytes)`);
     } catch (error) {
       console.error('[SQLiteWASM] Failed to save to OPFS:', error);
@@ -281,7 +281,7 @@ export class SQLiteWASMDriver implements BrowserDatabaseDriver {
     if (typeof window !== 'undefined') {
       setInterval(() => {
         if (!this.inTransaction) {
-          this.saveToOPFS().catch(err => {
+          this.saveToOPFS().catch((err) => {
             console.error('[SQLiteWASM] Auto-save failed:', err);
           });
         }

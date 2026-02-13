@@ -29,12 +29,12 @@ nodes:
     position:
       x: 100
       y: 200
-  
+
   - id: process_payment
     type: http_request
     label: Process Payment
     config:
-      url: "https://payment.api.com/charge"
+      url: 'https://payment.api.com/charge'
       method: POST
       body: |
         {
@@ -45,7 +45,7 @@ nodes:
     position:
       x: 250
       y: 200
-  
+
   - id: payment_decision
     type: decision
     label: Payment Success?
@@ -53,51 +53,51 @@ nodes:
     position:
       x: 400
       y: 200
-  
+
   - id: check_inventory
     type: get_record
     label: Check Inventory
     config:
       object: inventory
       filters:
-        product_id: "{{order.product_id}}"
+        product_id: '{{order.product_id}}'
     position:
       x: 550
       y: 150
-  
+
   - id: inventory_decision
     type: decision
     label: In Stock?
-    condition: "{{check_inventory.quantity}} >= {{order.quantity}}"
+    condition: '{{check_inventory.quantity}} >= {{order.quantity}}'
     position:
       x: 700
       y: 150
-  
+
   - id: update_inventory
     type: update_record
     label: Update Inventory
     config:
       object: inventory
-      recordId: "{{check_inventory._id}}"
+      recordId: '{{check_inventory._id}}'
       fields:
-        quantity: "{{check_inventory.quantity - order.quantity}}"
+        quantity: '{{check_inventory.quantity - order.quantity}}'
     position:
       x: 850
       y: 100
-  
+
   - id: create_shipment
     type: create_record
     label: Create Shipment
     config:
       object: shipment
       fields:
-        order_id: "{{order_id}}"
+        order_id: '{{order_id}}'
         status: pending
-        tracking_number: "{{GENERATE_TRACKING()}}"
+        tracking_number: '{{GENERATE_TRACKING()}}'
     position:
       x: 1000
       y: 100
-  
+
   - id: notify_customer_shipped
     type: connector_action
     label: Notify Customer
@@ -105,33 +105,33 @@ nodes:
       connectorId: email
       actionId: send_email
       input:
-        to: "{{customer.email}}"
+        to: '{{customer.email}}'
         template: order_shipped
         data:
-          tracking: "{{create_shipment.tracking_number}}"
+          tracking: '{{create_shipment.tracking_number}}'
     position:
       x: 1150
       y: 100
-  
+
   - id: completed
     type: end
     label: Order Completed
     position:
       x: 1300
       y: 100
-  
+
   - id: payment_failed
     type: update_record
     label: Mark Payment Failed
     config:
       object: order
-      recordId: "{{order_id}}"
+      recordId: '{{order_id}}'
       fields:
         status: payment_failed
     position:
       x: 550
       y: 300
-  
+
   - id: notify_payment_failed
     type: connector_action
     label: Notify Customer
@@ -139,31 +139,31 @@ nodes:
       connectorId: email
       actionId: send_email
       input:
-        to: "{{customer.email}}"
+        to: '{{customer.email}}'
         template: payment_failed
     position:
       x: 700
       y: 300
-  
+
   - id: failed_payment
     type: end
     label: Payment Failed
     position:
       x: 850
       y: 300
-  
+
   - id: out_of_stock
     type: update_record
     label: Mark Out of Stock
     config:
       object: order
-      recordId: "{{order_id}}"
+      recordId: '{{order_id}}'
       fields:
         status: out_of_stock
     position:
       x: 850
       y: 200
-  
+
   - id: notify_out_of_stock
     type: connector_action
     label: Notify Customer
@@ -171,12 +171,12 @@ nodes:
       connectorId: email
       actionId: send_email
       input:
-        to: "{{customer.email}}"
+        to: '{{customer.email}}'
         template: out_of_stock
     position:
       x: 1000
       y: 200
-  
+
   - id: failed_stock
     type: end
     label: Out of Stock
@@ -189,63 +189,63 @@ edges:
     source: start
     target: process_payment
     label: Process Order
-  
+
   - id: e2
     source: process_payment
     target: payment_decision
-  
+
   - id: e3
     source: payment_decision
     target: check_inventory
-    condition: "true"
+    condition: 'true'
     label: Payment OK
-  
+
   - id: e4
     source: payment_decision
     target: payment_failed
-    condition: "false"
+    condition: 'false'
     label: Payment Failed
-  
+
   - id: e5
     source: check_inventory
     target: inventory_decision
-  
+
   - id: e6
     source: inventory_decision
     target: update_inventory
-    condition: "true"
+    condition: 'true'
     label: In Stock
-  
+
   - id: e7
     source: inventory_decision
     target: out_of_stock
-    condition: "false"
+    condition: 'false'
     label: Out of Stock
-  
+
   - id: e8
     source: update_inventory
     target: create_shipment
-  
+
   - id: e9
     source: create_shipment
     target: notify_customer_shipped
-  
+
   - id: e10
     source: notify_customer_shipped
     target: completed
-  
+
   - id: e11
     source: payment_failed
     target: notify_payment_failed
-  
+
   - id: e12
     source: notify_payment_failed
     target: failed_payment
-  
+
   - id: e13
     source: out_of_stock
     target: notify_out_of_stock
-  
+
   - id: e14
     source: notify_out_of_stock
     target: failed_stock

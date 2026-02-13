@@ -9,7 +9,12 @@
  * the Security Kernel intercepts every operation.
  */
 
-import type { GraphQLResolverContext, ResolvedGraphQLConfig, PaginatedResult, SubscriptionHooks } from './types.js';
+import type {
+  GraphQLResolverContext,
+  ResolvedGraphQLConfig,
+  PaginatedResult,
+  SubscriptionHooks,
+} from './types.js';
 import type { ResolverCallbacks } from './schema-generator.js';
 
 /**
@@ -86,7 +91,10 @@ function sanitizeFilter(filter: Record<string, any> | undefined): Record<string,
 /**
  * Create resolver callbacks wired to the ObjectStack broker
  */
-export function createResolverCallbacks(config: ResolvedGraphQLConfig, hooks?: SubscriptionHooks): ResolverCallbacks {
+export function createResolverCallbacks(
+  config: ResolvedGraphQLConfig,
+  hooks?: SubscriptionHooks,
+): ResolverCallbacks {
   return {
     /**
      * Handle query operations: find (list) and findOne (get by ID)
@@ -108,9 +116,7 @@ export function createResolverCallbacks(config: ResolvedGraphQLConfig, hooks?: S
       const limit = Math.min(args.limit || config.defaultPageSize, config.maxPageSize);
       const offset = args.offset || 0;
       const filter = sanitizeFilter(args.filter);
-      const sort = args.sort
-        ? { [args.sort.field]: args.sort.direction || 'asc' }
-        : undefined;
+      const sort = args.sort ? { [args.sort.field]: args.sort.direction || 'asc' } : undefined;
 
       const [data, totalCount] = await Promise.all([
         ctx.broker.call('data.find', {
@@ -118,10 +124,12 @@ export function createResolverCallbacks(config: ResolvedGraphQLConfig, hooks?: S
           filters: filter,
           options: { limit, skip: offset, sort },
         }),
-        ctx.broker.call('data.count', {
-          objectName,
-          filters: filter,
-        }).catch(() => 0), // Graceful fallback if count is not supported
+        ctx.broker
+          .call('data.count', {
+            objectName,
+            filters: filter,
+          })
+          .catch(() => 0), // Graceful fallback if count is not supported
       ]);
 
       const records = Array.isArray(data) ? data : [];

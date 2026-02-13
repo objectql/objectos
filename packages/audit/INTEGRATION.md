@@ -65,23 +65,10 @@ const auditPlugin = createAuditLogPlugin({
 
   // Specify which objects to audit
   // Empty array = audit all objects
-  auditedObjects: [
-    'users',
-    'orders',
-    'payments',
-    'customer_data',
-    'financial_transactions',
-  ],
+  auditedObjects: ['users', 'orders', 'payments', 'customer_data', 'financial_transactions'],
 
   // Fields to exclude from audit (sensitive data)
-  excludedFields: [
-    'password',
-    'token',
-    'secret',
-    'apiKey',
-    'ssn',
-    'credit_card',
-  ],
+  excludedFields: ['password', 'token', 'secret', 'apiKey', 'ssn', 'credit_card'],
 
   // Retention period in days (0 = keep forever)
   retentionDays: 90,
@@ -138,11 +125,11 @@ const events = await auditAPI.queryEvents({
 const trail = await auditAPI.getAuditTrail('orders', 'order123');
 
 console.log('Audit Trail:');
-trail.forEach(event => {
+trail.forEach((event) => {
   console.log(`[${event.timestamp}] ${event.type} by ${event.userName || event.userId}`);
-  
+
   if (event.changes) {
-    event.changes.forEach(change => {
+    event.changes.forEach((change) => {
       console.log(`  ${change.field}: ${change.oldValue} → ${change.newValue}`);
     });
   }
@@ -153,11 +140,7 @@ trail.forEach(event => {
 
 ```typescript
 // Get all changes to a specific field
-const history = await auditAPI.getFieldHistory(
-  'orders',
-  'order123',
-  'status'
-);
+const history = await auditAPI.getFieldHistory('orders', 'order123', 'status');
 
 console.log('Status History:');
 history.forEach((change, index) => {
@@ -173,10 +156,10 @@ The plugin automatically integrates with ObjectOS event system:
 
 ```typescript
 // These events trigger audit logging
-'data.create'  // Record creation
-'data.update'  // Record update
-'data.delete'  // Record deletion
-'data.find'    // Record read (optional)
+'data.create'; // Record creation
+'data.update'; // Record update
+'data.delete'; // Record deletion
+'data.find'; // Record read (optional)
 ```
 
 ### Events the Plugin Emits
@@ -222,7 +205,7 @@ class PostgresAuditStorage implements AuditStorage {
         entry.success,
         entry.userId,
         JSON.stringify(entry.metadata),
-      ]
+      ],
     );
   }
 
@@ -245,7 +228,7 @@ class PostgresAuditStorage implements AuditStorage {
     // Add more filters...
 
     query += ` ORDER BY timestamp ${options.sortOrder === 'asc' ? 'ASC' : 'DESC'}`;
-    
+
     if (options.limit) {
       query += ` LIMIT $${paramIndex++}`;
       params.push(options.limit);
@@ -278,7 +261,7 @@ Add REST endpoints to expose audit functionality:
 // GET /api/audit/events
 app.get('/api/audit/events', async (req, res) => {
   const auditAPI = getAuditLogAPI(app);
-  
+
   const events = await auditAPI.queryEvents({
     objectName: req.query.objectName,
     userId: req.query.userId,
@@ -287,32 +270,29 @@ app.get('/api/audit/events', async (req, res) => {
     limit: parseInt(req.query.limit) || 50,
     offset: parseInt(req.query.offset) || 0,
   });
-  
+
   res.json(events);
 });
 
 // GET /api/audit/trail/:objectName/:recordId
 app.get('/api/audit/trail/:objectName/:recordId', async (req, res) => {
   const auditAPI = getAuditLogAPI(app);
-  
-  const trail = await auditAPI.getAuditTrail(
-    req.params.objectName,
-    req.params.recordId
-  );
-  
+
+  const trail = await auditAPI.getAuditTrail(req.params.objectName, req.params.recordId);
+
   res.json(trail);
 });
 
 // GET /api/audit/field/:objectName/:recordId/:fieldName
 app.get('/api/audit/field/:objectName/:recordId/:fieldName', async (req, res) => {
   const auditAPI = getAuditLogAPI(app);
-  
+
   const history = await auditAPI.getFieldHistory(
     req.params.objectName,
     req.params.recordId,
-    req.params.fieldName
+    req.params.fieldName,
   );
-  
+
   res.json(history);
 });
 ```
@@ -325,16 +305,16 @@ app.get('/api/audit/field/:objectName/:recordId/:fieldName', async (req, res) =>
 // Provide a user with all audit events about their data
 async function generateGDPRReport(userId: string) {
   const auditAPI = getAuditLogAPI(app);
-  
+
   const events = await auditAPI.queryEvents({
     userId,
     sortOrder: 'asc',
   });
-  
+
   return {
     userId,
     eventCount: events.length,
-    events: events.map(e => ({
+    events: events.map((e) => ({
       timestamp: e.timestamp,
       action: e.action,
       resource: e.resource,
@@ -349,13 +329,13 @@ async function generateGDPRReport(userId: string) {
 // Generate audit report for financial transactions
 async function generateSOXReport(startDate: string, endDate: string) {
   const auditAPI = getAuditLogAPI(app);
-  
+
   const events = await auditAPI.queryEvents({
     objectName: 'financial_transactions',
     startDate,
     endDate,
   });
-  
+
   return {
     period: { startDate, endDate },
     transactionCount: events.length,
@@ -369,6 +349,7 @@ async function generateSOXReport(startDate: string, endDate: string) {
 ### Plugin Not Recording Events
 
 1. Check that the plugin is enabled:
+
 ```typescript
 const auditAPI = getAuditLogAPI(app);
 if (!auditAPI) {
@@ -377,11 +358,13 @@ if (!auditAPI) {
 ```
 
 2. Verify event bus is available:
+
 ```typescript
 // The plugin requires app.eventBus to be present
 ```
 
 3. Check configuration:
+
 ```typescript
 // If auditedObjects is set, make sure your object is in the list
 ```

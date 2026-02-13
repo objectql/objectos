@@ -1,14 +1,14 @@
 /**
  * Notification Queue
- * 
+ *
  * Simple in-memory queue for async notification processing with retry logic
  */
 
-import type { 
-  NotificationRequest, 
-  NotificationResult, 
+import type {
+  NotificationRequest,
+  NotificationResult,
   QueuedNotification,
-  NotificationChannelInterface 
+  NotificationChannelInterface,
 } from './types.js';
 import { NotificationStatus } from './types.js';
 
@@ -33,7 +33,7 @@ export class NotificationQueue {
     this.config = {
       maxRetries: config.maxRetries ?? 3,
       retryDelay: config.retryDelay ?? 5000,
-      processingInterval: config.processingInterval ?? 1000
+      processingInterval: config.processingInterval ?? 1000,
     };
   }
 
@@ -49,17 +49,17 @@ export class NotificationQueue {
    */
   enqueue(request: NotificationRequest): string {
     const id = `notif_${++this.idCounter}_${Date.now()}`;
-    
+
     const notification: QueuedNotification = {
       id,
       request,
       status: NotificationStatus.Pending,
       attempts: 0,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.queue.push(notification);
-    
+
     // Start processing if not already running
     if (!this.processing) {
       this.startProcessing();
@@ -73,7 +73,7 @@ export class NotificationQueue {
    */
   private startProcessing(): void {
     if (this.processing) return;
-    
+
     this.processing = true;
     this.processingTimer = setInterval(() => {
       this.processNext();
@@ -97,10 +97,11 @@ export class NotificationQueue {
   private async processNext(): Promise<void> {
     // Find next pending or retrying notification
     const index = this.queue.findIndex(
-      n => n.status === NotificationStatus.Pending || 
-           (n.status === NotificationStatus.Retrying && 
-            n.lastAttemptAt && 
-            Date.now() - n.lastAttemptAt.getTime() >= this.config.retryDelay)
+      (n) =>
+        n.status === NotificationStatus.Pending ||
+        (n.status === NotificationStatus.Retrying &&
+          n.lastAttemptAt &&
+          Date.now() - n.lastAttemptAt.getTime() >= this.config.retryDelay),
     );
 
     if (index === -1) {
@@ -112,7 +113,7 @@ export class NotificationQueue {
     }
 
     const notification = this.queue[index];
-    
+
     // Check if max retries exceeded
     if (notification.attempts >= this.config.maxRetries) {
       notification.status = NotificationStatus.Failed;
@@ -130,7 +131,7 @@ export class NotificationQueue {
     try {
       // Get the appropriate channel
       const channel = this.channelMap.get(notification.request.channel);
-      
+
       if (!channel) {
         throw new Error(`Channel ${notification.request.channel} not registered`);
       }
@@ -164,16 +165,16 @@ export class NotificationQueue {
     retrying: number;
     items: QueuedNotification[];
   } {
-    const pending = this.queue.filter(n => n.status === NotificationStatus.Pending).length;
-    const sending = this.queue.filter(n => n.status === NotificationStatus.Sending).length;
-    const retrying = this.queue.filter(n => n.status === NotificationStatus.Retrying).length;
+    const pending = this.queue.filter((n) => n.status === NotificationStatus.Pending).length;
+    const sending = this.queue.filter((n) => n.status === NotificationStatus.Sending).length;
+    const retrying = this.queue.filter((n) => n.status === NotificationStatus.Retrying).length;
 
     return {
       total: this.queue.length,
       pending,
       sending,
       retrying,
-      items: [...this.queue]
+      items: [...this.queue],
     };
   }
 
@@ -181,7 +182,7 @@ export class NotificationQueue {
    * Get notification by ID
    */
   getById(id: string): QueuedNotification | undefined {
-    return this.queue.find(n => n.id === id);
+    return this.queue.find((n) => n.id === id);
   }
 
   /**

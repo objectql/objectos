@@ -1,4 +1,4 @@
-name: "Greetings"
+name: 'Greetings'
 
 on:
   issues:
@@ -19,19 +19,19 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           issue-message: >
             👋 Thanks for opening your first issue! We appreciate your contribution to ObjectOS.
-            
+
             Please make sure you've provided all the necessary information and context.
             Our team will review this as soon as possible.
-            
+
             In the meantime, you might want to check out our [Contributing Guide](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md)
             and [Documentation](https://objectos.org/docs).
           pr-message: >
             🎉 Thanks for opening your first pull request! We're excited to review your contribution.
-            
+
             Please make sure:
             - [ ] Your code follows our [coding standards](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md)
             - [ ] All tests pass
             - [ ] You've added tests for new features
             - [ ] Documentation is updated (if needed)
-            
+
             A maintainer will review your PR soon. Thanks for contributing to ObjectOS! 🚀

@@ -40,43 +40,40 @@
  * ```
  */
 
-export {
-    TelemetryPlugin,
-    getTelemetryAPI,
-} from './plugin.js';
+export { TelemetryPlugin, getTelemetryAPI } from './plugin.js';
 
 export {
-    SpanManager,
-    SpanBuilder,
-    NoopSpanBuilder,
-    NOOP_SPAN_BUILDER,
-    generateTraceId,
-    generateSpanId,
-    parseTraceparent,
-    formatTraceparent,
-    extractTraceContext,
-    injectTraceContext,
+  SpanManager,
+  SpanBuilder,
+  NoopSpanBuilder,
+  NOOP_SPAN_BUILDER,
+  generateTraceId,
+  generateSpanId,
+  parseTraceparent,
+  formatTraceparent,
+  extractTraceContext,
+  injectTraceContext,
 } from './span-manager.js';
 
 export {
-    NoopSpanExporter,
-    ConsoleSpanExporter,
-    OTLPHttpSpanExporter,
-    createExporter,
+  NoopSpanExporter,
+  ConsoleSpanExporter,
+  OTLPHttpSpanExporter,
+  createExporter,
 } from './exporters.js';
 
 export type {
-    TelemetryConfig,
-    Span,
-    SpanContext,
-    SpanAttributes,
-    SpanEvent,
-    SpanLink,
-    SpanKind,
-    SpanStatus,
-    SpanExporter,
-    TraceContextCarrier,
-    OTLPExporterConfig,
-    ExportProtocol,
-    AttributeValue,
+  TelemetryConfig,
+  Span,
+  SpanContext,
+  SpanAttributes,
+  SpanEvent,
+  SpanLink,
+  SpanKind,
+  SpanStatus,
+  SpanExporter,
+  TraceContextCarrier,
+  OTLPExporterConfig,
+  ExportProtocol,
+  AttributeValue,
 } from './types.js';

@@ -48,24 +48,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 #### Core Authentication
+
 - User registration and login via email/password
 - Session management with secure cookies
 - Organization and team support
 - Dynamic access control
 
 #### Database Support
+
 - PostgreSQL via `pg` driver
-- MongoDB via `mongodb` driver  
+- MongoDB via `mongodb` driver
 - SQLite via `better-sqlite3` driver
 - Automatic database detection from connection string
 
 #### Plugin Architecture
+
 - Conforms to @objectstack/spec v0.6.0 protocol
 - Implements PluginDefinition lifecycle interface
 - Provides ObjectStackManifest for plugin metadata
 - Scoped storage for plugin configuration
 
 #### Events
+
 - `auth.user.created` - New user registration
 - `auth.user.login` - User login
 - `auth.user.logout` - User logout

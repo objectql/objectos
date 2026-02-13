@@ -1,10 +1,10 @@
 # Multi-Level Approval Workflow with Delegation and Escalation
 # This workflow demonstrates advanced approval features
 
-name: "Purchase Order Approval"
-description: "Multi-level approval workflow with delegation and escalation support"
+name: 'Purchase Order Approval'
+description: 'Multi-level approval workflow with delegation and escalation support'
 type: approval
-version: "1.0.0"
+version: '1.0.0'
 
 states:
   draft:
@@ -19,9 +19,9 @@ states:
           - validate_purchase_order
           - notify_manager
     metadata:
-      label: "Draft"
-      description: "Purchase order is being prepared"
-  
+      label: 'Draft'
+      description: 'Purchase order is being prepared'
+
   pending_manager:
     transitions:
       approve:
@@ -42,12 +42,12 @@ states:
       - create_manager_approval_task
       - set_manager_deadline
     metadata:
-      label: "Pending Manager Approval"
-      description: "Waiting for manager to review"
+      label: 'Pending Manager Approval'
+      description: 'Waiting for manager to review'
       approvalLevel: 1
-      escalationTarget: "senior_manager"
-      escalationTimeout: 172800000  # 48 hours
-  
+      escalationTarget: 'senior_manager'
+      escalationTimeout: 172800000 # 48 hours
+
   pending_director:
     transitions:
       approve:
@@ -68,12 +68,12 @@ states:
       - create_director_approval_task
       - set_director_deadline
     metadata:
-      label: "Pending Director Approval"
-      description: "Waiting for director to review"
+      label: 'Pending Director Approval'
+      description: 'Waiting for director to review'
       approvalLevel: 2
-      escalationTarget: "vp_operations"
-      escalationTimeout: 259200000  # 72 hours
-  
+      escalationTarget: 'vp_operations'
+      escalationTimeout: 259200000 # 72 hours
+
   pending_cfo:
     transitions:
       approve:
@@ -96,12 +96,12 @@ states:
       - create_cfo_approval_task
       - set_cfo_deadline
     metadata:
-      label: "Pending CFO Approval"
-      description: "Waiting for CFO final approval"
+      label: 'Pending CFO Approval'
+      description: 'Waiting for CFO final approval'
       approvalLevel: 3
-      escalationTarget: "ceo"
-      escalationTimeout: 345600000  # 96 hours
-  
+      escalationTarget: 'ceo'
+      escalationTimeout: 345600000 # 96 hours
+
   approved:
     final: true
     on_enter:
@@ -109,9 +109,9 @@ states:
       - send_approval_notifications
       - trigger_procurement_process
     metadata:
-      label: "Approved"
-      description: "Purchase order has been fully approved"
-  
+      label: 'Approved'
+      description: 'Purchase order has been fully approved'
+
   rejected:
     final: true
     on_enter:
@@ -119,5 +119,5 @@ states:
       - send_rejection_notifications
       - archive_purchase_order
     metadata:
-      label: "Rejected"
-      description: "Purchase order was rejected"
+      label: 'Rejected'
+      description: 'Purchase order was rejected'

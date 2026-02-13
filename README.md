@@ -4,7 +4,7 @@
 
 State. Identity. Synchronization. Orchestration. Admin Console.
 
-*Built on [ObjectQL](https://github.com/objectstack-ai/objectql) & [ObjectStack](https://objectstack.ai).*
+_Built on [ObjectQL](https://github.com/objectstack-ai/objectql) & [ObjectStack](https://objectstack.ai)._
 
 [![License](https://img.shields.io/badge/license-AGPL%20v3-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-Hono%20%7C%20React%20%7C%20TypeScript-blue.svg)](#-tech-stack)
@@ -15,11 +15,11 @@ State. Identity. Synchronization. Orchestration. Admin Console.
 
 **ObjectOS** is the system layer of the ObjectStack ecosystem.
 
-| Layer | Repo | Responsibility |
-|---|---|---|
-| **ObjectQL** | [objectql/objectql](https://github.com/objectstack-ai/objectql) | Data — metadata, drivers, queries |
-| **ObjectUI** | [objectql/objectui](https://github.com/objectstack-ai/objectui) | Views — amis-like control library |
-| **ObjectOS** | this repo | **State, Identity, Sync, Orchestration, Admin Console** |
+| Layer        | Repo                                                            | Responsibility                                          |
+| ------------ | --------------------------------------------------------------- | ------------------------------------------------------- |
+| **ObjectQL** | [objectql/objectql](https://github.com/objectstack-ai/objectql) | Data — metadata, drivers, queries                       |
+| **ObjectUI** | [objectql/objectui](https://github.com/objectstack-ai/objectui) | Views — amis-like control library                       |
+| **ObjectOS** | this repo                                                       | **State, Identity, Sync, Orchestration, Admin Console** |
 
 ObjectOS acts as the "Kernel" that boots up, loads drivers (ObjectQL) and applications (Plugins), then governs every request through Authentication, Authorization, and Audit.
 
@@ -103,28 +103,28 @@ ObjectUI (Controls)  →  apps/web (App Shell)  →  ObjectStack Hono (API)
 
 ### Kernel Packages
 
-| Package | Role |
-|---|---|
-| `@objectos/auth` | Identity — BetterAuth, SSO, 2FA, Sessions |
-| `@objectos/permissions` | Authorization — RBAC, Permission Sets |
-| `@objectos/audit` | Compliance — CRUD events, field history |
-| `@objectos/workflow` | Flow — FSM engine, approval processes |
-| `@objectos/automation` | Triggers — WorkflowRule, action types |
-| `@objectos/jobs` | Background — queues, cron, retry |
-| `@objectos/notification` | Outbound — Email/SMS/Push/Webhook |
-| `@objectos/realtime` | Sync — WebSocket, presence |
-| `@objectos/cache` | Performance — LRU + Redis |
-| `@objectos/storage` | Persistence — KV (Memory/Redis/SQLite) |
-| `@objectos/metrics` | Observability — Prometheus export |
-| `@objectos/i18n` | Localization — multi-locale |
-| `@objectos/browser` | Offline — SQLite WASM, OPFS |
+| Package                  | Role                                      |
+| ------------------------ | ----------------------------------------- |
+| `@objectos/auth`         | Identity — BetterAuth, SSO, 2FA, Sessions |
+| `@objectos/permissions`  | Authorization — RBAC, Permission Sets     |
+| `@objectos/audit`        | Compliance — CRUD events, field history   |
+| `@objectos/workflow`     | Flow — FSM engine, approval processes     |
+| `@objectos/automation`   | Triggers — WorkflowRule, action types     |
+| `@objectos/jobs`         | Background — queues, cron, retry          |
+| `@objectos/notification` | Outbound — Email/SMS/Push/Webhook         |
+| `@objectos/realtime`     | Sync — WebSocket, presence                |
+| `@objectos/cache`        | Performance — LRU + Redis                 |
+| `@objectos/storage`      | Persistence — KV (Memory/Redis/SQLite)    |
+| `@objectos/metrics`      | Observability — Prometheus export         |
+| `@objectos/i18n`         | Localization — multi-locale               |
+| `@objectos/browser`      | Offline — SQLite WASM, OPFS               |
 
 ### Application Packages
 
-| Package | Role | Stack |
-|---|---|---|
-| `apps/web` | Admin Console | Vite + React 19 + React Router 7 |
-| `apps/site` | Documentation | Next.js 16 + Fumadocs |
+| Package     | Role          | Stack                            |
+| ----------- | ------------- | -------------------------------- |
+| `apps/web`  | Admin Console | Vite + React 19 + React Router 7 |
+| `apps/site` | Documentation | Next.js 16 + Fumadocs            |
 
 ---
 
@@ -196,51 +196,51 @@ with API proxy to ObjectStack at `:5320`.
 
 #### Development Commands
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | API `:5320` + Web `:5321` (daily development) |
-| `pnpm dev:all` | API + Web + Site (full stack) |
-| `pnpm start` | Production — single process with static mounts |
-| `pnpm build` | Build all packages (Turborepo) |
-| `pnpm test` | Run all tests |
-| `pnpm lint` | Lint all packages |
-| `pnpm type-check` | TypeScript check all packages |
+| Command           | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `pnpm dev`        | API `:5320` + Web `:5321` (daily development)  |
+| `pnpm dev:all`    | API + Web + Site (full stack)                  |
+| `pnpm start`      | Production — single process with static mounts |
+| `pnpm build`      | Build all packages (Turborepo)                 |
+| `pnpm test`       | Run all tests                                  |
+| `pnpm lint`       | Lint all packages                              |
+| `pnpm type-check` | TypeScript check all packages                  |
 
 #### ObjectStack CLI Commands
 
-| Command | Description |
-|---|---|
-| `pnpm objectstack:serve` | Start ObjectStack server (port 5320) |
-| `pnpm objectstack:dev` | Start dev mode with hot-reload |
-| `pnpm objectstack:studio` | Launch Console UI with dev server |
+| Command                     | Description                             |
+| --------------------------- | --------------------------------------- |
+| `pnpm objectstack:serve`    | Start ObjectStack server (port 5320)    |
+| `pnpm objectstack:dev`      | Start dev mode with hot-reload          |
+| `pnpm objectstack:studio`   | Launch Console UI with dev server       |
 | `pnpm objectstack:validate` | Validate configuration against protocol |
-| `pnpm objectstack:compile` | Compile configuration to JSON artifact |
-| `pnpm objectstack:info` | Display metadata summary |
-| `pnpm objectstack:doctor` | Check development environment health |
+| `pnpm objectstack:compile`  | Compile configuration to JSON artifact  |
+| `pnpm objectstack:info`     | Display metadata summary                |
+| `pnpm objectstack:doctor`   | Check development environment health    |
 
 #### Code Generation Commands
 
-| Command | Description |
-|---|---|
-| `pnpm generate` | Generate metadata files (interactive) |
-| `pnpm generate:object <name>` | Generate a new object schema |
-| `pnpm generate:flow <name>` | Generate a new workflow/flow |
-| `pnpm generate:view <name>` | Generate a new view definition |
-| `pnpm generate:action <name>` | Generate a new action |
-| `pnpm generate:agent <name>` | Generate a new AI agent |
-| `pnpm generate:dashboard <name>` | Generate a new dashboard |
-| `pnpm generate:app <name>` | Generate a new application |
-| `pnpm create:plugin <name>` | Create a new plugin from template |
-| `pnpm create:example <name>` | Create a new example from template |
+| Command                          | Description                           |
+| -------------------------------- | ------------------------------------- |
+| `pnpm generate`                  | Generate metadata files (interactive) |
+| `pnpm generate:object <name>`    | Generate a new object schema          |
+| `pnpm generate:flow <name>`      | Generate a new workflow/flow          |
+| `pnpm generate:view <name>`      | Generate a new view definition        |
+| `pnpm generate:action <name>`    | Generate a new action                 |
+| `pnpm generate:agent <name>`     | Generate a new AI agent               |
+| `pnpm generate:dashboard <name>` | Generate a new dashboard              |
+| `pnpm generate:app <name>`       | Generate a new application            |
+| `pnpm create:plugin <name>`      | Create a new plugin from template     |
+| `pnpm create:example <name>`     | Create a new example from template    |
 
 #### App-Specific Commands
 
-| Command | Description |
-|---|---|
-| `pnpm web:dev` | Admin Console only (port 5321) |
-| `pnpm web:build` | Build Admin Console |
-| `pnpm site:dev` | Documentation site only |
-| `pnpm site:build` | Build documentation |
+| Command           | Description                    |
+| ----------------- | ------------------------------ |
+| `pnpm web:dev`    | Admin Console only (port 5321) |
+| `pnpm web:build`  | Build Admin Console            |
+| `pnpm site:dev`   | Documentation site only        |
+| `pnpm site:build` | Build documentation            |
 
 ### Production
 

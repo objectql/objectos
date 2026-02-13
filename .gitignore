@@ -22,6 +22,9 @@ package-lock.json
 .vercel
 .next
 
+# Coverage
+coverage
+
 # Playwright
 playwright-report
 test-results

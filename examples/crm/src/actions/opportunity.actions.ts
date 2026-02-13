@@ -34,8 +34,8 @@ export const MassUpdateStageAction: Action = {
         { label: 'Negotiation', value: 'negotiation' },
         { label: 'Closed Won', value: 'closed_won' },
         { label: 'Closed Lost', value: 'closed_lost' },
-      ]
-    }
+      ],
+    },
   ],
   successMessage: 'Opportunities updated successfully!',
   refreshAfter: true,

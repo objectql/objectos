@@ -1,36 +1,39 @@
 /**
  * Workflow System Types - LEGACY VERSION
- * 
+ *
  * This file preserves the original type definitions for backward compatibility.
  * For new code, use the types from ./types.ts which are aligned with @objectstack/spec.
- * 
+ *
  * @deprecated This is the legacy types file. Import from ./types.ts instead.
  */
 
 /**
  * Workflow status
  */
-export type WorkflowStatus = 
-  | 'pending'     // Workflow is created but not started
-  | 'running'     // Workflow is currently executing
-  | 'completed'   // Workflow completed successfully
-  | 'failed'      // Workflow failed
-  | 'aborted';    // Workflow was aborted
+export type WorkflowStatus =
+  | 'pending' // Workflow is created but not started
+  | 'running' // Workflow is currently executing
+  | 'completed' // Workflow completed successfully
+  | 'failed' // Workflow failed
+  | 'aborted'; // Workflow was aborted
 
 /**
  * Workflow type
  */
-export type WorkflowType = 
-  | 'approval'      // Approval workflow
-  | 'sequential'    // Sequential workflow
-  | 'parallel'      // Parallel workflow
-  | 'conditional';  // Conditional branching workflow
+export type WorkflowType =
+  | 'approval' // Approval workflow
+  | 'sequential' // Sequential workflow
+  | 'parallel' // Parallel workflow
+  | 'conditional'; // Conditional branching workflow
 
 /**
  * Transition guard function
  * Returns true if transition is allowed, false otherwise
  */
-export type TransitionGuard = (context: WorkflowContext, params?: any) => boolean | Promise<boolean>;
+export type TransitionGuard = (
+  context: WorkflowContext,
+  params?: any,
+) => boolean | Promise<boolean>;
 
 /**
  * Transition action function
@@ -42,16 +45,16 @@ export type TransitionAction = (context: WorkflowContext, params?: any) => void 
  * Parameterized Action Configuration
  */
 export interface ActionConfig {
-    type: string;
-    params?: any;
+  type: string;
+  params?: any;
 }
 
 /**
  * Parameterized Guard Configuration
  */
 export interface GuardConfig {
-    type: string;
-    params?: any;
+  type: string;
+  params?: any;
 }
 
 /**
@@ -277,34 +280,34 @@ export interface WorkflowQueryOptions {
 export interface WorkflowStorage {
   /** Save a workflow definition */
   saveDefinition(definition: WorkflowDefinition): Promise<void>;
-  
+
   /** Get a workflow definition */
   getDefinition(id: string, version?: string): Promise<WorkflowDefinition | null>;
-  
+
   /** List workflow definitions */
   listDefinitions(): Promise<WorkflowDefinition[]>;
-  
+
   /** Save a workflow instance */
   saveInstance(instance: WorkflowInstance): Promise<void>;
-  
+
   /** Get a workflow instance */
   getInstance(id: string): Promise<WorkflowInstance | null>;
-  
+
   /** Update a workflow instance */
   updateInstance(id: string, updates: Partial<WorkflowInstance>): Promise<void>;
-  
+
   /** Query workflow instances */
   queryInstances(options: WorkflowQueryOptions): Promise<WorkflowInstance[]>;
-  
+
   /** Save a task */
   saveTask(task: WorkflowTask): Promise<void>;
-  
+
   /** Get a task */
   getTask(id: string): Promise<WorkflowTask | null>;
-  
+
   /** Get tasks for an instance */
   getInstanceTasks(instanceId: string): Promise<WorkflowTask[]>;
-  
+
   /** Update a task */
   updateTask(id: string, updates: Partial<WorkflowTask>): Promise<void>;
 }

@@ -18,7 +18,12 @@ interface ApprovalActionsProps {
 
 function getTransitionVariant(name: string): 'default' | 'destructive' | 'outline' {
   const lower = name.toLowerCase();
-  if (lower.includes('approve') || lower.includes('close_won') || lower.includes('complete') || lower.includes('mark_paid')) {
+  if (
+    lower.includes('approve') ||
+    lower.includes('close_won') ||
+    lower.includes('complete') ||
+    lower.includes('mark_paid')
+  ) {
     return 'default';
   }
   if (lower.includes('reject') || lower.includes('close_lost')) {
@@ -29,7 +34,12 @@ function getTransitionVariant(name: string): 'default' | 'destructive' | 'outlin
 
 function getTransitionIcon(name: string) {
   const lower = name.toLowerCase();
-  if (lower.includes('approve') || lower.includes('complete') || lower.includes('close_won') || lower.includes('mark_paid')) {
+  if (
+    lower.includes('approve') ||
+    lower.includes('complete') ||
+    lower.includes('close_won') ||
+    lower.includes('mark_paid')
+  ) {
     return Check;
   }
   if (lower.includes('reject') || lower.includes('close_lost')) {
@@ -38,7 +48,11 @@ function getTransitionIcon(name: string) {
   return ArrowRight;
 }
 
-export function ApprovalActions({ status, onTransition, isExecuting = false }: ApprovalActionsProps) {
+export function ApprovalActions({
+  status,
+  onTransition,
+  isExecuting = false,
+}: ApprovalActionsProps) {
   const transitions = status.availableTransitions;
 
   if (transitions.length === 0) {

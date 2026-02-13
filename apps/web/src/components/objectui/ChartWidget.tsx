@@ -13,8 +13,16 @@ interface ChartWidgetProps {
 }
 
 const DEFAULT_COLORS = [
-  '#3b82f6', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444',
-  '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#6366f1',
+  '#3b82f6',
+  '#8b5cf6',
+  '#22c55e',
+  '#f59e0b',
+  '#ef4444',
+  '#06b6d4',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#6366f1',
 ];
 
 function getColor(index: number, explicit?: string): string {
@@ -52,9 +60,7 @@ function BarChart({ config }: { config: ChartConfig }) {
               }}
             />
           </div>
-          <span className="w-10 shrink-0 text-right text-xs font-medium">
-            {point.value}
-          </span>
+          <span className="w-10 shrink-0 text-right text-xs font-medium">{point.value}</span>
         </div>
       ))}
     </div>
@@ -107,7 +113,13 @@ function PieChart({ config, donut = false }: { config: ChartConfig; donut?: bool
 
   return (
     <div className="flex items-center gap-4">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={config.title}>
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="img"
+        aria-label={config.title}
+      >
         {slices}
       </svg>
       <div className="space-y-1">

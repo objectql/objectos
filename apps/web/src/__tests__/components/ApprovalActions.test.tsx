@@ -52,11 +52,7 @@ describe('ApprovalActions', () => {
       { name: 'approve', label: 'Approve', from: 'pending', to: 'approved' },
     ];
     render(
-      <ApprovalActions
-        status={makeStatus(transitions)}
-        onTransition={() => {}}
-        isExecuting
-      />,
+      <ApprovalActions status={makeStatus(transitions)} onTransition={() => {}} isExecuting />,
     );
     const button = screen.getByText('Approve').closest('button');
     expect(button?.disabled).toBe(true);

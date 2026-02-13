@@ -4,7 +4,7 @@ export const TaskDashboard: Dashboard = {
   name: 'task_dashboard',
   label: 'Task Overview',
   description: 'Key task metrics and productivity overview',
-  
+
   widgets: [
     // Row 1: Key Metrics
     {
@@ -13,7 +13,7 @@ export const TaskDashboard: Dashboard = {
       object: 'task',
       aggregate: 'count',
       layout: { x: 0, y: 0, w: 3, h: 2 },
-      options: { color: '#3B82F6' }
+      options: { color: '#3B82F6' },
     },
     {
       title: 'Completed Today',
@@ -22,7 +22,7 @@ export const TaskDashboard: Dashboard = {
       filter: { is_completed: true, completed_date: { $gte: '{today_start}' } },
       aggregate: 'count',
       layout: { x: 3, y: 0, w: 3, h: 2 },
-      options: { color: '#10B981' }
+      options: { color: '#10B981' },
     },
     {
       title: 'Overdue Tasks',
@@ -31,7 +31,7 @@ export const TaskDashboard: Dashboard = {
       filter: { is_overdue: true, is_completed: false },
       aggregate: 'count',
       layout: { x: 6, y: 0, w: 3, h: 2 },
-      options: { color: '#EF4444' }
+      options: { color: '#EF4444' },
     },
     {
       title: 'Completion Rate',
@@ -41,9 +41,9 @@ export const TaskDashboard: Dashboard = {
       valueField: 'is_completed',
       aggregate: 'count',
       layout: { x: 9, y: 0, w: 3, h: 2 },
-      options: { suffix: '%', color: '#8B5CF6' }
+      options: { suffix: '%', color: '#8B5CF6' },
     },
-    
+
     // Row 2: Task Distribution
     {
       title: 'Tasks by Status',
@@ -53,7 +53,7 @@ export const TaskDashboard: Dashboard = {
       categoryField: 'status',
       aggregate: 'count',
       layout: { x: 0, y: 2, w: 6, h: 4 },
-      options: { showLegend: true }
+      options: { showLegend: true },
     },
     {
       title: 'Tasks by Priority',
@@ -63,9 +63,9 @@ export const TaskDashboard: Dashboard = {
       categoryField: 'priority',
       aggregate: 'count',
       layout: { x: 6, y: 2, w: 6, h: 4 },
-      options: { horizontal: true }
+      options: { horizontal: true },
     },
-    
+
     // Row 3: Trends
     {
       title: 'Weekly Task Completion',
@@ -75,7 +75,7 @@ export const TaskDashboard: Dashboard = {
       categoryField: 'completed_date',
       aggregate: 'count',
       layout: { x: 0, y: 6, w: 8, h: 4 },
-      options: { showDataLabels: true }
+      options: { showDataLabels: true },
     },
     {
       title: 'Tasks by Category',
@@ -85,9 +85,9 @@ export const TaskDashboard: Dashboard = {
       categoryField: 'category',
       aggregate: 'count',
       layout: { x: 8, y: 6, w: 4, h: 4 },
-      options: { showLegend: true }
+      options: { showLegend: true },
     },
-    
+
     // Row 4: Tables
     {
       title: 'Overdue Tasks',

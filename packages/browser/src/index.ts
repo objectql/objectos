@@ -1,14 +1,14 @@
 /**
  * @objectos/plugin-browser
- * 
+ *
  * Browser Runtime Plugin for ObjectOS
- * 
+ *
  * This plugin enables running ObjectOS backend entirely in the browser using:
  * - SQLite WASM for database operations (replacing PostgreSQL/MongoDB)
  * - OPFS for file storage (replacing S3/MinIO)
  * - Service Worker for API interception (replacing Express/Koa)
  * - Web Worker for business logic isolation (replacing Node.js vm)
- * 
+ *
  * @module @objectos/plugin-browser
  */
 
@@ -42,7 +42,7 @@ export type {
   APIRequestHandler,
   WorkerMessage,
   WorkerMessageType,
-  BrowserDatabaseDriver
+  BrowserDatabaseDriver,
 } from './types/index.js';
 
 /**

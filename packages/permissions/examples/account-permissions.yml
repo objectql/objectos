@@ -27,8 +27,8 @@ profiles:
     allowDelete: false
     # Record-level security: only see accounts in their department
     viewFilters:
-      department: "{{ dept }}"
-      owner: "{{ userId }}"
+      department: '{{ dept }}'
+      owner: '{{ userId }}'
 
   # Manager profile - can see all accounts in their department
   manager:
@@ -38,7 +38,7 @@ profiles:
     allowEdit: true
     allowDelete: false
     viewFilters:
-      department: "{{ dept }}"
+      department: '{{ dept }}'
 
   # Support profile - read-only access
   support:

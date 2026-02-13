@@ -45,10 +45,7 @@ export default function SignInPage() {
   };
 
   return (
-    <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to your account"
-    >
+    <AuthLayout title="Welcome back" subtitle="Sign in to your account">
       <div className="space-y-6">
         <SocialButtons />
 

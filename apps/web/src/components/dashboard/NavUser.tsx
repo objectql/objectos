@@ -6,15 +6,7 @@ import {
   useActiveOrganization,
   useListOrganizations,
 } from '@/lib/auth-client';
-import {
-  BadgeCheck,
-  Building2,
-  Check,
-  ChevronsUpDown,
-  LogOut,
-  Plus,
-  Shield,
-} from 'lucide-react';
+import { BadgeCheck, Building2, Check, ChevronsUpDown, LogOut, Plus, Shield } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -54,7 +46,6 @@ export function NavUser() {
     await organization.setActive({ organizationId: orgId });
     window.location.reload();
   };
-
 
   return (
     <SidebarMenu>
@@ -100,10 +91,7 @@ export function NavUser() {
                 </DropdownMenuLabel>
                 <DropdownMenuGroup>
                   {organizations.map((org) => (
-                    <DropdownMenuItem
-                      key={org.id}
-                      onClick={() => handleSwitchOrg(org.id)}
-                    >
+                    <DropdownMenuItem key={org.id} onClick={() => handleSwitchOrg(org.id)}>
                       <Building2 className="size-4" />
                       <span className="flex-1 truncate">{org.name}</span>
                       {activeOrg?.id === org.id && (

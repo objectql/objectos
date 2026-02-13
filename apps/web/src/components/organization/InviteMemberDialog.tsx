@@ -61,8 +61,7 @@ export function InviteMemberDialog({
         setSuccess(false);
       }, 1500);
     } catch (err: any) {
-      const message =
-        err?.message || err?.data?.message || 'Failed to send invitation';
+      const message = err?.message || err?.data?.message || 'Failed to send invitation';
       setError(message);
     } finally {
       setLoading(false);
@@ -84,9 +83,7 @@ export function InviteMemberDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite Member</DialogTitle>
-          <DialogDescription>
-            Send an invitation to join this organization.
-          </DialogDescription>
+          <DialogDescription>Send an invitation to join this organization.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -130,11 +127,7 @@ export function InviteMemberDialog({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading || success}>

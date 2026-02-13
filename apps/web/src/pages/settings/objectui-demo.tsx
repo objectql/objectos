@@ -1,9 +1,9 @@
 /**
  * ObjectUI Demo Page
- * 
+ *
  * Demonstrates the @object-ui integration in ObjectOS.
  * Shows how to use @object-ui/react components with the ObjectStack backend.
- * 
+ *
  * Route: /settings/objectui-demo
  */
 
@@ -108,10 +108,7 @@ export default function ObjectUIDemoPage() {
 
           {/* ObjectUI Renderer */}
           <div className="border rounded-lg p-4 bg-muted/50">
-            <ObjectUIExample
-              objectName={selectedObject}
-              view={selectedView}
-            />
+            <ObjectUIExample objectName={selectedObject} view={selectedView} />
           </div>
         </CardContent>
       </Card>
@@ -120,14 +117,12 @@ export default function ObjectUIDemoPage() {
       <Card>
         <CardHeader>
           <CardTitle>Usage Guide</CardTitle>
-          <CardDescription>
-            How to use @object-ui components in your application
-          </CardDescription>
+          <CardDescription>How to use @object-ui components in your application</CardDescription>
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none">
           <h3 className="text-base font-semibold">Basic Usage</h3>
           <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-{`import { SchemaRenderer } from '@object-ui/react';
+            {`import { SchemaRenderer } from '@object-ui/react';
 import { objectUIAdapter } from '@/lib/object-ui-adapter';
 
 function MyComponent() {
@@ -143,12 +138,24 @@ function MyComponent() {
 
           <h3 className="text-base font-semibold mt-4">Available Packages</h3>
           <ul className="list-disc list-inside space-y-1">
-            <li><code>@object-ui/core</code> - Core logic and types</li>
-            <li><code>@object-ui/react</code> - React components and SchemaRenderer</li>
-            <li><code>@object-ui/components</code> - Standard UI components (Shadcn-based)</li>
-            <li><code>@object-ui/layout</code> - Application shell components</li>
-            <li><code>@object-ui/fields</code> - Field renderers</li>
-            <li><code>@object-ui/data-objectstack</code> - ObjectStack data adapter</li>
+            <li>
+              <code>@object-ui/core</code> - Core logic and types
+            </li>
+            <li>
+              <code>@object-ui/react</code> - React components and SchemaRenderer
+            </li>
+            <li>
+              <code>@object-ui/components</code> - Standard UI components (Shadcn-based)
+            </li>
+            <li>
+              <code>@object-ui/layout</code> - Application shell components
+            </li>
+            <li>
+              <code>@object-ui/fields</code> - Field renderers
+            </li>
+            <li>
+              <code>@object-ui/data-objectstack</code> - ObjectStack data adapter
+            </li>
           </ul>
         </CardContent>
       </Card>

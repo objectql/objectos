@@ -86,8 +86,20 @@ export const builtInTemplates: WorkflowTemplate[] = [
       ],
       transitions: [
         { name: 'submit', label: 'Submit', from: 'draft', to: 'manager_review' },
-        { name: 'manager_approve', label: 'Manager Approve', from: 'manager_review', to: 'director_review', guard: 'isManager' },
-        { name: 'director_approve', label: 'Director Approve', from: 'director_review', to: 'approved', guard: 'isDirector' },
+        {
+          name: 'manager_approve',
+          label: 'Manager Approve',
+          from: 'manager_review',
+          to: 'director_review',
+          guard: 'isManager',
+        },
+        {
+          name: 'director_approve',
+          label: 'Director Approve',
+          from: 'director_review',
+          to: 'approved',
+          guard: 'isDirector',
+        },
         { name: 'reject', label: 'Reject', from: 'manager_review', to: 'rejected' },
         { name: 'director_reject', label: 'Reject', from: 'director_review', to: 'rejected' },
       ],
@@ -186,9 +198,7 @@ export function WorkflowTemplates({
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="mb-3 text-xs text-muted-foreground">
-                        {template.description}
-                      </p>
+                      <p className="mb-3 text-xs text-muted-foreground">{template.description}</p>
                       <div className="mb-3 flex flex-wrap gap-1">
                         <Badge variant="secondary" className="text-[10px]">
                           {template.workflow.states.length} states
@@ -261,9 +271,13 @@ export function WorkflowTemplates({
                 <div className="space-y-1">
                   {previewTemplate.workflow.transitions.map((t) => (
                     <div key={t.name} className="flex items-center gap-1 text-xs">
-                      <Badge variant="outline" className="text-[10px]">{t.from}</Badge>
+                      <Badge variant="outline" className="text-[10px]">
+                        {t.from}
+                      </Badge>
                       <span className="text-muted-foreground">→</span>
-                      <Badge variant="outline" className="text-[10px]">{t.to}</Badge>
+                      <Badge variant="outline" className="text-[10px]">
+                        {t.to}
+                      </Badge>
                       <span className="ml-1 text-muted-foreground">{t.label}</span>
                     </div>
                   ))}
@@ -282,7 +296,9 @@ export function WorkflowTemplates({
                   >
                     <option value="">Select object...</option>
                     {availableObjects.map((obj) => (
-                      <option key={obj} value={obj}>{obj}</option>
+                      <option key={obj} value={obj}>
+                        {obj}
+                      </option>
                     ))}
                   </select>
                 </div>

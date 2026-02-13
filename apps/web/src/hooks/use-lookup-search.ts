@@ -19,10 +19,7 @@ interface UseLookupSearchOptions {
   debounceMs?: number;
 }
 
-export function useLookupSearch({
-  referencedObject,
-  debounceMs = 300,
-}: UseLookupSearchOptions) {
+export function useLookupSearch({ referencedObject, debounceMs = 300 }: UseLookupSearchOptions) {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);

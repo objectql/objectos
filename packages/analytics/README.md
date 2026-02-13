@@ -12,13 +12,13 @@ Metadata-driven analytics engine plugin for ObjectOS with aggregation pipelines,
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/v1/analytics/aggregate` | Run an aggregation query |
-| GET | `/api/v1/analytics/reports` | List report definitions |
-| POST | `/api/v1/analytics/reports` | Create a report |
-| GET | `/api/v1/analytics/dashboards` | List dashboards |
-| GET | `/api/v1/analytics/schedules` | List scheduled reports |
+| Method | Path                           | Description              |
+| ------ | ------------------------------ | ------------------------ |
+| POST   | `/api/v1/analytics/aggregate`  | Run an aggregation query |
+| GET    | `/api/v1/analytics/reports`    | List report definitions  |
+| POST   | `/api/v1/analytics/reports`    | Create a report          |
+| GET    | `/api/v1/analytics/dashboards` | List dashboards          |
+| GET    | `/api/v1/analytics/schedules`  | List scheduled reports   |
 
 ## Usage
 

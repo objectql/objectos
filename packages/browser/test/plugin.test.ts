@@ -12,14 +12,14 @@ describe('BrowserRuntimePlugin', () => {
     plugin = new BrowserRuntimePlugin({
       database: {
         name: 'test.db',
-        useOPFS: false // Disable OPFS for testing
+        useOPFS: false, // Disable OPFS for testing
       },
       serviceWorker: {
-        enabled: false // Disable SW for testing
+        enabled: false, // Disable SW for testing
       },
       worker: {
-        enabled: false // Disable worker for testing
-      }
+        enabled: false, // Disable worker for testing
+      },
     });
   });
 
@@ -42,8 +42,8 @@ describe('BrowserRuntimePlugin', () => {
       const customPlugin = new BrowserRuntimePlugin({
         database: {
           name: 'custom.db',
-          useOPFS: true
-        }
+          useOPFS: true,
+        },
       });
 
       expect(customPlugin).toBeDefined();
@@ -62,7 +62,7 @@ describe('SQLiteWASMDriver', () => {
   beforeEach(() => {
     driver = new SQLiteWASMDriver({
       name: 'test.db',
-      useOPFS: false
+      useOPFS: false,
     });
   });
 

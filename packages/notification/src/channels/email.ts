@@ -1,15 +1,15 @@
 /**
  * Email Channel
- * 
+ *
  * Email notification channel using SMTP via nodemailer
  */
 
-import type { 
-  EmailConfig, 
-  NotificationRequest, 
+import type {
+  EmailConfig,
+  NotificationRequest,
   NotificationResult,
   NotificationChannelInterface,
-  EmailOptions
+  EmailOptions,
 } from '../types.js';
 import { NotificationChannel } from '../types.js';
 import { TemplateEngine } from '../template-engine.js';
@@ -36,12 +36,12 @@ export class EmailChannel implements NotificationChannelInterface {
     try {
       const module = await import('nodemailer');
       const nodemailer = module.default || module;
-      
+
       this.transporter = nodemailer.createTransport({
         host: this.config.host,
         port: this.config.port,
         secure: this.config.secure ?? false,
-        auth: this.config.auth
+        auth: this.config.auth,
       });
       return this.transporter;
     } catch (error) {
@@ -60,7 +60,7 @@ export class EmailChannel implements NotificationChannelInterface {
       }
 
       const options = this.buildEmailOptions(request);
-      
+
       // Send email
       const info = await this.transporter.sendMail(options);
 
@@ -71,15 +71,15 @@ export class EmailChannel implements NotificationChannelInterface {
         timestamp: new Date(),
         metadata: {
           accepted: info.accepted,
-          rejected: info.rejected
-        }
+          rejected: info.rejected,
+        },
       };
     } catch (error) {
       return {
         success: false,
         channel: NotificationChannel.Email,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -105,13 +105,21 @@ export class EmailChannel implements NotificationChannelInterface {
       const mailOptions = {
         from: this.config.from,
         to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
-        cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(', ') : options.cc) : undefined,
-        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(', ') : options.bcc) : undefined,
+        cc: options.cc
+          ? Array.isArray(options.cc)
+            ? options.cc.join(', ')
+            : options.cc
+          : undefined,
+        bcc: options.bcc
+          ? Array.isArray(options.bcc)
+            ? options.bcc.join(', ')
+            : options.bcc
+          : undefined,
         subject: options.subject,
         text: body,
         html: html,
         attachments: options.attachments,
-        replyTo: this.config.replyTo
+        replyTo: this.config.replyTo,
       };
 
       const info = await this.transporter.sendMail(mailOptions);
@@ -123,15 +131,15 @@ export class EmailChannel implements NotificationChannelInterface {
         timestamp: new Date(),
         metadata: {
           accepted: info.accepted,
-          rejected: info.rejected
-        }
+          rejected: info.rejected,
+        },
       };
     } catch (error) {
       return {
         success: false,
         channel: NotificationChannel.Email,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -154,7 +162,7 @@ export class EmailChannel implements NotificationChannelInterface {
       subject: request.subject || 'Notification',
       text: body,
       html: html,
-      replyTo: this.config.replyTo
+      replyTo: this.config.replyTo,
     };
   }
 

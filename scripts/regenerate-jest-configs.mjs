@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,16 +6,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../packages');
 
 const packages = [
-    'audit', 
-    'auth', 
-    'cache', 
-    'i18n', 
-    'jobs', 
-    'metrics', 
-    'notification', 
-    'permissions', 
-    'storage', 
-    'workflow' // workflow wasn't in the list but checking if it has one
+  'audit',
+  'auth',
+  'cache',
+  'i18n',
+  'jobs',
+  'metrics',
+  'notification',
+  'permissions',
+  'storage',
+  'workflow', // workflow wasn't in the list but checking if it has one
 ];
 // browser is separate
 
@@ -70,17 +69,17 @@ const browserConfig = `module.exports = {
 
 // Helper to write
 function writeConfig(pkgName, config) {
-    const filePath = path.join(rootDir, pkgName, 'jest.config.cjs');
-    fs.writeFileSync(filePath, config);
-    console.log(`Wrote ${filePath}`);
+  const filePath = path.join(rootDir, pkgName, 'jest.config.cjs');
+  fs.writeFileSync(filePath, config);
+  console.log(`Wrote ${filePath}`);
 }
 
 // Write node configs
-packages.forEach(pkg => {
-    // Only if directory exists
-    if (fs.existsSync(path.join(rootDir, pkg))) {
-        writeConfig(pkg, nodeConfig);
-    }
+packages.forEach((pkg) => {
+  // Only if directory exists
+  if (fs.existsSync(path.join(rootDir, pkg))) {
+    writeConfig(pkg, nodeConfig);
+  }
 });
 
 // Write browser config

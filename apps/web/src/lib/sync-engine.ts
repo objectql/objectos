@@ -103,7 +103,9 @@ export class SyncEngine {
    * Attempt to push pending mutations to the server.
    */
   async pushToServer(
-    sendFn: (mutations: MutationEntry[]) => Promise<{ synced: string[]; conflicts: SyncConflict[] }>,
+    sendFn: (
+      mutations: MutationEntry[],
+    ) => Promise<{ synced: string[]; conflicts: SyncConflict[] }>,
   ): Promise<void> {
     const pending = this.mutationLog.filter((m) => !m.synced);
     if (pending.length === 0) return;

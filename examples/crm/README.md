@@ -13,12 +13,14 @@
 ### ✨ Key Features
 
 #### 📊 **Complete Data Model**
+
 - **10 Core Objects** organized by domain (Sales, Service, Marketing, Products)
 - **50+ Field Types** including advanced types (Location, Color, Address)
 - **Comprehensive Relationships** with lookups and master-detail
 - **Smart Validations** with script-based rules and formulas
 
 #### 🔒 **Enterprise Security**
+
 - **5 User Profiles** (Admin, Sales Manager, Sales Rep, Service Agent, Marketing User)
 - **Role Hierarchy** with 10 roles
 - **Sharing Rules** (criteria-based, owner-based, territory-based)
@@ -26,18 +28,21 @@
 - **Organization-Wide Defaults** for baseline access control
 
 #### 🤖 **AI-Powered Automation**
+
 - **5 AI Agents** (Sales Assistant, Service Agent, Lead Enrichment, Revenue Intelligence, Email Campaign)
 - **4 RAG Pipelines** for knowledge retrieval
 - **Natural Language Queries** for intuitive data access
 - **Predictive Analytics** (lead scoring, revenue forecasting)
 
 #### ⚡ **Business Process Automation**
+
 - **5 Automated Flows** (Lead Conversion, Opportunity Approval, Case Escalation, Quote Generation, Campaign Enrollment)
 - **Workflow Rules** for field updates and notifications
 - **Approval Processes** for large deals and contracts
 - **Scheduled Jobs** for batch processing
 
 #### 📈 **Analytics & Reporting**
+
 - **3 Interactive Dashboards** (Sales, Service, Executive)
 - **8 Pre-built Reports** (opportunities, accounts, cases, leads, tasks)
 - **Real-time Metrics** with KPIs and trends
@@ -86,17 +91,17 @@ pnpm --filter @example/app-crm dev
 
 ### 📦 What's Included
 
-| Category | Count | Examples |
-|----------|-------|----------|
-| **Objects** | 10 | Account, Opportunity, Case, Product |
-| **Fields** | 100+ | AutoNumber, Formula, Lookup, Address |
-| **Profiles** | 5 | Admin, Sales Manager, Sales Rep |
-| **Sharing Rules** | 5+ | Criteria-based, Territory-based |
-| **AI Agents** | 5 | Sales Assistant, Service Agent |
-| **RAG Pipelines** | 4 | Sales Knowledge, Support KB |
-| **Flows** | 5 | Lead Conversion, Approval |
-| **Dashboards** | 3 | Sales, Service, Executive |
-| **Reports** | 8 | Opportunities, Cases, Leads |
+| Category          | Count | Examples                             |
+| ----------------- | ----- | ------------------------------------ |
+| **Objects**       | 10    | Account, Opportunity, Case, Product  |
+| **Fields**        | 100+  | AutoNumber, Formula, Lookup, Address |
+| **Profiles**      | 5     | Admin, Sales Manager, Sales Rep      |
+| **Sharing Rules** | 5+    | Criteria-based, Territory-based      |
+| **AI Agents**     | 5     | Sales Assistant, Service Agent       |
+| **RAG Pipelines** | 4     | Sales Knowledge, Support KB          |
+| **Flows**         | 5     | Lead Conversion, Approval            |
+| **Dashboards**    | 3     | Sales, Service, Executive            |
+| **Reports**       | 8     | Opportunities, Cases, Leads          |
 
 ---
 
@@ -109,12 +114,14 @@ pnpm --filter @example/app-crm dev
 ### ✨ 核心特性
 
 #### 📊 **完整数据模型**
+
 - **10个核心对象** 按领域组织（销售、服务、营销、产品）
 - **50+字段类型** 包括高级类型（位置、颜色、地址）
 - **全面的关系** 查找和主从关系
 - **智能验证** 基于脚本的规则和公式
 
 #### 🔒 **企业级安全**
+
 - **5种用户配置文件** （管理员、销售经理、销售代表、服务代表、营销用户）
 - **角色层次结构** 包含10个角色
 - **共享规则** （基于条件、基于所有者、基于区域）
@@ -122,18 +129,21 @@ pnpm --filter @example/app-crm dev
 - **组织范围默认值** 基线访问控制
 
 #### 🤖 **AI驱动自动化**
+
 - **5个AI代理** （销售助手、服务代理、线索丰富、收入智能、邮件营销）
 - **4个RAG管道** 用于知识检索
 - **自然语言查询** 直观的数据访问
 - **预测分析** （线索评分、收入预测）
 
 #### ⚡ **业务流程自动化**
+
 - **5个自动化流程** （线索转换、商机审批、案例升级、报价生成、营销注册）
 - **工作流规则** 字段更新和通知
 - **审批流程** 大型交易和合同
 - **定时任务** 批处理
 
 #### 📈 **分析与报表**
+
 - **3个交互式仪表板** （销售、服务、高管）
 - **8个预制报表** （商机、客户、案例、线索、任务）
 - **实时指标** KPI和趋势

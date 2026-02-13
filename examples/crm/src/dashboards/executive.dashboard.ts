@@ -4,7 +4,7 @@ export const ExecutiveDashboard: Dashboard = {
   name: 'executive_dashboard',
   label: 'Executive Overview',
   description: 'High-level business metrics',
-  
+
   widgets: [
     // Row 1: Revenue Metrics
     {
@@ -15,7 +15,7 @@ export const ExecutiveDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 0, y: 0, w: 3, h: 2 },
-      options: { prefix: '$', color: '#00AA00' }
+      options: { prefix: '$', color: '#00AA00' },
     },
     {
       title: 'Total Accounts',
@@ -24,7 +24,7 @@ export const ExecutiveDashboard: Dashboard = {
       filter: { is_active: true },
       aggregate: 'count',
       layout: { x: 3, y: 0, w: 3, h: 2 },
-      options: { color: '#4169E1' }
+      options: { color: '#4169E1' },
     },
     {
       title: 'Total Contacts',
@@ -32,7 +32,7 @@ export const ExecutiveDashboard: Dashboard = {
       object: 'contact',
       aggregate: 'count',
       layout: { x: 6, y: 0, w: 3, h: 2 },
-      options: { color: '#9370DB' }
+      options: { color: '#9370DB' },
     },
     {
       title: 'Total Leads',
@@ -41,9 +41,9 @@ export const ExecutiveDashboard: Dashboard = {
       filter: { is_converted: false },
       aggregate: 'count',
       layout: { x: 9, y: 0, w: 3, h: 2 },
-      options: { color: '#FFA500' }
+      options: { color: '#FFA500' },
     },
-    
+
     // Row 2: Revenue Analysis
     {
       title: 'Revenue by Industry',
@@ -64,9 +64,9 @@ export const ExecutiveDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 6, y: 2, w: 6, h: 4 },
-      options: { dateGranularity: 'quarter' }
+      options: { dateGranularity: 'quarter' },
     },
-    
+
     // Row 3: Customer & Activity Metrics
     {
       title: 'New Accounts by Month',
@@ -76,7 +76,7 @@ export const ExecutiveDashboard: Dashboard = {
       categoryField: 'created_date',
       aggregate: 'count',
       layout: { x: 0, y: 6, w: 4, h: 4 },
-      options: { dateGranularity: 'month' }
+      options: { dateGranularity: 'month' },
     },
     {
       title: 'Lead Conversion Rate',
@@ -85,7 +85,7 @@ export const ExecutiveDashboard: Dashboard = {
       valueField: 'is_converted',
       aggregate: 'avg',
       layout: { x: 4, y: 6, w: 4, h: 4 },
-      options: { suffix: '%', color: '#00AA00' }
+      options: { suffix: '%', color: '#00AA00' },
     },
     {
       title: 'Top Accounts by Revenue',
@@ -98,7 +98,7 @@ export const ExecutiveDashboard: Dashboard = {
         sortBy: 'annual_revenue',
         sortOrder: 'desc',
         limit: 10,
-      }
+      },
     },
-  ]
+  ],
 };

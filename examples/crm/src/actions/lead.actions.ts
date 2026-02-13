@@ -28,7 +28,7 @@ export const CreateCampaignAction: Action = {
       label: 'Campaign',
       type: 'lookup',
       required: true,
-    }
+    },
   ],
   successMessage: 'Leads added to campaign!',
   refreshAfter: true,

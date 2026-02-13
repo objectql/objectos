@@ -15,10 +15,10 @@ OpenTelemetry-compatible distributed tracing plugin for ObjectOS with W3C Trace 
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/telemetry/stats` | Telemetry statistics and span counts |
-| GET | `/api/v1/telemetry/spans` | Recent span data |
+| Method | Path                      | Description                          |
+| ------ | ------------------------- | ------------------------------------ |
+| GET    | `/api/v1/telemetry/stats` | Telemetry statistics and span counts |
+| GET    | `/api/v1/telemetry/spans` | Recent span data                     |
 
 ## Usage
 

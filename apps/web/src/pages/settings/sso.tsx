@@ -15,20 +15,85 @@ interface ProviderInfo {
  */
 const ALL_PROVIDERS: ProviderInfo[] = [
   // Social
-  { id: 'google',    label: 'Google',    category: 'social', envHint: 'GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET' },
-  { id: 'github',    label: 'GitHub',    category: 'social', envHint: 'GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET' },
-  { id: 'microsoft', label: 'Microsoft', category: 'social', envHint: 'MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET' },
-  { id: 'apple',     label: 'Apple',     category: 'social', envHint: 'APPLE_CLIENT_ID, APPLE_CLIENT_SECRET' },
-  { id: 'discord',   label: 'Discord',   category: 'social', envHint: 'DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET' },
-  { id: 'gitlab',    label: 'GitLab',    category: 'social', envHint: 'GITLAB_CLIENT_ID, GITLAB_CLIENT_SECRET' },
-  { id: 'linkedin',  label: 'LinkedIn',  category: 'social', envHint: 'LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET' },
-  { id: 'twitter',   label: 'X (Twitter)', category: 'social', envHint: 'TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET' },
-  { id: 'facebook',  label: 'Facebook',  category: 'social', envHint: 'FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET' },
+  {
+    id: 'google',
+    label: 'Google',
+    category: 'social',
+    envHint: 'GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET',
+  },
+  {
+    id: 'github',
+    label: 'GitHub',
+    category: 'social',
+    envHint: 'GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET',
+  },
+  {
+    id: 'microsoft',
+    label: 'Microsoft',
+    category: 'social',
+    envHint: 'MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET',
+  },
+  {
+    id: 'apple',
+    label: 'Apple',
+    category: 'social',
+    envHint: 'APPLE_CLIENT_ID, APPLE_CLIENT_SECRET',
+  },
+  {
+    id: 'discord',
+    label: 'Discord',
+    category: 'social',
+    envHint: 'DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET',
+  },
+  {
+    id: 'gitlab',
+    label: 'GitLab',
+    category: 'social',
+    envHint: 'GITLAB_CLIENT_ID, GITLAB_CLIENT_SECRET',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    category: 'social',
+    envHint: 'LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET',
+  },
+  {
+    id: 'twitter',
+    label: 'X (Twitter)',
+    category: 'social',
+    envHint: 'TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET',
+  },
+  {
+    id: 'facebook',
+    label: 'Facebook',
+    category: 'social',
+    envHint: 'FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET',
+  },
   // Enterprise SSO
-  { id: 'microsoft-entra-id', label: 'Microsoft Entra ID', category: 'enterprise', envHint: 'AZURE_AD_CLIENT_ID, AZURE_AD_CLIENT_SECRET, AZURE_AD_TENANT_ID' },
-  { id: 'auth0',     label: 'Auth0',     category: 'enterprise', envHint: 'AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_DOMAIN' },
-  { id: 'okta',      label: 'Okta',      category: 'enterprise', envHint: 'OKTA_CLIENT_ID, OKTA_CLIENT_SECRET, OKTA_ISSUER' },
-  { id: 'keycloak',  label: 'Keycloak',  category: 'enterprise', envHint: 'KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET, KEYCLOAK_ISSUER' },
+  {
+    id: 'microsoft-entra-id',
+    label: 'Microsoft Entra ID',
+    category: 'enterprise',
+    envHint: 'AZURE_AD_CLIENT_ID, AZURE_AD_CLIENT_SECRET, AZURE_AD_TENANT_ID',
+  },
+  {
+    id: 'auth0',
+    label: 'Auth0',
+    category: 'enterprise',
+    envHint: 'AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_DOMAIN',
+  },
+  {
+    id: 'okta',
+    label: 'Okta',
+    category: 'enterprise',
+    envHint: 'OKTA_CLIENT_ID, OKTA_CLIENT_SECRET, OKTA_ISSUER',
+  },
+  {
+    id: 'keycloak',
+    label: 'Keycloak',
+    category: 'enterprise',
+    envHint: 'KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET, KEYCLOAK_ISSUER',
+  },
 ];
 
 export default function SSOSettingsPage() {
@@ -37,8 +102,8 @@ export default function SSOSettingsPage() {
 
   useEffect(() => {
     fetch('/api/v1/auth/providers')
-      .then(r => r.json())
-      .then(data => setEnabledProviders(data.providers ?? []))
+      .then((r) => r.json())
+      .then((data) => setEnabledProviders(data.providers ?? []))
       .catch(() => setEnabledProviders([]))
       .finally(() => setLoading(false));
   }, []);
@@ -51,19 +116,20 @@ export default function SSOSettingsPage() {
     );
   }
 
-  const socialProviders = ALL_PROVIDERS.filter(p => p.category === 'social');
-  const enterpriseProviders = ALL_PROVIDERS.filter(p => p.category === 'enterprise');
+  const socialProviders = ALL_PROVIDERS.filter((p) => p.category === 'social');
+  const enterpriseProviders = ALL_PROVIDERS.filter((p) => p.category === 'enterprise');
 
   // Check if any custom OIDC provider is enabled (not in our known list)
-  const knownIds = ALL_PROVIDERS.map(p => p.id);
-  const customProviders = enabledProviders.filter(id => !knownIds.includes(id));
+  const knownIds = ALL_PROVIDERS.map((p) => p.id);
+  const customProviders = enabledProviders.filter((id) => !knownIds.includes(id));
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Single Sign-On</h2>
         <p className="text-muted-foreground">
-          Manage OAuth and enterprise SSO providers. Providers are configured via environment variables on the server.
+          Manage OAuth and enterprise SSO providers. Providers are configured via environment
+          variables on the server.
         </p>
       </div>
 
@@ -83,8 +149,10 @@ export default function SSOSettingsPage() {
         {enabledProviders.length > 0 && (
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {enabledProviders.map(id => (
-                <Badge key={id} variant="default">{id}</Badge>
+              {enabledProviders.map((id) => (
+                <Badge key={id} variant="default">
+                  {id}
+                </Badge>
               ))}
             </div>
           </CardContent>
@@ -101,7 +169,7 @@ export default function SSOSettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="divide-y">
-            {socialProviders.map(p => {
+            {socialProviders.map((p) => {
               const enabled = enabledProviders.includes(p.id);
               return (
                 <div key={p.id} className="flex items-center justify-between py-3">
@@ -136,7 +204,7 @@ export default function SSOSettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="divide-y">
-            {enterpriseProviders.map(p => {
+            {enterpriseProviders.map((p) => {
               const enabled = enabledProviders.includes(p.id);
               return (
                 <div key={p.id} className="flex items-center justify-between py-3">
@@ -172,7 +240,7 @@ export default function SSOSettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="divide-y">
-              {customProviders.map(id => (
+              {customProviders.map((id) => (
                 <div key={id} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="size-4 text-green-500" />
@@ -193,8 +261,8 @@ export default function SSOSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
-            SSO providers are configured via <strong>environment variables</strong> on the ObjectStack server.
-            Restart the server after setting new variables.
+            SSO providers are configured via <strong>environment variables</strong> on the
+            ObjectStack server. Restart the server after setting new variables.
           </p>
           <div className="rounded-md bg-muted p-3 font-mono text-xs">
             <div># Social provider example (GitHub)</div>

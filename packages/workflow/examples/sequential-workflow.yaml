@@ -1,10 +1,10 @@
 # Sequential Workflow Example
 # This workflow demonstrates a sequential process with ordered steps
 
-name: "Order Fulfillment"
-description: "Sequential order processing workflow"
+name: 'Order Fulfillment'
+description: 'Sequential order processing workflow'
 type: sequential
-version: "1.0.0"
+version: '1.0.0'
 
 states:
   received:
@@ -15,9 +15,9 @@ states:
       - log_order_received
       - notify_customer
     metadata:
-      label: "Order Received"
+      label: 'Order Received'
       step: 1
-  
+
   payment_processing:
     transitions:
       complete: inventory_check
@@ -25,9 +25,9 @@ states:
     on_enter:
       - process_payment
     metadata:
-      label: "Processing Payment"
+      label: 'Processing Payment'
       step: 2
-  
+
   inventory_check:
     transitions:
       available: packaging
@@ -35,9 +35,9 @@ states:
     on_enter:
       - check_inventory
     metadata:
-      label: "Checking Inventory"
+      label: 'Checking Inventory'
       step: 3
-  
+
   packaging:
     transitions:
       complete: shipping
@@ -45,9 +45,9 @@ states:
       - package_items
       - generate_shipping_label
     metadata:
-      label: "Packaging"
+      label: 'Packaging'
       step: 4
-  
+
   shipping:
     transitions:
       shipped: delivered
@@ -55,32 +55,32 @@ states:
       - update_tracking
       - notify_customer
     metadata:
-      label: "Shipping"
+      label: 'Shipping'
       step: 5
-  
+
   delivered:
     final: true
     on_enter:
       - complete_order
       - request_feedback
     metadata:
-      label: "Delivered"
+      label: 'Delivered'
       step: 6
-  
+
   payment_failed:
     final: true
     on_enter:
       - cancel_order
       - notify_customer
     metadata:
-      label: "Payment Failed"
-      terminal: "error"
-  
+      label: 'Payment Failed'
+      terminal: 'error'
+
   out_of_stock:
     final: true
     on_enter:
       - refund_payment
       - notify_customer
     metadata:
-      label: "Out of Stock"
-      terminal: "error"
+      label: 'Out of Stock'
+      terminal: 'error'

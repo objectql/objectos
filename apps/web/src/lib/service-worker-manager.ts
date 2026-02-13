@@ -57,17 +57,20 @@ export function useServiceWorker() {
     }
 
     // Check existing registration
-    navigator.serviceWorker.getRegistration().then((registration) => {
-      if (registration) {
-        setState((prev) => ({ ...prev, isRegistered: true }));
+    navigator.serviceWorker
+      .getRegistration()
+      .then((registration) => {
+        if (registration) {
+          setState((prev) => ({ ...prev, isRegistered: true }));
 
-        registration.addEventListener('updatefound', () => {
-          setState((prev) => ({ ...prev, updateAvailable: true }));
-        });
-      }
-    }).catch(() => {
-      // Ignore — serviceWorker may not be available
-    });
+          registration.addEventListener('updatefound', () => {
+            setState((prev) => ({ ...prev, updateAvailable: true }));
+          });
+        }
+      })
+      .catch(() => {
+        // Ignore — serviceWorker may not be available
+      });
   }, []);
 
   const register = useCallback(async () => {

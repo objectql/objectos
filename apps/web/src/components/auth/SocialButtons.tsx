@@ -17,10 +17,22 @@ interface ProviderMeta {
 
 const GoogleIcon = () => (
   <svg className="size-4" viewBox="0 0 24 24">
-    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05" />
-    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    <path
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      fill="#4285F4"
+    />
+    <path
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      fill="#34A853"
+    />
+    <path
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      fill="#EA4335"
+    />
   </svg>
 );
 
@@ -71,7 +83,15 @@ const FacebookIcon = () => (
 
 // Enterprise SSO icons
 const KeyIcon = () => (
-  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    className="size-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
   </svg>
 );
@@ -79,20 +99,20 @@ const KeyIcon = () => (
 /** Registry of all known provider metadata */
 const PROVIDER_REGISTRY: Record<string, ProviderMeta> = {
   // Social providers (signIn.social)
-  google:   { label: 'Google',   icon: <GoogleIcon />,   social: true },
-  github:   { label: 'GitHub',   icon: <Github className="size-4" />, social: true },
-  microsoft:{ label: 'Microsoft',icon: <MicrosoftIcon />,social: true },
-  apple:    { label: 'Apple',    icon: <AppleIcon />,    social: true },
-  discord:  { label: 'Discord',  icon: <DiscordIcon />,  social: true },
-  gitlab:   { label: 'GitLab',   icon: <GitLabIcon />,   social: true },
-  linkedin: { label: 'LinkedIn', icon: <LinkedInIcon />,  social: true },
-  twitter:  { label: 'X',        icon: <TwitterIcon />,  social: true },
+  google: { label: 'Google', icon: <GoogleIcon />, social: true },
+  github: { label: 'GitHub', icon: <Github className="size-4" />, social: true },
+  microsoft: { label: 'Microsoft', icon: <MicrosoftIcon />, social: true },
+  apple: { label: 'Apple', icon: <AppleIcon />, social: true },
+  discord: { label: 'Discord', icon: <DiscordIcon />, social: true },
+  gitlab: { label: 'GitLab', icon: <GitLabIcon />, social: true },
+  linkedin: { label: 'LinkedIn', icon: <LinkedInIcon />, social: true },
+  twitter: { label: 'X', icon: <TwitterIcon />, social: true },
   facebook: { label: 'Facebook', icon: <FacebookIcon />, social: true },
   // Enterprise SSO providers (signIn.oauth2 via genericOAuth)
   'microsoft-entra-id': { label: 'Microsoft Entra ID', icon: <MicrosoftIcon />, social: false },
-  'auth0':      { label: 'Auth0',      icon: <KeyIcon />, social: false },
-  'okta':       { label: 'Okta',       icon: <KeyIcon />, social: false },
-  'keycloak':   { label: 'Keycloak',   icon: <KeyIcon />, social: false },
+  auth0: { label: 'Auth0', icon: <KeyIcon />, social: false },
+  okta: { label: 'Okta', icon: <KeyIcon />, social: false },
+  keycloak: { label: 'Keycloak', icon: <KeyIcon />, social: false },
 };
 
 /**
@@ -109,8 +129,8 @@ export function SocialButtons() {
 
   useEffect(() => {
     fetch('/api/v1/auth/providers')
-      .then(r => r.json())
-      .then(data => setProviders(data.providers ?? []))
+      .then((r) => r.json())
+      .then((data) => setProviders(data.providers ?? []))
       .catch(() => setProviders([]))
       .finally(() => setFetching(false));
   }, []);
@@ -150,15 +170,12 @@ export function SocialButtons() {
   if (providers.length === 0) return null;
 
   // Determine grid layout based on provider count
-  const gridCols = providers.length === 1
-    ? 'grid-cols-1'
-    : providers.length <= 3
-    ? 'grid-cols-2'
-    : 'grid-cols-3';
+  const gridCols =
+    providers.length === 1 ? 'grid-cols-1' : providers.length <= 3 ? 'grid-cols-2' : 'grid-cols-3';
 
   return (
     <div className={`grid ${gridCols} gap-3`}>
-      {providers.map(id => {
+      {providers.map((id) => {
         const meta = PROVIDER_REGISTRY[id] ?? {
           label: id.charAt(0).toUpperCase() + id.slice(1),
           icon: <KeyIcon />,
@@ -172,11 +189,7 @@ export function SocialButtons() {
             disabled={!!isLoading}
             type="button"
           >
-            {isLoading === id ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              meta.icon
-            )}
+            {isLoading === id ? <Loader2 className="size-4 animate-spin" /> : meta.icon}
             {meta.label}
           </Button>
         );

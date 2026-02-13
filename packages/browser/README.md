@@ -6,12 +6,12 @@ Browser Runtime Plugin for ObjectOS - enables running the entire ObjectOS backen
 
 This plugin provides a complete browser-based runtime environment for ObjectOS, allowing applications to run fully offline without requiring a server backend. It implements browser equivalents for all server-side components:
 
-| Server Component | Browser Replacement | Implementation |
-|-----------------|-------------------|----------------|
-| Database (PostgreSQL/MongoDB) | SQLite WASM + OPFS | sql.js with Origin Private File System persistence |
-| File Storage (S3/MinIO) | OPFS | Origin Private File System API |
-| API Service (Express/Koa) | Service Worker | MSW-like request interception |
-| Business Logic (Node.js) | Web Worker | Isolated execution context |
+| Server Component              | Browser Replacement | Implementation                                     |
+| ----------------------------- | ------------------- | -------------------------------------------------- |
+| Database (PostgreSQL/MongoDB) | SQLite WASM + OPFS  | sql.js with Origin Private File System persistence |
+| File Storage (S3/MinIO)       | OPFS                | Origin Private File System API                     |
+| API Service (Express/Koa)     | Service Worker      | MSW-like request interception                      |
+| Business Logic (Node.js)      | Web Worker          | Isolated execution context                         |
 
 ## Features
 
@@ -51,18 +51,18 @@ const browserPlugin = new BrowserRuntimePlugin({
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL
-      )`
-    ]
+      )`,
+    ],
   },
   storage: {
     rootDir: 'my-app-files',
-    maxQuota: 100 * 1024 * 1024 // 100MB
+    maxQuota: 100 * 1024 * 1024, // 100MB
   },
   serviceWorker: {
     enabled: true,
     scriptPath: '/sw.js',
-    apiBasePath: '/api'
-  }
+    apiBasePath: '/api',
+  },
 });
 
 await kernel.registerPlugin(browserPlugin);
@@ -92,10 +92,10 @@ const database = browserPlugin.getDatabase();
 const users = await database.query('SELECT * FROM users');
 
 // Execute mutations
-await database.execute(
-  'INSERT INTO users (name, email) VALUES (?, ?)',
-  ['John Doe', 'john@example.com']
-);
+await database.execute('INSERT INTO users (name, email) VALUES (?, ?)', [
+  'John Doe',
+  'john@example.com',
+]);
 ```
 
 ### 4. Use File Storage
@@ -129,10 +129,8 @@ The SQLite WASM driver uses [sql.js](https://github.com/sql-js/sql.js) to provid
 ```typescript
 const driver = new SQLiteWASMDriver({
   name: 'mydb.db',
-  useOPFS: true,  // Persist to disk
-  initScripts: [
-    'CREATE TABLE ...',
-  ]
+  useOPFS: true, // Persist to disk
+  initScripts: ['CREATE TABLE ...'],
 });
 
 await driver.connect();
@@ -140,6 +138,7 @@ const results = await driver.query('SELECT * FROM users');
 ```
 
 **Persistence**: When `useOPFS` is enabled, the database is automatically saved to OPFS:
+
 - Auto-saves every 5 seconds
 - Saves on page unload
 - Loads existing database on connect
@@ -151,7 +150,7 @@ The OPFS storage backend provides file system operations:
 ```typescript
 const storage = new OPFSStorageBackend({
   rootDir: 'app-files',
-  maxQuota: 100 * 1024 * 1024
+  maxQuota: 100 * 1024 * 1024,
 });
 
 await storage.init();
@@ -159,6 +158,7 @@ await storage.writeFile('path/to/file.txt', data);
 ```
 
 **File Operations**:
+
 - `writeFile(path, data)`: Write file
 - `readFile(path)`: Read file
 - `deleteFile(path)`: Delete file
@@ -179,12 +179,13 @@ await sw.register('/sw.js');
 sw.registerHandler('/api/users', async (request) => {
   const users = await database.query('SELECT * FROM users');
   return new Response(JSON.stringify(users), {
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   });
 });
 ```
 
 **Request Flow**:
+
 1. Frontend makes `fetch('/api/users')`
 2. Service Worker intercepts the request
 3. Routes to registered handler
@@ -213,25 +214,25 @@ await worker.executeMutation('INSERT INTO users ...');
 ```typescript
 interface BrowserRuntimeConfig {
   database?: {
-    name?: string;           // Database file name
-    useOPFS?: boolean;       // Enable persistence
-    initScripts?: string[];  // Initial SQL
+    name?: string; // Database file name
+    useOPFS?: boolean; // Enable persistence
+    initScripts?: string[]; // Initial SQL
   };
-  
+
   storage?: {
-    rootDir?: string;        // OPFS root directory
-    maxQuota?: number;       // Max storage in bytes
+    rootDir?: string; // OPFS root directory
+    maxQuota?: number; // Max storage in bytes
   };
-  
+
   serviceWorker?: {
-    enabled?: boolean;       // Enable SW
-    scriptPath?: string;     // SW script path
-    apiBasePath?: string;    // API base path
+    enabled?: boolean; // Enable SW
+    scriptPath?: string; // SW script path
+    apiBasePath?: string; // API base path
   };
-  
+
   worker?: {
-    enabled?: boolean;       // Enable Web Worker
-    scriptPath?: string;     // Worker script path
+    enabled?: boolean; // Enable Web Worker
+    scriptPath?: string; // Worker script path
   };
 }
 ```
@@ -247,6 +248,7 @@ Requires modern browsers with support for:
 - ✅ IndexedDB (for metadata)
 
 **Supported Browsers**:
+
 - Chrome/Edge 102+
 - Firefox 111+
 - Safari 15.2+
@@ -263,7 +265,8 @@ const plugin = new BrowserRuntimePlugin({
   database: {
     name: 'crm.db',
     useOPFS: true,
-    initScripts: [`
+    initScripts: [
+      `
       CREATE TABLE IF NOT EXISTS contacts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         first_name TEXT NOT NULL,
@@ -279,8 +282,9 @@ const plugin = new BrowserRuntimePlugin({
         industry TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
-    `]
-  }
+    `,
+    ],
+  },
 });
 
 // Register with kernel
@@ -289,10 +293,11 @@ await kernel.registerPlugin(plugin);
 const db = plugin.getDatabase();
 
 // Create contact
-await db.execute(
-  'INSERT INTO contacts (first_name, last_name, email) VALUES (?, ?, ?)',
-  ['John', 'Doe', 'john@example.com']
-);
+await db.execute('INSERT INTO contacts (first_name, last_name, email) VALUES (?, ?, ?)', [
+  'John',
+  'Doe',
+  'john@example.com',
+]);
 
 // Query contacts
 const contacts = await db.query('SELECT * FROM contacts');
@@ -314,14 +319,16 @@ const storage = plugin.getStorage();
 async function handleFileUpload(file: File) {
   const buffer = await file.arrayBuffer();
   const path = `uploads/${Date.now()}-${file.name}`;
-  
+
   await storage.writeFile(path, new Uint8Array(buffer));
-  
+
   // Store metadata in database
-  await db.execute(
-    'INSERT INTO files (path, name, size, type) VALUES (?, ?, ?, ?)',
-    [path, file.name, file.size, file.type]
-  );
+  await db.execute('INSERT INTO files (path, name, size, type) VALUES (?, ?, ?, ?)', [
+    path,
+    file.name,
+    file.size,
+    file.type,
+  ]);
 }
 
 // Retrieve file
@@ -337,39 +344,48 @@ async function getFile(path: string): Promise<Blob> {
 ### 1. Database Migration
 
 **Server (PostgreSQL)**:
+
 ```typescript
 import { PostgresDriver } from '@objectql/driver-sql';
-const driver = new PostgresDriver({ /* config */ });
+const driver = new PostgresDriver({
+  /* config */
+});
 ```
 
 **Browser (SQLite WASM)**:
+
 ```typescript
 import { SQLiteWASMDriver } from '@objectos/plugin-browser';
 const driver = new SQLiteWASMDriver({
   name: 'app.db',
-  useOPFS: true
+  useOPFS: true,
 });
 ```
 
 ### 2. File Storage Migration
 
 **Server (S3)**:
+
 ```typescript
 import { S3Storage } from '@objectos/plugin-storage';
-const storage = new S3Storage({ /* config */ });
+const storage = new S3Storage({
+  /* config */
+});
 ```
 
 **Browser (OPFS)**:
+
 ```typescript
 import { OPFSStorageBackend } from '@objectos/plugin-browser';
 const storage = new OPFSStorageBackend({
-  rootDir: 'app-files'
+  rootDir: 'app-files',
 });
 ```
 
 ### 3. API Migration
 
 **Server (Express)**:
+
 ```typescript
 app.get('/api/users', async (req, res) => {
   const users = await db.query('SELECT * FROM users');
@@ -378,11 +394,12 @@ app.get('/api/users', async (req, res) => {
 ```
 
 **Browser (Service Worker)**:
+
 ```typescript
 serviceWorker.registerHandler('/api/users', async (request) => {
   const users = await db.query('SELECT * FROM users');
   return new Response(JSON.stringify(users), {
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   });
 });
 ```

@@ -1,8 +1,8 @@
 /**
  * Notification Plugin for ObjectOS
- * 
+ *
  * Multi-channel notification system with Email, SMS, Push, and Webhook support
- * 
+ *
  * Features:
  * - Multiple notification channels (Email, SMS, Push, Webhook)
  * - Template rendering with Handlebars
@@ -12,10 +12,15 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { INotificationService, NotificationMessage as SpecNotificationMessage, NotificationResult as SpecNotificationResult, NotificationChannel as SpecNotificationChannel } from '@objectstack/spec/contracts';
-import type { 
-  NotificationConfig, 
-  NotificationRequest, 
+import type {
+  INotificationService,
+  NotificationMessage as SpecNotificationMessage,
+  NotificationResult as SpecNotificationResult,
+  NotificationChannel as SpecNotificationChannel,
+} from '@objectstack/spec/contracts';
+import type {
+  NotificationConfig,
+  NotificationRequest,
   NotificationResult,
   NotificationTemplate,
   NotificationPreference,
@@ -52,7 +57,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
   private templateEngine: TemplateEngine;
   private queue?: NotificationQueue;
   private startedAt?: number;
-  
+
   private emailChannel?: EmailChannel;
   private smsChannel?: SmsChannel;
   private pushChannel?: PushChannel;
@@ -64,17 +69,17 @@ export class NotificationPlugin implements Plugin, INotificationService {
 
   constructor(config: NotificationConfig = {}) {
     this.config = config;
-    
+
     // Initialize template engine
     this.templateEngine = new TemplateEngine({
-      cache: config.templates?.cache ?? true
+      cache: config.templates?.cache ?? true,
     });
 
     // Initialize queue if enabled
     if (config.queue?.enabled !== false) {
       this.queue = new NotificationQueue({
         maxRetries: config.queue?.maxRetries ?? 3,
-        retryDelay: config.queue?.retryDelay ?? 5000
+        retryDelay: config.queue?.retryDelay ?? 5000,
       });
     }
 
@@ -115,7 +120,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
   init = async (context: PluginContext): Promise<void> => {
     this.context = context;
     this.startedAt = Date.now();
-    
+
     // Register notification service
     context.registerService('notification', {
       send: this.send.bind(this),
@@ -136,14 +141,14 @@ export class NotificationPlugin implements Plugin, INotificationService {
 
     context.logger.info('[NotificationPlugin] Initialized successfully');
     await context.trigger('plugin.initialized', { plugin: this.name });
-  }
+  };
 
   /**
    * Plugin lifecycle: Start
    */
   async start(context: PluginContext): Promise<void> {
     context.logger.info('[NotificationPlugin] Starting...');
-    
+
     // Register HTTP routes for Notification API
     try {
       const httpServer = context.getService('http.server') as any;
@@ -154,38 +159,38 @@ export class NotificationPlugin implements Plugin, INotificationService {
           try {
             const channels: any[] = [];
             if (this.emailChannel) {
-              channels.push({ 
-                name: 'email', 
+              channels.push({
+                name: 'email',
                 type: NotificationChannel.Email,
                 enabled: true,
-                config: { 
+                config: {
                   from: this.config.email?.from,
-                  host: this.config.email?.host ? 'configured' : 'not configured'
-                }
+                  host: this.config.email?.host ? 'configured' : 'not configured',
+                },
               });
             }
             if (this.smsChannel) {
-              channels.push({ 
-                name: 'sms', 
+              channels.push({
+                name: 'sms',
                 type: NotificationChannel.SMS,
                 enabled: true,
-                config: { provider: this.config.sms?.provider || 'default' }
+                config: { provider: this.config.sms?.provider || 'default' },
               });
             }
             if (this.pushChannel) {
-              channels.push({ 
-                name: 'push', 
+              channels.push({
+                name: 'push',
                 type: NotificationChannel.Push,
                 enabled: true,
-                config: { provider: this.config.push?.provider || 'default' }
+                config: { provider: this.config.push?.provider || 'default' },
               });
             }
             if (this.webhookChannel) {
-              channels.push({ 
-                name: 'webhook', 
+              channels.push({
+                name: 'webhook',
                 type: NotificationChannel.Webhook,
                 enabled: true,
-                config: {}
+                config: {},
               });
             }
             return c.json({ success: true, data: channels });
@@ -223,7 +228,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
     } catch (e: any) {
       context.logger.warn(`[NotificationPlugin] Could not register HTTP routes: ${e?.message}`);
     }
-    
+
     context.logger.info('[NotificationPlugin] Started successfully');
     await context.trigger('plugin.started', { plugin: this.name });
   }
@@ -248,7 +253,13 @@ export class NotificationPlugin implements Plugin, INotificationService {
         uptime: this.startedAt ? Date.now() - this.startedAt : 0,
         responseTime: Date.now() - start,
       },
-      checks: [{ name: 'notification-channels', status: status === 'healthy' ? 'passed' : 'warning', message }],
+      checks: [
+        {
+          name: 'notification-channels',
+          status: status === 'healthy' ? 'passed' : 'warning',
+          message,
+        },
+      ],
     };
   }
 
@@ -258,21 +269,37 @@ export class NotificationPlugin implements Plugin, INotificationService {
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
       capabilities: {
-        provides: [{
-          id: 'com.objectstack.service.notification',
-          name: 'notification',
-          version: { major: 0, minor: 1, patch: 0 },
-          methods: [
-            { name: 'send', description: 'Send a notification via specified channel', returnType: 'Promise<NotificationResult>', async: true },
-            { name: 'sendEmail', description: 'Send email notification', async: true },
-            { name: 'sendSMS', description: 'Send SMS notification', async: true },
-            { name: 'sendPush', description: 'Send push notification', async: true },
-            { name: 'sendWebhook', description: 'Send webhook notification', async: true },
-            { name: 'renderTemplate', description: 'Render a template with data', returnType: 'string', async: false },
-            { name: 'getQueueStatus', description: 'Get notification queue status', async: false },
-          ],
-          stability: 'stable',
-        }],
+        provides: [
+          {
+            id: 'com.objectstack.service.notification',
+            name: 'notification',
+            version: { major: 0, minor: 1, patch: 0 },
+            methods: [
+              {
+                name: 'send',
+                description: 'Send a notification via specified channel',
+                returnType: 'Promise<NotificationResult>',
+                async: true,
+              },
+              { name: 'sendEmail', description: 'Send email notification', async: true },
+              { name: 'sendSMS', description: 'Send SMS notification', async: true },
+              { name: 'sendPush', description: 'Send push notification', async: true },
+              { name: 'sendWebhook', description: 'Send webhook notification', async: true },
+              {
+                name: 'renderTemplate',
+                description: 'Render a template with data',
+                returnType: 'string',
+                async: false,
+              },
+              {
+                name: 'getQueueStatus',
+                description: 'Get notification queue status',
+                async: false,
+              },
+            ],
+            stability: 'stable',
+          },
+        ],
         requires: [],
       },
       security: {
@@ -288,7 +315,11 @@ export class NotificationPlugin implements Plugin, INotificationService {
    * Startup result
    */
   getStartupResult(): PluginStartupResult {
-    return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
+    return {
+      plugin: { name: this.name, version: this.version },
+      success: !!this.context,
+      duration: 0,
+    };
   }
 
   /**
@@ -297,7 +328,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
   async destroy(): Promise<void> {
     // Stop queue processing
     this.queue?.stop();
-    
+
     this.context?.logger.info('[NotificationPlugin] Destroyed');
     await this.context?.trigger('plugin.destroyed', { plugin: this.name });
   }
@@ -308,18 +339,21 @@ export class NotificationPlugin implements Plugin, INotificationService {
    */
   async send(request: NotificationRequest): Promise<NotificationResult>;
   async send(message: SpecNotificationMessage): Promise<SpecNotificationResult>;
-  async send(input: NotificationRequest | SpecNotificationMessage): Promise<NotificationResult | SpecNotificationResult> {
+  async send(
+    input: NotificationRequest | SpecNotificationMessage,
+  ): Promise<NotificationResult | SpecNotificationResult> {
     // Adapt spec NotificationMessage to local NotificationRequest if needed
-    const request: NotificationRequest = ('recipient' in input && !('to' in input))
-      ? input as NotificationRequest
-      : {
-          channel: (input as SpecNotificationMessage).channel as unknown as NotificationChannel,
-          recipient: (input as SpecNotificationMessage).to,
-          subject: (input as SpecNotificationMessage).subject,
-          body: (input as SpecNotificationMessage).body,
-          template: (input as SpecNotificationMessage).templateId,
-          data: (input as SpecNotificationMessage).templateData as TemplateData | undefined,
-        };
+    const request: NotificationRequest =
+      'recipient' in input && !('to' in input)
+        ? (input as NotificationRequest)
+        : {
+            channel: (input as SpecNotificationMessage).channel as unknown as NotificationChannel,
+            recipient: (input as SpecNotificationMessage).to,
+            subject: (input as SpecNotificationMessage).subject,
+            body: (input as SpecNotificationMessage).body,
+            template: (input as SpecNotificationMessage).templateId,
+            data: (input as SpecNotificationMessage).templateData as TemplateData | undefined,
+          };
 
     try {
       // Validate channel
@@ -336,7 +370,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
           messageId: id,
           channel: request.channel,
           timestamp: new Date(),
-          metadata: { queued: true }
+          metadata: { queued: true },
         };
       } else {
         return await channel.send(request);
@@ -346,7 +380,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
         success: false,
         channel: request.channel,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -355,7 +389,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
    * Send a batch of notifications (INotificationService contract)
    */
   async sendBatch(messages: SpecNotificationMessage[]): Promise<SpecNotificationResult[]> {
-    return Promise.all(messages.map(msg => this.send(msg)));
+    return Promise.all(messages.map((msg) => this.send(msg)));
   }
 
   /**
@@ -377,14 +411,14 @@ export class NotificationPlugin implements Plugin, INotificationService {
     to: string | string[],
     subject: string,
     body: string,
-    options?: Partial<EmailOptions>
+    options?: Partial<EmailOptions>,
   ): Promise<NotificationResult> {
     if (!this.emailChannel) {
       return {
         success: false,
         channel: NotificationChannel.Email,
         error: 'Email channel is not configured',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
 
@@ -392,7 +426,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
       to,
       subject,
       body,
-      ...options
+      ...options,
     };
 
     return this.emailChannel.sendEmail(emailOptions);
@@ -404,21 +438,21 @@ export class NotificationPlugin implements Plugin, INotificationService {
   async sendSMS(
     to: string | string[],
     body: string,
-    options?: Partial<SmsOptions>
+    options?: Partial<SmsOptions>,
   ): Promise<NotificationResult> {
     if (!this.smsChannel) {
       return {
         success: false,
         channel: NotificationChannel.SMS,
         error: 'SMS channel is not configured',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
 
     const smsOptions: SmsOptions = {
       to,
       body,
-      ...options
+      ...options,
     };
 
     return this.smsChannel.sendSMS(smsOptions);
@@ -431,14 +465,14 @@ export class NotificationPlugin implements Plugin, INotificationService {
     tokens: string | string[],
     title: string,
     body: string,
-    options?: Partial<PushOptions>
+    options?: Partial<PushOptions>,
   ): Promise<NotificationResult> {
     if (!this.pushChannel) {
       return {
         success: false,
         channel: NotificationChannel.Push,
         error: 'Push channel is not configured',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
 
@@ -446,7 +480,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
       tokens,
       title,
       body,
-      ...options
+      ...options,
     };
 
     return this.pushChannel.sendPush(pushOptions);
@@ -458,21 +492,21 @@ export class NotificationPlugin implements Plugin, INotificationService {
   async sendWebhook(
     url: string,
     data: any,
-    options?: Partial<WebhookOptions>
+    options?: Partial<WebhookOptions>,
   ): Promise<NotificationResult> {
     if (!this.webhookChannel) {
       return {
         success: false,
         channel: NotificationChannel.Webhook,
         error: 'Webhook channel is not configured',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
 
     const webhookOptions: WebhookOptions = {
       url,
       data,
-      ...options
+      ...options,
     };
 
     return this.webhookChannel.sendWebhook(webhookOptions);
@@ -494,7 +528,7 @@ export class NotificationPlugin implements Plugin, INotificationService {
     }
     return {
       enabled: true,
-      ...this.queue.getStatus()
+      ...this.queue.getStatus(),
     };
   }
 

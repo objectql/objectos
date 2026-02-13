@@ -31,7 +31,14 @@ interface FlowEditorProps {
   readOnly?: boolean;
 }
 
-const STATE_COLORS: WorkflowState['color'][] = ['default', 'blue', 'green', 'yellow', 'red', 'purple'];
+const STATE_COLORS: WorkflowState['color'][] = [
+  'default',
+  'blue',
+  'green',
+  'yellow',
+  'red',
+  'purple',
+];
 
 const colorClasses: Record<NonNullable<WorkflowState['color']>, string> = {
   default: 'bg-muted border-muted-foreground/30',
@@ -119,16 +126,27 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
           <div>
             <CardTitle>{editedWorkflow.label}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Object: {editedWorkflow.object} · {editedWorkflow.states.length} states · {editedWorkflow.transitions.length} transitions
+              Object: {editedWorkflow.object} · {editedWorkflow.states.length} states ·{' '}
+              {editedWorkflow.transitions.length} transitions
             </p>
           </div>
           {!readOnly && (
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowAddState(true)} className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddState(true)}
+                className="gap-1.5"
+              >
                 <Plus className="size-4" />
                 Add State
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowAddTransition(true)} className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddTransition(true)}
+                className="gap-1.5"
+              >
                 <ArrowRight className="size-4" />
                 Add Transition
               </Button>
@@ -155,8 +173,16 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
               >
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{state.label}</span>
-                  {state.initial && <Badge variant="outline" className="text-[10px]">Start</Badge>}
-                  {state.final && <Badge variant="outline" className="text-[10px]">End</Badge>}
+                  {state.initial && (
+                    <Badge variant="outline" className="text-[10px]">
+                      Start
+                    </Badge>
+                  )}
+                  {state.final && (
+                    <Badge variant="outline" className="text-[10px]">
+                      End
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">{state.name}</p>
                 {!readOnly && !state.initial && (
@@ -165,8 +191,12 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
                     onClick={() => handleRemoveState(state.name)}
                     aria-label={`Remove state ${state.label}`}
                     style={{ opacity: undefined }}
-                    onMouseEnter={(e) => { (e.target as HTMLElement).style.opacity = '1'; }}
-                    onMouseLeave={(e) => { (e.target as HTMLElement).style.opacity = '0'; }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLElement).style.opacity = '1';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLElement).style.opacity = '0';
+                    }}
                   >
                     <Trash2 className="size-3" />
                   </button>
@@ -260,8 +290,13 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddState(false)}>Cancel</Button>
-            <Button onClick={handleAddState} disabled={!newStateName.trim() || !newStateLabel.trim()}>
+            <Button variant="outline" onClick={() => setShowAddState(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddState}
+              disabled={!newStateName.trim() || !newStateLabel.trim()}
+            >
               Add State
             </Button>
           </DialogFooter>
@@ -296,7 +331,9 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
                 >
                   <option value="">Select...</option>
                   {editedWorkflow.states.map((s) => (
-                    <option key={s.name} value={s.name}>{s.label}</option>
+                    <option key={s.name} value={s.name}>
+                      {s.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -310,15 +347,22 @@ export function FlowEditor({ workflow, onSave, readOnly = false }: FlowEditorPro
                 >
                   <option value="">Select...</option>
                   {editedWorkflow.states.map((s) => (
-                    <option key={s.name} value={s.name}>{s.label}</option>
+                    <option key={s.name} value={s.name}>
+                      {s.label}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddTransition(false)}>Cancel</Button>
-            <Button onClick={handleAddTransition} disabled={!transitionFrom || !transitionTo || !transitionLabel.trim()}>
+            <Button variant="outline" onClick={() => setShowAddTransition(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddTransition}
+              disabled={!transitionFrom || !transitionTo || !transitionLabel.trim()}
+            >
               Add Transition
             </Button>
           </DialogFooter>

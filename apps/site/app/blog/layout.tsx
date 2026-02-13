@@ -3,9 +3,5 @@ import { baseOptions } from '../layout.config';
 import type { ReactNode } from 'react';
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
-  return (
-    <HomeLayout {...baseOptions}>
-      {children}
-    </HomeLayout>
-  );
+  return <HomeLayout {...baseOptions}>{children}</HomeLayout>;
 }

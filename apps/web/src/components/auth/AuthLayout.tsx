@@ -27,12 +27,8 @@ export function AuthLayout({ children, title, subtitle, alternativeLink }: AuthL
               <span className="text-xl font-bold text-foreground">ObjectOS</span>
             </Link>
 
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-            )}
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">{title}</h2>
+            {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
           </div>
 
           <div>{children}</div>

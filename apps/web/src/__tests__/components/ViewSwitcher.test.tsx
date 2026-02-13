@@ -49,12 +49,18 @@ describe('findKanbanField', () => {
         category: {
           type: 'select',
           label: 'Category',
-          options: [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }],
+          options: [
+            { label: 'A', value: 'a' },
+            { label: 'B', value: 'b' },
+          ],
         },
         priority: {
           type: 'select',
           label: 'Priority',
-          options: [{ label: 'Low', value: 'low' }, { label: 'High', value: 'high' }],
+          options: [
+            { label: 'Low', value: 'low' },
+            { label: 'High', value: 'high' },
+          ],
         },
       },
     };
@@ -73,11 +79,7 @@ describe('ViewSwitcher', () => {
   it('calls onViewChange when a button is clicked', () => {
     const onViewChange = vi.fn();
     render(
-      <ViewSwitcher
-        currentView="table"
-        onViewChange={onViewChange}
-        objectDef={taskObjectDef}
-      />,
+      <ViewSwitcher currentView="table" onViewChange={onViewChange} objectDef={taskObjectDef} />,
     );
     // Click the kanban button (second button)
     const buttons = screen.getAllByRole('button');
@@ -87,11 +89,7 @@ describe('ViewSwitcher', () => {
 
   it('disables kanban when no select field available', () => {
     render(
-      <ViewSwitcher
-        currentView="table"
-        onViewChange={() => {}}
-        objectDef={noSelectObjectDef}
-      />,
+      <ViewSwitcher currentView="table" onViewChange={() => {}} objectDef={noSelectObjectDef} />,
     );
     const buttons = screen.getAllByRole('button');
     // Kanban button should be disabled
@@ -99,13 +97,7 @@ describe('ViewSwitcher', () => {
   });
 
   it('enables kanban when select field is available', () => {
-    render(
-      <ViewSwitcher
-        currentView="table"
-        onViewChange={() => {}}
-        objectDef={taskObjectDef}
-      />,
-    );
+    render(<ViewSwitcher currentView="table" onViewChange={() => {}} objectDef={taskObjectDef} />);
     const buttons = screen.getAllByRole('button');
     // Kanban button should NOT be disabled
     expect(buttons[1].hasAttribute('disabled')).toBe(false);

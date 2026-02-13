@@ -26,7 +26,12 @@ import {
   GraphQLOutputType,
   GraphQLInputType,
 } from 'graphql';
-import type { ObjectDef, ObjectFieldDef, GraphQLResolverContext, ResolvedGraphQLConfig } from './types.js';
+import type {
+  ObjectDef,
+  ObjectFieldDef,
+  GraphQLResolverContext,
+  ResolvedGraphQLConfig,
+} from './types.js';
 import type { PubSub } from './pubsub.js';
 import { buildSubscriptionType } from './subscriptions.js';
 import { toPascalCase } from './utils.js';
@@ -190,18 +195,27 @@ function buildFilterInputType(objectDef: ObjectDef): GraphQLInputObjectType {
 /**
  * Build paginated result type wrapping an object type
  */
-function buildPaginatedType(objectDef: ObjectDef, objectType: GraphQLObjectType): GraphQLObjectType {
+function buildPaginatedType(
+  objectDef: ObjectDef,
+  objectType: GraphQLObjectType,
+): GraphQLObjectType {
   const typeName = toPascalCase(objectDef.name);
 
   return new GraphQLObjectType({
     name: `${typeName}Connection`,
     description: `Paginated list of ${typeName} records`,
     fields: {
-      data: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(objectType))), description: 'Records' },
+      data: {
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(objectType))),
+        description: 'Records',
+      },
       totalCount: { type: new GraphQLNonNull(GraphQLInt), description: 'Total record count' },
       pageSize: { type: new GraphQLNonNull(GraphQLInt), description: 'Page size used' },
       offset: { type: new GraphQLNonNull(GraphQLInt), description: 'Offset used' },
-      hasMore: { type: new GraphQLNonNull(GraphQLBoolean), description: 'Whether more records exist' },
+      hasMore: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: 'Whether more records exist',
+      },
     },
   });
 }
@@ -241,8 +255,18 @@ const MutationResult = new GraphQLObjectType({
 });
 
 export interface ResolverCallbacks {
-  onQuery: (objectName: string, operation: 'find' | 'findOne', args: any, ctx: GraphQLResolverContext) => Promise<any>;
-  onMutation: (objectName: string, operation: 'create' | 'update' | 'delete', args: any, ctx: GraphQLResolverContext) => Promise<any>;
+  onQuery: (
+    objectName: string,
+    operation: 'find' | 'findOne',
+    args: any,
+    ctx: GraphQLResolverContext,
+  ) => Promise<any>;
+  onMutation: (
+    objectName: string,
+    operation: 'create' | 'update' | 'delete',
+    args: any,
+    ctx: GraphQLResolverContext,
+  ) => Promise<any>;
 }
 
 /**
@@ -288,7 +312,10 @@ export function generateSchema(
       description: `List ${objectDef.label || typeName} records`,
       args: {
         filter: { type: filterInput },
-        limit: { type: GraphQLInt, description: `Max results (default: ${config.defaultPageSize})` },
+        limit: {
+          type: GraphQLInt,
+          description: `Max results (default: ${config.defaultPageSize})`,
+        },
         offset: { type: GraphQLInt, description: 'Offset for pagination (default: 0)' },
         sort: { type: SortInput, description: 'Sort order' },
       },

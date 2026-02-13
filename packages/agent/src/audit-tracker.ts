@@ -6,11 +6,7 @@
  * query capabilities by conversation, user, and tenant.
  */
 
-import type {
-  AgentAuditEntry,
-  CostSummary,
-  CostConfig,
-} from './types.js';
+import type { AgentAuditEntry, CostSummary, CostConfig } from './types.js';
 
 /**
  * In-memory audit tracker for agent interactions

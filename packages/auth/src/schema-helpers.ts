@@ -13,8 +13,8 @@ export const Field = {
   url: (options: any = {}) => ({ type: 'url', ...options }),
   password: (options: any = {}) => ({ type: 'password', ...options }),
   json: (options: any = {}) => ({ type: 'json', ...options }),
-    avatar: (options: any = {}) => ({ type: 'avatar', ...options }),
+  avatar: (options: any = {}) => ({ type: 'avatar', ...options }),
 };
 export const ObjectSchema = {
-  create: (definition: any) => definition
+  create: (definition: any) => definition,
 };

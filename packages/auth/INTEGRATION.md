@@ -37,7 +37,7 @@ import { createBetterAuthPlugin } from '@objectos/plugin-better-auth';
 const authPlugin = createBetterAuthPlugin({
   databaseUrl: process.env.DATABASE_URL,
   baseURL: 'https://myapp.com/api/auth',
-  trustedOrigins: ['https://myapp.com']
+  trustedOrigins: ['https://myapp.com'],
 });
 
 const os = new ObjectOS({
@@ -65,11 +65,13 @@ The plugin is already in the workspace, so just add it as a dependency:
 ### Step 2: Replace auth imports
 
 **Before:**
+
 ```typescript
 import { getAuth } from './auth/auth.client';
 ```
 
 **After:**
+
 ```typescript
 import { getBetterAuth } from '@objectos/plugin-better-auth';
 ```
@@ -79,6 +81,7 @@ import { getBetterAuth } from '@objectos/plugin-better-auth';
 The plugin automatically registers routes at `/api/auth/*` when enabled, so you can simplify your auth controller:
 
 **Before (auth.controller.ts):**
+
 ```typescript
 @Controller('auth')
 export class AuthController {
@@ -127,10 +130,10 @@ See [Better-Auth API documentation](https://www.better-auth.com/docs/api-referen
 
 The plugin uses the following environment variables:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OBJECTQL_DATABASE_URL` | `sqlite:objectos.db` | Database connection string |
-| `BETTER_AUTH_URL` | `http://localhost:3000/api/auth` | Base URL for auth endpoints |
+| Variable                | Default                          | Description                 |
+| ----------------------- | -------------------------------- | --------------------------- |
+| `OBJECTQL_DATABASE_URL` | `sqlite:objectos.db`             | Database connection string  |
+| `BETTER_AUTH_URL`       | `http://localhost:3000/api/auth` | Base URL for auth endpoints |
 
 ## Plugin Lifecycle
 
@@ -169,7 +172,7 @@ import { getBetterAuth } from '@objectos/plugin-better-auth';
 
 const auth = await getBetterAuth({
   databaseUrl: 'postgres://...',
-  baseURL: 'https://myapp.com/api/auth'
+  baseURL: 'https://myapp.com/api/auth',
 });
 
 // Use auth instance directly
@@ -183,9 +186,9 @@ Make sure the plugin is loaded through the ObjectOS kernel and the `onEnable` ho
 
 ```typescript
 const os = new ObjectOS({
-  plugins: [BetterAuthPlugin]
+  plugins: [BetterAuthPlugin],
 });
-await os.init();  // This calls onEnable
+await os.init(); // This calls onEnable
 ```
 
 ### Database connection issues

@@ -1,16 +1,16 @@
 /**
  * SMS Channel
- * 
+ *
  * SMS notification channel (stub/mock implementation)
  * Ready for integration with Twilio, Aliyun SMS, or other providers
  */
 
-import type { 
-  SmsConfig, 
-  NotificationRequest, 
+import type {
+  SmsConfig,
+  NotificationRequest,
   NotificationResult,
   NotificationChannelInterface,
-  SmsOptions
+  SmsOptions,
 } from '../types.js';
 import { NotificationChannel } from '../types.js';
 import { TemplateEngine } from '../template-engine.js';
@@ -33,9 +33,7 @@ export class SmsChannel implements NotificationChannelInterface {
    */
   async send(request: NotificationRequest): Promise<NotificationResult> {
     try {
-      const recipients = Array.isArray(request.recipient) 
-        ? request.recipient 
-        : [request.recipient];
+      const recipients = Array.isArray(request.recipient) ? request.recipient : [request.recipient];
 
       let body = request.body || '';
 
@@ -49,7 +47,7 @@ export class SmsChannel implements NotificationChannelInterface {
         console.log('[SMS Mock] Sending SMS:', {
           to: recipients,
           from: this.config.from,
-          body
+          body,
         });
 
         return {
@@ -59,8 +57,8 @@ export class SmsChannel implements NotificationChannelInterface {
           timestamp: new Date(),
           metadata: {
             provider: 'mock',
-            recipients: recipients.length
-          }
+            recipients: recipients.length,
+          },
         };
       }
 
@@ -80,7 +78,7 @@ export class SmsChannel implements NotificationChannelInterface {
         success: false,
         channel: NotificationChannel.SMS,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -90,7 +88,7 @@ export class SmsChannel implements NotificationChannelInterface {
    */
   async sendSMS(options: SmsOptions): Promise<NotificationResult> {
     const recipients = Array.isArray(options.to) ? options.to : [options.to];
-    
+
     let body = options.body;
 
     // Render template if provided
@@ -101,7 +99,7 @@ export class SmsChannel implements NotificationChannelInterface {
     const request: NotificationRequest = {
       channel: NotificationChannel.SMS,
       recipient: recipients,
-      body
+      body,
     };
 
     return this.send(request);
@@ -114,9 +112,9 @@ export class SmsChannel implements NotificationChannelInterface {
     // TODO: Implement Twilio integration
     // const twilio = require('twilio');
     // const client = twilio(this.config.accountSid, this.config.authToken);
-    // 
+    //
     // const results = await Promise.all(
-    //   recipients.map(to => 
+    //   recipients.map(to =>
     //     client.messages.create({
     //       body,
     //       from: this.config.from,
@@ -134,8 +132,8 @@ export class SmsChannel implements NotificationChannelInterface {
       timestamp: new Date(),
       metadata: {
         provider: 'twilio',
-        recipients: recipients.length
-      }
+        recipients: recipients.length,
+      },
     };
   }
 
@@ -161,8 +159,8 @@ export class SmsChannel implements NotificationChannelInterface {
       timestamp: new Date(),
       metadata: {
         provider: 'aliyun',
-        recipients: recipients.length
-      }
+        recipients: recipients.length,
+      },
     };
   }
 }

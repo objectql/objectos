@@ -13,10 +13,7 @@ interface SkeletonProps {
 
 function Skeleton({ className }: SkeletonProps) {
   return (
-    <div
-      className={`animate-pulse rounded bg-muted ${className ?? ''}`}
-      data-testid="skeleton"
-    />
+    <div className={`animate-pulse rounded bg-muted ${className ?? ''}`} data-testid="skeleton" />
   );
 }
 
@@ -34,7 +31,10 @@ export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; column
       {Array.from({ length: rows }).map((_, rowIdx) => (
         <div key={rowIdx} className="flex gap-4 border-b px-4 py-3 last:border-0">
           {Array.from({ length: columns }).map((_, colIdx) => (
-            <Skeleton key={colIdx} className={`h-4 flex-1 ${colIdx === 0 ? 'max-w-[200px]' : ''}`} />
+            <Skeleton
+              key={colIdx}
+              className={`h-4 flex-1 ${colIdx === 0 ? 'max-w-[200px]' : ''}`}
+            />
           ))}
         </div>
       ))}
@@ -45,7 +45,10 @@ export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; column
 /** Card grid skeleton */
 export function CardGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="card-grid-skeleton">
+    <div
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+      data-testid="card-grid-skeleton"
+    >
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="rounded-lg border p-4 space-y-3">
           <Skeleton className="h-5 w-2/3" />

@@ -150,6 +150,9 @@ export interface SubscriptionHooks {
  * DataLoader factory for per-request batching/caching
  */
 export interface DataLoaderFactory {
-  getLoader(objectName: string): { load(key: string): Promise<any>; loadMany(keys: string[]): Promise<any[]> };
+  getLoader(objectName: string): {
+    load(key: string): Promise<any>;
+    loadMany(keys: string[]): Promise<any[]>;
+  };
   clearAll(): void;
 }

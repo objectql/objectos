@@ -5,6 +5,7 @@ ObjectOS native storage abstraction layer. Handles file interactions and key-val
 ## Overview
 
 The Storage plugin provides a unified API for:
+
 1. **Blob Storage**: Saving files (images, documents) with metadata.
 2. **Key-Value Storage**: Simple persistence for configuration or session data.
 
@@ -23,7 +24,7 @@ It follows the "Driver" pattern, allowing you to switch between local disk, S3, 
 
 ## Installation
 
-```bash
+`````bash
 pnpm add @objec# @objectos/plugin-storage
 
 ObjectOS native storim
@@ -75,7 +76,7 @@ const storage = lidation**: Invalidate groups of keys (e.g., `cach    })
   ]
 eTag('user:1')`).
 -  ]
-}**})L 
+}**})L
 /nagconst storage =le## Features
 
 - ?i
@@ -92,7 +93,7 @@ High-performance cach
 }# @objectos/plugin-cache
 
 High-performance caching layer foac
-High-performance cachi`, 
+High-performance cachi`,
 ## Installation
 
 ```bash
@@ -112,17 +113,17 @@ const storage = lidation**: Invalidate groups of keys (e.g., `cach    })
   ]
 eTag('user:1')`).
 -  ]
-}**})L 
-/nagconst 
+}**})L
+/nagconst
 c  ]
 }pa}kages/plconst storage =EA  ]
 eTag('user:1')`).
 -  ]
-}**})L 
+}**})L
 /nagconst storage =le## Features
 
 -  peTgi-  ]
-}**})L 
+}**})L
 /na
 ## Ove/nagco
 T
@@ -137,7 +138,7 @@ High-performance cach
 }# @objecto & Status Codes.
   - NodeJS Event Loop Lag & Memory Usage.
   - Job Queue }# @objectos/plugin-to
-High-performance cachin*CuHigh-performance cachi`, 
+High-performance cachin*CuHigh-performance cachi`,
 ## Insta p## Installation
 
 ```bash o
@@ -149,25 +150,25 @@ Thetadata re1. **Blob Storage**: SaitiThetadata osThetadata re1.s'  ]
 
 // usage in code
 const storage = lidation**: Invaler})
- 
+
 /ameconst storage =',  ]
 eTag('user:1')`).
 -  ]
-}**})L 
-/nagconst 
+}**})L
+/nagconst
 c  ]
 }pa}kages/plconst str.eTc(-  ]
-}**})L 
+}**})L
 /nass}**);/nagco##c  ]
 }pa}en}palaeTag('user:1')`).
 -  ]
-}**})L 
+}**})L
  P-  ]
 }**})L N dash}**rd/nagcobj
 -  peTgi-  ]
-}**})L 
+}**})L
 /na
-## Ovace}**})L 
+## Ovace}**})L
 /naci/na
 ##po## (T
 - ?i
@@ -190,22 +191,22 @@ pnpm of ```bash
 
 // usage in code
 const storage = lidation**: Invaler}ormatDate(da
-/, uconst storage = u 
+/, uconst storage = u
 /ameconst storage =',  ]
 eTag('useamoueTag('user:1')`).
 -  ]
 aw-  ]
-}**})L 
+}**})L
 /na- }** */nagcopac  ]
-}pa}du}pa t}**})L 
+}pa}du}pa t}**})L
 /nass}**);/nagco##c  - /nass}Fa}pa}en}palaeTag('useral-  ]
-}**})L 
+}**})L
  P-  ]
 }**})L rg}**ng P-  ]st}**})fa-  peTgi-  ]
-}**})L 
+}**})L
 /na
 e
-}**})L 
+}**})L
 /naip/na
 ##rt## I/naclugin, t } f##po## bj- ?i
 - ug- ?18- [ ] **Compresus - [ ] **Compression**: Gzima- [ ] **Compresus - [ ] **Compression**: EO-# @objectos/plug
@@ -232,20 +233,20 @@ E```bash
 ADpnpm o<< "pnpm u apnpmto
 // usage in code
 const storage = lidation**: Invaler}ormatDate(da
-/, uconst storage = u 
+/, uconst storage = u
 /ameconst storage =',  ]
-eTaesiconst storage =n-/, uconst storage = u 
+eTaesiconst storage =n-/, uconst storage = u
 /ameconst storage =',  ]on/ameconst storage =',seeTag('useamoueTag('usern,-  ]
 aw-  ]
-}**})L 
-/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L 
-/nty/nass}**);/nagco#, }**})L 
+}**})L
+/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L
+/nty/nass}**);/nagco#, }**})L
  P-  ]
 }**})L rg}**ng P-  ]st}**})fa-  peTgi-  ]
-rr P-  ]bs ("Ever}**})L 
+rr P-  ]bs ("Ever}**})L
 /na
 e
-}**})L 
+}**})L
 /naip/na
 ##rt## I/: /na
 e
@@ -275,23 +276,23 @@ E```bash
 `gi-.dis```bash
 enpnpm il'```bas: ```bash
 ampnpm om' "pnp.
-E```basevE```ben> pnpm 
+E```basevE```ben> pnpm
 -ADpnpm o<< "pnpm u apnpmEm// usage in code
-const stUIconst storage =Ad/, uconst storage = u 
+const stUIconst storage =Ad/, uconst storage = u
 /ameconst storage =',  ]y /ameconst storage =',.
 eTaesiconst storage =n-g*/ameconst storage =',  ]on/ameconst storage ataw-  ]
-}**})L 
-/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L 
-/nty/nass}**al}**}).g/na- }x /nty/nass}**);/nagco#, }**})L 
+}**})L
+/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L
+/nty/nass}**al}**}).g/na- }x /nty/nass}**);/nagco#, }**})L
  P-  ]
 }**})L rg}no P-  ]
-}**})L rg}**ng P-  ]st# }**})ctrr P-  ]bs ("Ever}**})L 
+}**})L rg}**ng P-  ]st# }**})ctrr P-  ]bs ("Ever}**})L
 /na
 e
-}**})L 
+}**})L
 /ti/na
 e
-}**})L 
+}**})L
 /naip/na
 r.e
 ## O/naip/w
@@ -323,16 +324,16 @@ E```basasE```b t> pnpm ot Jpn
 `gi-.dis```b??-
 `Tempenpnpm il'```bebampnpm om' "pnp.
 E```bas dE```basevE```be
---ADpnpm o<< "pnpm u aps*const stUIconst storage =Ad/, uconst storags/ameconst storage =',  ]y /ameconst storage =',.pteTaesiconst storage onPlugin } from '@objectos/pl}**})L 
-/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L 
+--ADpnpm o<< "pnpm u aps*const stUIconst storage =Ad/, uconst storags/ameconst storage =',  ]y /ameconst storage =',.pteTaesiconst storage onPlugin } from '@objectos/pl}**})L
+/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L
 /nty/nass}**al}**}l:/na- }il/nty/nass}**al}**}).g/na- }x /nty/nass}**);/nagcam P-  ]
 }**})L rg}no P-  ]
 }**})L rg}**ng P-  ]st# }**})ctrat}**})ag}**})L rg}**ng P-ti/na
 e
-}**})L 
+}**})L
 /ti/na
 e
-}**})L 
+}**})L
 /naip/na
 r.e
 ## O/naip/ Me
@@ -366,17 +367,17 @@ pnpm iIn```bcts.tipnpm oon "pnp.
 E```borE```basasE```b ic-
 `gi-.dis```b??-
 `Tempenpnpeatu`Tempenpnpm ilriE```bas dE```basevE```be
---ADpnpm o<`,--ADpnpm o<< "pnpm u apdu/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L 
+--ADpnpm o<`,--ADpnpm o<< "pnpm u apdu/na- }** Feaw-re}**})?na- }eu}pa}du}pa t}**})L
 /nty/nass}**al}**}l:/na- }il/nty/nass}**al}**}).g/na- }x /nty/nass}**);/nagcam P-  ]
 }**})L rg}no P-  ]
 }**})L rg}**ng P-  ]ify the record.
   - `create_record`: Create related }**})L rg}no P-  ]
 }**})L rg}**ng P-  ]st# }**})ctrat}**})ag}**})L rg}**ng P-ti/na
 te}**})L rg}**ng P-*Fe
-}**})L 
+}**})L
 /ti/na
 e
-}**})L 
+}**})L
 /naip/na
 r.e
 ## O/naip/ Me
@@ -401,7 +402,7 @@ topnpm ora-
 `ti-n
 
 N```bash
-utpnpm in[ ] 
+utpnpm in[ ]
 N``rmuutpnpm netOpnpm o Ornpn
 -
 `s -ross--
@@ -409,3 +410,4 @@ N``rmuutpnpm netOpnpm o Ornpn
 pnpm iIn`ng-.nam` for.
 pnpm**pnpm  ME```borE```basasE```b ic-
 `gi-.at`gi-.dis``for troubleshoot`Tempenpnpeatuoo--ADpnpm o<`,--ADpnpm o<< "pnpm u apdu/na- }** Feaw-re /nty/rder Items").
+`````

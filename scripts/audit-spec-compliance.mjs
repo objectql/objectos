@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Audit Script for @objectstack/spec Compliance
- * 
+ *
  * This script scans all packages in the monorepo to ensure they comply
  * with @objectstack/spec protocol requirements.
  */
@@ -25,13 +25,13 @@ class SpecComplianceAuditor {
    */
   findPackages() {
     const packages = [];
-    
+
     const scanDir = (dir) => {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
-        
+
         if (entry.isDirectory() && entry.name !== 'node_modules' && entry.name !== 'dist') {
           scanDir(fullPath);
         } else if (entry.name === 'package.json') {
@@ -39,7 +39,7 @@ class SpecComplianceAuditor {
         }
       }
     };
-    
+
     scanDir(this.packagesDir);
     return packages;
   }
@@ -86,15 +86,15 @@ class SpecComplianceAuditor {
    */
   findTypeScriptFiles(packageDir) {
     const tsFiles = [];
-    
+
     const scanDir = (dir) => {
       if (!fs.existsSync(dir)) return;
-      
+
       const entries = fs.readdirSync(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
-        
+
         if (entry.isDirectory() && entry.name !== 'node_modules' && entry.name !== 'dist') {
           scanDir(fullPath);
         } else if (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')) {
@@ -102,7 +102,7 @@ class SpecComplianceAuditor {
         }
       }
     };
-    
+
     const srcDir = path.join(packageDir, 'src');
     scanDir(srcDir);
     return tsFiles;
@@ -113,19 +113,19 @@ class SpecComplianceAuditor {
    */
   extractSpecImports(filePath) {
     const imports = [];
-    
+
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
       const importRegex = /import\s+.*?from\s+['"]@objectstack\/spec[^'"]*['"]/g;
       const matches = content.match(importRegex);
-      
+
       if (matches) {
         imports.push(...matches);
       }
     } catch (error) {
       // Ignore read errors
     }
-    
+
     return imports;
   }
 
@@ -134,27 +134,29 @@ class SpecComplianceAuditor {
    */
   hasPluginImplementation(packageDir) {
     const tsFiles = this.findTypeScriptFiles(packageDir);
-    
+
     for (const file of tsFiles) {
       try {
         const content = fs.readFileSync(file, 'utf-8');
-        
+
         // Check for Plugin interface implementation
         if (content.includes('implements Plugin')) {
           return true;
         }
-        
+
         // Check for Plugin class or type import
-        if (content.includes('Plugin') && 
-            (content.includes('from \'@objectstack/runtime\'') || 
-             content.includes('from "@objectstack/runtime"'))) {
+        if (
+          content.includes('Plugin') &&
+          (content.includes("from '@objectstack/runtime'") ||
+            content.includes('from "@objectstack/runtime"'))
+        ) {
           return true;
         }
       } catch (error) {
         // Ignore read errors
       }
     }
-    
+
     return false;
   }
 
@@ -164,21 +166,23 @@ class SpecComplianceAuditor {
   auditPackage(packagePath) {
     const packageDir = path.dirname(packagePath);
     const pkg = this.readPackageJson(packagePath);
-    
+
     if (!pkg) {
       return {
         package: 'unknown',
         packagePath,
-        issues: [{
-          package: packagePath,
-          severity: 'error',
-          category: 'parsing',
-          message: 'Failed to parse package.json'
-        }],
+        issues: [
+          {
+            package: packagePath,
+            severity: 'error',
+            category: 'parsing',
+            message: 'Failed to parse package.json',
+          },
+        ],
         hasSpecDependency: false,
         hasRuntimeDependency: false,
         hasPluginImplementation: false,
-        specImports: []
+        specImports: [],
       };
     }
 
@@ -190,7 +194,7 @@ class SpecComplianceAuditor {
       hasRuntimeDependency: this.hasRuntimeDependency(pkg),
       hasPluginImplementation: this.hasPluginImplementation(packageDir),
       hasContractAdoption: false,
-      specImports: []
+      specImports: [],
     };
 
     // Collect all spec imports
@@ -212,14 +216,14 @@ class SpecComplianceAuditor {
   checkCompliance(result, pkg) {
     const isPlugin = result.package.includes('plugin-') || result.hasPluginImplementation;
     const isAdapter = result.package.includes('adapter-');
-    
+
     // Rule 1: Plugins should have @objectstack/runtime dependency
     if (isPlugin && !result.hasRuntimeDependency) {
       result.issues.push({
         package: result.package,
         severity: 'error',
         category: 'dependencies',
-        message: 'Plugin package must declare @objectstack/runtime dependency'
+        message: 'Plugin package must declare @objectstack/runtime dependency',
       });
     }
 
@@ -229,7 +233,7 @@ class SpecComplianceAuditor {
         package: result.package,
         severity: 'warning',
         category: 'dependencies',
-        message: `Package imports from @objectstack/spec but doesn't declare it as dependency. Found ${result.specImports.length} import(s)`
+        message: `Package imports from @objectstack/spec but doesn't declare it as dependency. Found ${result.specImports.length} import(s)`,
       });
     }
 
@@ -239,22 +243,28 @@ class SpecComplianceAuditor {
         package: result.package,
         severity: 'warning',
         category: 'implementation',
-        message: 'Plugin package should implement Plugin interface'
+        message: 'Plugin package should implement Plugin interface',
       });
     }
 
     // Rule 4: Check version consistency
     if (result.hasSpecDependency) {
-      const specVersion = pkg.dependencies?.['@objectstack/spec'] || 
-                          pkg.devDependencies?.['@objectstack/spec'] ||
-                          pkg.peerDependencies?.['@objectstack/spec'];
-      
-      if (specVersion !== '2.0.6' && specVersion !== '^2.0.6' && specVersion !== '2.0.7' && specVersion !== '^2.0.7') {
+      const specVersion =
+        pkg.dependencies?.['@objectstack/spec'] ||
+        pkg.devDependencies?.['@objectstack/spec'] ||
+        pkg.peerDependencies?.['@objectstack/spec'];
+
+      if (
+        specVersion !== '2.0.6' &&
+        specVersion !== '^2.0.6' &&
+        specVersion !== '2.0.7' &&
+        specVersion !== '^2.0.7'
+      ) {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/spec version is ${specVersion}, expected 2.0.7 or ^2.0.7`
+          message: `@objectstack/spec version is ${specVersion}, expected 2.0.7 or ^2.0.7`,
         });
       }
     }
@@ -265,30 +275,37 @@ class SpecComplianceAuditor {
         package: result.package,
         severity: 'warning',
         category: 'dependencies',
-        message: 'Plugin package should declare @objectstack/spec dependency for kernel type imports'
+        message:
+          'Plugin package should declare @objectstack/spec dependency for kernel type imports',
       });
     }
 
     // Rule 6: Check runtime version consistency
     if (result.hasRuntimeDependency) {
-      const runtimeVersion = pkg.dependencies?.['@objectstack/runtime'] || 
-                             pkg.devDependencies?.['@objectstack/runtime'] ||
-                             pkg.peerDependencies?.['@objectstack/runtime'];
-      
-      if (runtimeVersion !== '^2.0.6' && runtimeVersion !== '2.0.6' && runtimeVersion !== '^2.0.7' && runtimeVersion !== '2.0.7') {
+      const runtimeVersion =
+        pkg.dependencies?.['@objectstack/runtime'] ||
+        pkg.devDependencies?.['@objectstack/runtime'] ||
+        pkg.peerDependencies?.['@objectstack/runtime'];
+
+      if (
+        runtimeVersion !== '^2.0.6' &&
+        runtimeVersion !== '2.0.6' &&
+        runtimeVersion !== '^2.0.7' &&
+        runtimeVersion !== '2.0.7'
+      ) {
         result.issues.push({
           package: result.package,
           severity: 'info',
           category: 'dependencies',
-          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^2.0.7`
+          message: `@objectstack/runtime version is ${runtimeVersion}, expected ^2.0.7`,
         });
       }
     }
 
     // Rule 7: Check for @objectstack/spec/contracts adoption
     if (result.hasPluginImplementation) {
-      result.hasContractAdoption = result.specImports.some(
-        imp => imp.includes('@objectstack/spec/contracts')
+      result.hasContractAdoption = result.specImports.some((imp) =>
+        imp.includes('@objectstack/spec/contracts'),
       );
     }
   }
@@ -298,7 +315,7 @@ class SpecComplianceAuditor {
    */
   async audit() {
     console.log('🔍 Scanning packages for @objectstack/spec compliance...\n');
-    
+
     const packages = this.findPackages();
     console.log(`Found ${packages.length} packages to audit\n`);
 
@@ -322,11 +339,11 @@ class SpecComplianceAuditor {
 
     // Summary
     const totalPackages = this.results.length;
-    const packagesWithIssues = this.results.filter(r => r.issues.length > 0).length;
+    const packagesWithIssues = this.results.filter((r) => r.issues.length > 0).length;
     const totalIssues = this.issues.length;
-    const errors = this.issues.filter(i => i.severity === 'error').length;
-    const warnings = this.issues.filter(i => i.severity === 'warning').length;
-    const infos = this.issues.filter(i => i.severity === 'info').length;
+    const errors = this.issues.filter((i) => i.severity === 'error').length;
+    const warnings = this.issues.filter((i) => i.severity === 'warning').length;
+    const infos = this.issues.filter((i) => i.severity === 'info').length;
 
     console.log('📊 Summary:');
     console.log(`   Total packages: ${totalPackages}`);
@@ -335,8 +352,8 @@ class SpecComplianceAuditor {
     console.log(`   - Errors: ${errors}`);
     console.log(`   - Warnings: ${warnings}`);
     console.log(`   - Info: ${infos}`);
-    const contractsAdopted = this.results.filter(r => r.hasContractAdoption).length;
-    const pluginPackages = this.results.filter(r => r.hasPluginImplementation).length;
+    const contractsAdopted = this.results.filter((r) => r.hasContractAdoption).length;
+    const pluginPackages = this.results.filter((r) => r.hasPluginImplementation).length;
     console.log(`   Contracts adoption: ${contractsAdopted}/${pluginPackages} plugin packages`);
     console.log();
 
@@ -347,7 +364,7 @@ class SpecComplianceAuditor {
     for (const result of this.results) {
       const hasIssues = result.issues.length > 0;
       const icon = hasIssues ? '❌' : '✅';
-      
+
       console.log(`${icon} ${result.package}`);
       console.log(`   Path: ${path.relative(process.cwd(), result.packagePath)}`);
       console.log(`   Has @objectstack/spec: ${result.hasSpecDependency ? '✓' : '✗'}`);
@@ -355,12 +372,12 @@ class SpecComplianceAuditor {
       console.log(`   Has Plugin implementation: ${result.hasPluginImplementation ? '✓' : '✗'}`);
       console.log(`   Spec contracts adopted: ${result.hasContractAdoption ? '✓' : '✗'}`);
       console.log(`   Spec imports: ${result.specImports.length}`);
-      
+
       if (result.issues.length > 0) {
         console.log('   Issues:');
         for (const issue of result.issues) {
-          const severityIcon = issue.severity === 'error' ? '🔴' : 
-                              issue.severity === 'warning' ? '🟡' : '🔵';
+          const severityIcon =
+            issue.severity === 'error' ? '🔴' : issue.severity === 'warning' ? '🟡' : '🔵';
           console.log(`      ${severityIcon} [${issue.category}] ${issue.message}`);
         }
       }
@@ -382,7 +399,7 @@ class SpecComplianceAuditor {
 // Run the auditor
 const rootDir = process.cwd();
 const auditor = new SpecComplianceAuditor(rootDir);
-auditor.audit().catch(error => {
+auditor.audit().catch((error) => {
   console.error('Audit failed:', error);
   process.exit(1);
 });

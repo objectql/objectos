@@ -44,18 +44,12 @@ export function ObjectToolbar({
   return (
     <div className="flex items-center justify-between" data-testid="object-toolbar">
       <div className="flex items-center gap-3">
-        <ViewSwitcher
-          currentView={viewMode}
-          onViewChange={onViewChange}
-          objectDef={objectDef}
-        />
+        <ViewSwitcher currentView={viewMode} onViewChange={onViewChange} objectDef={objectDef} />
         <Badge variant="secondary">{total} records</Badge>
 
         {hasSelection && (
           <div className="flex items-center gap-2 border-l pl-3">
-            <span className="text-sm text-muted-foreground">
-              {selectedIds.length} selected
-            </span>
+            <span className="text-sm text-muted-foreground">{selectedIds.length} selected</span>
             {onBulkDelete && (
               <Button
                 variant="ghost"

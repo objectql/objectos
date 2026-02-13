@@ -68,7 +68,7 @@ function createMockBroker(overrides: any = {}) {
         case 'data.find':
           return records;
         case 'data.findOne':
-          return records.find(r => r._id === params.filters?._id) ?? null;
+          return records.find((r) => r._id === params.filters?._id) ?? null;
         case 'data.count':
           return records.length;
         case 'data.create':
@@ -89,7 +89,10 @@ function createMockBroker(overrides: any = {}) {
   };
 }
 
-function createContext(broker: any, user?: { id: string; profile?: string }): GraphQLResolverContext {
+function createContext(
+  broker: any,
+  user?: { id: string; profile?: string },
+): GraphQLResolverContext {
   return {
     broker,
     user: user ?? { id: 'user-1', profile: 'admin' },
@@ -317,9 +320,12 @@ describe('O.1.2 — Query Resolvers with Permission Enforcement', () => {
       contextValue: createContext(broker),
     });
 
-    expect(broker.call).toHaveBeenCalledWith('data.find', expect.objectContaining({
-      options: expect.objectContaining({ limit: 5, skip: 10 }),
-    }));
+    expect(broker.call).toHaveBeenCalledWith(
+      'data.find',
+      expect.objectContaining({
+        options: expect.objectContaining({ limit: 5, skip: 10 }),
+      }),
+    );
   });
 
   test('find query enforces maxPageSize', async () => {
@@ -334,9 +340,12 @@ describe('O.1.2 — Query Resolvers with Permission Enforcement', () => {
       contextValue: createContext(broker),
     });
 
-    expect(broker.call).toHaveBeenCalledWith('data.find', expect.objectContaining({
-      options: expect.objectContaining({ limit: 50 }),
-    }));
+    expect(broker.call).toHaveBeenCalledWith(
+      'data.find',
+      expect.objectContaining({
+        options: expect.objectContaining({ limit: 50 }),
+      }),
+    );
   });
 });
 
@@ -755,11 +764,13 @@ describe('O.1.4 — Subscription Hooks Integration', () => {
     });
 
     expect(received).toHaveLength(1);
-    expect(received[0]).toEqual(expect.objectContaining({
-      id: '1',
-      objectName: 'account',
-      deletedBy: 'user-1',
-    }));
+    expect(received[0]).toEqual(
+      expect.objectContaining({
+        id: '1',
+        objectName: 'account',
+        deletedBy: 'user-1',
+      }),
+    );
     expect(received[0].deletedAt).toBeDefined();
   });
 });
@@ -768,14 +779,10 @@ describe('O.1.4 — Subscription Hooks Integration', () => {
 
 describe('O.1.5 — DataLoader', () => {
   test('batches multiple load calls into a single batch function call', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn);
 
-    const [r1, r2, r3] = await Promise.all([
-      loader.load('a'),
-      loader.load('b'),
-      loader.load('c'),
-    ]);
+    const [r1, r2, r3] = await Promise.all([loader.load('a'), loader.load('b'), loader.load('c')]);
 
     expect(r1).toEqual({ id: 'a' });
     expect(r2).toEqual({ id: 'b' });
@@ -785,7 +792,7 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('caches results across sequential loads', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn);
 
     await loader.load('x');
@@ -797,7 +804,7 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('does not cache when cache is disabled', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn, { cache: false });
 
     await loader.load('x');
@@ -807,7 +814,7 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('loadMany loads multiple keys', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn);
 
     const results = await loader.loadMany(['a', 'b']);
@@ -823,14 +830,16 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('handles batch function errors', async () => {
-    const batchFn = jest.fn(async () => { throw new Error('Batch failed'); });
+    const batchFn = jest.fn(async () => {
+      throw new Error('Batch failed');
+    });
     const loader = new DataLoader(batchFn);
 
     await expect(loader.load('x')).rejects.toThrow('Batch failed');
   });
 
   test('clearCache removes cached entries', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn);
 
     await loader.load('x');
@@ -841,7 +850,7 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('prime pre-populates the cache', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader<string, Record<string, any>>(batchFn);
 
     loader.prime('primed', { id: 'primed', extra: true });
@@ -852,14 +861,10 @@ describe('O.1.5 — DataLoader', () => {
   });
 
   test('respects maxBatchSize', async () => {
-    const batchFn = jest.fn(async (keys: string[]) => keys.map(k => ({ id: k })));
+    const batchFn = jest.fn(async (keys: string[]) => keys.map((k) => ({ id: k })));
     const loader = new DataLoader(batchFn, { maxBatchSize: 2 });
 
-    const results = await Promise.all([
-      loader.load('a'),
-      loader.load('b'),
-      loader.load('c'),
-    ]);
+    const results = await Promise.all([loader.load('a'), loader.load('b'), loader.load('c')]);
 
     expect(results).toHaveLength(3);
     // Should have been split into at least 2 batches
@@ -900,10 +905,7 @@ describe('O.1.5 — DataLoader Factory', () => {
     const factory = createDataLoaderFactory(broker);
     const loader = factory.getLoader('account');
 
-    const [r1, r2] = await Promise.all([
-      loader.load('1'),
-      loader.load('2'),
-    ]);
+    const [r1, r2] = await Promise.all([loader.load('1'), loader.load('2')]);
 
     expect(r1).toEqual({ _id: '1', name: 'First' });
     expect(r2).toEqual({ _id: '2', name: 'Second' });
@@ -926,7 +928,10 @@ describe('O.1.6 — Enhanced GraphQL Playground', () => {
         if (!path.endsWith('/schema')) {
           // Capture playground handler
           const mockContext = {
-            html: (html: string) => { playgroundHTML = html; return html; },
+            html: (html: string) => {
+              playgroundHTML = html;
+              return html;
+            },
           };
           handler(mockContext);
         }

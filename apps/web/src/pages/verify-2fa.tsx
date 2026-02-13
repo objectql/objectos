@@ -69,9 +69,7 @@ export default function Verify2FAPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="code">
-              {useBackup ? 'Backup Code' : 'Verification Code'}
-            </Label>
+            <Label htmlFor="code">{useBackup ? 'Backup Code' : 'Verification Code'}</Label>
             <Input
               id="code"
               value={code}

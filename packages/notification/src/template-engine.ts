@@ -1,6 +1,6 @@
 /**
  * Template Engine
- * 
+ *
  * Handles template compilation and rendering using Handlebars
  */
 
@@ -16,7 +16,7 @@ export class TemplateEngine implements ITemplateEngine {
 
   constructor(options: { cache?: boolean } = {}) {
     this.cacheEnabled = options.cache ?? true;
-    
+
     // Lazy load handlebars (optional dependency)
     try {
       this.handlebars = require('handlebars');

@@ -35,7 +35,9 @@ export function validateManifest(manifest: Partial<PluginManifest>): string[] {
   if (!manifest.id || typeof manifest.id !== 'string') {
     errors.push('Manifest must have a non-empty string "id"');
   } else if (!PLUGIN_ID_REGEX.test(manifest.id)) {
-    errors.push(`Invalid plugin ID "${manifest.id}": must be lowercase alphanumeric with hyphens, at least 2 characters`);
+    errors.push(
+      `Invalid plugin ID "${manifest.id}": must be lowercase alphanumeric with hyphens, at least 2 characters`,
+    );
   }
 
   if (!manifest.name || typeof manifest.name !== 'string') {
@@ -67,10 +69,14 @@ export function validateManifest(manifest: Partial<PluginManifest>): string[] {
     } else {
       for (const [depId, range] of Object.entries(manifest.dependencies)) {
         if (!PLUGIN_ID_REGEX.test(depId)) {
-          errors.push(`Invalid dependency ID "${depId}": must be lowercase alphanumeric with hyphens`);
+          errors.push(
+            `Invalid dependency ID "${depId}": must be lowercase alphanumeric with hyphens`,
+          );
         }
         if (typeof range !== 'string' || !SEMVER_RANGE_REGEX.test(range)) {
-          errors.push(`Invalid version range "${range}" for dependency "${depId}": must be a valid semver range`);
+          errors.push(
+            `Invalid version range "${range}" for dependency "${depId}": must be a valid semver range`,
+          );
         }
       }
     }

@@ -20,19 +20,19 @@ const taskHook: Hook = {
         throw new Error('Spam tasks are not allowed');
       }
     }
-    
+
     if (ctx.event === 'afterUpdate') {
       // Check if completed
       if (ctx.input.status === 'completed' && ctx.previous && ctx.previous.status !== 'completed') {
         console.log(`Task ${ctx.id} completed by ${ctx.session?.userId || 'unknown'}`);
       }
-      
+
       // Check if task became overdue
       if (ctx.input.is_overdue && ctx.previous && !ctx.previous.is_overdue) {
         console.log(`Task ${ctx.id} is now overdue`);
       }
     }
-  }) as (...args: unknown[]) => unknown
+  }) as (...args: unknown[]) => unknown,
 };
 
 export default taskHook;

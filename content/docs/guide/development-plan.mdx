@@ -13,39 +13,46 @@ title: ObjectOS Development Plan
 ### 1.1 Completed Core Features
 
 ✅ **Infrastructure**
+
 - ObjectOS Kernel core engine implemented
 - Object Registry operational
 - NestJS-based HTTP server
 - Basic CRUD operations through driver layer
 
 ✅ **Data Layer**
+
 - PostgreSQL driver support
 - MongoDB driver support
 - YAML metadata parser
 
 ✅ **Authentication System**
+
 - Better-Auth integration
 - Basic authentication flow
 
 ✅ **UI Components**
+
 - React UI component library (Grid, Form)
 - Basic documentation structure
 
 ### 1.2 Key Areas Needing Improvement
 
 🔴 **High-Priority Missing Features**
+
 - Incomplete permission system (missing field-level and record-level permissions)
 - Incomplete relationship field resolution (Lookup, Master-Detail)
 - Insufficient test coverage (target: 80%+)
 - Incomplete lifecycle hooks system
 
 🟡 **Medium-Priority Missing Features**
+
 - Workflow engine not implemented
 - GraphQL API not implemented
 - Real-time sync capability missing
 - Batch operation API incomplete
 
 🟢 **Low-Priority Improvements**
+
 - UI components need optimization
 - Documentation needs expansion
 - Developer tools (CLI) missing
@@ -57,24 +64,28 @@ title: ObjectOS Development Plan
 ### 2.1 Core Objectives
 
 **Goal 1: Implement Production-Grade Permission System**
+
 - Complete object-level permissions (CRUD)
 - Implement field-level security
 - Implement record-level security (RLS)
 - Integrate into Kernel and Server layers
 
 **Goal 2: Complete Lifecycle Hooks System**
+
 - Implement all standard hooks (beforeFind, afterInsert, etc.)
 - Support async hook chains
 - Add hook priority and ordering
 - Provide hook debugging tools
 
 **Goal 3: Complete Relationship Field Implementation**
+
 - Lookup fields (many-to-one)
 - Master-Detail relationships (cascade delete)
 - Many-to-many relationships
 - Relationship query optimization
 
 **Goal 4: Improve Test Coverage**
+
 - Kernel: 90%+ unit test coverage
 - Server: 80%+ integration test coverage
 - Critical path E2E tests
@@ -88,7 +99,9 @@ title: ObjectOS Development Plan
 #### 3.1 Object-Level Permissions
 
 **Task List:**
+
 1. Define permission interface in `@objectql/types`
+
    ```typescript
    interface PermissionSet {
      allowRead?: boolean | string[];
@@ -99,13 +112,14 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement permission checker in Kernel
+
    ```typescript
    // packages/kernel/src/security/permission-checker.ts
    class PermissionChecker {
-     canRead(object: string, user: User): boolean
-     canCreate(object: string, user: User): boolean
-     canUpdate(object: string, user: User): boolean
-     canDelete(object: string, user: User): boolean
+     canRead(object: string, user: User): boolean;
+     canCreate(object: string, user: User): boolean;
+     canUpdate(object: string, user: User): boolean;
+     canDelete(object: string, user: User): boolean;
    }
    ```
 
@@ -114,11 +128,12 @@ title: ObjectOS Development Plan
    // packages/server/src/guards/permission.guard.ts
    @Injectable()
    export class PermissionGuard implements CanActivate {
-     canActivate(context: ExecutionContext): boolean
+     canActivate(context: ExecutionContext): boolean;
    }
    ```
 
 **Acceptance Criteria:**
+
 - [ ] All CRUD operations go through permission checks
 - [ ] Permission denial returns 403 error
 - [ ] Unit test coverage 95%+
@@ -129,7 +144,9 @@ title: ObjectOS Development Plan
 #### 3.2 Field-Level Security
 
 **Task List:**
+
 1. Extend field definition to support visibility rules
+
    ```yaml
    fields:
      salary:
@@ -140,11 +157,12 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement field filter
+
    ```typescript
    // packages/kernel/src/security/field-filter.ts
    class FieldFilter {
-     filterReadable(object: string, fields: string[], user: User): string[]
-     filterEditable(object: string, fields: string[], user: User): string[]
+     filterReadable(object: string, fields: string[], user: User): string[];
+     filterEditable(object: string, fields: string[], user: User): string[];
    }
    ```
 
@@ -152,10 +170,11 @@ title: ObjectOS Development Plan
    ```typescript
    // Kernel filters invisible fields before returning data
    const visibleFields = fieldFilter.filterReadable(objectName, fields, user);
-   return records.map(r => pick(r, visibleFields));
+   return records.map((r) => pick(r, visibleFields));
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Users can only see permitted fields
 - [ ] Edit operations automatically ignore unpermitted fields
 - [ ] API responses don't include restricted fields
@@ -166,7 +185,9 @@ title: ObjectOS Development Plan
 #### 3.3 Record-Level Security
 
 **Task List:**
+
 1. Implement sharing rules
+
    ```yaml
    sharing_rules:
      - name: owner_full_access
@@ -178,29 +199,23 @@ title: ObjectOS Development Plan
    ```
 
 2. Inject filters during queries
+
    ```typescript
    // packages/kernel/src/security/rls-injector.ts
    class RLSInjector {
-     injectFilters(
-       objectName: string, 
-       filters: FilterGroup, 
-       user: User
-     ): FilterGroup
+     injectFilters(objectName: string, filters: FilterGroup, user: User): FilterGroup;
    }
    ```
 
 3. Automatically apply in beforeFind hook
    ```typescript
    kernel.on('beforeFind', async (ctx) => {
-     ctx.filters = rlsInjector.injectFilters(
-       ctx.objectName,
-       ctx.filters,
-       ctx.user
-     );
+     ctx.filters = rlsInjector.injectFilters(ctx.objectName, ctx.filters, ctx.user);
    });
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Users can only query records they have permission for
 - [ ] Sharing rules applied correctly
 - [ ] Performance tests pass (query time increase < 10%)
@@ -215,15 +230,22 @@ title: ObjectOS Development Plan
 #### 3.4 Standard Hooks Implementation
 
 **Task List:**
+
 1. Define complete hook types
+
    ```typescript
-   type HookType = 
-     | 'beforeFind' | 'afterFind'
-     | 'beforeInsert' | 'afterInsert'
-     | 'beforeUpdate' | 'afterUpdate'
-     | 'beforeDelete' | 'afterDelete'
-     | 'beforeValidate' | 'afterValidate';
-   
+   type HookType =
+     | 'beforeFind'
+     | 'afterFind'
+     | 'beforeInsert'
+     | 'afterInsert'
+     | 'beforeUpdate'
+     | 'afterUpdate'
+     | 'beforeDelete'
+     | 'afterDelete'
+     | 'beforeValidate'
+     | 'afterValidate';
+
    interface HookContext<T = any> {
      objectName: string;
      operation: 'find' | 'insert' | 'update' | 'delete';
@@ -235,45 +257,41 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement hook manager
+
    ```typescript
    // packages/kernel/src/hooks/hook-manager.ts
    class HookManager {
-     register(
-       hookType: HookType, 
-       handler: HookHandler, 
-       priority?: number
-     ): void
-     
-     async execute(
-       hookType: HookType, 
-       context: HookContext
-     ): Promise<void>
-     
-     unregister(hookType: HookType, handler: HookHandler): void
+     register(hookType: HookType, handler: HookHandler, priority?: number): void;
+
+     async execute(hookType: HookType, context: HookContext): Promise<void>;
+
+     unregister(hookType: HookType, handler: HookHandler): void;
    }
    ```
 
 3. Insert hook call points in Kernel operations
+
    ```typescript
    async insert(objectName: string, data: any): Promise<any> {
      const context = { objectName, operation: 'insert', data, user };
-     
+
      // Before hooks
      await this.hooks.execute('beforeValidate', context);
      await this.hooks.execute('beforeInsert', context);
-     
+
      // Actual insert
      const result = await this.driver.insert(objectName, context.data);
-     
+
      // After hooks
      context.result = result;
      await this.hooks.execute('afterInsert', context);
-     
+
      return context.result;
    }
    ```
 
 **Acceptance Criteria:**
+
 - [ ] All 8 hook types work correctly
 - [ ] Hooks execute in priority order
 - [ ] Async hook handling supported
@@ -285,11 +303,13 @@ title: ObjectOS Development Plan
 #### 3.5 Hook Debugging Tools
 
 **Task List:**
+
 1. Add hook execution logging
+
    ```typescript
    class HookManager {
-     enableDebug(enabled: boolean): void
-     
+     enableDebug(enabled: boolean): void;
+
      async execute(hookType: HookType, context: HookContext) {
        if (this.debugEnabled) {
          console.log(`[Hook] ${hookType} started`, context);
@@ -303,6 +323,7 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement hook performance monitoring
+
    ```typescript
    interface HookMetrics {
      hookType: HookType;
@@ -317,14 +338,12 @@ title: ObjectOS Development Plan
    ```typescript
    // packages/kernel/src/testing/hook-tester.ts
    class HookTester {
-     testHook(
-       hookType: HookType,
-       context: HookContext
-     ): Promise<HookTestResult>
+     testHook(hookType: HookType, context: HookContext): Promise<HookTestResult>;
    }
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Can view all registered hooks
 - [ ] Can trace hook execution order
 - [ ] Can measure hook performance
@@ -339,7 +358,9 @@ title: ObjectOS Development Plan
 #### 3.6 Lookup Fields (Many-to-One)
 
 **Task List:**
+
 1. Extend field definition
+
    ```yaml
    fields:
      account:
@@ -350,14 +371,11 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement relationship resolver
+
    ```typescript
    // packages/kernel/src/relations/lookup-resolver.ts
    class LookupResolver {
-     async resolve(
-       objectName: string,
-       records: any[],
-       lookupField: string
-     ): Promise<any[]>
+     async resolve(objectName: string, records: any[], lookupField: string): Promise<any[]>;
    }
    ```
 
@@ -366,11 +384,12 @@ title: ObjectOS Development Plan
    // Auto-populate lookup fields
    const contacts = await kernel.find('contacts', {
      fields: ['name', 'account.name', 'account.industry'],
-     populate: ['account']
+     populate: ['account'],
    });
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Lookup fields correctly save reference IDs
 - [ ] Optional loading of related objects during queries
 - [ ] Support cascading queries (account.owner.name)
@@ -381,7 +400,9 @@ title: ObjectOS Development Plan
 #### 3.7 Master-Detail Relationships
 
 **Task List:**
+
 1. Define Master-Detail relationship
+
    ```yaml
    fields:
      opportunity:
@@ -392,18 +413,19 @@ title: ObjectOS Development Plan
    ```
 
 2. Implement cascade delete
+
    ```typescript
    // When deleting master, delete all detail records
    async delete(objectName: string, id: string) {
      const config = this.registry.get(objectName);
-     
+
      // Find and delete detail records
      for (const field of config.fields) {
        if (field.type === 'master_detail' && field.cascade_delete) {
          await this.deleteDetailRecords(objectName, id, field);
        }
      }
-     
+
      // Delete master record
      await this.driver.delete(objectName, id);
    }
@@ -421,6 +443,7 @@ title: ObjectOS Development Plan
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Master-Detail relationships correctly established
 - [ ] Deleting master records automatically deletes detail records
 - [ ] Rollup summary fields automatically calculated
@@ -431,7 +454,9 @@ title: ObjectOS Development Plan
 #### 3.8 Many-to-Many Relationships
 
 **Task List:**
+
 1. Define many-to-many relationship
+
    ```yaml
    # On project object
    fields:
@@ -442,32 +467,35 @@ title: ObjectOS Development Plan
    ```
 
 2. Auto-create junction table
+
    ```typescript
    // Auto-generate junction object
    const junctionObject = {
      name: 'project_members',
      fields: {
        project: { type: 'lookup', reference_to: 'projects' },
-       user: { type: 'lookup', reference_to: 'users' }
-     }
+       user: { type: 'lookup', reference_to: 'users' },
+     },
    };
    ```
 
 3. Implement many-to-many operations API
+
    ```typescript
    // Add members to project
    await kernel.addRelation('projects', projectId, 'members', [userId1, userId2]);
-   
+
    // Remove member
    await kernel.removeRelation('projects', projectId, 'members', [userId1]);
-   
+
    // Query with members
    const projects = await kernel.find('projects', {
-     populate: ['members']
+     populate: ['members'],
    });
    ```
 
 **Acceptance Criteria:**
+
 - [ ] Many-to-many relationships correctly established
 - [ ] Junction table auto-created and managed
 - [ ] Support adding/removing relationships
@@ -482,11 +510,13 @@ title: ObjectOS Development Plan
 #### 3.9 Unit Testing
 
 **Goals:**
+
 - Kernel package: 90%+ coverage
 - Server package: 80%+ coverage
 - UI package: 70%+ coverage
 
 **Task List:**
+
 1. Write unit tests for all new features
 2. Add tests for existing code
 3. Set up code coverage reporting
@@ -497,7 +527,9 @@ title: ObjectOS Development Plan
 #### 3.10 Integration Testing
 
 **Task List:**
+
 1. End-to-end API tests
+
    ```typescript
    describe('Permissions E2E', () => {
      it('should deny access to unpermitted field', async () => {
@@ -505,7 +537,7 @@ title: ObjectOS Development Plan
          .get('/api/data/employees/123')
          .set('Authorization', `Bearer ${salesUserToken}`)
          .expect(200);
-       
+
        expect(response.body).not.toHaveProperty('salary');
      });
    });
@@ -520,6 +552,7 @@ title: ObjectOS Development Plan
 #### 3.11 Documentation Updates
 
 **Task List:**
+
 1. API documentation (OpenAPI/Swagger)
 2. Permission system usage guide
 3. Hooks system development guide
@@ -533,27 +566,32 @@ title: ObjectOS Development Plan
 ## 4. Timeline & Milestones
 
 ### Week 1-2: Permission System Foundation
+
 - [ ] Object-level permissions implementation (Week 1)
 - [ ] Field-level security implementation (Week 2)
 - [ ] Unit tests and documentation (Week 2)
 
 ### Week 3-4: Permission System Completion & Hooks System
+
 - [ ] Record-level security implementation (Week 3)
 - [ ] Hooks system implementation (Week 4)
 - [ ] Hook debugging tools (Week 4)
 
 ### Week 5-7: Relationship Fields Implementation
+
 - [ ] Lookup fields (Week 5)
 - [ ] Master-Detail relationships (Week 6)
 - [ ] Many-to-many relationships (Week 7)
 
 ### Week 8-9: Integration Testing & Optimization
+
 - [ ] Integration test writing (Week 8)
 - [ ] Performance optimization (Week 8)
 - [ ] Bug fixes (Week 9)
 - [ ] Documentation completion (Week 9)
 
 ### Week 10: Release Preparation
+
 - [ ] Code review
 - [ ] Security audit
 - [ ] Release v0.3.0
@@ -593,21 +631,21 @@ title: ObjectOS Development Plan
 
 ### 6.1 Technical Risks
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Permission system performance issues | High | Medium | Early performance testing, use caching optimization |
-| Relationship query N+1 problem | High | High | Implement DataLoader pattern, batch queries |
-| Hook system complexity | Medium | Medium | Provide clear documentation, limit hook nesting depth |
-| Database compatibility | Medium | Low | Integration testing on multiple databases |
+| Risk                                 | Impact | Probability | Mitigation                                            |
+| ------------------------------------ | ------ | ----------- | ----------------------------------------------------- |
+| Permission system performance issues | High   | Medium      | Early performance testing, use caching optimization   |
+| Relationship query N+1 problem       | High   | High        | Implement DataLoader pattern, batch queries           |
+| Hook system complexity               | Medium | Medium      | Provide clear documentation, limit hook nesting depth |
+| Database compatibility               | Medium | Low         | Integration testing on multiple databases             |
 
 ### 6.2 Schedule Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Requirement changes | High | Freeze Q1 requirements, move new requirements to Q2 |
-| Insufficient manpower | High | Recruit contributors, simplify some feature scope |
-| Insufficient testing time | Medium | Test and develop in parallel, TDD mode |
-| Documentation delays | Low | Write documentation synchronously with code |
+| Risk                      | Impact | Mitigation                                          |
+| ------------------------- | ------ | --------------------------------------------------- |
+| Requirement changes       | High   | Freeze Q1 requirements, move new requirements to Q2 |
+| Insufficient manpower     | High   | Recruit contributors, simplify some feature scope   |
+| Insufficient testing time | Medium | Test and develop in parallel, TDD mode              |
+| Documentation delays      | Low    | Write documentation synchronously with code         |
 
 ---
 
@@ -702,18 +740,20 @@ The core goals of ObjectOS Q1 2026 are to **implement a production-grade permiss
 ✅ **Enhance Security**: Multi-layer permission protection, achieving enterprise-grade security standards  
 ✅ **Increase Flexibility**: Complete hook system, supporting business logic customization  
 ✅ **Expand Data Capabilities**: Relationship field support, meeting complex business needs  
-✅ **Ensure Quality**: 80%+ test coverage, comprehensive documentation  
+✅ **Ensure Quality**: 80%+ test coverage, comprehensive documentation
 
 **Making ObjectOS a truly production-ready enterprise low-code platform!**
 
 ---
 
 **Next Actions:**
+
 1. Team review of this plan
 2. Assign tasks to developers
 3. Set up project board (GitHub Projects)
 4. Begin Sprint 1 development
 
 **Contact:**
+
 - GitHub Issues: https://github.com/objectstack-ai/objectos/issues
 - Project Discussions: GitHub Discussions

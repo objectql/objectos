@@ -32,9 +32,7 @@ import { ObjectOS } from '@objectstack/runtime';
 import { MetricsPlugin } from '@objectos/plugin-metrics';
 
 const os = new ObjectOS({
-  plugins: [
-    new MetricsPlugin()
-  ]
+  plugins: [new MetricsPlugin()],
 });
 
 await os.start();
@@ -48,22 +46,22 @@ const metricsPlugin = new MetricsPlugin({
   prefix: 'objectos_',
   defaultLabels: {
     environment: 'production',
-    region: 'us-east-1'
+    region: 'us-east-1',
   },
   trackBuiltInMetrics: true,
-  maxHistogramObservations: 10000
+  maxHistogramObservations: 10000,
 });
 ```
 
 ### Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable/disable metrics collection |
-| `prefix` | string | `''` | Prefix for all metric names |
-| `defaultLabels` | Record<string, string> | `{}` | Default labels attached to all metrics |
-| `trackBuiltInMetrics` | boolean | `true` | Track kernel lifecycle metrics |
-| `maxHistogramObservations` | number | `10000` | Max observations per histogram |
+| Option                     | Type                   | Default | Description                            |
+| -------------------------- | ---------------------- | ------- | -------------------------------------- |
+| `enabled`                  | boolean                | `true`  | Enable/disable metrics collection      |
+| `prefix`                   | string                 | `''`    | Prefix for all metric names            |
+| `defaultLabels`            | Record<string, string> | `{}`    | Default labels attached to all metrics |
+| `trackBuiltInMetrics`      | boolean                | `true`  | Track kernel lifecycle metrics         |
+| `maxHistogramObservations` | number                 | `10000` | Max observations per histogram         |
 
 ## API Reference
 
@@ -90,11 +88,12 @@ metricsAPI.incrementCounter('bytes.sent', 1024);
 metricsAPI.incrementCounter('http.requests', 1, {
   method: 'POST',
   endpoint: '/api/users',
-  status: '201'
+  status: '201',
 });
 ```
 
 **Use Cases:**
+
 - Total requests served
 - Total errors encountered
 - Items processed
@@ -117,11 +116,12 @@ metricsAPI.decrementGauge('active.connections', 1);
 // With labels
 metricsAPI.setGauge('queue.size', queueLength, {
   queue: 'email',
-  priority: 'high'
+  priority: 'high',
 });
 ```
 
 **Use Cases:**
+
 - Memory usage
 - Active connections
 - Queue size
@@ -142,11 +142,12 @@ metricsAPI.recordHistogram('request.duration', duration);
 // With labels
 metricsAPI.recordHistogram('api.latency', latency, {
   endpoint: '/api/orders',
-  method: 'GET'
+  method: 'GET',
 });
 ```
 
 **Use Cases:**
+
 - Request/response latency
 - Database query duration
 - File upload size
@@ -166,7 +167,7 @@ const histograms = metricsAPI.getMetricsByType(MetricType.Histogram);
 // Get specific metric by name and labels
 const metric = metricsAPI.getMetric('http.requests', {
   method: 'GET',
-  status: '200'
+  status: '200',
 });
 ```
 
@@ -229,10 +230,10 @@ server.route({
   handler: async (req, res) => {
     const metricsAPI = getMetricsAPI(context.getKernel());
     const prometheusText = metricsAPI.exportPrometheus();
-    
+
     res.setHeader('Content-Type', 'text/plain; version=0.0.4');
     res.send(prometheusText);
-  }
+  },
 });
 ```
 
@@ -253,12 +254,12 @@ scrape_configs:
 
 When `trackBuiltInMetrics` is enabled, the following metrics are automatically collected:
 
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `plugin.load.duration` | Histogram | `plugin` | Time to load a plugin (ms) |
-| `plugin.enable.duration` | Histogram | `plugin` | Time to enable a plugin (ms) |
-| `service.calls.total` | Counter | `service`, `method` | Total service calls |
-| `hook.execution.duration` | Histogram | `hook` | Hook execution time (ms) |
+| Metric                    | Type      | Labels              | Description                  |
+| ------------------------- | --------- | ------------------- | ---------------------------- |
+| `plugin.load.duration`    | Histogram | `plugin`            | Time to load a plugin (ms)   |
+| `plugin.enable.duration`  | Histogram | `plugin`            | Time to enable a plugin (ms) |
+| `service.calls.total`     | Counter   | `service`, `method` | Total service calls          |
+| `hook.execution.duration` | Histogram | `hook`              | Hook execution time (ms)     |
 
 ## Examples
 
@@ -271,33 +272,33 @@ class APIHandler {
   async handleRequest(req: Request, res: Response) {
     const metricsAPI = getMetricsAPI(kernel);
     const startTime = Date.now();
-    
+
     try {
       const result = await processRequest(req);
-      
+
       // Record success
       metricsAPI.incrementCounter('api.requests.total', 1, {
         method: req.method,
         endpoint: req.path,
-        status: '200'
+        status: '200',
       });
-      
+
       // Record latency
       const duration = Date.now() - startTime;
       metricsAPI.recordHistogram('api.request.duration', duration, {
         method: req.method,
-        endpoint: req.path
+        endpoint: req.path,
       });
-      
+
       return result;
     } catch (error) {
       // Record error
       metricsAPI.incrementCounter('api.errors.total', 1, {
         method: req.method,
         endpoint: req.path,
-        error: error.name
+        error: error.name,
       });
-      
+
       throw error;
     }
   }
@@ -311,16 +312,16 @@ import { getMetricsAPI } from '@objectos/plugin-metrics';
 
 function startResourceMonitoring(kernel: any) {
   const metricsAPI = getMetricsAPI(kernel);
-  
+
   // Update every 10 seconds
   setInterval(() => {
     const mem = process.memoryUsage();
-    
+
     metricsAPI.setGauge('process.memory.heap.used', mem.heapUsed);
     metricsAPI.setGauge('process.memory.heap.total', mem.heapTotal);
     metricsAPI.setGauge('process.memory.external', mem.external);
     metricsAPI.setGauge('process.memory.rss', mem.rss);
-    
+
     const cpuUsage = process.cpuUsage();
     metricsAPI.setGauge('process.cpu.user', cpuUsage.user);
     metricsAPI.setGauge('process.cpu.system', cpuUsage.system);
@@ -336,33 +337,33 @@ import { getMetricsAPI } from '@objectos/plugin-metrics';
 class OrderService {
   async createOrder(order: Order) {
     const metricsAPI = getMetricsAPI(kernel);
-    
+
     // Track order creation
     metricsAPI.incrementCounter('orders.created.total', 1, {
       product: order.productType,
-      region: order.region
+      region: order.region,
     });
-    
+
     // Track order value
     metricsAPI.recordHistogram('order.value', order.totalAmount, {
-      currency: order.currency
+      currency: order.currency,
     });
-    
+
     // Update active orders gauge
     metricsAPI.incrementGauge('orders.active', 1, {
-      status: 'pending'
+      status: 'pending',
     });
-    
+
     return await this.saveOrder(order);
   }
-  
+
   async completeOrder(orderId: string) {
     const metricsAPI = getMetricsAPI(kernel);
-    
+
     // Update gauges
     metricsAPI.decrementGauge('orders.active', 1, { status: 'pending' });
     metricsAPI.incrementGauge('orders.active', 1, { status: 'completed' });
-    
+
     // Track completion
     metricsAPI.incrementCounter('orders.completed.total', 1);
   }
@@ -372,17 +373,18 @@ class OrderService {
 ## Best Practices
 
 1. **Use Labels Wisely**: Don't create too many unique label combinations (high cardinality)
+
    ```typescript
    // Good: Limited label values
-   metricsAPI.incrementCounter('requests', 1, { 
-     method: 'GET',  // ~10 possible values
-     status: '200'    // ~50 possible values
+   metricsAPI.incrementCounter('requests', 1, {
+     method: 'GET', // ~10 possible values
+     status: '200', // ~50 possible values
    });
-   
+
    // Bad: Unlimited label values (user IDs, timestamps, etc.)
    metricsAPI.incrementCounter('requests', 1, {
-     user_id: '12345',  // Millions of possible values
-     timestamp: Date.now().toString()
+     user_id: '12345', // Millions of possible values
+     timestamp: Date.now().toString(),
    });
    ```
 

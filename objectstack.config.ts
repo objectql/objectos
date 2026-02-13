@@ -50,7 +50,7 @@ export default defineStack({
       'packages/*/objects/*.object.yml',
       'packages/*/workflows/*.workflow.yml',
       'packages/*/permissions/*.permission.yml',
-    ]
+    ],
   },
 
   /**
@@ -78,13 +78,17 @@ export default defineStack({
 
     // Core
     new AuthPlugin({
-      secret: process.env.AUTH_SECRET || (() => {
-        const defaultSecret = 'dev-secret-change-in-production-min-32-chars';
-        if (process.env.NODE_ENV === 'production') {
-          console.error('WARNING: Using default AUTH_SECRET in production! Set AUTH_SECRET environment variable.');
-        }
-        return defaultSecret;
-      })(),
+      secret:
+        process.env.AUTH_SECRET ||
+        (() => {
+          const defaultSecret = 'dev-secret-change-in-production-min-32-chars';
+          if (process.env.NODE_ENV === 'production') {
+            console.error(
+              'WARNING: Using default AUTH_SECRET in production! Set AUTH_SECRET environment variable.',
+            );
+          }
+          return defaultSecret;
+        })(),
       baseUrl: process.env.BETTER_AUTH_URL || 'http://localhost:5320',
     }),
     new PermissionsPlugin({
@@ -126,9 +130,12 @@ export default defineStack({
       { root: './apps/site/out', path: '/docs', rewrite: true },
     ],
     cors: {
-      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5321', 'http://localhost:5320'],
+      origin: process.env.CORS_ORIGINS?.split(',') || [
+        'http://localhost:5321',
+        'http://localhost:5320',
+      ],
       credentials: true,
-    }
+    },
   },
 
   /**
@@ -137,6 +144,6 @@ export default defineStack({
   kernel: {
     logger: {
       level: process.env.LOG_LEVEL || 'info',
-    }
-  }
+    },
+  },
 } as any);

@@ -4,47 +4,47 @@
 # Package-specific labels
 'kernel':
   - changed-files:
-    - any-glob-to-any-file: 'packages/kernel/**/*'
+      - any-glob-to-any-file: 'packages/kernel/**/*'
 
 'server':
   - changed-files:
-    - any-glob-to-any-file: 'packages/server/**/*'
+      - any-glob-to-any-file: 'packages/server/**/*'
 
 'presets':
   - changed-files:
-    - any-glob-to-any-file: 'packages/presets/**/*'
+      - any-glob-to-any-file: 'packages/presets/**/*'
 
 # Type-specific labels
 'documentation':
   - changed-files:
-    - any-glob-to-any-file: 
-      - 'docs/**/*'
-      - '**/*.md'
+      - any-glob-to-any-file:
+          - 'docs/**/*'
+          - '**/*.md'
 
 'workflows':
   - changed-files:
-    - any-glob-to-any-file: '.github/**/*'
+      - any-glob-to-any-file: '.github/**/*'
 
 'dependencies':
   - changed-files:
-    - any-glob-to-any-file:
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '**/package.json'
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'pnpm-lock.yaml'
+          - '**/package.json'
 
 'tests':
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.test.ts'
-      - '**/*.spec.ts'
-      - '**/__tests__/**/*'
-      - '**/test/**/*'
+      - any-glob-to-any-file:
+          - '**/*.test.ts'
+          - '**/*.spec.ts'
+          - '**/__tests__/**/*'
+          - '**/test/**/*'
 
 'configuration':
   - changed-files:
-    - any-glob-to-any-file:
-      - 'tsconfig*.json'
-      - '.eslintrc*'
-      - '.prettierrc*'
-      - 'jest.config.*'
-      - '*.config.*'
+      - any-glob-to-any-file:
+          - 'tsconfig*.json'
+          - '.eslintrc*'
+          - '.prettierrc*'
+          - 'jest.config.*'
+          - '*.config.*'

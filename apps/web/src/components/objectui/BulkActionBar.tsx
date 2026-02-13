@@ -45,9 +45,7 @@ export function BulkActionBar({
   const [updateField, setUpdateField] = useState('');
   const [updateValue, setUpdateValue] = useState('');
 
-  const editableFields = resolveFields(objectDef.fields, ['id']).filter(
-    (f) => !f.readonly,
-  );
+  const editableFields = resolveFields(objectDef.fields, ['id']).filter((f) => !f.readonly);
 
   const handleDelete = () => {
     onBulkDelete(selectedIds);
@@ -113,12 +111,7 @@ export function BulkActionBar({
           </Button>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="ml-auto gap-1.5"
-          onClick={onDeselectAll}
-        >
+        <Button variant="ghost" size="sm" className="ml-auto gap-1.5" onClick={onDeselectAll}>
           <XCircle className="size-4" />
           Deselect
         </Button>
@@ -128,11 +121,13 @@ export function BulkActionBar({
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''}?</DialogTitle>
+            <DialogTitle>
+              Delete {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''}?
+            </DialogTitle>
             <DialogDescription>
               This action cannot be undone. The selected{' '}
-              {(objectDef.pluralLabel ?? objectDef.label ?? 'records').toLowerCase()}{' '}
-              will be permanently deleted.
+              {(objectDef.pluralLabel ?? objectDef.label ?? 'records').toLowerCase()} will be
+              permanently deleted.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -150,7 +145,9 @@ export function BulkActionBar({
       <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update field for {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''}</DialogTitle>
+            <DialogTitle>
+              Update field for {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''}
+            </DialogTitle>
             <DialogDescription>
               Choose a field and value to apply to all selected records.
             </DialogDescription>

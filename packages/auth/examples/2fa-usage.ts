@@ -1,6 +1,6 @@
 /**
  * Example: Using Two-Factor Authentication (2FA)
- * 
+ *
  * This example demonstrates how to set up and use TOTP-based
  * two-factor authentication with the Better-Auth plugin.
  */
@@ -18,7 +18,7 @@ async function basic2FASetup() {
   const authPlugin = createBetterAuthPlugin({
     databaseUrl: process.env.DATABASE_URL || 'sqlite:auth.db',
     baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000/api/auth',
-    
+
     // Two-Factor Authentication settings
     twoFactorEnabled: true, // Default: true
     twoFactorIssuer: 'MyApp', // Name shown in authenticator apps
@@ -101,10 +101,10 @@ async function signInWith2FA() {
   // Step 2: Check if 2FA is required
   if (response.requiresTwoFactor) {
     console.log('2FA code required');
-    
+
     // Prompt user for TOTP code
     const totpCode = '123456'; // From user's authenticator app
-    
+
     // Step 3: Verify TOTP code
     try {
       await authClient.twoFactor.verify({

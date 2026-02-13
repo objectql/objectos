@@ -37,9 +37,7 @@ import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 
-const navOverview = [
-  { title: 'Overview', href: '/settings', icon: LayoutDashboard },
-];
+const navOverview = [{ title: 'Overview', href: '/settings', icon: LayoutDashboard }];
 
 const navOrganization = [
   { title: 'General', href: '/settings/organization', icon: Building2 },
@@ -81,11 +79,7 @@ export function SettingsLayout() {
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                tooltip={item.title}
-              >
+              <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
                 <Link to={item.href}>
                   <item.icon />
                   <span>{item.title}</span>

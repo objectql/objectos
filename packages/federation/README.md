@@ -12,12 +12,12 @@ Dynamic plugin loading via Module Federation for ObjectOS with runtime remote lo
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/federation/remotes` | List loaded remote plugins |
-| GET | `/api/v1/federation/shared` | List shared dependencies |
-| GET | `/api/v1/federation/config` | Current federation configuration |
-| GET | `/api/v1/federation/stats` | Federation runtime statistics |
+| Method | Path                         | Description                      |
+| ------ | ---------------------------- | -------------------------------- |
+| GET    | `/api/v1/federation/remotes` | List loaded remote plugins       |
+| GET    | `/api/v1/federation/shared`  | List shared dependencies         |
+| GET    | `/api/v1/federation/config`  | Current federation configuration |
+| GET    | `/api/v1/federation/stats`   | Federation runtime statistics    |
 
 ## Usage
 

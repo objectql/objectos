@@ -4,7 +4,7 @@ export const SalesDashboard: Dashboard = {
   name: 'sales_dashboard',
   label: 'Sales Performance',
   description: 'Key sales metrics and pipeline overview',
-  
+
   widgets: [
     // Row 1: Key Metrics
     {
@@ -15,7 +15,7 @@ export const SalesDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 0, y: 0, w: 3, h: 2 },
-      options: { prefix: '$', color: '#4169E1' }
+      options: { prefix: '$', color: '#4169E1' },
     },
     {
       title: 'Closed Won This Quarter',
@@ -25,7 +25,7 @@ export const SalesDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 3, y: 0, w: 3, h: 2 },
-      options: { prefix: '$', color: '#00AA00' }
+      options: { prefix: '$', color: '#00AA00' },
     },
     {
       title: 'Open Opportunities',
@@ -34,7 +34,7 @@ export const SalesDashboard: Dashboard = {
       filter: { stage: { $nin: ['closed_won', 'closed_lost'] } },
       aggregate: 'count',
       layout: { x: 6, y: 0, w: 3, h: 2 },
-      options: { color: '#FFA500' }
+      options: { color: '#FFA500' },
     },
     {
       title: 'Win Rate',
@@ -44,9 +44,9 @@ export const SalesDashboard: Dashboard = {
       valueField: 'stage',
       aggregate: 'count',
       layout: { x: 9, y: 0, w: 3, h: 2 },
-      options: { suffix: '%', color: '#9370DB' }
+      options: { suffix: '%', color: '#9370DB' },
     },
-    
+
     // Row 2: Pipeline Analysis
     {
       title: 'Pipeline by Stage',
@@ -57,7 +57,7 @@ export const SalesDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 0, y: 2, w: 6, h: 4 },
-      options: { showValues: true }
+      options: { showValues: true },
     },
     {
       title: 'Opportunities by Owner',
@@ -68,9 +68,9 @@ export const SalesDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 6, y: 2, w: 6, h: 4 },
-      options: { horizontal: true }
+      options: { horizontal: true },
     },
-    
+
     // Row 3: Trends
     {
       title: 'Monthly Revenue Trend',
@@ -81,7 +81,7 @@ export const SalesDashboard: Dashboard = {
       valueField: 'amount',
       aggregate: 'sum',
       layout: { x: 0, y: 6, w: 8, h: 4 },
-      options: { dateGranularity: 'month', showTrend: true }
+      options: { dateGranularity: 'month', showTrend: true },
     },
     {
       title: 'Top Opportunities',
@@ -95,7 +95,7 @@ export const SalesDashboard: Dashboard = {
         sortBy: 'amount',
         sortOrder: 'desc',
         limit: 10,
-      }
+      },
     },
-  ]
+  ],
 };

@@ -44,9 +44,7 @@ export function EmptyState({
       </div>
       <h3 className="text-lg font-medium">{title}</h3>
       {description && (
-        <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">{description}</p>
       )}
       {actionLabel && onAction && (
         <Button className="mt-4" onClick={onAction}>

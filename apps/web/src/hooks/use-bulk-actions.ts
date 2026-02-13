@@ -20,9 +20,7 @@ export function useBulkActions({ objectName }: UseBulkActionsOptions) {
   const queryClient = useQueryClient();
 
   const toggleSelection = useCallback((id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   }, []);
 
   const selectAll = useCallback((ids: string[]) => {
@@ -47,15 +45,7 @@ export function useBulkActions({ objectName }: UseBulkActionsOptions) {
   });
 
   const bulkUpdateMutation = useMutation({
-    mutationFn: async ({
-      ids,
-      field,
-      value,
-    }: {
-      ids: string[];
-      field: string;
-      value: unknown;
-    }) => {
+    mutationFn: async ({ ids, field, value }: { ids: string[]; field: string; value: unknown }) => {
       for (const id of ids) {
         await objectStackClient.data.update(objectName, id, { [field]: value });
       }

@@ -1,6 +1,6 @@
 /**
  * I18n Plugin for ObjectOS
- * 
+ *
  * A lightweight internationalization and localization plugin.
  */
 

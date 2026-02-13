@@ -1,16 +1,16 @@
 /**
  * Push Notification Channel
- * 
+ *
  * Push notification channel (stub/mock implementation)
  * Ready for integration with Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs)
  */
 
-import type { 
-  PushConfig, 
-  NotificationRequest, 
+import type {
+  PushConfig,
+  NotificationRequest,
   NotificationResult,
   NotificationChannelInterface,
-  PushOptions
+  PushOptions,
 } from '../types.js';
 import { NotificationChannel } from '../types.js';
 
@@ -30,9 +30,7 @@ export class PushChannel implements NotificationChannelInterface {
    */
   async send(request: NotificationRequest): Promise<NotificationResult> {
     try {
-      const tokens = Array.isArray(request.recipient) 
-        ? request.recipient 
-        : [request.recipient];
+      const tokens = Array.isArray(request.recipient) ? request.recipient : [request.recipient];
 
       const title = request.subject || 'Notification';
       const body = request.body || '';
@@ -44,7 +42,7 @@ export class PushChannel implements NotificationChannelInterface {
           tokens,
           title,
           body,
-          data
+          data,
         });
 
         return {
@@ -54,8 +52,8 @@ export class PushChannel implements NotificationChannelInterface {
           timestamp: new Date(),
           metadata: {
             provider: 'mock',
-            tokens: tokens.length
-          }
+            tokens: tokens.length,
+          },
         };
       }
 
@@ -75,7 +73,7 @@ export class PushChannel implements NotificationChannelInterface {
         success: false,
         channel: NotificationChannel.Push,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -91,7 +89,7 @@ export class PushChannel implements NotificationChannelInterface {
       recipient: tokens,
       subject: options.title,
       body: options.body,
-      data: options.data
+      data: options.data,
     };
 
     return this.send(request);
@@ -101,14 +99,14 @@ export class PushChannel implements NotificationChannelInterface {
    * Send via Firebase Cloud Messaging (placeholder for actual implementation)
    */
   private async sendViaFirebase(
-    tokens: string[], 
-    title: string, 
-    body: string, 
-    data: any
+    tokens: string[],
+    title: string,
+    body: string,
+    data: any,
   ): Promise<NotificationResult> {
     // TODO: Implement Firebase integration
     // const admin = require('firebase-admin');
-    // 
+    //
     // const message = {
     //   notification: {
     //     title,
@@ -117,7 +115,7 @@ export class PushChannel implements NotificationChannelInterface {
     //   data,
     //   tokens
     // };
-    // 
+    //
     // const response = await admin.messaging().sendMulticast(message);
 
     console.log('[Push Firebase] Would send:', { tokens, title, body, data });
@@ -129,8 +127,8 @@ export class PushChannel implements NotificationChannelInterface {
       timestamp: new Date(),
       metadata: {
         provider: 'firebase',
-        tokens: tokens.length
-      }
+        tokens: tokens.length,
+      },
     };
   }
 
@@ -138,14 +136,14 @@ export class PushChannel implements NotificationChannelInterface {
    * Send via Apple Push Notification Service (placeholder for actual implementation)
    */
   private async sendViaAPNs(
-    tokens: string[], 
-    title: string, 
-    body: string, 
-    data: any
+    tokens: string[],
+    title: string,
+    body: string,
+    data: any,
   ): Promise<NotificationResult> {
     // TODO: Implement APNs integration
     // const apn = require('apn');
-    // 
+    //
     // const provider = new apn.Provider({
     //   token: {
     //     key: this.config.certificatePath,
@@ -153,12 +151,12 @@ export class PushChannel implements NotificationChannelInterface {
     //     teamId: this.config.teamId
     //   }
     // });
-    // 
+    //
     // const note = new apn.Notification();
     // note.alert = { title, body };
     // note.topic = this.config.bundleId;
     // note.payload = data;
-    // 
+    //
     // const result = await provider.send(note, tokens);
 
     console.log('[Push APNs] Would send:', { tokens, title, body, data });
@@ -170,8 +168,8 @@ export class PushChannel implements NotificationChannelInterface {
       timestamp: new Date(),
       metadata: {
         provider: 'apns',
-        tokens: tokens.length
-      }
+        tokens: tokens.length,
+      },
     };
   }
 }

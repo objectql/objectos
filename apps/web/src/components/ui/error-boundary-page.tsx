@@ -52,18 +52,24 @@ export class ErrorBoundaryPage extends Component<ErrorBoundaryPageProps, ErrorBo
       `UserAgent: ${navigator.userAgent}`,
     ].join('\n\n');
 
-    navigator.clipboard.writeText(diagnostics).then(() => {
-      this.setState({ copied: true });
-      setTimeout(() => this.setState({ copied: false }), 2000);
-    }).catch(() => {
-      // Clipboard may not be available
-    });
+    navigator.clipboard
+      .writeText(diagnostics)
+      .then(() => {
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 2000);
+      })
+      .catch(() => {
+        // Clipboard may not be available
+      });
   };
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-svh items-center justify-center bg-background p-4" data-testid="error-boundary-page">
+        <div
+          className="flex min-h-svh items-center justify-center bg-background p-4"
+          data-testid="error-boundary-page"
+        >
           <div className="w-full max-w-md space-y-6 text-center">
             <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-destructive/10">
               <AlertTriangle className="size-8 text-destructive" />
@@ -72,15 +78,14 @@ export class ErrorBoundaryPage extends Component<ErrorBoundaryPageProps, ErrorBo
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">Something went wrong</h1>
               <p className="text-sm text-muted-foreground">
-                An unexpected error occurred. You can try refreshing the page or going back to the home page.
+                An unexpected error occurred. You can try refreshing the page or going back to the
+                home page.
               </p>
             </div>
 
             {this.state.error && (
               <div className="rounded-lg border bg-muted/50 p-3 text-left">
-                <p className="text-xs font-mono text-destructive">
-                  {this.state.error.message}
-                </p>
+                <p className="text-xs font-mono text-destructive">{this.state.error.message}</p>
               </div>
             )}
 

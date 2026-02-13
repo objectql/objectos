@@ -15,7 +15,13 @@ export const OpportunitiesByStageReport: ReportInput = {
   ],
   groupingsDown: [{ field: 'stage', sortOrder: 'asc' }],
   filter: { stage: { $ne: 'closed_lost' }, close_date: { $gte: '{current_year_start}' } },
-  chart: { type: 'bar', title: 'Pipeline by Stage', showLegend: true, xAxis: 'stage', yAxis: 'amount' }
+  chart: {
+    type: 'bar',
+    title: 'Pipeline by Stage',
+    showLegend: true,
+    xAxis: 'stage',
+    yAxis: 'amount',
+  },
 };
 
 export const WonOpportunitiesByOwnerReport: ReportInput = {
@@ -32,5 +38,11 @@ export const WonOpportunitiesByOwnerReport: ReportInput = {
   ],
   groupingsDown: [{ field: 'owner', sortOrder: 'desc' }],
   filter: { stage: 'closed_won' },
-  chart: { type: 'column', title: 'Revenue by Sales Rep', showLegend: false, xAxis: 'owner', yAxis: 'amount' }
+  chart: {
+    type: 'column',
+    title: 'Revenue by Sales Rep',
+    showLegend: false,
+    xAxis: 'owner',
+    yAxis: 'amount',
+  },
 };

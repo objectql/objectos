@@ -4,10 +4,10 @@
 
 import { NotificationQueue } from '../src/queue.js';
 import { NotificationChannel, NotificationStatus } from '../src/types.js';
-import type { 
-  NotificationRequest, 
+import type {
+  NotificationRequest,
   NotificationResult,
-  NotificationChannelInterface 
+  NotificationChannelInterface,
 } from '../src/types.js';
 
 // Mock channel implementation
@@ -25,7 +25,7 @@ class MockChannel implements NotificationChannelInterface {
     this.callCount++;
 
     if (this.delay > 0) {
-      await new Promise(resolve => setTimeout(resolve, this.delay));
+      await new Promise((resolve) => setTimeout(resolve, this.delay));
     }
 
     if (this.shouldFail) {
@@ -33,7 +33,7 @@ class MockChannel implements NotificationChannelInterface {
         success: false,
         channel: request.channel,
         error: 'Mock failure',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
 
@@ -41,7 +41,7 @@ class MockChannel implements NotificationChannelInterface {
       success: true,
       messageId: `mock_${Date.now()}`,
       channel: request.channel,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -58,7 +58,7 @@ describe('NotificationQueue', () => {
     queue = new NotificationQueue({
       maxRetries: 3,
       retryDelay: 100,
-      processingInterval: 50
+      processingInterval: 50,
     });
     mockChannel = new MockChannel();
     queue.registerChannel(NotificationChannel.Email, mockChannel);
@@ -74,7 +74,7 @@ describe('NotificationQueue', () => {
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
         subject: 'Test',
-        body: 'Test message'
+        body: 'Test message',
       };
 
       const id = queue.enqueue(request);
@@ -87,13 +87,13 @@ describe('NotificationQueue', () => {
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
         subject: 'Test',
-        body: 'Test message'
+        body: 'Test message',
       };
 
       queue.enqueue(request);
-      
+
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       expect(mockChannel.callCount).toBe(1);
       expect(queue.size()).toBe(0); // Should be removed after success
@@ -101,7 +101,7 @@ describe('NotificationQueue', () => {
 
     it('should maintain FIFO order', async () => {
       const results: string[] = [];
-      
+
       const channel = {
         send: async (request: NotificationRequest) => {
           results.push(request.body!);
@@ -109,9 +109,9 @@ describe('NotificationQueue', () => {
             success: true,
             messageId: 'test',
             channel: request.channel,
-            timestamp: new Date()
+            timestamp: new Date(),
           };
-        }
+        },
       };
 
       queue.registerChannel(NotificationChannel.Email, channel);
@@ -119,23 +119,23 @@ describe('NotificationQueue', () => {
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'First'
+        body: 'First',
       });
 
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Second'
+        body: 'Second',
       });
 
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Third'
+        body: 'Third',
       });
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       expect(results).toEqual(['First', 'Second', 'Third']);
     });
@@ -149,13 +149,13 @@ describe('NotificationQueue', () => {
       const request: NotificationRequest = {
         channel: NotificationChannel.SMS,
         recipient: '+1234567890',
-        body: 'Test'
+        body: 'Test',
       };
 
       queue.enqueue(request);
 
       // Wait for retries
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Should try 3 times (maxRetries)
       expect(failingChannel.callCount).toBeGreaterThanOrEqual(3);
@@ -168,20 +168,20 @@ describe('NotificationQueue', () => {
       const request: NotificationRequest = {
         channel: NotificationChannel.SMS,
         recipient: '+1234567890',
-        body: 'Test'
+        body: 'Test',
       };
 
       queue.enqueue(request);
 
       // Wait for all retries to complete
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       expect(queue.size()).toBe(0); // Removed after max retries
     });
 
     it('should respect retry delay', async () => {
       const timestamps: number[] = [];
-      
+
       const timingChannel = {
         send: async (request: NotificationRequest) => {
           timestamps.push(Date.now());
@@ -189,15 +189,15 @@ describe('NotificationQueue', () => {
             success: false,
             channel: request.channel,
             error: 'Test failure',
-            timestamp: new Date()
+            timestamp: new Date(),
           };
-        }
+        },
       };
 
       const retryQueue = new NotificationQueue({
         maxRetries: 3,
         retryDelay: 100,
-        processingInterval: 10
+        processingInterval: 10,
       });
 
       retryQueue.registerChannel(NotificationChannel.Email, timingChannel);
@@ -205,10 +205,10 @@ describe('NotificationQueue', () => {
       retryQueue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Test'
+        body: 'Test',
       });
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       retryQueue.stop();
 
       // Check that retries were delayed
@@ -224,7 +224,7 @@ describe('NotificationQueue', () => {
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Test'
+        body: 'Test',
       });
 
       const status = queue.getStatus();
@@ -236,7 +236,7 @@ describe('NotificationQueue', () => {
       const id = queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Test'
+        body: 'Test',
       });
 
       const notification = queue.getById(id);
@@ -248,7 +248,7 @@ describe('NotificationQueue', () => {
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Test'
+        body: 'Test',
       });
 
       expect(queue.size()).toBe(1);
@@ -268,19 +268,19 @@ describe('NotificationQueue', () => {
       queue.enqueue({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Email'
+        body: 'Email',
       });
 
       queue.enqueue({
         channel: NotificationChannel.SMS,
         recipient: '+1234567890',
-        body: 'SMS'
+        body: 'SMS',
       });
 
       // Wait for processing
       let attempts = 0;
       while ((emailChannel.callCount < 1 || smsChannel.callCount < 1) && attempts < 20) {
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 100));
         attempts++;
       }
 
@@ -293,14 +293,14 @@ describe('NotificationQueue', () => {
         queue.enqueue({
           channel: NotificationChannel.Email,
           recipient: `test${i}@example.com`,
-          body: `Message ${i}`
+          body: `Message ${i}`,
         });
       }
 
       // Wait for processing
       let attempts = 0;
       while (mockChannel.callCount < 5 && attempts < 20) {
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 100));
         attempts++;
       }
 

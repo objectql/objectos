@@ -468,9 +468,12 @@ export class GraphQLPlugin implements Plugin {
         } catch (error: any) {
           this.errorCount++;
           context.logger.error(`[GraphQL] Execution error: ${(error as Error)?.message || error}`);
-          return c.json({
-            errors: [{ message: error.message || 'Internal server error' }],
-          }, 500);
+          return c.json(
+            {
+              errors: [{ message: error.message || 'Internal server error' }],
+            },
+            500,
+          );
         }
       });
 
@@ -552,7 +555,7 @@ export class GraphQLPlugin implements Plugin {
       if (objectqlService) {
         const allObjects = objectqlService.getObjects?.() ?? [];
         for (const obj of allObjects) {
-          if (obj && obj.name && obj.fields && !objects.find(o => o.name === obj.name)) {
+          if (obj && obj.name && obj.fields && !objects.find((o) => o.name === obj.name)) {
             objects.push({
               name: obj.name,
               label: obj.label,
@@ -575,14 +578,17 @@ export class GraphQLPlugin implements Plugin {
    */
   private buildResolverContext(c: any, context: PluginContext): GraphQLResolverContext {
     const broker = (context as any).broker ?? {
-      call: async () => { throw new Error('Broker not available'); },
+      call: async () => {
+        throw new Error('Broker not available');
+      },
       getService: () => undefined,
     };
 
     // Extract user from auth session (set by auth middleware)
-    const user = c.get?.('user') ?? c.req?.header?.('x-user-id')
-      ? { id: c.req.header('x-user-id'), profile: c.req.header('x-user-profile') }
-      : undefined;
+    const user =
+      (c.get?.('user') ?? c.req?.header?.('x-user-id'))
+        ? { id: c.req.header('x-user-id'), profile: c.req.header('x-user-profile') }
+        : undefined;
 
     // Create per-request DataLoader factory (O.1.5)
     const dataLoaders = createDataLoaderFactory(broker);
@@ -630,15 +636,22 @@ export class GraphQLPlugin implements Plugin {
   /**
    * Execute a GraphQL query programmatically
    */
-  async execute(query: string, variables?: Record<string, any>, ctx?: Partial<GraphQLResolverContext>): Promise<any> {
+  async execute(
+    query: string,
+    variables?: Record<string, any>,
+    ctx?: Partial<GraphQLResolverContext>,
+  ): Promise<any> {
     if (!this.schema) {
       throw new Error('GraphQL schema not initialized');
     }
 
-    const broker = ctx?.broker ?? ((this.context as any)?.broker ?? {
-      call: async () => { throw new Error('Broker not available'); },
-      getService: () => undefined,
-    });
+    const broker = ctx?.broker ??
+      (this.context as any)?.broker ?? {
+        call: async () => {
+          throw new Error('Broker not available');
+        },
+        getService: () => undefined,
+      };
 
     const resolverContext: GraphQLResolverContext = {
       broker,

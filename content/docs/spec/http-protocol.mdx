@@ -42,6 +42,7 @@ Content-Type: application/json
 ```
 
 Sessions are managed via HTTP-only cookies (set by Better-Auth). No manual `Authorization` header is required for browser clients.
+
 ```
 
 ## Request Headers
@@ -49,8 +50,10 @@ Sessions are managed via HTTP-only cookies (set by Better-Auth). No manual `Auth
 ### Required Headers
 
 ```
+
 Content-Type: application/json
-```
+
+````
 
 ### Optional Headers
 
@@ -58,7 +61,7 @@ Content-Type: application/json
 Authorization: Bearer <token>      # For authenticated requests
 X-Request-ID: <unique_id>          # For request tracking
 Accept-Language: en-US             # For internationalization
-```
+````
 
 ## Response Format
 
@@ -73,9 +76,9 @@ All successful responses follow this structure:
     // Response data
   },
   "meta": {
-    "count": 100,              // Total records (for queries)
-    "page": 1,                 // Current page
-    "limit": 20                // Records per page
+    "count": 100, // Total records (for queries)
+    "page": 1, // Current page
+    "limit": 20 // Records per page
   }
 }
 ```
@@ -100,17 +103,17 @@ All error responses follow this structure:
 
 ## HTTP Status Codes
 
-| Code | Meaning | Description |
-|------|---------|-------------|
-| 200 | OK | Request succeeded |
-| 201 | Created | Resource created successfully |
-| 400 | Bad Request | Invalid request syntax or validation error |
-| 401 | Unauthorized | Authentication required |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource not found |
-| 409 | Conflict | Unique constraint violation |
-| 422 | Unprocessable Entity | Business logic validation failed |
-| 500 | Internal Server Error | Server error |
+| Code | Meaning               | Description                                |
+| ---- | --------------------- | ------------------------------------------ |
+| 200  | OK                    | Request succeeded                          |
+| 201  | Created               | Resource created successfully              |
+| 400  | Bad Request           | Invalid request syntax or validation error |
+| 401  | Unauthorized          | Authentication required                    |
+| 403  | Forbidden             | Insufficient permissions                   |
+| 404  | Not Found             | Resource not found                         |
+| 409  | Conflict              | Unique constraint violation                |
+| 422  | Unprocessable Entity  | Business logic validation failed           |
+| 500  | Internal Server Error | Server error                               |
 
 ## Standard Endpoints
 
@@ -119,26 +122,27 @@ All error responses follow this structure:
 Retrieve multiple records with filtering, sorting, and pagination.
 
 **Endpoint:**
+
 ```
 POST /api/data/{object}/query
 ```
 
 **Request Body:**
+
 ```json
 {
   "filters": {
     "status": "active"
   },
   "fields": ["id", "name", "email"],
-  "sort": [
-    { "field": "created_at", "order": "desc" }
-  ],
+  "sort": [{ "field": "created_at", "order": "desc" }],
   "limit": 20,
   "skip": 0
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -158,6 +162,7 @@ POST /api/data/{object}/query
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:5320/api/v1/data/contacts/query \
   -H "Content-Type: application/json" \
@@ -173,15 +178,18 @@ curl -X POST http://localhost:5320/api/v1/data/contacts/query \
 Retrieve a single record by ID.
 
 **Endpoint:**
+
 ```
 GET /api/data/{object}/{id}
 ```
 
 **Query Parameters:**
+
 - `fields`: Comma-separated list of fields to return
 - `include`: Comma-separated list of related objects to include
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -196,6 +204,7 @@ GET /api/data/{object}/{id}
 ```
 
 **Example:**
+
 ```bash
 curl -X GET http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Authorization: Bearer <token>"
@@ -206,11 +215,13 @@ curl -X GET http://localhost:5320/api/v1/data/contacts/contact_123 \
 Create a new record.
 
 **Endpoint:**
+
 ```
 POST /api/data/{object}
 ```
 
 **Request Body:**
+
 ```json
 {
   "first_name": "Jane",
@@ -221,6 +232,7 @@ POST /api/data/{object}
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "success": true,
@@ -237,6 +249,7 @@ POST /api/data/{object}
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:5320/api/v1/data/contacts \
   -H "Content-Type: application/json" \
@@ -253,11 +266,13 @@ curl -X POST http://localhost:5320/api/v1/data/contacts \
 Update an existing record.
 
 **Endpoint:**
+
 ```
 PATCH /api/data/{object}/{id}
 ```
 
 **Request Body:**
+
 ```json
 {
   "phone": "+1987654321",
@@ -266,6 +281,7 @@ PATCH /api/data/{object}/{id}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -282,6 +298,7 @@ PATCH /api/data/{object}/{id}
 ```
 
 **Example:**
+
 ```bash
 curl -X PATCH http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Content-Type: application/json" \
@@ -296,11 +313,13 @@ curl -X PATCH http://localhost:5320/api/v1/data/contacts/contact_123 \
 Delete a record.
 
 **Endpoint:**
+
 ```
 DELETE /api/data/{object}/{id}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -312,6 +331,7 @@ DELETE /api/data/{object}/{id}
 ```
 
 **Example:**
+
 ```bash
 curl -X DELETE http://localhost:5320/api/v1/data/contacts/contact_123 \
   -H "Authorization: Bearer <token>"
@@ -322,11 +342,13 @@ curl -X DELETE http://localhost:5320/api/v1/data/contacts/contact_123 \
 Create, update, or delete multiple records in a single request.
 
 **Endpoint:**
+
 ```
 POST /api/data/{object}/batch
 ```
 
 **Request Body:**
+
 ```json
 {
   "operations": [
@@ -348,6 +370,7 @@ POST /api/data/{object}/batch
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -371,11 +394,13 @@ POST /api/data/{object}/batch
 Retrieve metadata definition for an object.
 
 **Endpoint:**
+
 ```
 GET /api/metadata/{object}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -410,11 +435,13 @@ GET /api/metadata/{object}
 Get list of all available objects.
 
 **Endpoint:**
+
 ```
 GET /api/metadata
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -466,6 +493,7 @@ curl -X POST http://localhost:5320/api/v1/data/opportunities/query \
 ```
 
 **Response includes nested objects:**
+
 ```json
 {
   "data": [
@@ -608,11 +636,13 @@ Cross-Origin Resource Sharing (CORS) is configured in `objectstack.config.ts`:
 ObjectOS provides real-time updates via `@objectos/realtime` WebSocket plugin:
 
 **Endpoint:**
+
 ```
 ws://localhost:5320/ws
 ```
 
 **Subscribe to changes:**
+
 ```json
 {
   "type": "subscribe",
@@ -628,6 +658,7 @@ ws://localhost:5320/ws
 Current API version: `v1`
 
 Version is included in the URL path:
+
 ```
 /api/v1/data/{object}
 ```

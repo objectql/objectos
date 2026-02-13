@@ -1,6 +1,6 @@
 /**
  * ObjectUI Integration Example
- * 
+ *
  * Demonstrates how to use @object-ui components in the ObjectOS console.
  * This component uses the SchemaRenderer from @object-ui/react to render
  * metadata-driven UI components.
@@ -20,15 +20,11 @@ interface ObjectUIExampleProps {
 
 /**
  * Example component showing how to integrate @object-ui components.
- * 
+ *
  * The SchemaRenderer will automatically fetch object metadata from the ObjectStack
  * backend and render the appropriate view based on the schema definition.
  */
-export function ObjectUIExample({ 
-  objectName, 
-  view = 'grid',
-  recordId 
-}: ObjectUIExampleProps) {
+export function ObjectUIExample({ objectName, view = 'grid', recordId }: ObjectUIExampleProps) {
   return (
     <SchemaRenderer
       adapter={objectUIAdapter}

@@ -50,9 +50,7 @@ export function sanitizeValue(value: unknown): unknown {
 }
 
 /** Sanitize every value in an object (shallow copy). */
-export function sanitizeObject(
-  obj: Record<string, unknown>,
-): Record<string, unknown> {
+export function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(obj)) {
     result[key] = sanitizeValue(val);

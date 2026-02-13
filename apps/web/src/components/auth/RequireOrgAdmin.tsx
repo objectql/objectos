@@ -32,9 +32,7 @@ export function RequireOrgAdmin() {
 
   // ── Resolve current user's role in the active org ──────────
   const userId = session?.user?.id;
-  const currentMember = activeOrg.members?.find(
-    (m: { userId: string }) => m.userId === userId,
-  );
+  const currentMember = activeOrg.members?.find((m: { userId: string }) => m.userId === userId);
   const role = currentMember?.role;
   const isAdmin = role === 'owner' || role === 'admin';
 
@@ -50,8 +48,8 @@ export function RequireOrgAdmin() {
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">Access Denied</h1>
       <p className="text-muted-foreground max-w-md">
-        The Admin Console is restricted to organization owners and administrators.
-        Contact your organization admin if you need access.
+        The Admin Console is restricted to organization owners and administrators. Contact your
+        organization admin if you need access.
       </p>
       <Button variant="outline" asChild>
         <a href="/console/apps/crm">Go to Apps</a>

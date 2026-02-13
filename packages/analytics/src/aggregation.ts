@@ -14,8 +14,16 @@ import type {
 } from './types.js';
 
 const VALID_STAGE_TYPES: AggregationStageType[] = [
-  'match', 'group', 'sort', 'limit', 'skip',
-  'project', 'unwind', 'lookup', 'addFields', 'count',
+  'match',
+  'group',
+  'sort',
+  'limit',
+  'skip',
+  'project',
+  'unwind',
+  'lookup',
+  'addFields',
+  'count',
 ];
 
 /**
@@ -126,21 +134,37 @@ export class AggregationEngine {
   /**
    * Match — filter records matching all conditions
    */
-  private applyMatch(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
-    return data.filter(record => {
+  private applyMatch(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
+    return data.filter((record) => {
       for (const [key, value] of Object.entries(body)) {
         const recordValue = this.getNestedValue(record, key);
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
           // Operator-based matching
           for (const [op, opVal] of Object.entries(value)) {
             switch (op) {
-              case '$gt': if (!(recordValue > (opVal as any))) return false; break;
-              case '$gte': if (!(recordValue >= (opVal as any))) return false; break;
-              case '$lt': if (!(recordValue < (opVal as any))) return false; break;
-              case '$lte': if (!(recordValue <= (opVal as any))) return false; break;
-              case '$ne': if (recordValue === opVal) return false; break;
-              case '$in': if (!Array.isArray(opVal) || !opVal.includes(recordValue)) return false; break;
-              default: if (recordValue !== value) return false;
+              case '$gt':
+                if (!(recordValue > (opVal as any))) return false;
+                break;
+              case '$gte':
+                if (!(recordValue >= (opVal as any))) return false;
+                break;
+              case '$lt':
+                if (!(recordValue < (opVal as any))) return false;
+                break;
+              case '$lte':
+                if (!(recordValue <= (opVal as any))) return false;
+                break;
+              case '$ne':
+                if (recordValue === opVal) return false;
+                break;
+              case '$in':
+                if (!Array.isArray(opVal) || !opVal.includes(recordValue)) return false;
+                break;
+              default:
+                if (recordValue !== value) return false;
             }
           }
         } else {
@@ -156,7 +180,10 @@ export class AggregationEngine {
    *
    * body: { _id: 'fieldName', fieldAlias: { $sum: 'fieldName' }, ... }
    */
-  private applyGroup(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
+  private applyGroup(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
     const groupField = body._id;
     const groups = new Map<any, Record<string, any>[]>();
 
@@ -180,22 +207,29 @@ export class AggregationEngine {
               if (typeof field === 'number') {
                 row[alias] = records.length * field;
               } else {
-                row[alias] = records.reduce((sum, r) => sum + (Number(this.getNestedValue(r, field)) || 0), 0);
+                row[alias] = records.reduce(
+                  (sum, r) => sum + (Number(this.getNestedValue(r, field)) || 0),
+                  0,
+                );
               }
               break;
             }
             case '$avg': {
-              const vals = records.map(r => Number(this.getNestedValue(r, field)) || 0);
+              const vals = records.map((r) => Number(this.getNestedValue(r, field)) || 0);
               row[alias] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
               break;
             }
             case '$min': {
-              const vals = records.map(r => this.getNestedValue(r, field)).filter(v => v != null);
+              const vals = records
+                .map((r) => this.getNestedValue(r, field))
+                .filter((v) => v != null);
               row[alias] = vals.length > 0 ? Math.min(...vals.map(Number)) : null;
               break;
             }
             case '$max': {
-              const vals = records.map(r => this.getNestedValue(r, field)).filter(v => v != null);
+              const vals = records
+                .map((r) => this.getNestedValue(r, field))
+                .filter((v) => v != null);
               row[alias] = vals.length > 0 ? Math.max(...vals.map(Number)) : null;
               break;
             }
@@ -238,8 +272,16 @@ export class AggregationEngine {
   /**
    * Limit — return at most N records
    */
-  private applyLimit(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
-    const n = typeof body.n === 'number' ? body.n : (typeof body.limit === 'number' ? body.limit : data.length);
+  private applyLimit(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
+    const n =
+      typeof body.n === 'number'
+        ? body.n
+        : typeof body.limit === 'number'
+          ? body.limit
+          : data.length;
     return data.slice(0, n);
   }
 
@@ -247,7 +289,7 @@ export class AggregationEngine {
    * Skip — skip first N records
    */
   private applySkip(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
-    const n = typeof body.n === 'number' ? body.n : (typeof body.skip === 'number' ? body.skip : 0);
+    const n = typeof body.n === 'number' ? body.n : typeof body.skip === 'number' ? body.skip : 0;
     return data.slice(n);
   }
 
@@ -256,11 +298,16 @@ export class AggregationEngine {
    *
    * body: { fieldName: 1 (include) | 0 (exclude) | 'newName' (rename) }
    */
-  private applyProject(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
+  private applyProject(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
     const includes = Object.entries(body).filter(([, v]) => v === 1 || typeof v === 'string');
-    const excludes = Object.entries(body).filter(([, v]) => v === 0).map(([k]) => k);
+    const excludes = Object.entries(body)
+      .filter(([, v]) => v === 0)
+      .map(([k]) => k);
 
-    return data.map(record => {
+    return data.map((record) => {
       if (includes.length > 0) {
         const row: Record<string, any> = {};
         for (const [field, value] of includes) {
@@ -285,7 +332,10 @@ export class AggregationEngine {
   /**
    * Unwind — flatten an array field into multiple records
    */
-  private applyUnwind(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
+  private applyUnwind(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
     const field = body.path ?? body.field;
     if (!field) return data;
 
@@ -306,11 +356,14 @@ export class AggregationEngine {
   /**
    * Lookup — join with another data source (simplified in-memory stub)
    */
-  private applyLookup(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
+  private applyLookup(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
     // In-memory lookup is a no-op placeholder — real implementation
     // would call broker to fetch from another collection
     const { as } = body;
-    return data.map(record => ({ ...record, [as ?? '_lookup']: [] }));
+    return data.map((record) => ({ ...record, [as ?? '_lookup']: [] }));
   }
 
   /**
@@ -318,23 +371,40 @@ export class AggregationEngine {
    *
    * body: { newField: value | { $concat: [...] } | { $multiply: [...] } }
    */
-  private applyAddFields(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
-    return data.map(record => {
+  private applyAddFields(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
+    return data.map((record) => {
       const row = { ...record };
       for (const [field, expr] of Object.entries(body)) {
         if (typeof expr === 'object' && expr !== null) {
           const [op, args] = Object.entries(expr)[0] as [string, any];
           switch (op) {
             case '$concat':
-              row[field] = (args as any[]).map(a => typeof a === 'string' && a.startsWith('$') ? this.getNestedValue(record, a.slice(1)) : a).join('');
+              row[field] = (args as any[])
+                .map((a) =>
+                  typeof a === 'string' && a.startsWith('$')
+                    ? this.getNestedValue(record, a.slice(1))
+                    : a,
+                )
+                .join('');
               break;
             case '$multiply': {
-              const vals = (args as any[]).map(a => typeof a === 'string' && a.startsWith('$') ? Number(this.getNestedValue(record, a.slice(1))) || 0 : Number(a) || 0);
+              const vals = (args as any[]).map((a) =>
+                typeof a === 'string' && a.startsWith('$')
+                  ? Number(this.getNestedValue(record, a.slice(1))) || 0
+                  : Number(a) || 0,
+              );
               row[field] = vals.reduce((a, b) => a * b, 1);
               break;
             }
             case '$add': {
-              const vals = (args as any[]).map(a => typeof a === 'string' && a.startsWith('$') ? Number(this.getNestedValue(record, a.slice(1))) || 0 : Number(a) || 0);
+              const vals = (args as any[]).map((a) =>
+                typeof a === 'string' && a.startsWith('$')
+                  ? Number(this.getNestedValue(record, a.slice(1))) || 0
+                  : Number(a) || 0,
+              );
               row[field] = vals.reduce((a, b) => a + b, 0);
               break;
             }
@@ -354,7 +424,10 @@ export class AggregationEngine {
   /**
    * Count — return a single record with the count
    */
-  private applyCount(body: Record<string, any>, data: Record<string, any>[]): Record<string, any>[] {
+  private applyCount(
+    body: Record<string, any>,
+    data: Record<string, any>[],
+  ): Record<string, any>[] {
     const alias = body.as ?? body.field ?? 'count';
     return [{ [alias]: data.length }];
   }

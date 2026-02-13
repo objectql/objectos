@@ -1,5 +1,5 @@
 # Contact Permissions
-# 
+#
 # This permission set defines access control for the contacts object.
 # It demonstrates object-level CRUD permissions and field-level security.
 
@@ -27,7 +27,7 @@ profiles:
     allowDelete: false
     # Record-level security: only see contacts they own
     viewFilters:
-      owner: "{{ userId }}"
+      owner: '{{ userId }}'
 
   # Marketing profile - read-only access to all contacts
   marketing:

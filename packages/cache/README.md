@@ -29,6 +29,7 @@ npm install @objectos/plugin-cache
 ### Optional Dependencies
 
 For Redis support:
+
 ```bash
 npm install ioredis
 ```
@@ -43,9 +44,9 @@ import { CachePlugin } from '@objectos/plugin-cache';
 const cache = new CachePlugin({
   backend: 'lru',
   options: {
-    maxSize: 1000,        // Maximum items in cache
-    defaultTtl: 3600,     // Default TTL in seconds
-  }
+    maxSize: 1000, // Maximum items in cache
+    defaultTtl: 3600, // Default TTL in seconds
+  },
 });
 
 // Initialize
@@ -86,7 +87,7 @@ const cache = new CachePlugin({
     db: 0,
     keyPrefix: 'app:',
     defaultTtl: 3600,
-  }
+  },
 });
 
 await cache.init(context);
@@ -106,6 +107,7 @@ new CachePlugin(config?: CacheConfig)
 ```
 
 **Config Options:**
+
 - `backend`: `'lru'` | `'redis'` - Backend type (default: 'lru')
 - `options`: Backend-specific options
 - `customBackend`: Custom backend implementation
@@ -114,24 +116,31 @@ new CachePlugin(config?: CacheConfig)
 #### Methods
 
 ##### `async get(key: string): Promise<any>`
+
 Retrieve a value from cache. Returns `undefined` if not found or expired.
 
 ##### `async set(key: string, value: any, ttl?: number): Promise<void>`
+
 Store a value in cache with optional TTL (in seconds).
 
 ##### `async delete(key: string): Promise<void>`
+
 Remove a value from cache.
 
 ##### `async has(key: string): Promise<boolean>`
+
 Check if a key exists in cache.
 
 ##### `async clear(): Promise<void>`
+
 Clear all cached data.
 
 ##### `getStats(): CacheStats | undefined`
+
 Get cache statistics (if enabled).
 
 **Returns:**
+
 ```typescript
 {
   hits: number;        // Total cache hits
@@ -143,6 +152,7 @@ Get cache statistics (if enabled).
 ```
 
 ##### `getScopedCache(pluginId: string): ScopedCache`
+
 Get a namespaced cache instance for a plugin.
 
 ### Backend Options
@@ -181,7 +191,7 @@ Each plugin can have its own isolated cache namespace:
 const myCache = cachePlugin.getScopedCache('my-plugin-id');
 
 // All keys are automatically prefixed
-await myCache.set('user', userData);  // Stored as "my-plugin-id:user"
+await myCache.set('user', userData); // Stored as "my-plugin-id:user"
 await myCache.get('user');
 ```
 
@@ -193,15 +203,25 @@ Implement your own cache backend:
 import { CacheBackend } from '@objectos/plugin-cache';
 
 class MyCustomBackend implements CacheBackend {
-  async get(key: string): Promise<any> { /* ... */ }
-  async set(key: string, value: any, ttl?: number): Promise<void> { /* ... */ }
-  async delete(key: string): Promise<void> { /* ... */ }
-  async has(key: string): Promise<boolean> { /* ... */ }
-  async clear(): Promise<void> { /* ... */ }
+  async get(key: string): Promise<any> {
+    /* ... */
+  }
+  async set(key: string, value: any, ttl?: number): Promise<void> {
+    /* ... */
+  }
+  async delete(key: string): Promise<void> {
+    /* ... */
+  }
+  async has(key: string): Promise<boolean> {
+    /* ... */
+  }
+  async clear(): Promise<void> {
+    /* ... */
+  }
 }
 
 const cache = new CachePlugin({
-  customBackend: new MyCustomBackend()
+  customBackend: new MyCustomBackend(),
 });
 ```
 
@@ -213,15 +233,15 @@ const cache = new CachePlugin({
 async function getUser(userId: string) {
   // Try cache first
   let user = await cache.get(`user:${userId}`);
-  
+
   if (!user) {
     // Cache miss - fetch from database
     user = await db.users.findById(userId);
-    
+
     // Store in cache for 1 hour
     await cache.set(`user:${userId}`, user, 3600);
   }
-  
+
   return user;
 }
 ```
@@ -232,10 +252,10 @@ async function getUser(userId: string) {
 async function updateUser(userId: string, data: any) {
   // Update database
   const user = await db.users.update(userId, data);
-  
+
   // Update cache
   await cache.set(`user:${userId}`, user, 3600);
-  
+
   return user;
 }
 ```
@@ -246,7 +266,7 @@ async function updateUser(userId: string, data: any) {
 async function deleteUser(userId: string) {
   // Delete from database
   await db.users.delete(userId);
-  
+
   // Invalidate cache
   await cache.delete(`user:${userId}`);
 }
@@ -254,22 +274,24 @@ async function deleteUser(userId: string) {
 
 ## LRU vs Redis Comparison
 
-| Feature | LRU (In-Memory) | Redis |
-|---------|-----------------|-------|
-| **Performance** | Fastest (no network) | Fast (network overhead) |
-| **Persistence** | No | Optional |
-| **Scalability** | Single process | Distributed |
-| **Memory** | Limited by process | Limited by Redis server |
-| **Eviction** | Automatic LRU | TTL + Redis policies |
-| **Best For** | Development, single server | Production, multiple servers |
+| Feature         | LRU (In-Memory)            | Redis                        |
+| --------------- | -------------------------- | ---------------------------- |
+| **Performance** | Fastest (no network)       | Fast (network overhead)      |
+| **Persistence** | No                         | Optional                     |
+| **Scalability** | Single process             | Distributed                  |
+| **Memory**      | Limited by process         | Limited by Redis server      |
+| **Eviction**    | Automatic LRU              | TTL + Redis policies         |
+| **Best For**    | Development, single server | Production, multiple servers |
 
 ### When to Use LRU
+
 - Development and testing
 - Single server deployments
 - Low-latency requirements
 - Simple caching needs
 
 ### When to Use Redis
+
 - Production environments
 - Multi-server deployments
 - Cache sharing across services
@@ -295,7 +317,7 @@ await cache.set('config:global', config, 86400); // 24 hours
 ```typescript
 async function getData(key: string) {
   try {
-    return await cache.get(key) ?? await fetchFromSource(key);
+    return (await cache.get(key)) ?? (await fetchFromSource(key));
   } catch (error) {
     logger.warn('Cache error, falling back to source', error);
     return await fetchFromSource(key);
@@ -308,11 +330,11 @@ async function getData(key: string) {
 ```typescript
 setInterval(() => {
   const stats = cache.getStats();
-  
+
   if (stats && stats.hitRate < 0.5) {
     logger.warn('Low cache hit rate:', stats);
   }
-  
+
   logger.info('Cache stats:', {
     hits: stats?.hits,
     misses: stats?.misses,
@@ -343,15 +365,15 @@ const cache = new CachePlugin({
   options: {
     // Small cache: 100-500 items (~50KB-250KB)
     maxSize: 500,
-    
+
     // Medium cache: 1000-5000 items (~500KB-2.5MB)
     maxSize: 5000,
-    
+
     // Large cache: 10000+ items (~5MB+)
     // Each entry uses ~100-500 bytes depending on value size
     // Monitor memory usage in production
     maxSize: 10000,
-  }
+  },
 });
 ```
 
@@ -370,12 +392,12 @@ npm test -- --coverage
 Full TypeScript support with strict typing:
 
 ```typescript
-import type { 
-  CachePlugin, 
-  CacheConfig, 
+import type {
+  CachePlugin,
+  CacheConfig,
   CacheStats,
   LruCacheOptions,
-  RedisCacheOptions 
+  RedisCacheOptions,
 } from '@objectos/plugin-cache';
 ```
 

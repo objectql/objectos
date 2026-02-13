@@ -17,6 +17,7 @@ Replaces legacy authentication systems with [Better-Auth](https://www.better-aut
 ## Usage
 
 Integrated directly into user objects.
+
 ```typescript
 // checks session
 const session = await auth.api.getSession({ headers: req.headers });

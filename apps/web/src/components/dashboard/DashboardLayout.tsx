@@ -32,9 +32,7 @@ import { Separator } from '@/components/ui/separator';
 import { NavUser } from '@/components/dashboard/NavUser';
 import { AppSwitcher } from '@/components/dashboard/AppSwitcher';
 
-const navMain = [
-  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-];
+const navMain = [{ title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }];
 
 const navOrganization = [
   { title: 'Members', href: '/organization/members', icon: Users },

@@ -27,10 +27,12 @@ const realtime = createRealtimePlugin({
 ```typescript
 const ws = new WebSocket('ws://localhost:5320/api/v1/realtime');
 
-ws.send(JSON.stringify({
-  type: 'subscribe',
-  channel: 'data:contacts',
-}));
+ws.send(
+  JSON.stringify({
+    type: 'subscribe',
+    channel: 'data:contacts',
+  }),
+);
 
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);

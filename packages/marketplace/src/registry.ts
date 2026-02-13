@@ -40,10 +40,8 @@ export class PluginRegistry {
     const existing = this.plugins.get(manifest.id) ?? [];
 
     // Check for duplicate version
-    if (existing.some(e => e.manifest.version === manifest.version)) {
-      throw new Error(
-        `Plugin "${manifest.id}" version ${manifest.version} is already registered`,
-      );
+    if (existing.some((e) => e.manifest.version === manifest.version)) {
+      throw new Error(`Plugin "${manifest.id}" version ${manifest.version} is already registered`);
     }
 
     const now = new Date().toISOString();
@@ -87,13 +85,13 @@ export class PluginRegistry {
     // Apply text query filter
     if (query) {
       const q = query.toLowerCase();
-      results = results.filter(e => {
+      results = results.filter((e) => {
         const m = e.manifest;
         return (
           m.id.toLowerCase().includes(q) ||
           m.name.toLowerCase().includes(q) ||
           m.description.toLowerCase().includes(q) ||
-          (m.keywords ?? []).some(k => k.toLowerCase().includes(q))
+          (m.keywords ?? []).some((k) => k.toLowerCase().includes(q))
         );
       });
     }
@@ -101,15 +99,15 @@ export class PluginRegistry {
     // Filter by keyword
     if (keyword) {
       const kw = keyword.toLowerCase();
-      results = results.filter(e =>
-        (e.manifest.keywords ?? []).some(k => k.toLowerCase() === kw),
+      results = results.filter((e) =>
+        (e.manifest.keywords ?? []).some((k) => k.toLowerCase() === kw),
       );
     }
 
     // Filter by author
     if (author) {
       const a = author.toLowerCase();
-      results = results.filter(e => e.manifest.author.toLowerCase() === a);
+      results = results.filter((e) => e.manifest.author.toLowerCase() === a);
     }
 
     // Sort
@@ -161,7 +159,7 @@ export class PluginRegistry {
   getPluginVersion(id: string, version: string): PluginRegistryEntry | undefined {
     const entries = this.plugins.get(id);
     if (!entries) return undefined;
-    return entries.find(e => e.manifest.version === version);
+    return entries.find((e) => e.manifest.version === version);
   }
 
   /**
@@ -171,7 +169,7 @@ export class PluginRegistry {
     const entries = this.plugins.get(id);
     if (!entries) return [];
 
-    return entries.map(e => ({
+    return entries.map((e) => ({
       version: e.manifest.version,
       releasedAt: e.updatedAt,
       compatibility: e.manifest.engine,
@@ -203,7 +201,7 @@ export class PluginRegistry {
     for (const entries of this.plugins.values()) {
       if (entries.length === 0) continue;
       const latest = entries[entries.length - 1];
-      if ((latest.manifest.keywords ?? []).some(k => k.toLowerCase() === cat)) {
+      if ((latest.manifest.keywords ?? []).some((k) => k.toLowerCase() === cat)) {
         results.push(latest);
       }
     }

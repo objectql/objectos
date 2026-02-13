@@ -45,9 +45,7 @@ export function TriggerMonitorDashboard({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const filteredExecutions =
-    statusFilter === 'all'
-      ? executions
-      : executions.filter((e) => e.status === statusFilter);
+    statusFilter === 'all' ? executions : executions.filter((e) => e.status === statusFilter);
 
   // Statistics
   const totalCount = executions.length;
@@ -56,9 +54,7 @@ export function TriggerMonitorDashboard({
   const successRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 0;
   const avgExecTime =
     totalCount > 0
-      ? Math.round(
-          executions.reduce((sum, e) => sum + e.executionTime, 0) / totalCount,
-        )
+      ? Math.round(executions.reduce((sum, e) => sum + e.executionTime, 0) / totalCount)
       : 0;
 
   return (
@@ -127,19 +123,17 @@ export function TriggerMonitorDashboard({
                   ))}
                 </div>
               )}
-              {(['all', 'success', 'failure', 'skipped'] as StatusFilter[]).map(
-                (status) => (
-                  <Button
-                    key={status}
-                    variant={statusFilter === status ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="text-xs capitalize"
-                    onClick={() => setStatusFilter(status)}
-                  >
-                    {status}
-                  </Button>
-                ),
-              )}
+              {(['all', 'success', 'failure', 'skipped'] as StatusFilter[]).map((status) => (
+                <Button
+                  key={status}
+                  variant={statusFilter === status ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="text-xs capitalize"
+                  onClick={() => setStatusFilter(status)}
+                >
+                  {status}
+                </Button>
+              ))}
             </div>
           </div>
         </CardHeader>
@@ -183,7 +177,9 @@ export function TriggerMonitorDashboard({
                     <span>{execution.executionTime}ms</span>
                     <span>
                       {new Date(execution.executedAt).toLocaleTimeString(undefined, {
-                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
                       })}
                     </span>
                   </div>

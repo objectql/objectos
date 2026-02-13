@@ -17,7 +17,13 @@ export const CasesByStatusPriorityReport: ReportInput = {
     { field: 'status', sortOrder: 'asc' },
     { field: 'priority', sortOrder: 'desc' },
   ],
-  chart: { type: 'bar', title: 'Cases by Status', showLegend: true, xAxis: 'status', yAxis: 'case_number' }
+  chart: {
+    type: 'bar',
+    title: 'Cases by Status',
+    showLegend: true,
+    xAxis: 'status',
+    yAxis: 'case_number',
+  },
 };
 
 export const SlaPerformanceReport: ReportInput = {
@@ -33,5 +39,11 @@ export const SlaPerformanceReport: ReportInput = {
   ],
   groupingsDown: [{ field: 'priority', sortOrder: 'desc' }],
   filter: { is_closed: true },
-  chart: { type: 'column', title: 'SLA Violations by Priority', showLegend: false, xAxis: 'priority', yAxis: 'is_sla_violated' }
+  chart: {
+    type: 'column',
+    title: 'SLA Violations by Priority',
+    showLegend: false,
+    xAxis: 'priority',
+    yAxis: 'is_sla_violated',
+  },
 };

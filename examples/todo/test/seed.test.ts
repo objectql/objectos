@@ -1,4 +1,3 @@
-
 import { ObjectKernel, DriverPlugin, AppPlugin } from '@objectstack/runtime';
 import { InMemoryDriver } from '@objectstack/driver-memory';
 import { ObjectQLPlugin } from '@objectstack/objectql';
@@ -31,18 +30,17 @@ import TodoApp from '../objectstack.config';
     const expectedTitles = ['Learn ObjectStack', 'Build a cool app'];
     const foundTitles = tasks.map((t: any) => t.subject);
 
-    const missing = expectedTitles.filter(t => !foundTitles.includes(t));
+    const missing = expectedTitles.filter((t) => !foundTitles.includes(t));
 
     if (missing.length > 0) {
-        console.error('❌ Missing expected seeded data:', missing);
-        process.exit(1);
+      console.error('❌ Missing expected seeded data:', missing);
+      process.exit(1);
     } else {
-        console.log('🎉 Seeding Verification Successful!');
-        process.exit(0);
+      console.log('🎉 Seeding Verification Successful!');
+      process.exit(0);
     }
   } catch (e) {
-      console.error('❌ Verification Failed:', e);
-      process.exit(1);
+    console.error('❌ Verification Failed:', e);
+    process.exit(1);
   }
-
 })();

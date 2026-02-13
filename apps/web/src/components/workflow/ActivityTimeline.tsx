@@ -72,9 +72,7 @@ export function ActivityTimeline({ activities, maxItems }: ActivityTimelineProps
           <CardTitle className="text-sm font-medium">Activity</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="py-4 text-center text-sm text-muted-foreground">
-            No activity yet.
-          </p>
+          <p className="py-4 text-center text-sm text-muted-foreground">No activity yet.</p>
         </CardContent>
       </Card>
     );
@@ -95,12 +93,12 @@ export function ActivityTimeline({ activities, maxItems }: ActivityTimelineProps
             return (
               <div key={entry.id} className="relative flex gap-3 pb-4">
                 {/* Vertical line */}
-                {!isLast && (
-                  <div className="absolute left-[13px] top-7 bottom-0 w-px bg-border" />
-                )}
+                {!isLast && <div className="absolute left-[13px] top-7 bottom-0 w-px bg-border" />}
 
                 {/* Icon */}
-                <div className={`z-10 flex size-7 shrink-0 items-center justify-center rounded-full ${colors}`}>
+                <div
+                  className={`z-10 flex size-7 shrink-0 items-center justify-center rounded-full ${colors}`}
+                >
                   <Icon className="size-3.5" />
                 </div>
 

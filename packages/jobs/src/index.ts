@@ -1,32 +1,32 @@
 /**
  * @objectos/plugin-jobs
- * 
+ *
  * Job queue and scheduling plugin for ObjectOS
- * 
+ *
  * Features:
  * - Background job processing with concurrent worker support
  * - Cron-based job scheduling
  * - Automatic retry logic with exponential backoff
  * - Job monitoring and statistics
  * - Built-in jobs for common tasks
- * 
+ *
  * @example
  * ```typescript
  * import { JobsPlugin } from '@objectos/plugin-jobs';
- * 
+ *
  * // Use plugin
  * const os = new ObjectOS({
  *   plugins: [new JobsPlugin()]
  * });
  * ```
- * 
+ *
  * @example
  * ```typescript
  * // Register a custom job handler
  * import { getJobsAPI } from '@objectos/plugin-jobs';
- * 
+ *
  * const jobsAPI = getJobsAPI(kernel);
- * 
+ *
  * jobsAPI.registerHandler({
  *   name: 'send-email',
  *   handler: async (context) => {
@@ -35,14 +35,14 @@
  *     context.logger.info(`Sent email to ${to}`);
  *   }
  * });
- * 
+ *
  * // Enqueue a job
  * await jobsAPI.enqueue({
  *   id: 'email-123',
  *   name: 'send-email',
  *   data: { to: 'user@example.com', subject: 'Hello', body: 'World' }
  * });
- * 
+ *
  * // Schedule a recurring job
  * await jobsAPI.schedule({
  *   id: 'daily-cleanup',
@@ -51,7 +51,7 @@
  *   data: { objects: ['logs'], retentionDays: 30 }
  * });
  * ```
- * 
+ *
  * @example
  * ```typescript
  * // Query jobs and get statistics
@@ -61,56 +61,43 @@
  * ```
  */
 
-export {
-    JobsPlugin,
-    getJobsAPI,
-} from './plugin.js';
+export { JobsPlugin, getJobsAPI } from './plugin.js';
+
+export { InMemoryJobStorage } from './storage.js';
+
+export { PersistentJobStorage } from './persistent-storage.js';
+
+export type { StorageBackend } from './persistent-storage.js';
+
+export { JobQueue } from './queue.js';
+
+export { JobScheduler } from './scheduler.js';
 
 export {
-    InMemoryJobStorage,
-} from './storage.js';
-
-export {
-    PersistentJobStorage,
-} from './persistent-storage.js';
-
-export type {
-    StorageBackend,
-} from './persistent-storage.js';
-
-export {
-    JobQueue,
-} from './queue.js';
-
-export {
-    JobScheduler,
-} from './scheduler.js';
-
-export {
-    createDataCleanupJob,
-    createReportJob,
-    createBackupJob,
-    builtInJobs,
+  createDataCleanupJob,
+  createReportJob,
+  createBackupJob,
+  builtInJobs,
 } from './built-in-jobs.js';
 
 export type {
-    Job,
-    JobConfig,
-    JobContext,
-    JobDefinition,
-    JobHandler,
-    JobPluginConfig,
-    JobPriority,
-    JobQueryOptions,
-    JobQueueStats,
-    JobStatus,
-    JobStorage,
-    DataCleanupJobConfig,
-    ReportJobConfig,
-    BackupJobConfig,
-    TaskRetryPolicy,
-    TaskExecutionResult,
-    QueueConfig,
-    PersistenceBackend,
-    DeadLetterEntry,
+  Job,
+  JobConfig,
+  JobContext,
+  JobDefinition,
+  JobHandler,
+  JobPluginConfig,
+  JobPriority,
+  JobQueryOptions,
+  JobQueueStats,
+  JobStatus,
+  JobStorage,
+  DataCleanupJobConfig,
+  ReportJobConfig,
+  BackupJobConfig,
+  TaskRetryPolicy,
+  TaskExecutionResult,
+  QueueConfig,
+  PersistenceBackend,
+  DeadLetterEntry,
 } from './types.js';

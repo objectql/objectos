@@ -5,10 +5,7 @@
  */
 
 // Types
-export type {
-  UIServiceConfig,
-  ViewRecord,
-} from './types.js';
+export type { UIServiceConfig, ViewRecord } from './types.js';
 
 // Plugin
 export { UIPlugin, getUIAPI } from './plugin.js';

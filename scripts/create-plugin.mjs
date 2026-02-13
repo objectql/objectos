@@ -35,38 +35,39 @@ if (existsSync(pkgDir)) {
 }
 
 const files = {
-  'package.json': JSON.stringify(
-    {
-      name: `@objectos/${name}`,
-      version: '0.1.0',
-      type: 'module',
-      license: 'AGPL-3.0',
-      description: `${pascalName} plugin for ObjectOS`,
-      main: 'dist/index.js',
-      types: 'dist/index.d.ts',
-      scripts: {
-        build:
-          'tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration',
-        test: 'vitest run',
-        'test:coverage': 'vitest run --coverage',
-        'test:watch': 'vitest',
-        lint: 'eslint src/',
-        clean: 'rm -rf dist',
-        'type-check': 'tsc --noEmit',
+  'package.json':
+    JSON.stringify(
+      {
+        name: `@objectos/${name}`,
+        version: '0.1.0',
+        type: 'module',
+        license: 'AGPL-3.0',
+        description: `${pascalName} plugin for ObjectOS`,
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        scripts: {
+          build:
+            'tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --declaration',
+          test: 'vitest run',
+          'test:coverage': 'vitest run --coverage',
+          'test:watch': 'vitest',
+          lint: 'eslint src/',
+          clean: 'rm -rf dist',
+          'type-check': 'tsc --noEmit',
+        },
+        dependencies: {
+          '@objectstack/runtime': '^3.0.0',
+          '@objectstack/spec': '3.0.0',
+        },
+        devDependencies: {
+          tsup: '^8.5.1',
+          typescript: '^5.9.3',
+          vitest: '^4.0.18',
+        },
       },
-      dependencies: {
-        '@objectstack/runtime': '^3.0.0',
-        '@objectstack/spec': '3.0.0',
-      },
-      devDependencies: {
-        tsup: '^8.5.1',
-        typescript: '^5.9.3',
-        vitest: '^4.0.18',
-      },
-    },
-    null,
-    2,
-  ) + '\n',
+      null,
+      2,
+    ) + '\n',
 
   'tsconfig.json':
     JSON.stringify(

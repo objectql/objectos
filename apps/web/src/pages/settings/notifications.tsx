@@ -89,9 +89,7 @@ export default function NotificationsPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Failed</CardDescription>
-              <CardTitle className="text-3xl text-destructive">
-                {queueStatus.failed || 0}
-              </CardTitle>
+              <CardTitle className="text-3xl text-destructive">{queueStatus.failed || 0}</CardTitle>
             </CardHeader>
           </Card>
         </div>
@@ -101,9 +99,7 @@ export default function NotificationsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Notification Channels</CardTitle>
-          <CardDescription>
-            Configure and manage notification delivery channels
-          </CardDescription>
+          <CardDescription>Configure and manage notification delivery channels</CardDescription>
         </CardHeader>
         <CardContent>
           {channelsLoading ? (
@@ -129,9 +125,7 @@ export default function NotificationsPage() {
                   <TableRow key={idx}>
                     <TableCell className="font-medium capitalize">{channel.name}</TableCell>
                     <TableCell>
-                      <Badge variant={channelTypeColors[channel.type] as any}>
-                        {channel.type}
-                      </Badge>
+                      <Badge variant={channelTypeColors[channel.type] as any}>{channel.type}</Badge>
                     </TableCell>
                     <TableCell>
                       {channel.enabled ? (
@@ -158,7 +152,7 @@ export default function NotificationsPage() {
       </Card>
 
       {/* Email Channel Details */}
-      {channels.find(c => c.type === 'email') && (
+      {channels.find((c) => c.type === 'email') && (
         <Card>
           <CardHeader>
             <CardTitle>Email Channel</CardTitle>
@@ -168,11 +162,11 @@ export default function NotificationsPage() {
             <div className="space-y-2 text-sm">
               <div>
                 <span className="font-medium">From Address:</span>{' '}
-                {channels.find(c => c.type === 'email')?.config.from || 'Not configured'}
+                {channels.find((c) => c.type === 'email')?.config.from || 'Not configured'}
               </div>
               <div>
                 <span className="font-medium">SMTP Server:</span>{' '}
-                {channels.find(c => c.type === 'email')?.config.host || 'Not configured'}
+                {channels.find((c) => c.type === 'email')?.config.host || 'Not configured'}
               </div>
             </div>
           </CardContent>
@@ -180,7 +174,7 @@ export default function NotificationsPage() {
       )}
 
       {/* SMS Channel Details */}
-      {channels.find(c => c.type === 'sms') && (
+      {channels.find((c) => c.type === 'sms') && (
         <Card>
           <CardHeader>
             <CardTitle>SMS Channel</CardTitle>
@@ -190,7 +184,7 @@ export default function NotificationsPage() {
             <div className="space-y-2 text-sm">
               <div>
                 <span className="font-medium">Provider:</span>{' '}
-                {channels.find(c => c.type === 'sms')?.config.provider || 'Not configured'}
+                {channels.find((c) => c.type === 'sms')?.config.provider || 'Not configured'}
               </div>
             </div>
           </CardContent>
@@ -198,7 +192,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Push Channel Details */}
-      {channels.find(c => c.type === 'push') && (
+      {channels.find((c) => c.type === 'push') && (
         <Card>
           <CardHeader>
             <CardTitle>Push Channel</CardTitle>
@@ -208,7 +202,7 @@ export default function NotificationsPage() {
             <div className="space-y-2 text-sm">
               <div>
                 <span className="font-medium">Provider:</span>{' '}
-                {channels.find(c => c.type === 'push')?.config.provider || 'Not configured'}
+                {channels.find((c) => c.type === 'push')?.config.provider || 'Not configured'}
               </div>
             </div>
           </CardContent>
@@ -216,7 +210,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Webhook Channel Details */}
-      {channels.find(c => c.type === 'webhook') && (
+      {channels.find((c) => c.type === 'webhook') && (
         <Card>
           <CardHeader>
             <CardTitle>Webhook Channel</CardTitle>
@@ -234,9 +228,7 @@ export default function NotificationsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Templates</CardTitle>
-          <CardDescription>
-            Manage notification templates (coming soon)
-          </CardDescription>
+          <CardDescription>Manage notification templates (coming soon)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground">

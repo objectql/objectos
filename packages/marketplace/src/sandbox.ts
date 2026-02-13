@@ -5,11 +5,7 @@
  * sandbox configuration, and resource limit checking for plugins.
  */
 
-import type {
-  PluginManifest,
-  PluginSecurityReport,
-  SandboxConfig,
-} from './types.js';
+import type { PluginManifest, PluginSecurityReport, SandboxConfig } from './types.js';
 
 /**
  * Known dangerous permissions that require elevated trust
@@ -27,13 +23,7 @@ const DANGEROUS_PERMISSIONS = [
 /**
  * Known suspicious dependency patterns
  */
-const SUSPICIOUS_PATTERNS = [
-  'eval',
-  'exec',
-  'shell',
-  'crypto-miner',
-  'keylogger',
-];
+const SUSPICIOUS_PATTERNS = ['eval', 'exec', 'shell', 'crypto-miner', 'keylogger'];
 
 /**
  * Default resource limits

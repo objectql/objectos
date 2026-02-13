@@ -1,10 +1,10 @@
 # Parallel Workflow Example
 # This workflow demonstrates parallel execution paths
 
-name: "Employee Onboarding"
-description: "Parallel onboarding tasks workflow"
+name: 'Employee Onboarding'
+description: 'Parallel onboarding tasks workflow'
 type: parallel
-version: "1.0.0"
+version: '1.0.0'
 
 states:
   started:
@@ -15,41 +15,41 @@ states:
       - create_onboarding_ticket
       - assign_buddy
     metadata:
-      label: "Onboarding Started"
-  
+      label: 'Onboarding Started'
+
   parallel_tasks:
     transitions:
       it_complete: it_completed
       hr_complete: hr_completed
       facilities_complete: facilities_completed
     metadata:
-      label: "Parallel Tasks in Progress"
+      label: 'Parallel Tasks in Progress'
       tasks:
         - it_setup
         - hr_paperwork
         - facilities_access
-  
+
   it_completed:
     transitions:
       check: check_all_complete
     metadata:
-      label: "IT Setup Complete"
-      completed_task: "it_setup"
-  
+      label: 'IT Setup Complete'
+      completed_task: 'it_setup'
+
   hr_completed:
     transitions:
       check: check_all_complete
     metadata:
-      label: "HR Paperwork Complete"
-      completed_task: "hr_paperwork"
-  
+      label: 'HR Paperwork Complete'
+      completed_task: 'hr_paperwork'
+
   facilities_completed:
     transitions:
       check: check_all_complete
     metadata:
-      label: "Facilities Access Complete"
-      completed_task: "facilities_access"
-  
+      label: 'Facilities Access Complete'
+      completed_task: 'facilities_access'
+
   check_all_complete:
     transitions:
       all_done: training
@@ -57,8 +57,8 @@ states:
     guards:
       - all_parallel_tasks_complete
     metadata:
-      label: "Checking Completion Status"
-  
+      label: 'Checking Completion Status'
+
   training:
     transitions:
       complete: completed
@@ -66,8 +66,8 @@ states:
       - schedule_training
       - send_training_materials
     metadata:
-      label: "Training"
-  
+      label: 'Training'
+
   completed:
     final: true
     on_enter:
@@ -75,4 +75,4 @@ states:
       - notify_manager
       - celebrate
     metadata:
-      label: "Onboarding Complete"
+      label: 'Onboarding Complete'

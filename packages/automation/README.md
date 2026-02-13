@@ -21,18 +21,15 @@ This package implements the automation specification from [@objectstack/spec](ht
   - `on_create`, `on_update`, `on_create_or_update`, `on_delete`
   - `schedule` (Time-based with cron)
   - Time triggers (before/after date fields)
-  
 - ✅ **Conditions**: Filter logic with formula criteria
-  
 - ✅ **Actions** (spec-compliant):
   - `field_update`: Modify record fields
-  - `email_alert`: Send email notifications  
+  - `email_alert`: Send email notifications
   - `http_call`: Call external APIs
   - `connector_action`: Integrate with connectors (Slack, Twilio, etc.)
   - `task_creation`: Create tasks
   - `push_notification`: Send push notifications
   - `custom_script`: Execute JavaScript/TypeScript/Python scripts
-  
 - ✅ **Formulas**: Spreadsheet-like formula engine for calculated fields
 
 ## Examples
@@ -53,7 +50,7 @@ Each example demonstrates different aspects of the spec-compliant WorkflowRule f
 name: big_deal_alert
 objectName: c_opportunity
 triggerType: on_create
-criteria: "amount > 100000"
+criteria: 'amount > 100000'
 actions:
   - name: notify_manager
     type: email_alert
@@ -63,8 +60,8 @@ actions:
   - name: create_task
     type: task_creation
     taskObject: task
-    subject: "Review big deal"
-    assignedTo: "manager_id"
+    subject: 'Review big deal'
+    assignedTo: 'manager_id'
 active: true
 ```
 
@@ -84,15 +81,15 @@ const rule: WorkflowRule = {
       name: 'send_welcome',
       type: 'email_alert',
       template: 'welcome_email',
-      recipients: ['{{email}}']
+      recipients: ['{{email}}'],
     },
     {
       name: 'create_task',
       type: 'task_creation',
       taskObject: 'task',
       subject: 'Follow up with {{name}}',
-      assignedTo: '{{owner_id}}'
-    }
+      assignedTo: '{{owner_id}}',
+    },
   ],
   timeTriggers: [
     {
@@ -106,12 +103,12 @@ const rule: WorkflowRule = {
           type: 'push_notification',
           title: 'Follow-up reminder',
           body: 'Remember to follow up with {{name}}',
-          recipients: ['{{owner_id}}']
-        }
-      ]
-    }
+          recipients: ['{{owner_id}}'],
+        },
+      ],
+    },
   ],
-  active: true
+  active: true,
 };
 ```
 
@@ -127,17 +124,17 @@ const legacyRule: AutomationRule = {
   status: 'active',
   trigger: {
     type: 'object.create',
-    objectName: 'lead'
+    objectName: 'lead',
   },
   actions: [
     {
-      type: 'send_email',  // Legacy: now 'email_alert'
+      type: 'send_email', // Legacy: now 'email_alert'
       to: 'user@example.com',
       subject: 'New Lead',
-      body: 'A new lead was created'
-    }
+      body: 'A new lead was created',
+    },
   ],
-  createdAt: new Date()
+  createdAt: new Date(),
 };
 ```
 
@@ -152,8 +149,8 @@ const legacyRule: AutomationRule = {
 ## API Reference
 
 See [type definitions](./src/types.ts) for the complete API including:
+
 - `WorkflowRule`: Spec-compliant automation rule
 - `WorkflowAction`: Discriminated union of all action types
 - `TimeTrigger`: Scheduled action configuration
 - `AutomationStorage`: Storage interface for rules and formulas
-

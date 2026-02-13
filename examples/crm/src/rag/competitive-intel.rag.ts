@@ -36,7 +36,12 @@ export const CompetitiveIntelRAG = {
 
   loaders: [
     { type: 'directory', source: '/knowledge/competitive', fileTypes: ['.md'], recursive: true },
-    { type: 'directory', source: '/knowledge/market-research', fileTypes: ['.pdf'], recursive: true },
+    {
+      type: 'directory',
+      source: '/knowledge/market-research',
+      fileTypes: ['.pdf'],
+      recursive: true,
+    },
   ],
 
   maxContextTokens: 5000,

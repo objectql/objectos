@@ -187,9 +187,7 @@ export default function JobsPage() {
               <div className="animate-spin rounded-full size-8 border-2 border-muted border-t-primary" />
             </div>
           ) : jobs.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No jobs found
-            </div>
+            <div className="text-center py-8 text-muted-foreground">No jobs found</div>
           ) : (
             <Table>
               <TableHeader>
@@ -207,14 +205,10 @@ export default function JobsPage() {
                   <TableRow key={job.id}>
                     <TableCell className="font-medium">{job.name}</TableCell>
                     <TableCell>
-                      <Badge variant={statusColors[job.status] as any}>
-                        {job.status}
-                      </Badge>
+                      <Badge variant={statusColors[job.status] as any}>{job.status}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={priorityColors[job.priority] as any}>
-                        {job.priority}
-                      </Badge>
+                      <Badge variant={priorityColors[job.priority] as any}>{job.priority}</Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(job.createdAt).toLocaleString()}

@@ -1,6 +1,6 @@
 /**
  * Object Definitions Barrel
- * 
+ *
  * Re-exports all *.object.ts definitions for auto-registration.
  * Hooks (*.hook.ts) and state machines (*.state.ts) are excluded —
  * they are auto-associated by naming convention at runtime.

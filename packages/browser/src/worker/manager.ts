@@ -1,6 +1,6 @@
 /**
  * Web Worker Manager for Business Logic Isolation
- * 
+ *
  * This module manages a Web Worker that executes business logic
  * in isolation from the main thread, improving performance and security.
  */
@@ -26,7 +26,7 @@ export class WorkerManager {
 
     try {
       this.worker = new Worker(scriptPath, { type: 'module' });
-      
+
       // Set up message handler
       this.worker.addEventListener('message', (event) => {
         this.handleMessage(event.data);
@@ -100,7 +100,7 @@ export class WorkerManager {
     }
 
     const id = String(++this.messageId);
-    
+
     return new Promise((resolve, reject) => {
       // Set timeout
       const timeout = setTimeout(() => {

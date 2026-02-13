@@ -4,7 +4,7 @@ export const ServiceDashboard: Dashboard = {
   name: 'service_dashboard',
   label: 'Customer Service',
   description: 'Support case metrics and performance',
-  
+
   widgets: [
     // Row 1: Key Metrics
     {
@@ -14,7 +14,7 @@ export const ServiceDashboard: Dashboard = {
       filter: { is_closed: false },
       aggregate: 'count',
       layout: { x: 0, y: 0, w: 3, h: 2 },
-      options: { color: '#FFA500' }
+      options: { color: '#FFA500' },
     },
     {
       title: 'Critical Cases',
@@ -23,7 +23,7 @@ export const ServiceDashboard: Dashboard = {
       filter: { priority: 'critical', is_closed: false },
       aggregate: 'count',
       layout: { x: 3, y: 0, w: 3, h: 2 },
-      options: { color: '#FF0000' }
+      options: { color: '#FF0000' },
     },
     {
       title: 'Avg Resolution Time (hrs)',
@@ -33,7 +33,7 @@ export const ServiceDashboard: Dashboard = {
       valueField: 'resolution_time_hours',
       aggregate: 'avg',
       layout: { x: 6, y: 0, w: 3, h: 2 },
-      options: { suffix: 'h', color: '#4169E1' }
+      options: { suffix: 'h', color: '#4169E1' },
     },
     {
       title: 'SLA Violations',
@@ -42,9 +42,9 @@ export const ServiceDashboard: Dashboard = {
       filter: { is_sla_violated: true },
       aggregate: 'count',
       layout: { x: 9, y: 0, w: 3, h: 2 },
-      options: { color: '#FF4500' }
+      options: { color: '#FF4500' },
     },
-    
+
     // Row 2: Case Distribution
     {
       title: 'Cases by Status',
@@ -54,7 +54,7 @@ export const ServiceDashboard: Dashboard = {
       categoryField: 'status',
       aggregate: 'count',
       layout: { x: 0, y: 2, w: 4, h: 4 },
-      options: { showLegend: true }
+      options: { showLegend: true },
     },
     {
       title: 'Cases by Priority',
@@ -64,7 +64,7 @@ export const ServiceDashboard: Dashboard = {
       categoryField: 'priority',
       aggregate: 'count',
       layout: { x: 4, y: 2, w: 4, h: 4 },
-      options: { showLegend: true }
+      options: { showLegend: true },
     },
     {
       title: 'Cases by Origin',
@@ -74,7 +74,7 @@ export const ServiceDashboard: Dashboard = {
       aggregate: 'count',
       layout: { x: 8, y: 2, w: 4, h: 4 },
     },
-    
+
     // Row 3: Trends and Lists
     {
       title: 'Daily Case Volume',
@@ -84,7 +84,7 @@ export const ServiceDashboard: Dashboard = {
       categoryField: 'created_date',
       aggregate: 'count',
       layout: { x: 0, y: 6, w: 8, h: 4 },
-      options: { dateGranularity: 'day' }
+      options: { dateGranularity: 'day' },
     },
     {
       title: 'My Open Cases',
@@ -98,7 +98,7 @@ export const ServiceDashboard: Dashboard = {
         sortBy: 'priority',
         sortOrder: 'desc',
         limit: 10,
-      }
+      },
     },
-  ]
+  ],
 };

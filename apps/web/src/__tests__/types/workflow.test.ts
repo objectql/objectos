@@ -18,9 +18,7 @@ describe('workflow types', () => {
         { name: 'draft', label: 'Draft', initial: true, color: 'default' },
         { name: 'done', label: 'Done', final: true, color: 'green' },
       ],
-      transitions: [
-        { name: 'complete', label: 'Complete', from: 'draft', to: 'done' },
-      ],
+      transitions: [{ name: 'complete', label: 'Complete', from: 'draft', to: 'done' }],
     };
     expect(def.states).toHaveLength(2);
     expect(def.transitions).toHaveLength(1);
@@ -34,9 +32,7 @@ describe('workflow types', () => {
       currentState: 'draft',
       currentStateLabel: 'Draft',
       color: 'default',
-      availableTransitions: [
-        { name: 'complete', label: 'Complete', from: 'draft', to: 'done' },
-      ],
+      availableTransitions: [{ name: 'complete', label: 'Complete', from: 'draft', to: 'done' }],
       canApprove: true,
     };
     expect(status.currentState).toBe('draft');

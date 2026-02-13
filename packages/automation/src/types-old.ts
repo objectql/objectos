@@ -1,9 +1,9 @@
 /**
  * Automation System Types - LEGACY VERSION
- * 
+ *
  * This file preserves the original type definitions for backward compatibility.
  * For new code, use the types from ./types.ts which are aligned with @objectstack/spec.
- * 
+ *
  * @deprecated This is the legacy types file. Import from ./types.ts instead.
  */
 
@@ -16,42 +16,37 @@ import type {
 } from '@objectstack/spec/automation';
 
 // Re-export spec types for convenience
-export type {
-  WorkflowRule,
-  WorkflowAction,
-  WorkflowTriggerType,
-  TimeTrigger,
-};
+export type { WorkflowRule, WorkflowAction, WorkflowTriggerType, TimeTrigger };
 
 /**
  * Trigger type enumeration (legacy compatibility)
  * @deprecated Use WorkflowTriggerType from @objectstack/spec instead
  */
-export type TriggerType = 
-  | 'object.create'    // Object created
-  | 'object.update'    // Object updated
-  | 'object.delete'    // Object deleted
-  | 'scheduled'        // Scheduled (cron)
-  | 'webhook';         // Webhook triggered
+export type TriggerType =
+  | 'object.create' // Object created
+  | 'object.update' // Object updated
+  | 'object.delete' // Object deleted
+  | 'scheduled' // Scheduled (cron)
+  | 'webhook'; // Webhook triggered
 
 /**
  * Action type enumeration (legacy compatibility)
  * @deprecated Use WorkflowAction discriminated union from @objectstack/spec instead
  */
-export type ActionType = 
-  | 'update_field'     // Update a field (now 'field_update' in spec)
-  | 'create_record'    // Create a new record
-  | 'send_email'       // Send an email (now 'email_alert' in spec)
-  | 'http_request'     // Make HTTP request (now 'http_call' in spec)
-  | 'execute_script';  // Execute a script (now 'custom_script' in spec)
+export type ActionType =
+  | 'update_field' // Update a field (now 'field_update' in spec)
+  | 'create_record' // Create a new record
+  | 'send_email' // Send an email (now 'email_alert' in spec)
+  | 'http_request' // Make HTTP request (now 'http_call' in spec)
+  | 'execute_script'; // Execute a script (now 'custom_script' in spec)
 
 /**
  * Formula field type
  */
-export type FormulaType = 
-  | 'calculated'       // Runtime calculated
-  | 'rollup'           // Rollup summary (SUM, COUNT, etc.)
-  | 'autonumber';      // Auto-number field
+export type FormulaType =
+  | 'calculated' // Runtime calculated
+  | 'rollup' // Rollup summary (SUM, COUNT, etc.)
+  | 'autonumber'; // Auto-number field
 
 /**
  * Rollup operation
@@ -61,10 +56,10 @@ export type RollupOperation = 'SUM' | 'COUNT' | 'AVG' | 'MIN' | 'MAX';
 /**
  * Automation rule status
  */
-export type AutomationRuleStatus = 
-  | 'active'           // Rule is active
-  | 'inactive'         // Rule is inactive
-  | 'error';           // Rule has errors
+export type AutomationRuleStatus =
+  | 'active' // Rule is active
+  | 'inactive' // Rule is inactive
+  | 'error'; // Rule has errors
 
 /**
  * Object trigger configuration
@@ -109,10 +104,7 @@ export interface WebhookTriggerConfig {
 /**
  * Trigger configuration (union type)
  */
-export type TriggerConfig = 
-  | ObjectTriggerConfig 
-  | ScheduledTriggerConfig 
-  | WebhookTriggerConfig;
+export type TriggerConfig = ObjectTriggerConfig | ScheduledTriggerConfig | WebhookTriggerConfig;
 
 /**
  * Trigger condition
@@ -121,7 +113,15 @@ export interface TriggerCondition {
   /** Field name */
   field: string;
   /** Operator */
-  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'starts_with' | 'ends_with' | 'changed';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'greater_than'
+    | 'less_than'
+    | 'contains'
+    | 'starts_with'
+    | 'ends_with'
+    | 'changed';
   /** Value to compare */
   value?: any;
 }
@@ -221,11 +221,11 @@ export interface ExecuteScriptActionConfig {
 /**
  * Action configuration (union type)
  */
-export type ActionConfig = 
-  | UpdateFieldActionConfig 
-  | CreateRecordActionConfig 
-  | SendEmailActionConfig 
-  | HttpRequestActionConfig 
+export type ActionConfig =
+  | UpdateFieldActionConfig
+  | CreateRecordActionConfig
+  | SendEmailActionConfig
+  | HttpRequestActionConfig
   | ExecuteScriptActionConfig;
 
 /**
@@ -340,10 +340,7 @@ export interface AutoNumberFormulaConfig {
 /**
  * Formula configuration (union type)
  */
-export type FormulaConfig = 
-  | CalculatedFormulaConfig 
-  | RollupFormulaConfig 
-  | AutoNumberFormulaConfig;
+export type FormulaConfig = CalculatedFormulaConfig | RollupFormulaConfig | AutoNumberFormulaConfig;
 
 /**
  * Automation storage interface
@@ -351,28 +348,31 @@ export type FormulaConfig =
 export interface AutomationStorage {
   /** Save an automation rule */
   saveRule(rule: AutomationRule): Promise<void>;
-  
+
   /** Get an automation rule */
   getRule(id: string): Promise<AutomationRule | null>;
-  
+
   /** List automation rules */
-  listRules(filter?: { status?: AutomationRuleStatus; triggerType?: TriggerType }): Promise<AutomationRule[]>;
-  
+  listRules(filter?: {
+    status?: AutomationRuleStatus;
+    triggerType?: TriggerType;
+  }): Promise<AutomationRule[]>;
+
   /** Update an automation rule */
   updateRule(id: string, updates: Partial<AutomationRule>): Promise<void>;
-  
+
   /** Delete an automation rule */
   deleteRule(id: string): Promise<void>;
-  
+
   /** Save a formula field */
   saveFormula(formula: FormulaField): Promise<void>;
-  
+
   /** Get a formula field */
   getFormula(objectName: string, fieldName: string): Promise<FormulaField | null>;
-  
+
   /** List formula fields */
   listFormulas(objectName?: string): Promise<FormulaField[]>;
-  
+
   /** Delete a formula field */
   deleteFormula(objectName: string, fieldName: string): Promise<void>;
 }

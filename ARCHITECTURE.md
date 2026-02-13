@@ -9,22 +9,25 @@ ObjectOS is a **metadata-driven runtime engine** that transforms declarative YAM
 ObjectOS is built on the **[@objectstack/spec](https://github.com/objectstack-ai/spec)** protocol, which defines the "DNA" of the ObjectStack ecosystem. The spec provides:
 
 ### 1. **Strict Type Definitions**
+
 - **Zod Schemas**: Runtime validation for configuration and data
 - **TypeScript Interfaces**: Compile-time type safety via `z.infer<>`
 - **JSON Schemas**: VS Code IntelliSense and tooling support
 
 ### 2. **Five Protocol Namespaces**
 
-| Namespace | Scope | Key Types |
-|-----------|-------|-----------|
-| **Data** | Business objects, fields, queries | `ServiceObject`, `Field`, `QueryAST`, `Hook` |
+| Namespace  | Scope                                | Key Types                                                      |
+| ---------- | ------------------------------------ | -------------------------------------------------------------- |
+| **Data**   | Business objects, fields, queries    | `ServiceObject`, `Field`, `QueryAST`, `Hook`                   |
 | **Kernel** | Plugin lifecycle, manifests, context | `PluginDefinition`, `ObjectStackManifest`, `PluginContextData` |
-| **System** | Runtime infrastructure, security | `AuditEvent`, `Job`, `Event` |
-| **UI** | Presentation layer | `App`, `View`, `Dashboard` |
-| **API** | Connectivity contracts | `Endpoint`, `Contract` |
+| **System** | Runtime infrastructure, security     | `AuditEvent`, `Job`, `Event`                                   |
+| **UI**     | Presentation layer                   | `App`, `View`, `Dashboard`                                     |
+| **API**    | Connectivity contracts               | `Endpoint`, `Contract`                                         |
 
 ### 3. **Plugin Lifecycle Hooks**
+
 The spec defines a standardized plugin lifecycle:
+
 - `onInstall`: First-time setup
 - `onEnable`: Plugin activation
 - `onLoad`: Metadata registration
@@ -36,6 +39,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 ## The Three-Repository Model
 
 ### @objectstack/spec (Protocol Definition)
+
 - **Location**: https://github.com/objectstack-ai/spec
 - **Purpose**: Defines the protocol and type contracts
 - **Key Exports**:
@@ -46,6 +50,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
   - `API.*` - Endpoint contracts
 
 ### ObjectQL Repository (Data Layer Implementation)
+
 - **Location**: https://github.com/objectstack-ai/objectql
 - **Purpose**: Defines the metadata standard and provides core implementations
 - **Key Packages**:
@@ -55,6 +60,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
   - `@objectql/driver-mongo` - MongoDB driver
 
 ### ObjectOS Repository (Runtime Implementation)
+
 - **Location**: This repository
 - **Purpose**: Implements the runtime engine and plugin ecosystem
 - **Key Packages**:
@@ -70,6 +76,7 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 > **"Runtime manages plugins, Plugins implement features, Drivers handle data."**
 
 This separation ensures:
+
 1. **Testability**: Each layer can be tested independently
 2. **Flexibility**: Add/remove features via plugins without touching core
 3. **Scalability**: Plugins can be distributed and loaded dynamically
@@ -80,6 +87,7 @@ This separation ensures:
 ### What is ObjectQL?
 
 ObjectQL is a **declarative metadata format** for describing:
+
 - Business objects (entities)
 - Fields and data types
 - Relationships (lookup, master-detail)
@@ -98,17 +106,17 @@ fields:
     type: text
     label: First Name
     required: true
-  
+
   last_name:
     type: text
     label: Last Name
     required: true
-  
+
   email:
     type: email
     label: Email
     unique: true
-  
+
   account:
     type: lookup
     reference_to: accounts
@@ -152,16 +160,16 @@ export class ObjectOS {
   private hooks: HookManager;
 
   // Load metadata into registry
-  async load(config: ObjectConfig): Promise<void>
+  async load(config: ObjectConfig): Promise<void>;
 
   // CRUD operations
-  async find(objectName: string, options: FindOptions): Promise<any[]>
-  async insert(objectName: string, data: any): Promise<any>
-  async update(objectName: string, id: string, data: any): Promise<any>
-  async delete(objectName: string, id: string): Promise<void>
+  async find(objectName: string, options: FindOptions): Promise<any[]>;
+  async insert(objectName: string, data: any): Promise<any>;
+  async update(objectName: string, id: string, data: any): Promise<any>;
+  async delete(objectName: string, id: string): Promise<void>;
 
   // Driver management
-  useDriver(driver: ObjectQLDriver): void
+  useDriver(driver: ObjectQLDriver): void;
 }
 ```
 
@@ -177,8 +185,8 @@ kernel.on('beforeInsert', async (context) => {
 });
 
 // Hook types
-type HookType = 
-  | 'beforeFind' 
+type HookType =
+  | 'beforeFind'
   | 'afterFind'
   | 'beforeInsert'
   | 'afterInsert'
@@ -201,12 +209,15 @@ class ObjectOS {
 }
 
 // ✅ GOOD: Injected dependency
-const driver = new PostgresDriver({ /* config */ });
+const driver = new PostgresDriver({
+  /* config */
+});
 const kernel = new ObjectOS();
 kernel.useDriver(driver);
 ```
 
 This allows:
+
 - Unit testing with mock drivers
 - Swapping databases at runtime
 - Multi-tenant applications with different databases per tenant
@@ -246,10 +257,10 @@ interface ObjectQLDriver {
 
 ### Supported Drivers
 
-| Driver | Package | Databases |
-|--------|---------|-----------|
-| SQL Driver | `@objectql/driver-sql` | PostgreSQL, MySQL, SQLite |
-| MongoDB Driver | `@objectql/driver-mongo` | MongoDB |
+| Driver         | Package                  | Databases                 |
+| -------------- | ------------------------ | ------------------------- |
+| SQL Driver     | `@objectql/driver-sql`   | PostgreSQL, MySQL, SQLite |
+| MongoDB Driver | `@objectql/driver-mongo` | MongoDB                   |
 
 ## Layer 4: HTTP Layer (@objectos/server)
 
@@ -274,7 +285,7 @@ export class ObjectDataController {
   async query(
     @Param('objectName') name: string,
     @Body() body: QueryDTO,
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
   ) {
     // Controller only handles HTTP translation
     return this.kernel.find(name, {
@@ -282,7 +293,7 @@ export class ObjectDataController {
       fields: body.fields,
       sort: body.sort,
       limit: body.limit,
-      user: user // For permission checks
+      user: user, // For permission checks
     });
   }
 }
@@ -297,18 +308,18 @@ export class ObjectDataController {
 
 ### REST API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/v1/data/:object/query` | Query records |
-| POST | `/api/v1/data/:object` | Create record |
-| PATCH | `/api/v1/data/:object/:id` | Update record |
-| DELETE | `/api/v1/data/:object/:id` | Delete record |
-| GET | `/api/v1/meta/:object` | Get object metadata |
-| ALL | `/api/v1/auth/*` | Authentication (BetterAuth) |
-| GET | `/api/v1/audit/events` | Audit log events |
-| GET | `/api/v1/jobs` | Job queue status |
-| GET | `/api/v1/metrics/prometheus` | Prometheus metrics |
-| GET | `/api/v1/permissions/sets` | Permission sets |
+| Method | Path                         | Description                 |
+| ------ | ---------------------------- | --------------------------- |
+| POST   | `/api/v1/data/:object/query` | Query records               |
+| POST   | `/api/v1/data/:object`       | Create record               |
+| PATCH  | `/api/v1/data/:object/:id`   | Update record               |
+| DELETE | `/api/v1/data/:object/:id`   | Delete record               |
+| GET    | `/api/v1/meta/:object`       | Get object metadata         |
+| ALL    | `/api/v1/auth/*`             | Authentication (BetterAuth) |
+| GET    | `/api/v1/audit/events`       | Audit log events            |
+| GET    | `/api/v1/jobs`               | Job queue status            |
+| GET    | `/api/v1/metrics/prometheus` | Prometheus metrics          |
+| GET    | `/api/v1/permissions/sets`   | Permission sets             |
 
 ## Layer 5: UI Layer
 
@@ -345,7 +356,7 @@ kernel.registerFieldType('gps_location', {
   },
   format: (value) => {
     // Format for display
-  }
+  },
 });
 ```
 
@@ -463,9 +474,11 @@ describe('ObjectOS', () => {
     const kernel = new ObjectOS();
     const mockDriver = createMockDriver();
     kernel.useDriver(mockDriver);
-    
+
     await expect(
-      kernel.insert('contacts', { /* missing required field */ })
+      kernel.insert('contacts', {
+        /* missing required field */
+      }),
     ).rejects.toThrow('first_name is required');
   });
 });
@@ -480,7 +493,7 @@ describe('POST /api/data/contacts', () => {
       .post('/api/data/contacts')
       .send({ first_name: 'John', last_name: 'Doe' })
       .expect(201);
-    
+
     expect(response.body).toHaveProperty('id');
   });
 });
@@ -559,6 +572,7 @@ describe('Contact Management', () => {
 ### 1. Microservices
 
 As the application grows, layers can be split:
+
 - Metadata Service (reads object definitions)
 - CRUD Service (handles data operations)
 - Auth Service (handles authentication)
@@ -566,6 +580,7 @@ As the application grows, layers can be split:
 ### 2. Event Sourcing
 
 Instead of updating records directly:
+
 - Store events (ContactCreated, ContactUpdated)
 - Rebuild state from events
 - Enables audit trails and time travel
@@ -573,6 +588,7 @@ Instead of updating records directly:
 ### 3. GraphQL Support
 
 Alternative to REST:
+
 - Single endpoint
 - Client specifies fields
 - Reduces over-fetching

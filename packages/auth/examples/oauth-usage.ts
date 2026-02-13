@@ -1,6 +1,6 @@
 /**
  * Example: Using OAuth2/OIDC Authentication
- * 
+ *
  * This example demonstrates how to set up and use OAuth providers
  * (Google and GitHub) with the Better-Auth plugin.
  */
@@ -18,7 +18,7 @@ async function basicOAuthSetup() {
   const authPlugin = createBetterAuthPlugin({
     databaseUrl: process.env.DATABASE_URL || 'sqlite:auth.db',
     baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000/api/auth',
-    
+
     // OAuth providers (automatically enabled if credentials are provided)
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -186,7 +186,7 @@ async function multipleProviders() {
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     githubClientId: process.env.GITHUB_CLIENT_ID,
     githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
-    
+
     // You can add more providers by extending the configuration
     // and adding them to auth-client.ts following the same pattern
   });

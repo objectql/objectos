@@ -81,9 +81,7 @@ export function LayoutBuilder({ objectDef, layout, onLayoutChange }: LayoutBuild
 
   const updateSection = useCallback(
     (id: string, updates: Partial<LayoutSection>) => {
-      updateSections(
-        layout.sections.map((s) => (s.id === id ? { ...s, ...updates } : s)),
-      );
+      updateSections(layout.sections.map((s) => (s.id === id ? { ...s, ...updates } : s)));
     },
     [layout.sections, updateSections],
   );

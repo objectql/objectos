@@ -176,9 +176,7 @@ describe('UI Plugin', () => {
 
     it('should destroy successfully', async () => {
       await plugin.destroy();
-      expect(mockContext.logger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Destroyed'),
-      );
+      expect(mockContext.logger.info).toHaveBeenCalledWith(expect.stringContaining('Destroyed'));
     });
   });
 
@@ -351,7 +349,9 @@ describe('getUIAPI helper', () => {
 
   it('should return null when UI service is not registered', () => {
     const kernel = {
-      getService: jest.fn(() => { throw new Error('not found'); }),
+      getService: jest.fn(() => {
+        throw new Error('not found');
+      }),
     };
     const api = getUIAPI(kernel);
     expect(api).toBeNull();

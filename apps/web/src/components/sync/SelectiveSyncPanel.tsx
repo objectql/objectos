@@ -79,9 +79,7 @@ export function SelectiveSyncPanel({
             <Badge variant="secondary">
               {enabledCount} object{enabledCount !== 1 ? 's' : ''} synced
             </Badge>
-            <Badge variant="outline">
-              {totalCached} records cached
-            </Badge>
+            <Badge variant="outline">{totalCached} records cached</Badge>
           </div>
         </div>
         {storageQuota > 0 && (
@@ -96,7 +94,11 @@ export function SelectiveSyncPanel({
             <div className="mt-1 h-1.5 w-full rounded-full bg-muted">
               <div
                 className={`h-full rounded-full transition-all ${
-                  storagePercent > 90 ? 'bg-red-500' : storagePercent > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                  storagePercent > 90
+                    ? 'bg-red-500'
+                    : storagePercent > 70
+                      ? 'bg-yellow-500'
+                      : 'bg-green-500'
                 }`}
                 style={{ width: `${Math.min(storagePercent, 100)}%` }}
               />

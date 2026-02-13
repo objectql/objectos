@@ -14,12 +14,12 @@ export interface BrowserRuntimeConfig {
      * Name of the database
      */
     name?: string;
-    
+
     /**
      * Use OPFS for persistent storage (recommended for production)
      */
     useOPFS?: boolean;
-    
+
     /**
      * Initial SQL scripts to run on database creation
      */
@@ -34,7 +34,7 @@ export interface BrowserRuntimeConfig {
      * Root directory name in OPFS
      */
     rootDir?: string;
-    
+
     /**
      * Maximum storage quota in bytes
      */
@@ -49,12 +49,12 @@ export interface BrowserRuntimeConfig {
      * Enable service worker for API interception
      */
     enabled?: boolean;
-    
+
     /**
      * Service worker script path
      */
     scriptPath?: string;
-    
+
     /**
      * API base path to intercept
      */
@@ -69,7 +69,7 @@ export interface BrowserRuntimeConfig {
      * Enable web worker for business logic isolation
      */
     enabled?: boolean;
-    
+
     /**
      * Worker script path
      */
@@ -85,22 +85,22 @@ export interface SQLiteDatabase {
    * Execute a SQL query
    */
   exec(sql: string, params?: any[]): SQLiteResult[];
-  
+
   /**
    * Run a SQL statement
    */
   run(sql: string, params?: any[]): void;
-  
+
   /**
    * Prepare a SQL statement
    */
   prepare(sql: string): SQLiteStatement;
-  
+
   /**
    * Close the database
    */
   close(): void;
-  
+
   /**
    * Export database to Uint8Array
    */
@@ -135,32 +135,32 @@ export interface OPFSStorage {
    * Write file to OPFS
    */
   writeFile(path: string, data: Uint8Array | Blob): Promise<void>;
-  
+
   /**
    * Read file from OPFS
    */
   readFile(path: string): Promise<Uint8Array>;
-  
+
   /**
    * Delete file from OPFS
    */
   deleteFile(path: string): Promise<void>;
-  
+
   /**
    * Check if file exists
    */
   exists(path: string): Promise<boolean>;
-  
+
   /**
    * List files in directory
    */
   listFiles(path: string): Promise<string[]>;
-  
+
   /**
    * Get file metadata
    */
   getMetadata(path: string): Promise<FileMetadata>;
-  
+
   /**
    * Get storage usage
    */
@@ -190,7 +190,7 @@ export interface StorageUsage {
 /**
  * Service Worker message types
  */
-export type ServiceWorkerMessageType = 
+export type ServiceWorkerMessageType =
   | 'API_REQUEST'
   | 'API_RESPONSE'
   | 'REGISTER_HANDLER'
@@ -237,32 +237,32 @@ export interface BrowserDatabaseDriver {
    * Connect to database
    */
   connect(): Promise<void>;
-  
+
   /**
    * Disconnect from database
    */
   disconnect(): Promise<void>;
-  
+
   /**
    * Execute query
    */
   query(sql: string, params?: any[]): Promise<any[]>;
-  
+
   /**
    * Execute mutation
    */
   execute(sql: string, params?: any[]): Promise<void>;
-  
+
   /**
    * Begin transaction
    */
   beginTransaction(): Promise<void>;
-  
+
   /**
    * Commit transaction
    */
   commit(): Promise<void>;
-  
+
   /**
    * Rollback transaction
    */

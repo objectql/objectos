@@ -69,6 +69,10 @@ describe('CsvExportButton', () => {
     expect(revokeObjectURL).toHaveBeenCalled();
 
     vi.restoreAllMocks();
-    Object.defineProperty(window, 'URL', { value: originalURL, writable: true, configurable: true });
+    Object.defineProperty(window, 'URL', {
+      value: originalURL,
+      writable: true,
+      configurable: true,
+    });
   });
 });

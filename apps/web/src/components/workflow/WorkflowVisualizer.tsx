@@ -90,9 +90,10 @@ export function WorkflowVisualizer({ workflow, currentState }: WorkflowVisualize
             return (
               <g key={t.name}>
                 <path
-                  d={isBackward
-                    ? `M ${x1} ${y1} Q ${x1 + 20} ${midY}, ${midX} ${midY} Q ${x2 - 20} ${midY}, ${x2} ${y2}`
-                    : `M ${x1} ${y1} L ${x2} ${y2}`
+                  d={
+                    isBackward
+                      ? `M ${x1} ${y1} Q ${x1 + 20} ${midY}, ${midX} ${midY} Q ${x2 - 20} ${midY}, ${x2} ${y2}`
+                      : `M ${x1} ${y1} L ${x2} ${y2}`
                   }
                   fill="none"
                   stroke="#94a3b8"
@@ -115,14 +116,7 @@ export function WorkflowVisualizer({ workflow, currentState }: WorkflowVisualize
 
           {/* Arrow marker definition */}
           <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="8"
-              markerHeight="6"
-              refX="7"
-              refY="3"
-              orient="auto"
-            >
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
               <polygon points="0 0, 8 3, 0 6" fill="#94a3b8" />
             </marker>
           </defs>

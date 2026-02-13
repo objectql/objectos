@@ -190,11 +190,7 @@ export class AgentPlugin implements Plugin {
         );
 
         // Add final response to conversation
-        this.conversationManager.addMessage(
-          conversation.id,
-          result.finalResponse,
-          tenantId,
-        );
+        this.conversationManager.addMessage(conversation.id, result.finalResponse, tenantId);
 
         // Audit log
         const cost = this.auditTracker.calculateCost(
@@ -205,9 +201,7 @@ export class AgentPlugin implements Plugin {
           agentId: this.config.model,
           conversationId: conversation.id,
           action: 'chat',
-          toolCalls: result.steps
-            .filter((s) => s.toolCall)
-            .map((s) => s.toolCall!),
+          toolCalls: result.steps.filter((s) => s.toolCall).map((s) => s.toolCall!),
           tokenUsage: {
             promptTokens: Math.round(result.totalTokens * 0.6),
             completionTokens: Math.round(result.totalTokens * 0.4),
@@ -402,21 +396,8 @@ export class AgentPlugin implements Plugin {
   getCapabilities(): PluginCapabilityManifest {
     return {
       id: this.name,
-      provides: [
-        'agent',
-        'agent.chat',
-        'agent.tools',
-        'agent.conversations',
-        'agent.audit',
-      ],
-      consumes: [
-        'http.server',
-        'permissions',
-        'data',
-        'workflow',
-        'notification',
-        'metadata',
-      ],
+      provides: ['agent', 'agent.chat', 'agent.tools', 'agent.conversations', 'agent.audit'],
+      consumes: ['http.server', 'permissions', 'data', 'workflow', 'notification', 'metadata'],
     };
   }
 

@@ -8,43 +8,66 @@ export const CaseEscalationFlow: Flow = {
   description: 'Automatically escalate high-priority cases',
   type: 'record_change',
 
-  variables: [
-    { name: 'caseId', type: 'text', isInput: true, isOutput: false },
-  ],
+  variables: [{ name: 'caseId', type: 'text', isInput: true, isOutput: false }],
 
   nodes: [
     {
-      id: 'start', type: 'start', label: 'Start',
-      config: { objectName: 'case', criteria: 'priority = "critical" OR (priority = "high" AND account.type = "customer")' },
-    },
-    {
-      id: 'get_case', type: 'get_record', label: 'Get Case Record',
-      config: { objectName: 'case', filter: { id: '{caseId}' }, outputVariable: 'caseRecord' },
-    },
-    {
-      id: 'assign_senior_agent', type: 'update_record', label: 'Assign to Senior Agent',
+      id: 'start',
+      type: 'start',
+      label: 'Start',
       config: {
-        objectName: 'case', filter: { id: '{caseId}' },
-        fields: { owner: '{caseRecord.owner.manager}', is_escalated: true, escalated_date: '{NOW()}' },
+        objectName: 'case',
+        criteria: 'priority = "critical" OR (priority = "high" AND account.type = "customer")',
       },
     },
     {
-      id: 'create_task', type: 'create_record', label: 'Create Follow-up Task',
+      id: 'get_case',
+      type: 'get_record',
+      label: 'Get Case Record',
+      config: { objectName: 'case', filter: { id: '{caseId}' }, outputVariable: 'caseRecord' },
+    },
+    {
+      id: 'assign_senior_agent',
+      type: 'update_record',
+      label: 'Assign to Senior Agent',
       config: {
-        objectName: 'task',
+        objectName: 'case',
+        filter: { id: '{caseId}' },
         fields: {
-          subject: 'Follow up on escalated case: {caseRecord.case_number}',
-          related_to: '{caseId}', owner: '{caseRecord.owner}',
-          priority: 'high', status: 'not_started', due_date: '{TODAY() + 1}',
+          owner: '{caseRecord.owner.manager}',
+          is_escalated: true,
+          escalated_date: '{NOW()}',
         },
       },
     },
     {
-      id: 'notify_team', type: 'script', label: 'Notify Support Team',
+      id: 'create_task',
+      type: 'create_record',
+      label: 'Create Follow-up Task',
+      config: {
+        objectName: 'task',
+        fields: {
+          subject: 'Follow up on escalated case: {caseRecord.case_number}',
+          related_to: '{caseId}',
+          owner: '{caseRecord.owner}',
+          priority: 'high',
+          status: 'not_started',
+          due_date: '{TODAY() + 1}',
+        },
+      },
+    },
+    {
+      id: 'notify_team',
+      type: 'script',
+      label: 'Notify Support Team',
       config: {
         actionType: 'email',
         template: 'case_escalated',
-        recipients: ['{caseRecord.owner}', '{caseRecord.owner.manager}', 'support-team@example.com'],
+        recipients: [
+          '{caseRecord.owner}',
+          '{caseRecord.owner.manager}',
+          'support-team@example.com',
+        ],
         variables: {
           caseNumber: '{caseRecord.case_number}',
           priority: '{caseRecord.priority}',

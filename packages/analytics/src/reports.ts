@@ -81,13 +81,13 @@ export class ReportManager {
     let results = Array.from(this.reports.values());
 
     if (options?.objectName) {
-      results = results.filter(r => r.objectName === options.objectName);
+      results = results.filter((r) => r.objectName === options.objectName);
     }
     if (options?.createdBy) {
-      results = results.filter(r => r.createdBy === options.createdBy);
+      results = results.filter((r) => r.createdBy === options.createdBy);
     }
     if (options?.format) {
-      results = results.filter(r => r.format === options.format);
+      results = results.filter((r) => r.format === options.format);
     }
 
     return results;
@@ -184,7 +184,7 @@ export class ReportManager {
     stages: AggregationStage[],
     params: Record<string, any>,
   ): AggregationStage[] {
-    return stages.map(stage => ({
+    return stages.map((stage) => ({
       type: stage.type,
       body: this.interpolateObject(stage.body, params),
     }));
@@ -193,7 +193,10 @@ export class ReportManager {
   /**
    * Recursively interpolate parameter references in an object
    */
-  private interpolateObject(obj: Record<string, any>, params: Record<string, any>): Record<string, any> {
+  private interpolateObject(
+    obj: Record<string, any>,
+    params: Record<string, any>,
+  ): Record<string, any> {
     const result: Record<string, any> = {};
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === 'string' && value.startsWith('$param.')) {
@@ -202,7 +205,7 @@ export class ReportManager {
       } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         result[key] = this.interpolateObject(value, params);
       } else if (Array.isArray(value)) {
-        result[key] = value.map(item => {
+        result[key] = value.map((item) => {
           if (typeof item === 'string' && item.startsWith('$param.')) {
             return params[item.slice('$param.'.length)] ?? item;
           }

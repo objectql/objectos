@@ -9,7 +9,7 @@ export const TodoApp = App.create({
     logo: '/assets/todo-logo.png',
     favicon: '/assets/todo-favicon.ico',
   },
-  
+
   navigation: [
     {
       id: 'group_tasks',
@@ -17,12 +17,42 @@ export const TodoApp = App.create({
       label: 'Tasks',
       icon: 'check-square',
       children: [
-        { id: 'nav_all_tasks', type: 'object', objectName: 'task', label: 'All Tasks', icon: 'list' },
-        { id: 'nav_my_tasks', type: 'object', objectName: 'task', label: 'My Tasks', icon: 'user-check' },
-        { id: 'nav_overdue', type: 'object', objectName: 'task', label: 'Overdue', icon: 'alert-circle' },
-        { id: 'nav_today', type: 'object', objectName: 'task', label: 'Due Today', icon: 'calendar' },
-        { id: 'nav_upcoming', type: 'object', objectName: 'task', label: 'Upcoming', icon: 'calendar-plus' },
-      ]
+        {
+          id: 'nav_all_tasks',
+          type: 'object',
+          objectName: 'task',
+          label: 'All Tasks',
+          icon: 'list',
+        },
+        {
+          id: 'nav_my_tasks',
+          type: 'object',
+          objectName: 'task',
+          label: 'My Tasks',
+          icon: 'user-check',
+        },
+        {
+          id: 'nav_overdue',
+          type: 'object',
+          objectName: 'task',
+          label: 'Overdue',
+          icon: 'alert-circle',
+        },
+        {
+          id: 'nav_today',
+          type: 'object',
+          objectName: 'task',
+          label: 'Due Today',
+          icon: 'calendar',
+        },
+        {
+          id: 'nav_upcoming',
+          type: 'object',
+          objectName: 'task',
+          label: 'Upcoming',
+          icon: 'calendar-plus',
+        },
+      ],
     },
     {
       id: 'group_analytics',
@@ -30,8 +60,14 @@ export const TodoApp = App.create({
       label: 'Analytics',
       icon: 'chart-bar',
       children: [
-        { id: 'nav_dashboard', type: 'dashboard', dashboardName: 'task_dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
-      ]
+        {
+          id: 'nav_dashboard',
+          type: 'dashboard',
+          dashboardName: 'task_dashboard',
+          label: 'Dashboard',
+          icon: 'layout-dashboard',
+        },
+      ],
     },
-  ]
+  ],
 });

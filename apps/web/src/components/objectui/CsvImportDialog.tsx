@@ -38,17 +38,13 @@ function parseCsv(text: string): ParsedCsv {
   const lines = text.split(/\r?\n/).filter((line) => line.trim());
   if (lines.length === 0) return { headers: [], rows: [] };
   const headers = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
-  const rows = lines.slice(1).map((line) =>
-    line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, '')),
-  );
+  const rows = lines
+    .slice(1)
+    .map((line) => line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, '')));
   return { headers, rows };
 }
 
-export function CsvImportDialog({
-  objectDef,
-  onImport,
-  isLoading = false,
-}: CsvImportDialogProps) {
+export function CsvImportDialog({ objectDef, onImport, isLoading = false }: CsvImportDialogProps) {
   const [open, setOpen] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedCsv | null>(null);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
@@ -139,10 +135,10 @@ export function CsvImportDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Import {objectDef.pluralLabel ?? objectDef.label ?? objectDef.name}</DialogTitle>
-          <DialogDescription>
-            Upload a CSV file and map columns to fields.
-          </DialogDescription>
+          <DialogTitle>
+            Import {objectDef.pluralLabel ?? objectDef.label ?? objectDef.name}
+          </DialogTitle>
+          <DialogDescription>Upload a CSV file and map columns to fields.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -228,10 +224,7 @@ export function CsvImportDialog({
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleImport}
-            disabled={isLoading || !parsedData || mappedCount === 0}
-          >
+          <Button onClick={handleImport} disabled={isLoading || !parsedData || mappedCount === 0}>
             {isLoading ? 'Importing...' : `Import ${parsedData?.rows.length ?? 0} records`}
           </Button>
         </DialogFooter>

@@ -22,12 +22,7 @@ interface InlineEditCellProps {
   editable?: boolean;
 }
 
-export function InlineEditCell({
-  field,
-  value,
-  onSave,
-  editable = true,
-}: InlineEditCellProps) {
+export function InlineEditCell({ field, value, onSave, editable = true }: InlineEditCellProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement | HTMLSelectElement>(null);
@@ -73,7 +68,9 @@ export function InlineEditCell({
   if (!isEditing) {
     return (
       <div
-        className={editable && !field.readonly ? 'cursor-pointer rounded px-1 hover:bg-muted/50' : ''}
+        className={
+          editable && !field.readonly ? 'cursor-pointer rounded px-1 hover:bg-muted/50' : ''
+        }
         onClick={startEditing}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') startEditing();
@@ -106,10 +103,22 @@ export function InlineEditCell({
             </option>
           ))}
         </select>
-        <Button variant="ghost" size="icon" className="size-6" onClick={handleSave} aria-label="Save">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-6"
+          onClick={handleSave}
+          aria-label="Save"
+        >
           <Check className="size-3" />
         </Button>
-        <Button variant="ghost" size="icon" className="size-6" onClick={handleCancel} aria-label="Cancel">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-6"
+          onClick={handleCancel}
+          aria-label="Cancel"
+        >
           <X className="size-3" />
         </Button>
       </div>
@@ -141,7 +150,13 @@ export function InlineEditCell({
       <Button variant="ghost" size="icon" className="size-6" onClick={handleSave} aria-label="Save">
         <Check className="size-3" />
       </Button>
-      <Button variant="ghost" size="icon" className="size-6" onClick={handleCancel} aria-label="Cancel">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-6"
+        onClick={handleCancel}
+        aria-label="Cancel"
+      >
         <X className="size-3" />
       </Button>
     </div>

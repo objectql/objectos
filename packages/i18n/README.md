@@ -42,16 +42,16 @@ const i18n = new I18nPlugin({
       greeting: 'Hello, {{name}}!',
       messages: {
         one: 'You have {{count}} message',
-        other: 'You have {{count}} messages'
-      }
+        other: 'You have {{count}} messages',
+      },
     },
     zh: {
       greeting: '你好，{{name}}！',
       messages: {
-        other: '你有 {{count}} 条消息'
-      }
-    }
-  }
+        other: '你有 {{count}} 条消息',
+      },
+    },
+  },
 });
 
 // Initialize the plugin
@@ -60,11 +60,11 @@ await i18n.start(context);
 
 // Use translations
 i18n.t('greeting', { name: 'Alice' }); // "Hello, Alice!"
-i18n.t('messages', { count: 5 });      // "You have 5 messages"
+i18n.t('messages', { count: 5 }); // "You have 5 messages"
 
 // Switch locale
 i18n.setLocale('zh');
-i18n.t('greeting', { name: '小明' });   // "你好，小明！"
+i18n.t('greeting', { name: '小明' }); // "你好，小明！"
 ```
 
 ## Usage
@@ -73,26 +73,26 @@ i18n.t('greeting', { name: '小明' });   // "你好，小明！"
 
 ```typescript
 // Simple translation
-i18n.t('common.save');  // "Save"
+i18n.t('common.save'); // "Save"
 
 // Nested keys
-i18n.t('user.profile.name');  // "Name"
+i18n.t('user.profile.name'); // "Name"
 
 // With variables
-i18n.t('user.greeting', { name: 'Bob' });  // "Hello, Bob!"
+i18n.t('user.greeting', { name: 'Bob' }); // "Hello, Bob!"
 ```
 
 ### Locale Management
 
 ```typescript
 // Get current locale
-const locale = i18n.getLocale();  // "en"
+const locale = i18n.getLocale(); // "en"
 
 // Switch locale
 i18n.setLocale('fr');
 
 // Get all loaded locales
-const locales = i18n.getLoadedLocales();  // ['en', 'fr', 'zh']
+const locales = i18n.getLoadedLocales(); // ['en', 'fr', 'zh']
 
 // Check if translation exists
 if (i18n.hasTranslation('user.name')) {
@@ -111,10 +111,10 @@ const i18n = new I18nPlugin({
     en: {
       app: {
         title: 'My App',
-        description: 'Welcome'
-      }
-    }
-  }
+        description: 'Welcome',
+      },
+    },
+  },
 });
 ```
 
@@ -131,7 +131,7 @@ await i18n.loadFromJson('zh', './locales/zh.json');
 // Enable YAML support in config
 const i18n = new I18nPlugin({
   defaultLocale: 'en',
-  enableYaml: true
+  enableYaml: true,
 });
 
 await i18n.loadFromYaml('en', './locales/en.yml');
@@ -144,7 +144,7 @@ await i18n.loadFromYaml('en', './locales/en.yml');
 i18n.addTranslations('en', 'auth', {
   login: 'Login',
   logout: 'Logout',
-  signup: 'Sign Up'
+  signup: 'Sign Up',
 });
 
 // Use: i18n.t('auth.login')
@@ -155,16 +155,16 @@ i18n.addTranslations('en', 'auth', {
 Replace `{{variable}}` placeholders with dynamic values:
 
 ```typescript
-i18n.t('user.welcome', { 
-  name: 'Alice', 
-  count: 5 
+i18n.t('user.welcome', {
+  name: 'Alice',
+  count: 5,
 });
 // "Welcome back, Alice. You have 5 new messages."
 
 // Boolean and number values
-i18n.t('status', { 
-  active: true, 
-  score: 42 
+i18n.t('status', {
+  active: true,
+  score: 42,
 });
 // "Active: true, Score: 42"
 ```
@@ -202,25 +202,25 @@ i18n.t('messages', { count: 5 });  // "5 messages"
 
 ```typescript
 // Basic number formatting
-i18n.formatNumber(1234.56);  // "1,234.56" (en-US)
+i18n.formatNumber(1234.56); // "1,234.56" (en-US)
 
 // Currency formatting
 i18n.formatNumber(99.99, {
   style: 'currency',
-  currency: 'USD'
+  currency: 'USD',
 });
 // "$99.99"
 
 // Percentage formatting
 i18n.formatNumber(0.75, {
-  style: 'percent'
+  style: 'percent',
 });
 // "75%"
 
 // Custom fraction digits
 i18n.formatNumber(1234.5678, {
   minimumFractionDigits: 2,
-  maximumFractionDigits: 2
+  maximumFractionDigits: 2,
 });
 // "1,234.57"
 ```
@@ -235,9 +235,9 @@ i18n.formatDate(date, { dateStyle: 'medium' });
 // "Jan 15, 2024" (en-US)
 
 // With time
-i18n.formatDate(date, { 
+i18n.formatDate(date, {
   dateStyle: 'short',
-  timeStyle: 'short'
+  timeStyle: 'short',
 });
 // "1/15/24, 12:30 PM"
 
@@ -245,7 +245,7 @@ i18n.formatDate(date, {
 i18n.formatDate(date, {
   year: 'numeric',
   month: 'long',
-  day: 'numeric'
+  day: 'numeric',
 });
 // "January 15, 2024"
 ```
@@ -281,18 +281,18 @@ const i18n = new I18nPlugin({
   fallbackLocale: 'en',
   translations: {
     en: {
-      common: { save: 'Save', cancel: 'Cancel' }
+      common: { save: 'Save', cancel: 'Cancel' },
     },
     fr: {
-      common: { save: 'Enregistrer' }
+      common: { save: 'Enregistrer' },
       // 'cancel' is missing in French
-    }
-  }
+    },
+  },
 });
 
 i18n.setLocale('fr');
-i18n.t('common.save');    // "Enregistrer" (French)
-i18n.t('common.cancel');  // "Cancel" (fallback to English)
+i18n.t('common.save'); // "Enregistrer" (French)
+i18n.t('common.cancel'); // "Cancel" (fallback to English)
 ```
 
 ### Missing Translation Handling
@@ -301,7 +301,7 @@ i18n.t('common.cancel');  // "Cancel" (fallback to English)
 // Enable warnings
 const i18n = new I18nPlugin({
   defaultLocale: 'en',
-  warnOnMissing: true
+  warnOnMissing: true,
 });
 
 // Custom handler
@@ -309,10 +309,10 @@ const i18n = new I18nPlugin({
   defaultLocale: 'en',
   onMissingTranslation: (key, locale) => {
     return `[MISSING: ${key}]`;
-  }
+  },
 });
 
-i18n.t('nonexistent.key');  // "[MISSING: nonexistent.key]"
+i18n.t('nonexistent.key'); // "[MISSING: nonexistent.key]"
 ```
 
 ## Translation File Formats
@@ -526,7 +526,7 @@ Always configure a fallback locale to prevent missing translations:
 ```typescript
 const i18n = new I18nPlugin({
   defaultLocale: 'en',
-  fallbackLocale: 'en'  // Always have a complete English translation
+  fallbackLocale: 'en', // Always have a complete English translation
 });
 ```
 
@@ -535,13 +535,13 @@ const i18n = new I18nPlugin({
 ```typescript
 const i18n = new I18nPlugin({
   defaultLocale: 'en',
-  warnOnMissing: true,  // Log warnings in development
+  warnOnMissing: true, // Log warnings in development
   onMissingTranslation: (key) => {
     // In production, return a user-friendly message
-    return process.env.NODE_ENV === 'development' 
+    return process.env.NODE_ENV === 'development'
       ? `[Missing: ${key}]`
       : key.split('.').pop() || key;
-  }
+  },
 });
 ```
 
@@ -565,20 +565,14 @@ Then load them separately:
 
 ```typescript
 await i18n.loadFromJson('en', './locales/en/common.json');
-i18n.addTranslations('en', 'auth', 
-  JSON.parse(await fs.readFile('./locales/en/auth.json'))
-);
+i18n.addTranslations('en', 'auth', JSON.parse(await fs.readFile('./locales/en/auth.json')));
 ```
 
 ### 7. Use TypeScript for Type Safety
 
 ```typescript
 // Create a typed translation key
-type TranslationKey = 
-  | 'common.save'
-  | 'common.cancel'
-  | 'user.greeting'
-  | 'user.welcome';
+type TranslationKey = 'common.save' | 'common.cancel' | 'user.greeting' | 'user.welcome';
 
 function translate(key: TranslationKey, params?: any): string {
   return i18n.t(key, params);
@@ -608,7 +602,7 @@ function getAllKeys(obj: any, prefix = ''): string[] {
 
 const enKeys = getAllKeys(enTranslations);
 const frKeys = getAllKeys(frTranslations);
-const missing = enKeys.filter(key => !frKeys.includes(key));
+const missing = enKeys.filter((key) => !frKeys.includes(key));
 
 if (missing.length > 0) {
   console.warn('Missing French translations:', missing);

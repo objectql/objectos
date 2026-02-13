@@ -23,7 +23,10 @@ const colorMap: Record<NonNullable<WorkflowState['color']>, string> = {
   purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
 };
 
-export function WorkflowStatusBadge({ status, showWorkflowName = false }: WorkflowStatusBadgeProps) {
+export function WorkflowStatusBadge({
+  status,
+  showWorkflowName = false,
+}: WorkflowStatusBadgeProps) {
   const colorClasses = colorMap[status.color ?? 'default'];
 
   return (

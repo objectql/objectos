@@ -104,17 +104,13 @@ export default function InvitationsPage() {
     );
   }
 
-  const pendingUserInvitations = userInvitations.filter(
-    (inv) => inv.status === 'pending',
-  );
+  const pendingUserInvitations = userInvitations.filter((inv) => inv.status === 'pending');
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Invitations</h2>
-        <p className="text-muted-foreground">
-          Manage organization invitations.
-        </p>
+        <p className="text-muted-foreground">Manage organization invitations.</p>
       </div>
 
       {/* Pending invitations for the current user */}
@@ -151,18 +147,11 @@ export default function InvitationsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleAccept(inv.id)}
-                        >
+                        <Button size="sm" onClick={() => handleAccept(inv.id)}>
                           <Check className="size-4" />
                           Accept
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleReject(inv.id)}
-                        >
+                        <Button size="sm" variant="outline" onClick={() => handleReject(inv.id)}>
                           <X className="size-4" />
                           Decline
                         </Button>
@@ -180,18 +169,12 @@ export default function InvitationsPage() {
       {activeOrg && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              Invitations for {activeOrg.name}
-            </CardTitle>
-            <CardDescription>
-              All invitations sent from this organization.
-            </CardDescription>
+            <CardTitle>Invitations for {activeOrg.name}</CardTitle>
+            <CardDescription>All invitations sent from this organization.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {orgInvitations.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                No invitations found.
-              </div>
+              <div className="text-center py-12 text-muted-foreground">No invitations found.</div>
             ) : (
               <Table>
                 <TableHeader>
@@ -211,9 +194,7 @@ export default function InvitationsPage() {
                         <Badge variant="secondary">{inv.role}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={statusVariant(inv.status)}>
-                          {inv.status}
-                        </Badge>
+                        <Badge variant={statusVariant(inv.status)}>{inv.status}</Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(inv.createdAt).toLocaleDateString()}

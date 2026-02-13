@@ -42,23 +42,23 @@ fields:
     label: First Name
     required: true
     max_length: 100
-  
+
   last_name:
     type: text
     label: Last Name
     required: true
     max_length: 100
-  
+
   email:
     type: email
     label: Email Address
     unique: true
     required: true
-  
+
   phone:
     type: text
     label: Phone Number
-  
+
   birthdate:
     type: date
     label: Birth Date
@@ -70,24 +70,24 @@ Define who can access this object:
 
 ```yaml
 permission_set:
-  allowRead: true                    # Everyone can read
-  allowCreate: ['sales', 'admin']    # Sales and admin can create
-  allowEdit: ['sales', 'admin']      # Sales and admin can edit
-  allowDelete: ['admin']             # Only admin can delete
+  allowRead: true # Everyone can read
+  allowCreate: ['sales', 'admin'] # Sales and admin can create
+  allowEdit: ['sales', 'admin'] # Sales and admin can edit
+  allowDelete: ['admin'] # Only admin can delete
 ```
 
 ## Object Structure
 
 ### Object Attributes
 
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | string | Yes | API name (snake_case, no spaces) |
-| `label` | string | No | Display name for UI |
-| `icon` | string | No | Icon name (from icon library) |
-| `description` | string | No | Object description |
-| `enable_api` | boolean | No | Enable REST API (default: true) |
-| `enable_audit` | boolean | No | Enable audit logging (default: false) |
+| Attribute      | Type    | Required | Description                           |
+| -------------- | ------- | -------- | ------------------------------------- |
+| `name`         | string  | Yes      | API name (snake_case, no spaces)      |
+| `label`        | string  | No       | Display name for UI                   |
+| `icon`         | string  | No       | Icon name (from icon library)         |
+| `description`  | string  | No       | Object description                    |
+| `enable_api`   | boolean | No       | Enable REST API (default: true)       |
+| `enable_audit` | boolean | No       | Enable audit logging (default: false) |
 
 ### Example
 
@@ -252,7 +252,7 @@ fields:
     type: lookup
     label: Account
     reference_to: accounts
-    on_delete: set_null  # When account deleted, set to null
+    on_delete: set_null # When account deleted, set to null
 ```
 
 ### One-to-Many (Inverse of Lookup)
@@ -286,11 +286,11 @@ fields:
   opportunity:
     type: master_detail
     reference_to: opportunities
-  
+
   contact:
     type: master_detail
     reference_to: contacts
-  
+
   role:
     type: select
     options:
@@ -344,7 +344,7 @@ name:
 ```yaml
 phone:
   type: text
-  pattern: '^\+?[1-9]\d{1,14}$'  # E.164 phone format
+  pattern: '^\+?[1-9]\d{1,14}$' # E.164 phone format
 ```
 
 ## Default Values
@@ -373,8 +373,8 @@ Control who can see or edit specific fields:
 salary:
   type: currency
   label: Salary
-  visible_to: ['hr', 'admin']    # Only HR and admin can see
-  editable_by: ['hr']            # Only HR can edit
+  visible_to: ['hr', 'admin'] # Only HR and admin can see
+  editable_by: ['hr'] # Only HR can edit
 ```
 
 ## Calculated Fields
@@ -442,7 +442,7 @@ fields:
     label: Account Name
     required: true
     max_length: 255
-  
+
   industry:
     type: select
     label: Industry
@@ -455,21 +455,21 @@ fields:
         label: Healthcare
       - value: retail
         label: Retail
-  
+
   website:
     type: url
     label: Website
-  
+
   annual_revenue:
     type: currency
     label: Annual Revenue
     currency_code: USD
-  
+
   employee_count:
     type: number
     label: Number of Employees
     min: 0
-  
+
   type:
     type: select
     label: Type
@@ -500,36 +500,36 @@ fields:
     type: text
     label: First Name
     required: true
-  
+
   last_name:
     type: text
     label: Last Name
     required: true
-  
+
   email:
     type: email
     label: Email
     unique: true
     required: true
-  
+
   phone:
     type: text
     label: Phone
-  
+
   title:
     type: text
     label: Job Title
-  
+
   account:
     type: lookup
     label: Account
     reference_to: accounts
     on_delete: set_null
-  
+
   birthdate:
     type: date
     label: Birth Date
-  
+
   is_primary:
     type: boolean
     label: Primary Contact
@@ -556,31 +556,31 @@ fields:
     type: text
     label: Opportunity Name
     required: true
-  
+
   account:
     type: lookup
     label: Account
     reference_to: accounts
     required: true
-  
+
   amount:
     type: currency
     label: Amount
     currency_code: USD
     min: 0
-  
+
   probability:
     type: percent
     label: Probability
     min: 0
     max: 100
-  
+
   expected_revenue:
     type: formula
     label: Expected Revenue
     formula: 'amount * (probability / 100)'
     return_type: currency
-  
+
   stage:
     type: select
     label: Stage
@@ -599,12 +599,12 @@ fields:
       - value: closed_lost
         label: Closed Lost
     default: prospecting
-  
+
   close_date:
     type: date
     label: Expected Close Date
     required: true
-  
+
   owner:
     type: lookup
     label: Owner
@@ -653,7 +653,7 @@ Set reasonable maximum lengths:
 
 ```yaml
 name:
-  max_length: 255  # Standard for most text fields
+  max_length: 255 # Standard for most text fields
 ```
 
 ### 5. Default Values

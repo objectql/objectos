@@ -31,9 +31,7 @@ export default function BlogIndex() {
                 <p className="text-muted-foreground">{(post as any).description}</p>
               )}
               <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                {(post as any).date && (
-                  timeElement((post as any).date)
-                )}
+                {(post as any).date && timeElement((post as any).date)}
                 {(post as any).author && <span>By {(post as any).author}</span>}
               </div>
             </Link>
@@ -45,14 +43,14 @@ export default function BlogIndex() {
 }
 
 function timeElement(date: string | Date) {
-    const d = new Date(date);
-    return (
-        <time dateTime={d.toISOString()}>
-            {d.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            })}
-        </time>
-    )
+  const d = new Date(date);
+  return (
+    <time dateTime={d.toISOString()}>
+      {d.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}
+    </time>
+  );
 }

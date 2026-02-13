@@ -19,8 +19,16 @@ Use statistical analysis and machine learning to provide data-driven insights.`,
   model: { provider: 'openai', model: 'gpt-4', temperature: 0.2, maxTokens: 3000 },
 
   tools: [
-    { type: 'query' as const, name: 'analyze_pipeline', description: 'Analyze sales pipeline health' },
-    { type: 'query' as const, name: 'identify_at_risk', description: 'Identify at-risk opportunities' },
+    {
+      type: 'query' as const,
+      name: 'analyze_pipeline',
+      description: 'Analyze sales pipeline health',
+    },
+    {
+      type: 'query' as const,
+      name: 'identify_at_risk',
+      description: 'Identify at-risk opportunities',
+    },
     { type: 'query' as const, name: 'forecast_revenue', description: 'Generate revenue forecast' },
   ],
 

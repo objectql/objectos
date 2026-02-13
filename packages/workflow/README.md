@@ -50,7 +50,7 @@ initial_state: draft
 states:
   draft:
     on:
-      submit: 
+      submit:
         target: pending_approval
         guard: valid_dates
   pending_approval:
@@ -81,11 +81,11 @@ nodes:
   - id: decision_1
     type: decision
     label: Check days count
-    condition: "{{days_count}} > 5"
+    condition: '{{days_count}} > 5'
   - id: approval_1
     type: approval
     label: Manager Approval
-    approver: "{{manager_id}}"
+    approver: '{{manager_id}}'
   - id: end_approved
     type: end
     label: Approved
@@ -115,16 +115,14 @@ const leaveFlow: Flow = {
   status: 'active',
   variables: [
     { name: 'request_id', type: 'text', isInput: true },
-    { name: 'approver', type: 'text', isInput: true }
+    { name: 'approver', type: 'text', isInput: true },
   ],
   nodes: [
     { id: 'start', type: 'start', label: 'Start' },
-    { id: 'approve', type: 'end', label: 'Approved' }
+    { id: 'approve', type: 'end', label: 'Approved' },
   ],
-  edges: [
-    { id: 'e1', source: 'start', target: 'approve' }
-  ],
-  version: 1
+  edges: [{ id: 'e1', source: 'start', target: 'approve' }],
+  version: 1,
 };
 
 // Approval process configuration
@@ -134,15 +132,15 @@ const approvalProcess: ApprovalProcess = {
     {
       step: 1,
       approver: 'manager',
-      required: true
+      required: true,
     },
     {
       step: 2,
       approver: 'director',
-      required: true
-    }
+      required: true,
+    },
   ],
-  allowParallel: false
+  allowParallel: false,
 };
 ```
 
@@ -165,26 +163,26 @@ const legacyWorkflow: WorkflowDefinition = {
       transitions: {
         submit: {
           target: 'pending',
-          guards: ['valid_dates']
-        }
-      }
+          guards: ['valid_dates'],
+        },
+      },
     },
     pending: {
       name: 'pending',
       transitions: {
         approve: { target: 'approved' },
-        reject: { target: 'rejected' }
-      }
+        reject: { target: 'rejected' },
+      },
     },
     approved: {
       name: 'approved',
-      final: true
+      final: true,
     },
     rejected: {
       name: 'rejected',
-      final: true
-    }
-  }
+      final: true,
+    },
+  },
 };
 ```
 
@@ -213,9 +211,9 @@ const legacy = convertFromFlow(flow);
 ## API Reference
 
 See [type definitions](./src/types.ts) for the complete API including:
+
 - `Flow`: Spec-compliant visual workflow definition
 - `FlowNode`: Workflow step types and configuration
 - `FlowEdge`: Workflow connections
 - `ApprovalProcess`: Multi-level approval configuration
 - `WorkflowDefinition`: Legacy state machine format (still supported)
-

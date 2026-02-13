@@ -61,13 +61,10 @@ export default function ObjectListPage() {
     [setSearchParams],
   );
 
-  const handleLoadView = useCallback(
-    (view: SavedView) => {
-      setFilters(view.filters);
-      if (view.viewMode) setViewMode(view.viewMode);
-    },
-    [],
-  );
+  const handleLoadView = useCallback((view: SavedView) => {
+    setFilters(view.filters);
+    if (view.viewMode) setViewMode(view.viewMode);
+  }, []);
 
   if (isLoading) {
     return (
@@ -100,8 +97,7 @@ export default function ObjectListPage() {
   const createPath = `/apps/${appId}/${objectName}/new`;
 
   // Map view mode to SchemaRenderer view name
-  const schemaView =
-    viewMode === 'table' ? 'grid' : viewMode === 'kanban' ? 'kanban' : 'calendar';
+  const schemaView = viewMode === 'table' ? 'grid' : viewMode === 'kanban' ? 'kanban' : 'calendar';
 
   return (
     <div className="space-y-6">
@@ -110,9 +106,7 @@ export default function ObjectListPage() {
         <h2 className="text-2xl font-bold tracking-tight">
           {objectDef.pluralLabel ?? objectDef.label ?? objectName}
         </h2>
-        {objectDef.description && (
-          <p className="text-muted-foreground">{objectDef.description}</p>
-        )}
+        {objectDef.description && <p className="text-muted-foreground">{objectDef.description}</p>}
       </div>
 
       {/* Toolbar — H.4.2 + I.2 bulk actions + I.6 CSV */}
@@ -132,10 +126,7 @@ export default function ObjectListPage() {
             onImport={csvOps.importRecords}
             isLoading={csvOps.isImporting}
           />
-          <CsvExportButton
-            objectDef={objectDef}
-            records={records}
-          />
+          <CsvExportButton objectDef={objectDef} records={records} />
         </div>
       </div>
 
@@ -170,11 +161,7 @@ export default function ObjectListPage() {
 
       {/* SchemaRenderer view — H.1.1, H.1.5, H.1.6 */}
       <div data-testid="schema-renderer-container">
-        <SchemaRenderer
-          adapter={objectUIAdapter}
-          objectName={objectName!}
-          view={schemaView}
-        />
+        <SchemaRenderer adapter={objectUIAdapter} objectName={objectName!} view={schemaView} />
       </div>
 
       {/* Pagination — H.3.2 */}

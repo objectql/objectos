@@ -1,6 +1,6 @@
 /**
  * OPFS (Origin Private File System) Storage Implementation
- * 
+ *
  * This module provides a file storage backend using the browser's
  * Origin Private File System API for storing user files and attachments.
  */
@@ -15,7 +15,7 @@ export interface OPFSStorageConfig {
    * Root directory name
    */
   rootDir?: string;
-  
+
   /**
    * Maximum storage quota in bytes (default: 100MB)
    */
@@ -65,11 +65,11 @@ export class OPFSStorageBackend implements OPFSStorage {
     try {
       // Parse path and create directory structure
       const { dirHandle, fileName } = await this.ensureDirectoryPath(path);
-      
+
       // Create or overwrite file
       const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
       const writable = await fileHandle.createWritable();
-      
+
       if (data instanceof Blob) {
         await writable.write(data);
       } else {
@@ -77,7 +77,7 @@ export class OPFSStorageBackend implements OPFSStorage {
         await writable.write(new Blob([data.buffer as ArrayBuffer]));
       }
       await writable.close();
-      
+
       console.log(`[OPFS] Wrote file: ${path}`);
     } catch (error) {
       console.error(`[OPFS] Failed to write file ${path}:`, error);
@@ -98,7 +98,7 @@ export class OPFSStorageBackend implements OPFSStorage {
       const fileHandle = await dirHandle.getFileHandle(fileName);
       const file = await fileHandle.getFile();
       const buffer = await file.arrayBuffer();
-      
+
       return new Uint8Array(buffer);
     } catch (error) {
       console.error(`[OPFS] Failed to read file ${path}:`, error);
@@ -117,7 +117,7 @@ export class OPFSStorageBackend implements OPFSStorage {
     try {
       const { dirHandle, fileName } = await this.getDirectoryPath(path);
       await dirHandle.removeEntry(fileName);
-      
+
       console.log(`[OPFS] Deleted file: ${path}`);
     } catch (error) {
       console.error(`[OPFS] Failed to delete file ${path}:`, error);
@@ -151,18 +151,16 @@ export class OPFSStorageBackend implements OPFSStorage {
     }
 
     try {
-      const dirHandle = path 
-        ? await this.getDirectoryHandle(path)
-        : this.rootHandle;
-      
+      const dirHandle = path ? await this.getDirectoryHandle(path) : this.rootHandle;
+
       const files: string[] = [];
-      
+
       for await (const entry of dirHandle.values()) {
         if (entry.kind === 'file') {
           files.push(entry.name);
         }
       }
-      
+
       return files;
     } catch (error) {
       console.error(`[OPFS] Failed to list files in ${path}:`, error);
@@ -182,13 +180,13 @@ export class OPFSStorageBackend implements OPFSStorage {
       const { dirHandle, fileName } = await this.getDirectoryPath(path);
       const fileHandle = await dirHandle.getFileHandle(fileName);
       const file = await fileHandle.getFile();
-      
+
       return {
         name: file.name,
         path: path,
         size: file.size,
         type: file.type,
-        lastModified: new Date(file.lastModified)
+        lastModified: new Date(file.lastModified),
       };
     } catch (error) {
       console.error(`[OPFS] Failed to get metadata for ${path}:`, error);
@@ -204,7 +202,7 @@ export class OPFSStorageBackend implements OPFSStorage {
       return {
         used: 0,
         quota: this.maxQuota,
-        available: this.maxQuota
+        available: this.maxQuota,
       };
     }
 
@@ -212,18 +210,18 @@ export class OPFSStorageBackend implements OPFSStorage {
       const estimate = await navigator.storage.estimate();
       const used = estimate.usage || 0;
       const quota = estimate.quota || this.maxQuota;
-      
+
       return {
         used,
         quota,
-        available: quota - used
+        available: quota - used,
       };
     } catch (error) {
       console.error('[OPFS] Failed to get storage usage:', error);
       return {
         used: 0,
         quota: this.maxQuota,
-        available: this.maxQuota
+        available: this.maxQuota,
       };
     }
   }
@@ -239,16 +237,16 @@ export class OPFSStorageBackend implements OPFSStorage {
       throw new Error('OPFS not initialized');
     }
 
-    const parts = path.split('/').filter(p => p.length > 0);
+    const parts = path.split('/').filter((p) => p.length > 0);
     const fileName = parts.pop() || '';
-    
+
     let currentHandle = this.rootHandle;
-    
+
     // Create directory structure
     for (const part of parts) {
       currentHandle = await currentHandle.getDirectoryHandle(part, { create: true });
     }
-    
+
     return { dirHandle: currentHandle, fileName };
   }
 
@@ -263,16 +261,16 @@ export class OPFSStorageBackend implements OPFSStorage {
       throw new Error('OPFS not initialized');
     }
 
-    const parts = path.split('/').filter(p => p.length > 0);
+    const parts = path.split('/').filter((p) => p.length > 0);
     const fileName = parts.pop() || '';
-    
+
     let currentHandle = this.rootHandle;
-    
+
     // Navigate to directory
     for (const part of parts) {
       currentHandle = await currentHandle.getDirectoryHandle(part);
     }
-    
+
     return { dirHandle: currentHandle, fileName };
   }
 
@@ -284,13 +282,13 @@ export class OPFSStorageBackend implements OPFSStorage {
       throw new Error('OPFS not initialized');
     }
 
-    const parts = path.split('/').filter(p => p.length > 0);
+    const parts = path.split('/').filter((p) => p.length > 0);
     let currentHandle = this.rootHandle;
-    
+
     for (const part of parts) {
       currentHandle = await currentHandle.getDirectoryHandle(part);
     }
-    
+
     return currentHandle;
   }
 
@@ -307,7 +305,7 @@ export class OPFSStorageBackend implements OPFSStorage {
       for await (const entry of this.rootHandle.values()) {
         await this.rootHandle.removeEntry(entry.name, { recursive: true });
       }
-      
+
       console.log('[OPFS] Cleared all files');
     } catch (error) {
       console.error('[OPFS] Failed to clear storage:', error);

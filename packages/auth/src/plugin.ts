@@ -1,9 +1,9 @@
 /**
  * Better-Auth Plugin for ObjectOS
- * 
+ *
  * This plugin provides authentication capabilities using Better-Auth library.
  * It conforms to the @objectstack/runtime protocol for plugin lifecycle and context.
- * 
+ *
  * Features:
  * - Email/Password authentication
  * - Organization and team management
@@ -12,17 +12,32 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { IAuthService, AuthResult as SpecAuthResult, AuthUser as SpecAuthUser } from '@objectstack/spec/contracts';
-import { getBetterAuth, resetAuthInstance, getEnabledProviders, type BetterAuthConfig } from './auth-client.js';
-import type { PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult, AuthSecurityPolicies } from './types.js';
+import type {
+  IAuthService,
+  AuthResult as SpecAuthResult,
+  AuthUser as SpecAuthUser,
+} from '@objectstack/spec/contracts';
+import {
+  getBetterAuth,
+  resetAuthInstance,
+  getEnabledProviders,
+  type BetterAuthConfig,
+} from './auth-client.js';
+import type {
+  PluginHealthReport,
+  PluginCapabilityManifest,
+  PluginSecurityManifest,
+  PluginStartupResult,
+  AuthSecurityPolicies,
+} from './types.js';
 import * as Objects from './objects/index.js';
 
 /**
  * Plugin Configuration Options
  */
 export interface BetterAuthPluginOptions extends BetterAuthConfig {
-    /** Security policies for password and session management */
-    securityPolicies?: AuthSecurityPolicies;
+  /** Security policies for password and session management */
+  securityPolicies?: AuthSecurityPolicies;
 }
 
 /**
@@ -30,319 +45,331 @@ export interface BetterAuthPluginOptions extends BetterAuthConfig {
  * Implements the Plugin interface for @objectstack/runtime
  */
 export class BetterAuthPlugin implements Plugin, IAuthService {
-    name = '@objectos/auth';
-    version = '0.1.0';
-    
-    // Register objects
-    objects = Object.values(Objects);
-    dependencies: string[] = [];
+  name = '@objectos/auth';
+  version = '0.1.0';
 
-    private config: BetterAuthPluginOptions;
-    private context?: PluginContext;
-    private authInstance?: any;
-    public handler?: any;
-    private startedAt?: number;
+  // Register objects
+  objects = Object.values(Objects);
+  dependencies: string[] = [];
 
-    constructor(config: BetterAuthPluginOptions = {}) {
-        this.config = config;
+  private config: BetterAuthPluginOptions;
+  private context?: PluginContext;
+  private authInstance?: any;
+  public handler?: any;
+  private startedAt?: number;
+
+  constructor(config: BetterAuthPluginOptions = {}) {
+    this.config = config;
+  }
+
+  /**
+   * Initialize plugin - Initialize Better-Auth and register as 'auth' service
+   *
+   * The ObjectStack HttpDispatcher routes `ALL /api/v1/auth/*` to whatever
+   * service is registered under CoreServiceName 'auth'.  It calls
+   *   `authService.handler(request: Request): Promise<Response>`
+   * so we expose a thin fetch-style handler wrapping better-auth.
+   */
+  init = async (context: PluginContext): Promise<void> => {
+    this.context = context;
+    this.startedAt = Date.now();
+
+    context.logger.info('[Better-Auth Plugin] Initializing...');
+
+    try {
+      // Initialize Better-Auth with correct basePath for /api/v1/auth/*
+      // Wire session lifecycle hooks into the kernel event system
+      const pluginConfig = {
+        ...this.config,
+        onSessionEvent: async (event: string, data: Record<string, unknown>) => {
+          if (this.context) {
+            await this.context.trigger(event, data);
+          }
+        },
+      };
+      this.authInstance = await getBetterAuth(pluginConfig);
+
+      // Run database migrations to ensure auth tables exist
+      try {
+        const authCtx = await this.authInstance.$context;
+        await authCtx.runMigrations();
+        context.logger.info('[Better-Auth Plugin] Database migrations completed');
+      } catch (migrationError: any) {
+        context.logger.warn(
+          `[Better-Auth Plugin] Migration warning: ${migrationError?.message || migrationError}`,
+        );
+      }
+
+      // Expose a Web-standard fetch handler (Request → Response)
+      // HttpDispatcher calls: authService.handler(context.request)
+      this.handler = async (request: Request): Promise<Response> => {
+        return this.authInstance.handler(request);
+      };
+
+      // Register as 'auth' — the name HttpDispatcher.handleAuth() looks up.
+      // The kernel (or another plugin like ObjectQL App) may have already
+      // registered a stub 'auth' service.  Since the public Kernel API
+      // does not expose replaceService(), we override via the services Map
+      // when necessary.
+      this.overrideOrRegister(context, 'auth', this);
+      this.overrideOrRegister(context, 'better-auth', this);
+
+      // Emit plugin initialized event
+      await context.trigger('plugin.initialized', {
+        pluginId: this.name,
+        timestamp: new Date().toISOString(),
+      });
+
+      context.logger.info('[Better-Auth Plugin] Initialized successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorObj = error instanceof Error ? error : undefined;
+      context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, errorObj);
+      throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
     }
+  };
 
-    /**
-     * Initialize plugin - Initialize Better-Auth and register as 'auth' service
-     *
-     * The ObjectStack HttpDispatcher routes `ALL /api/v1/auth/*` to whatever
-     * service is registered under CoreServiceName 'auth'.  It calls
-     *   `authService.handler(request: Request): Promise<Response>`
-     * so we expose a thin fetch-style handler wrapping better-auth.
-     */
-    init = async (context: PluginContext): Promise<void> => {
-        this.context = context;
-        this.startedAt = Date.now();
+  /**
+   * Start plugin - Mount better-auth handler on the Hono app
+   *
+   * The default createHonoApp auth route calls `c.req.parseBody()` which
+   * consumes the Request body before passing `c.req.raw` to our handler.
+   * better-auth needs to read the body itself (JSON), which fails with
+   * "Body is unusable: Body has already been read".
+   *
+   * To fix this we mount a middleware on the raw Hono app that intercepts
+   * /api/v1/auth/* BEFORE the standard route, passing a fresh Request
+   * to better-auth directly.
+   */
+  async start(context: PluginContext): Promise<void> {
+    context.logger.info('[Better-Auth Plugin] Starting...');
 
-        context.logger.info('[Better-Auth Plugin] Initializing...');
-
-        try {
-            // Initialize Better-Auth with correct basePath for /api/v1/auth/*
-            // Wire session lifecycle hooks into the kernel event system
-            const pluginConfig = {
-                ...this.config,
-                onSessionEvent: async (event: string, data: Record<string, unknown>) => {
-                    if (this.context) {
-                        await this.context.trigger(event, data);
-                    }
-                },
-            };
-            this.authInstance = await getBetterAuth(pluginConfig);
-
-            // Run database migrations to ensure auth tables exist
-            try {
-                const authCtx = await this.authInstance.$context;
-                await authCtx.runMigrations();
-                context.logger.info('[Better-Auth Plugin] Database migrations completed');
-            } catch (migrationError: any) {
-                context.logger.warn(`[Better-Auth Plugin] Migration warning: ${migrationError?.message || migrationError}`);
-            }
-
-            // Expose a Web-standard fetch handler (Request → Response)
-            // HttpDispatcher calls: authService.handler(context.request)
-            this.handler = async (request: Request): Promise<Response> => {
-                return this.authInstance.handler(request);
-            };
-
-            // Register as 'auth' — the name HttpDispatcher.handleAuth() looks up.
-            // The kernel (or another plugin like ObjectQL App) may have already
-            // registered a stub 'auth' service.  Since the public Kernel API
-            // does not expose replaceService(), we override via the services Map
-            // when necessary.
-            this.overrideOrRegister(context, 'auth', this);
-            this.overrideOrRegister(context, 'better-auth', this);
-
-            // Emit plugin initialized event
-            await context.trigger('plugin.initialized', {
-                pluginId: this.name,
-                timestamp: new Date().toISOString()
-            });
-
-            context.logger.info('[Better-Auth Plugin] Initialized successfully');
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            const errorObj = error instanceof Error ? error : undefined;
-            context.logger.error(`[Better-Auth Plugin] Failed to initialize: ${errorMessage}`, errorObj);
-            throw new Error(`Better-Auth Plugin initialization failed: ${errorMessage}`);
-        }
-    }
-
-    /**
-     * Start plugin - Mount better-auth handler on the Hono app
-     *
-     * The default createHonoApp auth route calls `c.req.parseBody()` which
-     * consumes the Request body before passing `c.req.raw` to our handler.
-     * better-auth needs to read the body itself (JSON), which fails with
-     * "Body is unusable: Body has already been read".
-     *
-     * To fix this we mount a middleware on the raw Hono app that intercepts
-     * /api/v1/auth/* BEFORE the standard route, passing a fresh Request
-     * to better-auth directly.
-     */
-    async start(context: PluginContext): Promise<void> {
-        context.logger.info('[Better-Auth Plugin] Starting...');
-
-        // Mount better-auth directly on Hono (bypasses body-consuming parseBody)
-        try {
-            const httpServer = context.getService('http.server') as any;
-            const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
-            if (rawApp && this.authInstance) {
-                // Public endpoint: list enabled OAuth/SSO providers (no auth required)
-                rawApp.get('/api/v1/auth/providers', (c: any) => {
-                    return c.json({ providers: getEnabledProviders() });
-                });
-
-                // Intercept all auth requests before the default dispatcher route
-                rawApp.all('/api/v1/auth/*', async (c: any) => {
-                    const response = await this.authInstance.handler(c.req.raw);
-                    return response;
-                });
-                context.logger.info('[Better-Auth Plugin] Mounted auth handler on Hono app');
-            }
-        } catch (e: any) {
-            context.logger.warn(`[Better-Auth Plugin] Could not mount on Hono: ${e?.message}`);
-        }
-
-        // Emit authentication ready event
-        await context.trigger('auth.ready', {
-            pluginId: this.name,
-            timestamp: new Date().toISOString()
+    // Mount better-auth directly on Hono (bypasses body-consuming parseBody)
+    try {
+      const httpServer = context.getService('http.server') as any;
+      const rawApp = httpServer?.getRawApp?.() ?? httpServer?.app;
+      if (rawApp && this.authInstance) {
+        // Public endpoint: list enabled OAuth/SSO providers (no auth required)
+        rawApp.get('/api/v1/auth/providers', (c: any) => {
+          return c.json({ providers: getEnabledProviders() });
         });
 
-        context.logger.info('[Better-Auth Plugin] Started successfully');
+        // Intercept all auth requests before the default dispatcher route
+        rawApp.all('/api/v1/auth/*', async (c: any) => {
+          const response = await this.authInstance.handler(c.req.raw);
+          return response;
+        });
+        context.logger.info('[Better-Auth Plugin] Mounted auth handler on Hono app');
+      }
+    } catch (e: any) {
+      context.logger.warn(`[Better-Auth Plugin] Could not mount on Hono: ${e?.message}`);
     }
 
-    /**
-     * Get the Better-Auth instance
-     */
-    getAuthInstance(): any {
-        return this.authInstance;
+    // Emit authentication ready event
+    await context.trigger('auth.ready', {
+      pluginId: this.name,
+      timestamp: new Date().toISOString(),
+    });
+
+    context.logger.info('[Better-Auth Plugin] Started successfully');
+  }
+
+  /**
+   * Get the Better-Auth instance
+   */
+  getAuthInstance(): any {
+    return this.authInstance;
+  }
+
+  /**
+   * Register a service, overriding any existing stub.
+   *
+   * The ObjectStack kernel throws on duplicate registerService() calls.
+   * The ObjectQL App plugin (or others) may pre-register an 'auth' stub
+   * before BetterAuthPlugin.init() runs.  We detect that case and
+   * replace the stub via the kernel's internal services Map so the
+   * real better-auth handler takes precedence.
+   */
+  private overrideOrRegister(context: PluginContext, name: string, service: any): void {
+    try {
+      context.registerService(name, service);
+    } catch {
+      // Service already exists — replace it on kernel.services Map
+      const kernel = context.getKernel() as any;
+      if (kernel?.services instanceof Map) {
+        kernel.services.set(name, service);
+        context.logger.info(`[Better-Auth Plugin] Replaced existing '${name}' service`);
+      } else {
+        context.logger.warn(`[Better-Auth Plugin] Could not replace service '${name}'`);
+      }
     }
+  }
 
-    /**
-     * Register a service, overriding any existing stub.
-     *
-     * The ObjectStack kernel throws on duplicate registerService() calls.
-     * The ObjectQL App plugin (or others) may pre-register an 'auth' stub
-     * before BetterAuthPlugin.init() runs.  We detect that case and
-     * replace the stub via the kernel's internal services Map so the
-     * real better-auth handler takes precedence.
-     */
-    private overrideOrRegister(context: PluginContext, name: string, service: any): void {
-        try {
-            context.registerService(name, service);
-        } catch {
-            // Service already exists — replace it on kernel.services Map
-            const kernel = context.getKernel() as any;
-            if (kernel?.services instanceof Map) {
-                kernel.services.set(name, service);
-                context.logger.info(`[Better-Auth Plugin] Replaced existing '${name}' service`);
-            } else {
-                context.logger.warn(`[Better-Auth Plugin] Could not replace service '${name}'`);
-            }
-        }
+  // ── IAuthService contract methods ──
+
+  /**
+   * IAuthService.handleRequest — delegates to the Better-Auth handler
+   */
+  async handleRequest(request: Request): Promise<Response> {
+    if (!this.authInstance) {
+      throw new Error('Better-Auth not initialized');
     }
+    return this.authInstance.handler(request);
+  }
 
-    // ── IAuthService contract methods ──
-
-    /**
-     * IAuthService.handleRequest — delegates to the Better-Auth handler
-     */
-    async handleRequest(request: Request): Promise<Response> {
-        if (!this.authInstance) {
-            throw new Error('Better-Auth not initialized');
-        }
-        return this.authInstance.handler(request);
+  /**
+   * IAuthService.verify — validate a session token
+   */
+  async verify(token: string): Promise<SpecAuthResult> {
+    if (!this.authInstance) {
+      return { success: false, error: 'Auth not initialized' };
     }
-
-    /**
-     * IAuthService.verify — validate a session token
-     */
-    async verify(token: string): Promise<SpecAuthResult> {
-        if (!this.authInstance) {
-            return { success: false, error: 'Auth not initialized' };
-        }
-        try {
-            const ctx = await this.authInstance.$context;
-            const session = await ctx.sessionManager?.getSession?.(token);
-            if (session?.user) {
-                return {
-                    success: true,
-                    user: { id: session.user.id, email: session.user.email, name: session.user.name },
-                    session: { id: session.session?.id ?? token, userId: session.user.id, token, expiresAt: typeof session.session?.expiresAt?.toISOString === 'function' ? session.session.expiresAt.toISOString() : String(session.session?.expiresAt ?? '') },
-                };
-            }
-            return { success: false, error: 'Invalid or expired token' };
-        } catch {
-            return { success: false, error: 'Token verification failed' };
-        }
-    }
-
-    /**
-     * IAuthService.logout — invalidate a session (optional)
-     */
-    async logout(sessionId: string): Promise<void> {
-        if (!this.authInstance) return;
-        try {
-            const ctx = await this.authInstance.$context;
-            await ctx.sessionManager?.revokeSession?.(sessionId);
-        } catch {
-            // best-effort
-        }
-    }
-
-    /**
-     * IAuthService.getCurrentUser — extract user from request (optional)
-     */
-    async getCurrentUser(request: Request): Promise<SpecAuthUser | undefined> {
-        if (!this.authInstance) return undefined;
-        try {
-            const ctx = await this.authInstance.$context;
-            const session = await ctx.sessionManager?.getSessionFromRequest?.(request);
-            if (session?.user) {
-                return { id: session.user.id, email: session.user.email, name: session.user.name };
-            }
-            return undefined;
-        } catch {
-            return undefined;
-        }
-    }
-
-    /**
-     * Get the Better-Auth fetch-style handler.
-     * Returns (request: Request) => Promise<Response>
-     */
-    getHandler(): (request: Request) => Promise<Response> {
-        if (!this.authInstance) {
-            throw new Error('Better-Auth not initialized');
-        }
-        return (request: Request) => this.authInstance.handler(request);
-    }
-
-    /**
-     * Health check
-     */
-    async healthCheck(): Promise<PluginHealthReport> {
-        const isInitialized = !!this.authInstance;
-        const status = isInitialized ? 'healthy' : 'unhealthy';
-        const message = isInitialized ? 'Better-Auth instance active' : 'Auth not initialized';
+    try {
+      const ctx = await this.authInstance.$context;
+      const session = await ctx.sessionManager?.getSession?.(token);
+      if (session?.user) {
         return {
-            status,
-            timestamp: new Date().toISOString(),
-            message,
-            metrics: {
-                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-            },
-            checks: [
-                { name: 'auth-instance', status: isInitialized ? 'passed' : 'failed', message },
-            ],
+          success: true,
+          user: { id: session.user.id, email: session.user.email, name: session.user.name },
+          session: {
+            id: session.session?.id ?? token,
+            userId: session.user.id,
+            token,
+            expiresAt:
+              typeof session.session?.expiresAt?.toISOString === 'function'
+                ? session.session.expiresAt.toISOString()
+                : String(session.session?.expiresAt ?? ''),
+          },
         };
+      }
+      return { success: false, error: 'Invalid or expired token' };
+    } catch {
+      return { success: false, error: 'Token verification failed' };
     }
+  }
 
-    /**
-     * Capability manifest
-     */
-    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
-        return {
-            capabilities: {},
-            security: {
-                pluginId: 'auth',
-                trustLevel: 'trusted',
-                permissions: { permissions: [], defaultGrant: 'deny' },
-                sandbox: { enabled: false, level: 'none' },
-            },
-        };
+  /**
+   * IAuthService.logout — invalidate a session (optional)
+   */
+  async logout(sessionId: string): Promise<void> {
+    if (!this.authInstance) return;
+    try {
+      const ctx = await this.authInstance.$context;
+      await ctx.sessionManager?.revokeSession?.(sessionId);
+    } catch {
+      // best-effort
     }
+  }
 
-    /**
-     * Startup result
-     */
-    getStartupResult(): PluginStartupResult {
-        return { plugin: { name: this.name, version: this.version }, success: !!this.authInstance, duration: 0 };
+  /**
+   * IAuthService.getCurrentUser — extract user from request (optional)
+   */
+  async getCurrentUser(request: Request): Promise<SpecAuthUser | undefined> {
+    if (!this.authInstance) return undefined;
+    try {
+      const ctx = await this.authInstance.$context;
+      const session = await ctx.sessionManager?.getSessionFromRequest?.(request);
+      if (session?.user) {
+        return { id: session.user.id, email: session.user.email, name: session.user.name };
+      }
+      return undefined;
+    } catch {
+      return undefined;
     }
+  }
 
-    /**
-     * Cleanup and shutdown - Close database connections and reset auth instance
-     */
-    async destroy(): Promise<void> {
-        this.context?.logger.info('[Better-Auth Plugin] Destroying...');
-
-        try {
-            // Close database connections and reset auth instance
-            await resetAuthInstance();
-            this.authInstance = undefined;
-
-            // Emit plugin destroyed event
-            if (this.context) {
-                await this.context.trigger('plugin.destroyed', {
-                    pluginId: this.name,
-                    timestamp: new Date().toISOString()
-                });
-            }
-
-            this.context?.logger.info('[Better-Auth Plugin] Destroyed successfully');
-        } catch (error) {
-            const errorObj = error instanceof Error ? error : undefined;
-            this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', errorObj);
-            throw error;
-        }
+  /**
+   * Get the Better-Auth fetch-style handler.
+   * Returns (request: Request) => Promise<Response>
+   */
+  getHandler(): (request: Request) => Promise<Response> {
+    if (!this.authInstance) {
+      throw new Error('Better-Auth not initialized');
     }
+    return (request: Request) => this.authInstance.handler(request);
+  }
+
+  /**
+   * Health check
+   */
+  async healthCheck(): Promise<PluginHealthReport> {
+    const isInitialized = !!this.authInstance;
+    const status = isInitialized ? 'healthy' : 'unhealthy';
+    const message = isInitialized ? 'Better-Auth instance active' : 'Auth not initialized';
+    return {
+      status,
+      timestamp: new Date().toISOString(),
+      message,
+      metrics: {
+        uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+      },
+      checks: [{ name: 'auth-instance', status: isInitialized ? 'passed' : 'failed', message }],
+    };
+  }
+
+  /**
+   * Capability manifest
+   */
+  getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+    return {
+      capabilities: {},
+      security: {
+        pluginId: 'auth',
+        trustLevel: 'trusted',
+        permissions: { permissions: [], defaultGrant: 'deny' },
+        sandbox: { enabled: false, level: 'none' },
+      },
+    };
+  }
+
+  /**
+   * Startup result
+   */
+  getStartupResult(): PluginStartupResult {
+    return {
+      plugin: { name: this.name, version: this.version },
+      success: !!this.authInstance,
+      duration: 0,
+    };
+  }
+
+  /**
+   * Cleanup and shutdown - Close database connections and reset auth instance
+   */
+  async destroy(): Promise<void> {
+    this.context?.logger.info('[Better-Auth Plugin] Destroying...');
+
+    try {
+      // Close database connections and reset auth instance
+      await resetAuthInstance();
+      this.authInstance = undefined;
+
+      // Emit plugin destroyed event
+      if (this.context) {
+        await this.context.trigger('plugin.destroyed', {
+          pluginId: this.name,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      this.context?.logger.info('[Better-Auth Plugin] Destroyed successfully');
+    } catch (error) {
+      const errorObj = error instanceof Error ? error : undefined;
+      this.context?.logger.error('[Better-Auth Plugin] Error during destroy:', errorObj);
+      throw error;
+    }
+  }
 }
 
 /**
  * Helper function to access the Better-Auth API from kernel
  */
 export function getBetterAuthAPI(kernel: any): BetterAuthPlugin | null {
-    try {
-        return kernel.getService('better-auth');
-    } catch {
-        return null;
-    }
+  try {
+    return kernel.getService('better-auth');
+  } catch {
+    return null;
+  }
 }
 
 /**

@@ -18,9 +18,7 @@ export default function PackagesPage() {
             <CardTitle>Installed Packages</CardTitle>
             <Badge variant="secondary">Scaffold</Badge>
           </div>
-          <CardDescription>
-            View active packages, versions, and health status.
-          </CardDescription>
+          <CardDescription>View active packages, versions, and health status.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-2">
           <Button variant="outline">Check Updates</Button>
@@ -34,9 +32,7 @@ export default function PackagesPage() {
             <CardTitle>Registry</CardTitle>
             <Badge variant="secondary">Scaffold</Badge>
           </div>
-          <CardDescription>
-            Discover and install packages from the registry.
-          </CardDescription>
+          <CardDescription>Discover and install packages from the registry.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-2">
           <Button variant="outline">Browse Registry</Button>

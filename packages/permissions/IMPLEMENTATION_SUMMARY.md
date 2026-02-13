@@ -39,6 +39,7 @@ The plugin follows a modular architecture with clear separation of concerns:
 ### Core Components
 
 #### 1. Permission Engine (`engine.ts`)
+
 - **Purpose:** Core permission checking logic
 - **Features:**
   - Object-level CRUD permission checks
@@ -54,6 +55,7 @@ The plugin follows a modular architecture with clear separation of concerns:
   - `clearCache()` / `clearUserCache()` - Cache management
 
 #### 2. Permission Storage (`storage.ts`)
+
 - **Purpose:** Abstract storage for permission sets
 - **Implementation:** In-memory storage with indexing
 - **Features:**
@@ -63,6 +65,7 @@ The plugin follows a modular architecture with clear separation of concerns:
 - **Interface:** `PermissionStorage` for extensibility
 
 #### 3. YAML Loader (`loader.ts`)
+
 - **Purpose:** Load permission sets from YAML files
 - **Features:**
   - Load from individual files
@@ -72,6 +75,7 @@ The plugin follows a modular architecture with clear separation of concerns:
 - **Supported Formats:** `.yml`, `.yaml`
 
 #### 4. Plugin Class (`plugin.ts`)
+
 - **Purpose:** ObjectOS plugin implementation
 - **Implements:** `Plugin` interface from `@objectstack/runtime`
 - **Lifecycle:**
@@ -87,11 +91,12 @@ The plugin follows a modular architecture with clear separation of concerns:
 ### Features Implemented
 
 #### Object-Level Permissions (CRUD)
+
 ```typescript
 const result = await engine.checkPermission(
   { userId: 'user-123', profiles: ['sales'] },
   'contacts',
-  'create'
+  'create',
 );
 // result.allowed: boolean
 // result.reason: string (if denied)
@@ -99,27 +104,30 @@ const result = await engine.checkPermission(
 ```
 
 #### Field-Level Security
+
 ```typescript
 const canViewSalary = await engine.checkFieldPermission(
   { userId: 'user-123', profiles: ['sales'] },
   'contacts',
   'salary',
-  'read'
+  'read',
 );
 // Returns: boolean
 ```
 
 #### Record-Level Security (RLS)
+
 ```typescript
 const filters = await engine.getRecordFilters(
   { userId: 'user-123', profiles: ['sales'] },
-  'contacts'
+  'contacts',
 );
 // Returns: { owner: 'user-123' }
 // Template {{ userId }} is replaced with actual user ID
 ```
 
 #### Permission Caching
+
 - Configurable TTL (default: 60 seconds)
 - User-specific cache clearing
 - Global cache clearing
@@ -130,6 +138,7 @@ const filters = await engine.getRecordFilters(
 **Total Tests:** 63 (exceeds requirement of 20+)
 
 #### Storage Tests (17 tests)
+
 - Store and retrieve permission sets
 - Index by object name
 - Multiple permission sets
@@ -137,6 +146,7 @@ const filters = await engine.getRecordFilters(
 - Delete and clear operations
 
 #### Loader Tests (18 tests)
+
 - Load from YAML string
 - Load from .yml and .yaml files
 - Load from directory (batch)
@@ -144,6 +154,7 @@ const filters = await engine.getRecordFilters(
 - Error handling
 
 #### Engine Tests (20 tests)
+
 - Object-level permission checks
 - Multiple profiles
 - Field-level permissions
@@ -155,6 +166,7 @@ const filters = await engine.getRecordFilters(
 - User-specific cache clearing
 
 #### Plugin Tests (8 tests)
+
 - Plugin metadata
 - Lifecycle (init, start, destroy)
 - Event listener registration
@@ -178,7 +190,7 @@ profiles:
     allowCreate: true
     allowEdit: true
     allowDelete: true
-  
+
   sales:
     objectName: contacts
     allowRead: true
@@ -186,7 +198,7 @@ profiles:
     allowEdit: true
     allowDelete: false
     viewFilters:
-      owner: "{{ userId }}"
+      owner: '{{ userId }}'
 
 fieldPermissions:
   salary:
@@ -227,6 +239,7 @@ The plugin integrates seamlessly with ObjectOS through event hooks:
 ### Example Usage
 
 See `examples/usage-example.ts` for complete usage demonstration:
+
 - Creating plugin instance
 - Loading permission sets
 - Checking permissions
@@ -260,6 +273,7 @@ See `examples/usage-example.ts` for complete usage demonstration:
 ## Deliverables
 
 ### Required (from problem statement)
+
 - [x] Complete plugin class (`PermissionsPlugin`)
 - [x] YAML permission configuration loading
 - [x] Object-level permission checks (CRUD)
@@ -270,6 +284,7 @@ See `examples/usage-example.ts` for complete usage demonstration:
 - [x] Usage documentation
 
 ### Bonus Features
+
 - [x] Permission caching for performance
 - [x] Template variable substitution
 - [x] Multiple YAML examples (3)
@@ -296,6 +311,7 @@ See `examples/usage-example.ts` for complete usage demonstration:
 ## Future Enhancements
 
 Potential improvements for future versions:
+
 - GraphQL middleware for automatic enforcement
 - REST API middleware
 - Admin UI for permission management

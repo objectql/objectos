@@ -29,9 +29,7 @@ Always use reputable data sources and maintain data quality.`,
     indexes: ['sales_knowledge'],
   },
 
-  triggers: [
-    { type: 'object_create', objectName: 'lead' },
-  ],
+  triggers: [{ type: 'object_create', objectName: 'lead' }],
 
   schedule: { type: 'cron', expression: '0 */4 * * *', timezone: 'UTC' },
 };

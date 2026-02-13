@@ -30,9 +30,8 @@ export function SyncStatusBar({ position = 'bottom', onOpenConflicts }: SyncStat
     return null;
   }
 
-  const positionClasses = position === 'top'
-    ? 'fixed top-0 left-0 right-0 z-50'
-    : 'fixed bottom-0 left-0 right-0 z-50';
+  const positionClasses =
+    position === 'top' ? 'fixed top-0 left-0 right-0 z-50' : 'fixed bottom-0 left-0 right-0 z-50';
 
   const bgClass = !isOnline
     ? 'bg-destructive/10 border-destructive/30'
@@ -88,7 +87,10 @@ export function SyncStatusBar({ position = 'bottom', onOpenConflicts }: SyncStat
           {conflictCount > 0 && (
             <div className="flex items-center gap-1.5">
               <AlertTriangle className="size-4 text-yellow-600" />
-              <Badge variant="outline" className="border-yellow-500 text-xs text-yellow-700 dark:text-yellow-400">
+              <Badge
+                variant="outline"
+                className="border-yellow-500 text-xs text-yellow-700 dark:text-yellow-400"
+              >
                 {conflictCount} conflict{conflictCount !== 1 ? 's' : ''}
               </Badge>
               {onOpenConflicts && (

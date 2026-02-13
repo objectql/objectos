@@ -42,7 +42,9 @@ export function RecordTable({ objectDef, records, basePath }: RecordTableProps) 
   if (records.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-        <p className="text-lg font-medium">No {(objectDef.pluralLabel ?? objectDef.label ?? 'records').toLowerCase()} yet</p>
+        <p className="text-lg font-medium">
+          No {(objectDef.pluralLabel ?? objectDef.label ?? 'records').toLowerCase()} yet
+        </p>
         <p className="text-sm text-muted-foreground">
           Records will appear here once they are created.
         </p>

@@ -51,13 +51,7 @@ describe('FilterPanel', () => {
   });
 
   it('renders filter button', () => {
-    render(
-      <FilterPanel
-        objectDef={taskObjectDef}
-        filters={[]}
-        onFiltersChange={vi.fn()}
-      />,
-    );
+    render(<FilterPanel objectDef={taskObjectDef} filters={[]} onFiltersChange={vi.fn()} />);
     expect(screen.getByText('Filters')).toBeDefined();
   });
 
@@ -85,13 +79,7 @@ describe('FilterPanel', () => {
   });
 
   it('shows filter builder when expanded', () => {
-    render(
-      <FilterPanel
-        objectDef={taskObjectDef}
-        filters={[]}
-        onFiltersChange={vi.fn()}
-      />,
-    );
+    render(<FilterPanel objectDef={taskObjectDef} filters={[]} onFiltersChange={vi.fn()} />);
     fireEvent.click(screen.getByText('Filters'));
     expect(screen.getByLabelText('Filter field')).toBeDefined();
   });

@@ -7,11 +7,7 @@ import { HotReloadManager } from '../src/hot-reload.js';
 import { FederationPlugin } from '../src/plugin.js';
 import { MockModuleResolver, RemoteLoader } from '../src/remote-loader.js';
 import { SharedDependencyManager, isVersionCompatible } from '../src/shared-deps.js';
-import type {
-  RemoteEntry,
-  ResolvedFederationConfig,
-  SharedDependency,
-} from '../src/types.js';
+import type { RemoteEntry, ResolvedFederationConfig, SharedDependency } from '../src/types.js';
 import { resolveConfig, DEFAULT_FEDERATION_CONFIG } from '../src/types.js';
 
 // ---------------------------------------------------------------------------
@@ -113,7 +109,11 @@ describe('O.5.1 — Host Configuration', () => {
 
   test('resolveRemotes uses scope when provided', () => {
     const entries: RemoteEntry[] = [
-      createRemoteEntry({ name: 'crm', scope: 'crm-scope', url: 'https://crm.example.com/entry.js' }),
+      createRemoteEntry({
+        name: 'crm',
+        scope: 'crm-scope',
+        url: 'https://crm.example.com/entry.js',
+      }),
     ];
     const resolved = configurator.resolveRemotes(entries);
     expect(resolved['crm-scope']).toBe('https://crm.example.com/entry.js');
@@ -256,7 +256,12 @@ describe('O.5.2 — Remote Loader', () => {
   test('accepts modules with named plugin export', async () => {
     const remote = createRemoteEntry();
     resolver.register(remote.url, {
-      plugin: { name: 'named-plugin', init: async () => {}, start: async () => {}, stop: async () => {} },
+      plugin: {
+        name: 'named-plugin',
+        init: async () => {},
+        start: async () => {},
+        stop: async () => {},
+      },
     });
 
     const result = await loader.load(remote);
@@ -353,14 +358,18 @@ describe('O.5.3 — Shared Dependencies', () => {
   });
 
   test('checkConflicts detects version incompatibility', () => {
-    manager.register(createSharedDep({ name: 'react', version: '18.0.0', requiredVersion: '^19.0.0' }));
+    manager.register(
+      createSharedDep({ name: 'react', version: '18.0.0', requiredVersion: '^19.0.0' }),
+    );
     const conflicts = manager.checkConflicts();
     expect(conflicts.length).toBeGreaterThan(0);
     expect(conflicts[0]).toContain('does not satisfy');
   });
 
   test('checkConflicts returns empty for valid deps', () => {
-    manager.register(createSharedDep({ name: 'react', version: '19.1.0', requiredVersion: '^19.0.0' }));
+    manager.register(
+      createSharedDep({ name: 'react', version: '19.1.0', requiredVersion: '^19.0.0' }),
+    );
     const conflicts = manager.checkConflicts();
     expect(conflicts).toEqual([]);
   });
@@ -374,7 +383,9 @@ describe('O.5.3 — Shared Dependencies', () => {
   });
 
   test('buildSharedScope returns scope object', () => {
-    manager.register(createSharedDep({ name: 'react', version: '19.0.0', singleton: true, eager: false }));
+    manager.register(
+      createSharedDep({ name: 'react', version: '19.0.0', singleton: true, eager: false }),
+    );
     const scope = manager.buildSharedScope();
     expect(scope['react']).toEqual({ version: '19.0.0', singleton: true, eager: false });
   });
@@ -438,7 +449,9 @@ describe('O.5.4 — Hot Reload', () => {
 
   test('notifyChange emits change event', async () => {
     const events: any[] = [];
-    manager.onReload((e) => { events.push(e); });
+    manager.onReload((e) => {
+      events.push(e);
+    });
 
     await manager.notifyChange('crm-plugin');
     expect(events.length).toBe(1);
@@ -474,7 +487,9 @@ describe('O.5.4 — Hot Reload', () => {
 
   test('triggerReload emits add for first time', async () => {
     const events: any[] = [];
-    manager.onReload((e) => { events.push(e); });
+    manager.onReload((e) => {
+      events.push(e);
+    });
 
     const event = await manager.triggerReload('new-plugin');
     expect(event.type).toBe('add');
@@ -488,7 +503,9 @@ describe('O.5.4 — Hot Reload', () => {
   });
 
   test('callback errors do not crash the manager', async () => {
-    manager.onReload(() => { throw new Error('boom'); });
+    manager.onReload(() => {
+      throw new Error('boom');
+    });
     manager.onReload(jest.fn());
     // Should not throw
     await manager.notifyChange('test');

@@ -1,9 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  organization,
-  useActiveOrganization,
-  useListOrganizations,
-} from '@/lib/auth-client';
+import { organization, useActiveOrganization, useListOrganizations } from '@/lib/auth-client';
 import { ChevronsUpDown, Plus, Check } from 'lucide-react';
 import {
   DropdownMenu,
@@ -52,9 +48,7 @@ export function OrgSwitcher() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{orgName}</span>
                 {orgSlug && (
-                  <span className="truncate text-xs text-muted-foreground">
-                    {orgSlug}
-                  </span>
+                  <span className="truncate text-xs text-muted-foreground">{orgSlug}</span>
                 )}
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -79,9 +73,7 @@ export function OrgSwitcher() {
                   {org.name.charAt(0).toUpperCase()}
                 </div>
                 <span className="flex-1 truncate">{org.name}</span>
-                {activeOrg?.id === org.id && (
-                  <Check className="size-4 text-muted-foreground" />
-                )}
+                {activeOrg?.id === org.id && <Check className="size-4 text-muted-foreground" />}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

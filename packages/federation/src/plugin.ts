@@ -70,7 +70,9 @@ export class FederationPlugin implements Plugin {
       if (result.success) {
         context.logger.info(`[Federation] Loaded remote: ${remote.name}`);
       } else {
-        context.logger.error(`[Federation] Failed to load remote: ${remote.name} — ${result.error}`);
+        context.logger.error(
+          `[Federation] Failed to load remote: ${remote.name} — ${result.error}`,
+        );
       }
     }
 
@@ -111,7 +113,8 @@ export class FederationPlugin implements Plugin {
   getHealthReport(): PluginHealthReport {
     const loaded = this.remoteLoader.getLoaded();
     const total = this.config.remotes.length;
-    const status = loaded.length === total ? 'healthy' : loaded.length > 0 ? 'degraded' : 'unhealthy';
+    const status =
+      loaded.length === total ? 'healthy' : loaded.length > 0 ? 'degraded' : 'unhealthy';
     return {
       status,
       message: `${loaded.length}/${total} remotes loaded`,
@@ -126,7 +129,10 @@ export class FederationPlugin implements Plugin {
   getCapabilities(): PluginCapability[] {
     return [
       { name: 'remote-loading', description: 'Load plugins from remote URLs at runtime' },
-      { name: 'shared-dependencies', description: 'Manage shared dependencies across host and remotes' },
+      {
+        name: 'shared-dependencies',
+        description: 'Manage shared dependencies across host and remotes',
+      },
       { name: 'hot-reload', description: 'Hot-reload remote plugins during development' },
       { name: 'host-config', description: 'Generate Module Federation config for Vite/Webpack' },
     ];
