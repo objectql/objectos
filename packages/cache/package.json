@@ -27,6 +27,6 @@
     "typescript": "^5.9.3"
   },
   "optionalDependencies": {
-    "ioredis": "^5.4.2"
+    "ioredis": "^5.9.3"
   }
 }
