@@ -12,13 +12,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#profiles
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const ObjectPermissionObject = ObjectSchema.create({
+export const ObjectPermissionObject: ServiceObject = ObjectSchema.create({
   name: 'object_permission',
   label: 'Object Permission',
   pluralLabel: 'Object Permissions',
   icon: 'lock',
-  description: 'Defines CRUD + lifecycle + viewAll/modifyAll permissions for an object, scoped to a permission set.',
+  description:
+    'Defines CRUD + lifecycle + viewAll/modifyAll permissions for an object, scoped to a permission set.',
   isSystem: true,
 
   fields: {

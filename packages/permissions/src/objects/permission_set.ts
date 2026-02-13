@@ -18,13 +18,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#permission-sets
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const PermissionSetObject = ObjectSchema.create({
+export const PermissionSetObject: ServiceObject = ObjectSchema.create({
   name: 'permission_set',
   label: 'Permission Set',
   pluralLabel: 'Permission Sets',
   icon: 'key',
-  description: 'Unified permission container. Profiles (is_profile=true) and add-on sets (is_profile=false).',
+  description:
+    'Unified permission container. Profiles (is_profile=true) and add-on sets (is_profile=false).',
   isSystem: true,
 
   fields: {
@@ -71,14 +73,16 @@ export const PermissionSetObject = ObjectSchema.create({
     system_permissions: {
       type: 'json' as const,
       label: 'System Permissions',
-      description: 'Array of system permission keys, e.g. ["manage_users", "export_reports", "bulk_api_enabled"]',
+      description:
+        'Array of system permission keys, e.g. ["manage_users", "export_reports", "bulk_api_enabled"]',
     },
 
     // ── Row-Level Security (spec: rowLevelSecurity) ─────────────────────────
     row_level_security: {
       type: 'json' as const,
       label: 'Row-Level Security',
-      description: 'Array of RLS policies: [{ name, object, operation, using, check, roles, enabled, priority }]',
+      description:
+        'Array of RLS policies: [{ name, object, operation, using, check, roles, enabled, priority }]',
     },
 
     // ── ObjectOS extensions (not in spec) ───────────────────────────────────

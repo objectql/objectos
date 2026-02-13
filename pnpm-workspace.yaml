@@ -5,6 +5,7 @@ packages:
 
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - better-sqlite3
   - esbuild
   - sqlite3
   - unrs-resolver
