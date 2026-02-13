@@ -29,6 +29,6 @@
   },
   "optionalDependencies": {
     "better-sqlite3": "^11.0.0",
-    "ioredis": "^5.4.2"
+    "ioredis": "^5.9.3"
   }
 }
