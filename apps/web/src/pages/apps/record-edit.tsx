@@ -48,7 +48,7 @@ export default function RecordEditPage() {
             Back to list
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">Record not found</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Record not found</h2>
         <p className="text-muted-foreground">
           The requested record does not exist or you do not have permission to edit it.
         </p>
@@ -81,7 +81,7 @@ export default function RecordEditPage() {
             {recordTitle}
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">Edit {recordTitle}</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Edit {recordTitle}</h2>
         <p className="text-muted-foreground">
           Update this {((objectDef?.label ?? objectName) || 'record').toLowerCase()} record.
         </p>

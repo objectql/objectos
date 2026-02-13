@@ -74,7 +74,7 @@ export default function AuditPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Audit Log</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Audit Log</h2>
         <p className="text-muted-foreground">
           Track all system events, mutations, and access history.
         </p>
@@ -172,9 +172,9 @@ export default function AuditPage() {
                   <TableHead>Timestamp</TableHead>
                   <TableHead>Event Type</TableHead>
                   <TableHead>Object</TableHead>
-                  <TableHead>Record ID</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Changes</TableHead>
+                  <TableHead className="hidden md:table-cell">Record ID</TableHead>
+                  <TableHead className="hidden sm:table-cell">User</TableHead>
+                  <TableHead className="hidden lg:table-cell">Changes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -189,13 +189,13 @@ export default function AuditPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">{event.objectName}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                       {event.recordId || '-'}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
                       {event.userId || 'System'}
                     </TableCell>
-                    <TableCell className="text-sm">
+                    <TableCell className="hidden text-sm lg:table-cell">
                       {event.changes && event.changes.length > 0 ? (
                         <div className="space-y-1">
                           {event.changes.slice(0, 2).map((change, idx) => (

@@ -121,7 +121,7 @@ export default function JobsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Jobs Monitor</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Jobs Monitor</h2>
         <p className="text-muted-foreground">
           Monitor and manage background jobs, queue status, and retry failed tasks.
         </p>
@@ -129,7 +129,7 @@ export default function JobsPage() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Total</CardDescription>
@@ -160,7 +160,7 @@ export default function JobsPage() {
       {/* Jobs Table */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Job Queue</CardTitle>
               <CardDescription>View and manage background jobs</CardDescription>
@@ -194,9 +194,9 @@ export default function JobsPage() {
                 <TableRow>
                   <TableHead>Job Name</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Priority</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Retries</TableHead>
+                  <TableHead className="hidden sm:table-cell">Priority</TableHead>
+                  <TableHead className="hidden md:table-cell">Created</TableHead>
+                  <TableHead className="hidden sm:table-cell">Retries</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,13 +207,13 @@ export default function JobsPage() {
                     <TableCell>
                       <Badge variant={statusColors[job.status] as any}>{job.status}</Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <Badge variant={priorityColors[job.priority] as any}>{job.priority}</Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                       {new Date(job.createdAt).toLocaleString()}
                     </TableCell>
-                    <TableCell>{job.retryCount || 0}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{job.retryCount || 0}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         {job.status === 'failed' && (

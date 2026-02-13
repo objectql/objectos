@@ -72,7 +72,7 @@ export default function PluginsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Plugin Management</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Plugin Management</h2>
         <p className="text-muted-foreground">
           View loaded plugins, health status, and capabilities.
         </p>
@@ -117,30 +117,30 @@ export default function PluginsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Plugin</TableHead>
-                    <TableHead>Version</TableHead>
+                    <TableHead className="hidden sm:table-cell">Version</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Uptime</TableHead>
-                    <TableHead>Services</TableHead>
-                    <TableHead>Security</TableHead>
+                    <TableHead className="hidden md:table-cell">Uptime</TableHead>
+                    <TableHead className="hidden lg:table-cell">Services</TableHead>
+                    <TableHead className="hidden md:table-cell">Security</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {plugins.map((plugin) => (
                     <TableRow key={plugin.name}>
                       <TableCell className="font-medium">{plugin.name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
                         {plugin.version}
                       </TableCell>
                       <TableCell>
                         <Badge variant={statusColors[plugin.status] as any}>{plugin.status}</Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                         {formatUptime(plugin.uptime)}
                       </TableCell>
-                      <TableCell className="text-sm">
+                      <TableCell className="hidden text-sm lg:table-cell">
                         {plugin.manifest?.capabilities?.services?.join(', ') || '-'}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         <div className="flex gap-1">
                           {plugin.manifest?.security?.handlesSensitiveData && (
                             <Badge variant="secondary" className="text-xs">

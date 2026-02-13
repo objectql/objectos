@@ -41,7 +41,7 @@ export default function RecordCreatePage() {
             Back to list
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">Object not found</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Object not found</h2>
         <p className="text-muted-foreground">Cannot create a record for an undefined object.</p>
       </div>
     );
@@ -74,7 +74,7 @@ export default function RecordCreatePage() {
             {objectDef.pluralLabel ?? objectDef.label ?? objectName}
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">New {objectDef.label ?? objectName}</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">New {objectDef.label ?? objectName}</h2>
         <p className="text-muted-foreground">
           Create a new {((objectDef?.label ?? objectName) || 'record').toLowerCase()} record.
         </p>

@@ -34,7 +34,7 @@ export default function ObjectUIDemoPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">ObjectUI Integration</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-3xl">ObjectUI Integration</h2>
         <p className="text-muted-foreground">
           Demonstration of @object-ui components integrated with ObjectStack backend.
         </p>

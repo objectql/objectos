@@ -83,7 +83,7 @@ export default function ObjectListPage() {
             Back to app
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">Object not found</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Object not found</h2>
         <p className="text-muted-foreground">
           The object &ldquo;{objectName}&rdquo; is not defined in this application.
         </p>
@@ -103,14 +103,14 @@ export default function ObjectListPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
           {objectDef.pluralLabel ?? objectDef.label ?? objectName}
         </h2>
         {objectDef.description && <p className="text-muted-foreground">{objectDef.description}</p>}
       </div>
 
       {/* Toolbar — H.4.2 + I.2 bulk actions + I.6 CSV */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <ObjectToolbar
           objectDef={objectDef}
           total={total}

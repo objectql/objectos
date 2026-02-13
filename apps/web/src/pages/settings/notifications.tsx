@@ -57,7 +57,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Notification Settings</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Notification Settings</h2>
         <p className="text-muted-foreground">
           Manage notification channels, templates, and delivery settings.
         </p>
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
 
       {/* Queue Status */}
       {queueStatus && (
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Pending</CardDescription>
@@ -117,7 +117,7 @@ export default function NotificationsPage() {
                   <TableHead>Channel</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Configuration</TableHead>
+                  <TableHead className="hidden sm:table-cell">Configuration</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -134,7 +134,7 @@ export default function NotificationsPage() {
                         <Badge variant="secondary">Disabled</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
                       {Object.entries(channel.config)
                         .filter(([_, value]) => value && value !== 'not configured')
                         .map(([key, value]) => (

@@ -70,7 +70,7 @@ export default function OrganizationSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Organization</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Organization</h2>
         <p className="text-muted-foreground">Switch, create, and manage organizations.</p>
       </div>
 

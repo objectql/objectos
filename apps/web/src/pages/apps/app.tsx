@@ -53,7 +53,7 @@ export default function BusinessAppPage() {
   if (!appDef) {
     return (
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">App not found</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">App not found</h2>
         <p className="text-muted-foreground">The requested business app is not installed.</p>
       </div>
     );
@@ -62,7 +62,7 @@ export default function BusinessAppPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">{appDef.label}</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{appDef.label}</h2>
         <p className="text-muted-foreground">{appDef.description}</p>
         {appDef.active === false && (
           <Badge variant="outline" className="mt-2">

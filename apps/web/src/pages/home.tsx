@@ -37,10 +37,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="text-5xl font-bold mb-4 text-foreground tracking-tight">
+        <h1 className="text-3xl font-bold mb-4 text-foreground tracking-tight sm:text-5xl">
           Welcome to ObjectOS
         </h1>
-        <p className="text-xl mb-8 text-muted-foreground">
+        <p className="text-lg mb-8 text-muted-foreground sm:text-xl">
           A Business Operating System for the ObjectStack Ecosystem
         </p>
 
