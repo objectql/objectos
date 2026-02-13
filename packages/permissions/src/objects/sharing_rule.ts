@@ -16,13 +16,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#sharing-rules
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const SharingRuleObject = ObjectSchema.create({
+export const SharingRuleObject: ServiceObject = ObjectSchema.create({
   name: 'sharing_rule',
   label: 'Sharing Rule',
   pluralLabel: 'Sharing Rules',
   icon: 'share-2',
-  description: 'Sharing rules extend access beyond the role hierarchy based on ownership or criteria.',
+  description:
+    'Sharing rules extend access beyond the role hierarchy based on ownership or criteria.',
   isSystem: true,
 
   titleFormat: '{label}',
@@ -98,7 +100,8 @@ export const SharingRuleObject = ObjectSchema.create({
     // ── Criteria-Based: condition expression (spec: condition) ───────────────
     condition: Field.text({
       label: 'Condition',
-      description: "Expression for criteria-based rules, e.g. \"type = 'customer' AND is_active = true\"",
+      description:
+        'Expression for criteria-based rules, e.g. "type = \'customer\' AND is_active = true"',
     }),
 
     // ── Shared With (spec: sharedWith: { type, value }) ─────────────────────

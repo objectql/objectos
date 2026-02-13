@@ -13,15 +13,9 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#sharing-rules
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-const ACCESS_LEVELS = [
-  { label: 'Private', value: 'private' },
-  { label: 'Public Read Only', value: 'public_read_only' },
-  { label: 'Public Read/Write', value: 'public_read_write' },
-  { label: 'Controlled By Parent', value: 'controlled_by_parent' },
-] as const;
-
-export const OrganizationDefaultObject = ObjectSchema.create({
+export const OrganizationDefaultObject: ServiceObject = ObjectSchema.create({
   name: 'organization_default',
   label: 'Organization-Wide Default',
   pluralLabel: 'Organization-Wide Defaults',
@@ -70,13 +64,12 @@ export const OrganizationDefaultObject = ObjectSchema.create({
     grant_access_using_hierarchy: Field.boolean({
       label: 'Grant Access Using Role Hierarchy',
       defaultValue: true,
-      description: 'When true, users higher in the role hierarchy inherit access to subordinates\' records',
+      description:
+        "When true, users higher in the role hierarchy inherit access to subordinates' records",
     }),
   },
 
-  indexes: [
-    { fields: ['object_name'], unique: true },
-  ],
+  indexes: [{ fields: ['object_name'], unique: true }],
 
   enable: {
     trackHistory: true,

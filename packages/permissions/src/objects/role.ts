@@ -10,13 +10,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#role-hierarchy
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const RoleObject = ObjectSchema.create({
+export const RoleObject: ServiceObject = ObjectSchema.create({
   name: 'role',
   label: 'Role',
   pluralLabel: 'Roles',
   icon: 'sitemap',
-  description: 'Roles control record-level access through a hierarchy. Users higher in the hierarchy can see records owned by subordinates.',
+  description:
+    'Roles control record-level access through a hierarchy. Users higher in the hierarchy can see records owned by subordinates.',
   isSystem: true,
 
   titleFormat: '{label}',
@@ -54,7 +56,8 @@ export const RoleObject = ObjectSchema.create({
     hierarchy_path: Field.text({
       label: 'Hierarchy Path',
       readonly: true,
-      description: "Auto-computed materialized path, e.g. '/executive/sales_director/sales_manager'",
+      description:
+        "Auto-computed materialized path, e.g. '/executive/sales_director/sales_manager'",
     }),
 
     hierarchy_level: Field.number({

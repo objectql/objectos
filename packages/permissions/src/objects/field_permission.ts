@@ -15,13 +15,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#field-level-security
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const FieldPermissionObject = ObjectSchema.create({
+export const FieldPermissionObject: ServiceObject = ObjectSchema.create({
   name: 'field_permission',
   label: 'Field Permission',
   pluralLabel: 'Field Permissions',
   icon: 'columns',
-  description: 'Controls visibility and editability of specific fields, scoped to a permission set.',
+  description:
+    'Controls visibility and editability of specific fields, scoped to a permission set.',
   isSystem: true,
 
   fields: {

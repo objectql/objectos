@@ -34,6 +34,7 @@ export { SharingRuleObject } from './sharing_rule.js';
 
 // ── Convenience aggregate ──────────────────────────────────────────────────────
 
+import type { ServiceObject } from '@objectstack/spec/data';
 import { PermissionSetObject } from './permission_set.js';
 import { PermissionSetAssignmentObject } from './permission_set_assignment.js';
 import { ObjectPermissionObject } from './object_permission.js';
@@ -52,7 +53,7 @@ import { SharingRuleObject } from './sharing_rule.js';
  * config.objects = PermissionObjects;
  * ```
  */
-export const PermissionObjects = [
+export const PermissionObjects: readonly ServiceObject[] = [
   PermissionSetObject,
   PermissionSetAssignmentObject,
   ObjectPermissionObject,

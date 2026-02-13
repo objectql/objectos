@@ -6,13 +6,15 @@
  * @see https://protocol.objectstack.ai/docs/guides/security#permission-sets
  */
 import { ObjectSchema, Field } from '@objectstack/spec/data';
+import type { ServiceObject } from '@objectstack/spec/data';
 
-export const PermissionSetAssignmentObject = ObjectSchema.create({
+export const PermissionSetAssignmentObject: ServiceObject = ObjectSchema.create({
   name: 'permission_set_assignment',
   label: 'Permission Set Assignment',
   pluralLabel: 'Permission Set Assignments',
   icon: 'user-check',
-  description: 'Links permission sets to users or groups. A user can have multiple permission sets.',
+  description:
+    'Links permission sets to users or groups. A user can have multiple permission sets.',
   isSystem: true,
 
   fields: {
