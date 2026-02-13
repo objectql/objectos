@@ -78,23 +78,23 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/driver-memory':
-        specifier: 3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/objectql':
-        specifier: 3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/plugin-auth':
-        specifier: 3.0.1
-        version: 3.0.1(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(pino@10.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
+        specifier: 3.0.2
+        version: 3.0.2(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(pino@10.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
       '@objectstack/plugin-hono-server':
-        specifier: 3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: 3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       build:
         specifier: ^0.1.4
         version: 0.1.4
@@ -115,8 +115,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.0(jiti@2.6.1))
       '@objectstack/cli':
-        specifier: ^3.0.1
-        version: 3.0.1(@objectstack/core@3.0.1(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(@objectstack/core@3.0.2(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -260,8 +260,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@objectstack/client':
-        specifier: 3.0.0
-        version: 3.0.0(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -354,12 +354,12 @@ importers:
   examples/crm:
     dependencies:
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@objectstack/cli':
-        specifier: ^3.0.0
-        version: 3.0.0(@objectstack/core@3.0.1(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(@objectstack/core@3.0.2(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -367,24 +367,24 @@ importers:
   examples/todo:
     dependencies:
       '@objectstack/client':
-        specifier: 3.0.0
-        version: 3.0.0(pino@10.3.0)
+        specifier: 3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/driver-memory':
-        specifier: ^3.0.0
-        version: 3.0.0(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/objectql':
-        specifier: ^3.0.0
-        version: 3.0.0(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@objectstack/cli':
-        specifier: ^3.0.0
-        version: 3.0.0(@objectstack/core@3.0.1(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(@objectstack/core@3.0.2(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -392,11 +392,11 @@ importers:
   packages/agent:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -420,11 +420,11 @@ importers:
   packages/analytics:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -451,11 +451,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@objectos/permissions':
         specifier: workspace:^
@@ -485,11 +485,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       better-auth:
         specifier: ^1.4.18
         version: 1.4.18(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
@@ -537,11 +537,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       cron-parser:
         specifier: ^4.9.0
         version: 4.9.0
@@ -571,11 +571,11 @@ importers:
   packages/browser:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       comlink:
         specifier: ^4.4.1
         version: 4.4.2
@@ -614,11 +614,11 @@ importers:
   packages/cache:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -646,11 +646,11 @@ importers:
   packages/federation:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -674,11 +674,11 @@ importers:
   packages/graphql:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       graphql:
         specifier: ^16.10.0
         version: 16.12.0
@@ -705,11 +705,11 @@ importers:
   packages/i18n:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -743,11 +743,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       cron-parser:
         specifier: ^4.9.0
         version: 4.9.0
@@ -774,11 +774,11 @@ importers:
   packages/marketplace:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -802,11 +802,11 @@ importers:
   packages/metrics:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -830,11 +830,11 @@ importers:
   packages/notification:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -874,11 +874,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -911,11 +911,11 @@ importers:
   packages/realtime:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       ws:
         specifier: ^8.16.0
         version: 8.19.0
@@ -945,11 +945,11 @@ importers:
   packages/storage:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.12
@@ -983,11 +983,11 @@ importers:
   packages/telemetry:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -1011,11 +1011,11 @@ importers:
   packages/ui:
     dependencies:
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -1042,11 +1042,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(pino@10.3.0)
       '@objectstack/runtime':
-        specifier: ^3.0.1
-        version: 3.0.1(pino@10.3.0)
+        specifier: ^3.0.2
+        version: 3.0.2(pino@10.3.0)
       '@objectstack/spec':
-        specifier: 3.0.1
-        version: 3.0.1
+        specifier: 3.0.2
+        version: 3.0.2
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -2559,23 +2559,17 @@ packages:
   '@objectql/types@4.2.0':
     resolution: {integrity: sha512-GDJZ3tCTcVtZHJJTum5CvS9Ex2edsImfYx0rZ67bQ53YSKRr+c/wXl8bQ7HV/0fD59zRybNZxxsjmI5Viaztcw==}
 
-  '@objectstack/cli@3.0.0':
-    resolution: {integrity: sha512-SaqcYnWfYja/gCWs7E30WOqEhI+VvJI7eZ3aWg/a/a1ll03kYRnDSevUt+ZSIQN01PALQlZHzR5ybakh/H71lg==}
+  '@objectstack/cli@3.0.2':
+    resolution: {integrity: sha512-LAdGrxX+3wUKusj2LNt5+QFJCpdGPnn9g1EvwHKQbsXdSnTdoxHMKVXpQHn10tcBaDeIgYBbFDDOtPrmbHQiuA==}
     hasBin: true
     peerDependencies:
-      '@objectstack/core': 3.0.0
-
-  '@objectstack/cli@3.0.1':
-    resolution: {integrity: sha512-nA70xBN+ilaac3Icy8Bkben/dH8x7sBrluUWjydwqIit/5IJFTdFygjsTmUrSWjqqr4ovlJ8P1zwYmLD3izCqg==}
-    hasBin: true
-    peerDependencies:
-      '@objectstack/core': 3.0.1
+      '@objectstack/core': 3.0.2
 
   '@objectstack/client@2.0.7':
     resolution: {integrity: sha512-obBwaLPSBh9S+bHuwHx4G25e9aMvUpbzr7jnfGaCt8BsBC9D96C2Zgv6SvY3RnxoozjSaRu3DP6HLS+O3Ki60g==}
 
-  '@objectstack/client@3.0.0':
-    resolution: {integrity: sha512-6puK6tjc6UZ3THnKe4bbJMjV1n1/leKVX9RypOTy7BKxzwKdUZ13YVWoi45XYLdiivY9ZQoyFTWZfX8oRv1zhQ==}
+  '@objectstack/client@3.0.2':
+    resolution: {integrity: sha512-a/zVeVYjid38nIDV5mzvQH5sKJSen+4bIhjTW/LHaIHytEBcugwVJ1kgC96YEAodVWTolXBY898QrYifIAIYgA==}
 
   '@objectstack/core@1.1.0':
     resolution: {integrity: sha512-BabYj3iESh5t5Yw7pwcRE+2gHZU2jl78/Emx9frUnZ9exkRurxGEynLXVK4Us5UQgjNjVJzZILAQPO5syTD33A==}
@@ -2593,60 +2587,37 @@ packages:
       pino:
         optional: true
 
-  '@objectstack/core@3.0.0':
-    resolution: {integrity: sha512-3SXwc5VPO9lbT+PC7PSjNh8nvOegOuIjYMyDRJDMQbD96wZXSvtZBkRkStxEGb0s9/L+7GapGrxhbS3ANaRAVQ==}
+  '@objectstack/core@3.0.2':
+    resolution: {integrity: sha512-NGOUXg8Kq2TSJXDzsK48RuXUFHbNEclVlYkfz7x3WzSBAEcv+TUWTctRX8y75y5N8ZY8XWSnlOz5sbMX8+Frxg==}
     peerDependencies:
       pino: ^8.0.0
     peerDependenciesMeta:
       pino:
         optional: true
 
-  '@objectstack/core@3.0.1':
-    resolution: {integrity: sha512-59oplVQMmGDOML8pfffXCYA4rM6qAL1bAbdclU98u2+inb5D9IcApfB+AqxXZlCUI5qP3Zaq4roGnAZrcX79cA==}
-    peerDependencies:
-      pino: ^8.0.0
-    peerDependenciesMeta:
-      pino:
-        optional: true
-
-  '@objectstack/driver-memory@3.0.0':
-    resolution: {integrity: sha512-ZL/wDPF2VZfyLtkSyiLn5vQDAQvG3L879bDP2aaEqWHzMvThpxUDOttd0nwdTDEN5iGjH0AwFZF3fDyxHVVC+g==}
-
-  '@objectstack/driver-memory@3.0.1':
-    resolution: {integrity: sha512-orq0UjytKbt4ZfKntgJQg0WYp6io9fZFKP6520r3Z7q/PYMtDUt0xTIdTRnUo1IupexNF9AV+lsDkN10gsU2cA==}
+  '@objectstack/driver-memory@3.0.2':
+    resolution: {integrity: sha512-Kkt5b5vnf3vTGYwoiNTL/FzVNLNkR6ucPJU8kHIZ7OVOIW74fTdd88n58/2RG4bN2I/xidBtpIRjlm/eaS6b/A==}
 
   '@objectstack/objectql@1.1.0':
     resolution: {integrity: sha512-guV2hcN21jx0T6gJeXcppzXLmNS0Uu+ooaiN+knS4c9ZxPdTk2GnAyg2wlfL8kGCrYvOSm4y32zogZFd74snow==}
 
-  '@objectstack/objectql@3.0.0':
-    resolution: {integrity: sha512-nSUh3CQZv3aBJN4hVuwNUM9rHJXnqNpum+H9hMug5qySPpU3GjRnJiZmh4xXtVEVGV+uci0McIXvi7m34hd7fQ==}
+  '@objectstack/objectql@3.0.2':
+    resolution: {integrity: sha512-bwnNDGaSvBrs6gj+qyWeP6tq1Be5eWSWQWbS6rv3VuwGI9gThwX8Q7icQ2MSy7msELrXUQqf/bmhkcX2ORLhrg==}
 
-  '@objectstack/objectql@3.0.1':
-    resolution: {integrity: sha512-sFMKbKLvr1lielDDmrNfmB0+oCt9rgRBSrjraKfnn3ZJSbX6qNN66pZ1pfrVryq3jCsOqs6Pe1Mkz8PNM1FLDw==}
+  '@objectstack/plugin-auth@3.0.2':
+    resolution: {integrity: sha512-cxu14egMYW4KBDjbJ99pBZ5qt4NyrrNj2CPE5l2j9phYoAgkaEHmRO445IWUGzPwuCQLRphHEmNhV3UjVTbPLA==}
 
-  '@objectstack/plugin-auth@3.0.1':
-    resolution: {integrity: sha512-lx6wCTNmhkPhQtbzr7lPYl4yfDrREWGX2qKfu++Xhn/fdOp7xpEviFy1iLwThX7zs1S1e/E/HdQlNKrEwAJnLA==}
+  '@objectstack/plugin-hono-server@3.0.2':
+    resolution: {integrity: sha512-HZ6m550nfpOC0nVgBQilqnUi+0sl4UD8W/HN5q6ZjAZVsor0It5DG04FS4j0FKvl5yEj7xt4J637YOnQ6hWdPQ==}
 
-  '@objectstack/plugin-hono-server@3.0.0':
-    resolution: {integrity: sha512-R2XIu54e5vY22yhw0rzW+6YKcAFWac+m9R0zRHNBjRHI2MF417tR8WkGs7cokwm+or5ZtmCrbzsRjDJiJShOUw==}
-
-  '@objectstack/plugin-hono-server@3.0.1':
-    resolution: {integrity: sha512-ZnxO4L/6rEnUFyct7Ad5XD3XLlUOUpRDKRWfCCUwtfEAE/Av0pMMI6WGqGNFuAKu4L9+hctGeO05FVEk7CnifA==}
-
-  '@objectstack/rest@3.0.0':
-    resolution: {integrity: sha512-SieNwtEhyDDNL9Xeo9QbmioctiMbez21mg8lEX9lzh6i7iS5giZpLWoKdal+6HyQUNOmw8w19gA5bnfalODMzw==}
-
-  '@objectstack/rest@3.0.1':
-    resolution: {integrity: sha512-HGHJ1kZIElyZXSjcECf8UPnfUok6mATHYCOlLUa0tcKs9kTkx9FyXkja3quhU0kOKHsgzbnhM7E0arh4ECKE6A==}
+  '@objectstack/rest@3.0.2':
+    resolution: {integrity: sha512-3Sd7vibsgHD0MLCrqzmz76VgrB1Ka2MLLcr8uvhzLySdhOBzmgrdFt2hnjdQ3482TlW3ua7TRC4zNKp/LGnGhw==}
 
   '@objectstack/runtime@1.1.0':
     resolution: {integrity: sha512-6gcKCdUG4Y4OfUMbn6hWh5QGYooql7m7ejXXnKxmRrOV1M/a1CuW0KfTjiM/Dt+Qey0KIoemuwkyTQd1c0enbg==}
 
-  '@objectstack/runtime@3.0.0':
-    resolution: {integrity: sha512-PLikvOY3AihDY7Myxlon3BIhnUUvY9WiVCJbB4E/LSzlozYpvYkZ+JUVYMFzeJ2pMrPyzQmRSXjkBQKxYGfe5w==}
-
-  '@objectstack/runtime@3.0.1':
-    resolution: {integrity: sha512-NboZQ8sShV5NlCJrHyv0BjL4TeJ1tuBLE6eiReUChjnbPQbneRtTHnwWgEP9HN0+4b8VTlkonzAFHuGpkg2HAQ==}
+  '@objectstack/runtime@3.0.2':
+    resolution: {integrity: sha512-eDKUYNwxYGFsRsbM3qjazYY5AjdFi3dzcnu8vu1VBZSnLoApofVm/Q7ieO2Aik5tTae6JZlO7h3//lopCyzbgg==}
 
   '@objectstack/spec@1.1.0':
     resolution: {integrity: sha512-U0NiY+8ByG4klzKcXyOWjE0IWie8Qykj3Pm/MYz2IGZB0kyZmL5GHSNUltmd18rs96Aqfst/vCTSKM8/nPmnUA==}
@@ -2656,22 +2627,15 @@ packages:
     resolution: {integrity: sha512-PBuOrrWlcj8/ZDfClvEmZ3ll3uP/XVMEbtqCLiiJG+IwlpvCXcCtEWECzL47R3IHd2Ccq4+K7MXFL0yrnYPYoA==}
     engines: {node: '>=18.0.0'}
 
-  '@objectstack/spec@3.0.0':
-    resolution: {integrity: sha512-F8UGqVV4CO7BDgzHsNEzTmXGnsW7uzXziHkb3flU/ATZotqc1k7JLArps6vFZAD8e9mWm7OHa1XVdY+IGTDmlg==}
-    engines: {node: '>=18.0.0'}
-
-  '@objectstack/spec@3.0.1':
-    resolution: {integrity: sha512-cM7MFE+GSXvL+sJcwjw1Rwcwa30yGlYOAakLkTmX0R4i5qzhjUl9Rzwha9t2EXcn74gHOgy8cTy82yLgFwfMsQ==}
+  '@objectstack/spec@3.0.2':
+    resolution: {integrity: sha512-EA5mToq46WKj/1Ki4zwvmuRogqL2NLW4OJz9ZT5CNJFF7QJTVhxE8V0xXsezugJQ1xrRQBinci0VRc2fxeC3gA==}
     engines: {node: '>=18.0.0'}
 
   '@objectstack/types@1.1.0':
     resolution: {integrity: sha512-akcqUcMX05SdikD300xX9CKFTC6OqAXtvpwmZ0IS4ZgZlt68Ljr4zXuqtPlf9l+E8f7l2xGG0XoPaehDmfdTYg==}
 
-  '@objectstack/types@3.0.0':
-    resolution: {integrity: sha512-zei64KIpwjdsLhZBC13ndmpzJ7G/IzaEcW73w1Vq0bcjcLS3WMwpUcSAZwzD34ncNe+/ZIaU+N2hlQUuvm0rqg==}
-
-  '@objectstack/types@3.0.1':
-    resolution: {integrity: sha512-msugwBiuQvFY1i45h9CTmw/PMQfsyjk9AlPUimg0iuFUmhAs1/PeXSG4wGEb1Q8m7yn/EEdU9DEXWT4HPHoIcg==}
+  '@objectstack/types@3.0.2':
+    resolution: {integrity: sha512-OPF+eCT4HuKkqRkH9X0GrgVZgrjt5MzS9heVlhp0GjMF+IZwC/srkp4tuM+iomD7TBIi0XQQAjnbEtxEkVf33w==}
 
   '@orama/orama@3.1.18':
     resolution: {integrity: sha512-a61ljmRVVyG5MC/698C8/FfFDw5a8LOIvyOLW5fztgUXqUpc1jOfQzOitSCbge657OgXXThmY3Tk8fpiDb4UcA==}
@@ -10062,33 +10026,15 @@ snapshots:
 
   '@objectql/types@4.2.0': {}
 
-  '@objectstack/cli@3.0.0(@objectstack/core@3.0.1(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)':
+  '@objectstack/cli@3.0.2(@objectstack/core@3.0.2(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)':
     dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/driver-memory': 3.0.0(pino@10.3.0)
-      '@objectstack/objectql': 3.0.0(pino@10.3.0)
-      '@objectstack/plugin-hono-server': 3.0.0(pino@10.3.0)
-      '@objectstack/rest': 3.0.0(pino@10.3.0)
-      '@objectstack/runtime': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
-      bundle-require: 5.1.0(esbuild@0.27.2)
-      chalk: 5.6.2
-      commander: 14.0.3
-      tsx: 4.21.0
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - esbuild
-      - pino
-
-  '@objectstack/cli@3.0.1(@objectstack/core@3.0.1(pino@10.3.0))(esbuild@0.27.2)(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/driver-memory': 3.0.1(pino@10.3.0)
-      '@objectstack/objectql': 3.0.1(pino@10.3.0)
-      '@objectstack/plugin-hono-server': 3.0.1(pino@10.3.0)
-      '@objectstack/rest': 3.0.1(pino@10.3.0)
-      '@objectstack/runtime': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/driver-memory': 3.0.2(pino@10.3.0)
+      '@objectstack/objectql': 3.0.2(pino@10.3.0)
+      '@objectstack/plugin-hono-server': 3.0.2(pino@10.3.0)
+      '@objectstack/rest': 3.0.2(pino@10.3.0)
+      '@objectstack/runtime': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
       bundle-require: 5.1.0(esbuild@0.27.2)
       chalk: 5.6.2
       commander: 14.0.3
@@ -10105,10 +10051,10 @@ snapshots:
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/client@3.0.0(pino@10.3.0)':
+  '@objectstack/client@3.0.2(pino@10.3.0)':
     dependencies:
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
     transitivePeerDependencies:
       - pino
 
@@ -10128,34 +10074,18 @@ snapshots:
     optionalDependencies:
       pino: 10.3.0
 
-  '@objectstack/core@3.0.0(pino@10.3.0)':
+  '@objectstack/core@3.0.2(pino@10.3.0)':
     dependencies:
-      '@objectstack/spec': 3.0.0
+      '@objectstack/spec': 3.0.2
       pino-pretty: 13.1.3
       zod: 4.3.6
     optionalDependencies:
       pino: 10.3.0
 
-  '@objectstack/core@3.0.1(pino@10.3.0)':
+  '@objectstack/driver-memory@3.0.2(pino@10.3.0)':
     dependencies:
-      '@objectstack/spec': 3.0.1
-      pino-pretty: 13.1.3
-      zod: 4.3.6
-    optionalDependencies:
-      pino: 10.3.0
-
-  '@objectstack/driver-memory@3.0.0(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
-      mingo: 7.2.0
-    transitivePeerDependencies:
-      - pino
-
-  '@objectstack/driver-memory@3.0.1(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
       mingo: 7.2.0
     transitivePeerDependencies:
       - pino
@@ -10168,26 +10098,18 @@ snapshots:
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/objectql@3.0.0(pino@10.3.0)':
+  '@objectstack/objectql@3.0.2(pino@10.3.0)':
     dependencies:
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
-      '@objectstack/types': 3.0.0
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
+      '@objectstack/types': 3.0.2
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/objectql@3.0.1(pino@10.3.0)':
+  '@objectstack/plugin-auth@3.0.2(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(pino@10.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))':
     dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
-      '@objectstack/types': 3.0.1
-    transitivePeerDependencies:
-      - pino
-
-  '@objectstack/plugin-auth@3.0.1(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(pino@10.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))':
-    dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
       better-auth: 1.4.18(better-sqlite3@12.6.2)(mongodb@7.0.0(socks@2.8.7))(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.17.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.18(@types/node@25.2.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
     transitivePeerDependencies:
       - '@lynx-js/react'
@@ -10211,36 +10133,19 @@ snapshots:
       - vitest
       - vue
 
-  '@objectstack/plugin-hono-server@3.0.0(pino@10.3.0)':
+  '@objectstack/plugin-hono-server@3.0.2(pino@10.3.0)':
     dependencies:
       '@hono/node-server': 1.19.9(hono@4.11.9)
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
       hono: 4.11.9
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/plugin-hono-server@3.0.1(pino@10.3.0)':
+  '@objectstack/rest@3.0.2(pino@10.3.0)':
     dependencies:
-      '@hono/node-server': 1.19.9(hono@4.11.9)
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
-      hono: 4.11.9
-    transitivePeerDependencies:
-      - pino
-
-  '@objectstack/rest@3.0.0(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - pino
-
-  '@objectstack/rest@3.0.1(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
       zod: 4.3.6
     transitivePeerDependencies:
       - pino
@@ -10254,22 +10159,12 @@ snapshots:
     transitivePeerDependencies:
       - pino
 
-  '@objectstack/runtime@3.0.0(pino@10.3.0)':
+  '@objectstack/runtime@3.0.2(pino@10.3.0)':
     dependencies:
-      '@objectstack/core': 3.0.0(pino@10.3.0)
-      '@objectstack/rest': 3.0.0(pino@10.3.0)
-      '@objectstack/spec': 3.0.0
-      '@objectstack/types': 3.0.0
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - pino
-
-  '@objectstack/runtime@3.0.1(pino@10.3.0)':
-    dependencies:
-      '@objectstack/core': 3.0.1(pino@10.3.0)
-      '@objectstack/rest': 3.0.1(pino@10.3.0)
-      '@objectstack/spec': 3.0.1
-      '@objectstack/types': 3.0.1
+      '@objectstack/core': 3.0.2(pino@10.3.0)
+      '@objectstack/rest': 3.0.2(pino@10.3.0)
+      '@objectstack/spec': 3.0.2
+      '@objectstack/types': 3.0.2
       zod: 4.3.6
     transitivePeerDependencies:
       - pino
@@ -10282,11 +10177,7 @@ snapshots:
     dependencies:
       zod: 4.3.6
 
-  '@objectstack/spec@3.0.0':
-    dependencies:
-      zod: 4.3.6
-
-  '@objectstack/spec@3.0.1':
+  '@objectstack/spec@3.0.2':
     dependencies:
       zod: 4.3.6
 
@@ -10294,13 +10185,9 @@ snapshots:
     dependencies:
       '@objectstack/spec': 1.1.0
 
-  '@objectstack/types@3.0.0':
+  '@objectstack/types@3.0.2':
     dependencies:
-      '@objectstack/spec': 3.0.0
-
-  '@objectstack/types@3.0.1':
-    dependencies:
-      '@objectstack/spec': 3.0.1
+      '@objectstack/spec': 3.0.2
 
   '@orama/orama@3.1.18': {}
 
