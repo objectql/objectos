@@ -109,14 +109,15 @@ export default function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Members</h2>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Members</h2>
           <p className="text-muted-foreground">Manage members of {activeOrg.name}.</p>
         </div>
         <Button onClick={() => setInviteOpen(true)}>
           <UserPlus />
-          Invite Member
+          <span className="hidden sm:inline">Invite Member</span>
+          <span className="sm:hidden">Invite</span>
         </Button>
       </div>
 
@@ -134,7 +135,7 @@ export default function MembersPage() {
                 <TableRow>
                   <TableHead>Member</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
+                  <TableHead className="hidden sm:table-cell">Joined</TableHead>
                   <TableHead className="w-[50px]" />
                 </TableRow>
               </TableHeader>
@@ -159,7 +160,7 @@ export default function MembersPage() {
                     <TableCell>
                       <Badge variant={roleBadgeVariant(member.role)}>{member.role}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">
                       {new Date(member.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>

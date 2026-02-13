@@ -44,7 +44,7 @@ export default function PermissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Permissions & RBAC</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Permissions & RBAC</h2>
         <p className="text-muted-foreground">
           Manage roles, permission sets, and object-level access policies.
         </p>
@@ -74,19 +74,19 @@ export default function PermissionsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Label</TableHead>
-                  <TableHead>Description</TableHead>
+                  <TableHead className="hidden sm:table-cell">Label</TableHead>
+                  <TableHead className="hidden md:table-cell">Description</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Objects</TableHead>
+                  <TableHead className="hidden sm:table-cell">Type</TableHead>
+                  <TableHead className="hidden md:table-cell">Objects</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {permissionSets.map((set) => (
                   <TableRow key={set.name}>
                     <TableCell className="font-medium font-mono text-sm">{set.name}</TableCell>
-                    <TableCell>{set.label || set.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="hidden sm:table-cell">{set.label || set.name}</TableCell>
+                    <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                       {set.description || '-'}
                     </TableCell>
                     <TableCell>
@@ -96,14 +96,14 @@ export default function PermissionsPage() {
                         <Badge variant="secondary">Inactive</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       {set.isSystem ? (
                         <Badge variant="default">System</Badge>
                       ) : (
                         <Badge variant="secondary">Custom</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm">
+                    <TableCell className="hidden text-sm md:table-cell">
                       {set.objectPermissions ? Object.keys(set.objectPermissions).length : 0} object
                       {Object.keys(set.objectPermissions || {}).length !== 1 ? 's' : ''}
                     </TableCell>

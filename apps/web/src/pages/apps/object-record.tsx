@@ -56,7 +56,7 @@ export default function ObjectRecordPage() {
             Back to list
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">Record not found</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Record not found</h2>
         <p className="text-muted-foreground">The requested record does not exist.</p>
       </div>
     );
@@ -126,10 +126,10 @@ export default function ObjectRecordPage() {
             {objectDef.pluralLabel ?? objectDef.label ?? objectName}
           </Link>
         </Button>
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold tracking-tight">{recordTitle}</h2>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{recordTitle}</h2>
           {workflowStatus && <WorkflowStatusBadge status={workflowStatus} />}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:ml-auto">
             {/* Clone — I.5 */}
             <CloneRecordDialog
               objectDef={objectDef}

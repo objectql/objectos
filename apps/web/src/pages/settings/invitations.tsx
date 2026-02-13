@@ -109,7 +109,7 @@ export default function InvitationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Invitations</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Invitations</h2>
         <p className="text-muted-foreground">Manage organization invitations.</p>
       </div>
 
@@ -131,7 +131,7 @@ export default function InvitationsPage() {
                 <TableRow>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Expires</TableHead>
+                  <TableHead className="hidden sm:table-cell">Expires</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -142,7 +142,7 @@ export default function InvitationsPage() {
                     <TableCell>
                       <Badge variant="secondary">{inv.role}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">
                       {new Date(inv.expiresAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
@@ -182,7 +182,7 @@ export default function InvitationsPage() {
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Sent</TableHead>
+                    <TableHead className="hidden sm:table-cell">Sent</TableHead>
                     <TableHead className="w-[50px]" />
                   </TableRow>
                 </TableHeader>
@@ -196,7 +196,7 @@ export default function InvitationsPage() {
                       <TableCell>
                         <Badge variant={statusVariant(inv.status)}>{inv.status}</Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="hidden text-muted-foreground sm:table-cell">
                         {new Date(inv.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell>

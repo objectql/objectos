@@ -60,7 +60,7 @@ export default function SettingsOverviewPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Settings</h2>
         <p className="text-muted-foreground">
           Welcome back, {user.name || 'Admin'}. Manage your platform from here.
         </p>

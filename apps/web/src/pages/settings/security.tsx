@@ -179,7 +179,7 @@ export default function SecuritySettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Security</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Security</h2>
         <p className="text-muted-foreground">
           Manage two-factor authentication and active sessions.
         </p>
@@ -382,8 +382,8 @@ export default function SecuritySettingsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Device</TableHead>
-                  <TableHead>IP Address</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead className="hidden sm:table-cell">IP Address</TableHead>
+                  <TableHead className="hidden sm:table-cell">Created</TableHead>
                   <TableHead className="w-24"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -403,10 +403,10 @@ export default function SecuritySettingsPage() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
                         {s.ipAddress || '—'}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
                         {formatDate(s.createdAt)}
                       </TableCell>
                       <TableCell>

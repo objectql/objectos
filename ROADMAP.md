@@ -1,8 +1,8 @@
 # ObjectOS Roadmap
 
-> **Version**: 14.1.0
-> **Date**: February 12, 2026
-> **Status**: Phase P — Developer Experience ✅ Complete
+> **Version**: 15.0.0
+> **Date**: February 13, 2026
+> **Status**: Phase Q — Mobile UX Optimization ✅ Complete
 > **Spec SDK**: `@objectstack/spec@3.0.2`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
@@ -10,20 +10,24 @@
 
 ## Executive Summary
 
-ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 19 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–P are complete**. The platform has completed **Phase P — Developer Experience**, delivering documentation accuracy, code quality tooling, test infrastructure standardization, and developer onboarding improvements.
+ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 19 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–Q are complete**. The platform has completed **Phase Q — Mobile UX Optimization**, delivering responsive layouts, adaptive table columns, touch-friendly headers, and responsive typography across all 31 pages of the Admin Console.
 
 The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift: the Admin Console's Business App Shell now leverages @object-ui's `SchemaRenderer` for metadata-driven UI rendering, replacing hand-built components with protocol-compliant controls.
 
-**All roadmap phases are now complete.** The platform is production-ready with comprehensive developer tooling, coverage reporting, plugin scaffolding, and environment health checks.
+**All roadmap phases are now complete.** The platform is production-ready with comprehensive developer tooling, coverage reporting, plugin scaffolding, environment health checks, and mobile-optimized UI.
 
 > **@objectstack/\* v3.0.1 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.1 — the latest patch release of the 3.x series, bringing bug fixes and performance improvements while maintaining full protocol compatibility.
 
 ### What Changed
 
-| Before (Plan v14.0)                | After (Plan v14.1 — This Roadmap)                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| @objectstack/\* packages at v3.0.0 | **@objectstack/\* packages upgraded to v3.0.1** — latest patch release with bug fixes and improvements |
-| Spec SDK at 3.0.0                  | Spec SDK updated to 3.0.1 — full protocol compatibility maintained                                     |
+| Before (Plan v14.1)                          | After (Plan v15.0 — This Roadmap)                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Phase P was the last completed phase         | **Phase Q — Mobile UX Optimization** complete across all 31 Admin Console pages                  |
+| Cards used fixed `px-6` padding              | Cards use responsive `px-4 sm:px-6` padding for mobile comfort                                   |
+| Layout headers fixed at `h-16 px-4`          | Headers adapt to `h-14 px-3` on mobile, `h-16 px-4` on desktop                                   |
+| Tables showed all columns on all screens     | Non-essential table columns hidden on mobile via `hidden sm:table-cell` / `hidden md:table-cell` |
+| Page headings used fixed `text-2xl`          | Headings use responsive `text-xl sm:text-2xl` across all pages                                   |
+| Header + action button rows used inline flex | Header sections stack vertically on mobile via `flex-col sm:flex-row`                            |
 
 ---
 
@@ -104,6 +108,7 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 | **N** | **Enterprise Features**                                |   **Feb 2026**   | **✅ Complete** |
 | **O** | **Platform Expansion**                                 |   **Feb 2026**   | **✅ Complete** |
 | **P** | **Developer Experience**                               | **Feb–Apr 2026** | **✅ Complete** |
+| **Q** | **Mobile UX Optimization**                             |   **Feb 2026**   | **✅ Complete** |
 
 ### Phase G Outcomes
 
@@ -454,6 +459,63 @@ A comprehensive scan of the entire codebase identified the following improvement
 
 ---
 
+## Phase Q — Mobile UX Optimization (v3.0.0 — February 2026) ✅
+
+> **Goal**: Evaluate every page and component in the Admin Console, optimize mobile user experience with responsive layouts, adaptive tables, and touch-friendly interactions.
+
+### Q.1 — Shared Component Optimization
+
+| #     | Task                                                                  | Priority | Status |
+| ----- | --------------------------------------------------------------------- | :------: | :----: |
+| Q.1.1 | Card component: responsive padding (`px-4 sm:px-6`) for all sub-parts |    🔴    |   ✅   |
+| Q.1.2 | SettingsLayout: compact mobile header (`h-14 px-3 sm:h-16 sm:px-4`)   |    🔴    |   ✅   |
+| Q.1.3 | AppLayout: compact mobile header with truncated breadcrumbs           |    🔴    |   ✅   |
+| Q.1.4 | SettingsLayout: hide ObjectOS label on mobile (`hidden sm:inline`)    |    🟡    |   ✅   |
+
+### Q.2 — Page-Level Responsive Typography
+
+| #     | Task                                                                           | Priority | Status |
+| ----- | ------------------------------------------------------------------------------ | :------: | :----: |
+| Q.2.1 | All settings page headings: `text-xl sm:text-2xl` (16 pages)                   |    🔴    |   ✅   |
+| Q.2.2 | Home page: responsive hero text (`text-3xl sm:text-5xl`, `text-lg sm:text-xl`) |    🟡    |   ✅   |
+| Q.2.3 | Business app page headings: `text-xl sm:text-2xl` (5 pages)                    |    🟡    |   ✅   |
+| Q.2.4 | Organization page headings: `text-xl sm:text-2xl` (5 pages)                    |    🟡    |   ✅   |
+| Q.2.5 | ObjectUI demo heading: `text-xl sm:text-3xl`                                   |    🟢    |   ✅   |
+
+### Q.3 — Responsive Table Columns
+
+| #     | Task                                                                           | Priority | Status |
+| ----- | ------------------------------------------------------------------------------ | :------: | :----: |
+| Q.3.1 | Members table: hide "Joined" column on mobile (`hidden sm:table-cell`)         |    🔴    |   ✅   |
+| Q.3.2 | Audit table: hide Record ID / User / Changes columns progressively             |    🔴    |   ✅   |
+| Q.3.3 | Jobs table: hide Priority / Created / Retries columns on mobile                |    🟡    |   ✅   |
+| Q.3.4 | Invitations tables: hide Expires / Sent columns on mobile                      |    🟡    |   ✅   |
+| Q.3.5 | Metrics tables: hide Labels / Description columns; histogram hide P50/P99/Max  |    🟡    |   ✅   |
+| Q.3.6 | Permissions table: hide Label / Description / Type / Objects columns on mobile |    🟡    |   ✅   |
+| Q.3.7 | Plugins table: hide Version / Uptime / Services / Security columns on mobile   |    🟡    |   ✅   |
+| Q.3.8 | Security sessions table: hide IP Address / Created columns on mobile           |    🟡    |   ✅   |
+| Q.3.9 | Notifications table: hide Configuration column on mobile                       |    🟢    |   ✅   |
+
+### Q.4 — Responsive Header + Action Layouts
+
+| #     | Task                                                                          | Priority | Status |
+| ----- | ----------------------------------------------------------------------------- | :------: | :----: |
+| Q.4.1 | Members page: header + Invite button stack on mobile (`flex-col sm:flex-row`) |    🔴    |   ✅   |
+| Q.4.2 | Teams page: header + Create Team button stack on mobile                       |    🟡    |   ✅   |
+| Q.4.3 | Jobs card header: title + filter dropdown stack on mobile                     |    🟡    |   ✅   |
+| Q.4.4 | Object list toolbar: stack on mobile                                          |    🟡    |   ✅   |
+| Q.4.5 | Object record: title + action buttons stack on mobile                         |    🟡    |   ✅   |
+| Q.4.6 | Stats card grids: `sm:grid-cols-2 md:grid-cols-4` (Jobs, Notifications)       |    🟢    |   ✅   |
+
+### Q.5 — Mobile-Specific Enhancements
+
+| #     | Task                                                                       | Priority | Status |
+| ----- | -------------------------------------------------------------------------- | :------: | :----: |
+| Q.5.1 | Members invite button: short label on mobile (`Invite` vs `Invite Member`) |    🟢    |   ✅   |
+| Q.5.2 | Content area padding: `p-3 sm:p-4` in both layouts                         |    🟡    |   ✅   |
+
+---
+
 ## Release Timeline
 
 ### v1.0.0 — Production Release (Target: March 2026)
@@ -540,6 +602,15 @@ A comprehensive scan of the entire codebase identified the following improvement
   - ADR directory with ADR-001 (Vitest standardization) ✅
   - GitHub issue templates (bug report, feature request, plugin proposal) ✅
 
+### v3.0.0 — Mobile UX Optimization (Target: February 2026)
+
+- Phase Q: Mobile UX Optimization
+  - Shared component responsive padding (Card, Layouts) ✅
+  - Responsive typography across all 31 pages ✅
+  - Adaptive table columns — hide non-essential columns on mobile ✅
+  - Header + action button stacking on mobile ✅
+  - Compact mobile headers and content padding ✅
+
 ### Master Timeline
 
 ```
@@ -581,6 +652,14 @@ Feb 2026                                                    Sep 2026
   │   P.3 Test standardization                 │              │
   │   P.4 Onboarding (guides, templates, ADR)  │              │
   │                                      v2.1–2.4 Releases    │
+  │                                             │              │
+  ├── Phase Q: Mobile UX Optimization ─────────┤              │
+  │   Q.1 Shared component responsive padding  │              │
+  │   Q.2 Responsive typography (31 pages)     │              │
+  │   Q.3 Adaptive table columns               │              │
+  │   Q.4 Header + action stacking             │              │
+  │   Q.5 Mobile-specific enhancements         │              │
+  │                                      v3.0.0 Release       │
   ▼                                             ▼              ▼
 ```
 
@@ -721,5 +800,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v14.1.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.1</sub>
+<sub>ObjectOS v15.0.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.2</sub>
 </div>

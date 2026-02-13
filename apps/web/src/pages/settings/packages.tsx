@@ -6,7 +6,7 @@ export default function PackagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Package Management</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Package Management</h2>
         <p className="text-muted-foreground">
           Install, enable, and manage ObjectOS plugins and app packages.
         </p>

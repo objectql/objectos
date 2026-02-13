@@ -66,7 +66,7 @@ export default function MetricsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Metrics Dashboard</h2>
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Metrics Dashboard</h2>
         <p className="text-muted-foreground">
           System metrics and performance indicators from ObjectOS kernel.
         </p>
@@ -120,22 +120,22 @@ export default function MetricsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Metric</TableHead>
-                      <TableHead>Labels</TableHead>
+                      <TableHead className="hidden sm:table-cell">Labels</TableHead>
                       <TableHead className="text-right">Value</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead className="hidden md:table-cell">Description</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {counterMetrics.map((metric, idx) => (
                       <TableRow key={idx}>
                         <TableCell className="font-medium">{metric.name}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="hidden text-xs text-muted-foreground sm:table-cell">
                           {formatLabels(metric.labels)}
                         </TableCell>
                         <TableCell className="text-right font-mono">
                           {formatValue(metric.value)}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                           {metric.help}
                         </TableCell>
                       </TableRow>
@@ -158,22 +158,22 @@ export default function MetricsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Metric</TableHead>
-                      <TableHead>Labels</TableHead>
+                      <TableHead className="hidden sm:table-cell">Labels</TableHead>
                       <TableHead className="text-right">Value</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead className="hidden md:table-cell">Description</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {gaugeMetrics.map((metric, idx) => (
                       <TableRow key={idx}>
                         <TableCell className="font-medium">{metric.name}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="hidden text-xs text-muted-foreground sm:table-cell">
                           {formatLabels(metric.labels)}
                         </TableCell>
                         <TableCell className="text-right font-mono">
                           {formatValue(metric.value)}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                           {metric.help}
                         </TableCell>
                       </TableRow>
@@ -197,11 +197,11 @@ export default function MetricsPage() {
                     <TableRow>
                       <TableHead>Metric</TableHead>
                       <TableHead>Count</TableHead>
-                      <TableHead>Mean</TableHead>
-                      <TableHead>P50</TableHead>
+                      <TableHead className="hidden sm:table-cell">Mean</TableHead>
+                      <TableHead className="hidden md:table-cell">P50</TableHead>
                       <TableHead>P95</TableHead>
-                      <TableHead>P99</TableHead>
-                      <TableHead>Max</TableHead>
+                      <TableHead className="hidden md:table-cell">P99</TableHead>
+                      <TableHead className="hidden sm:table-cell">Max</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -209,17 +209,17 @@ export default function MetricsPage() {
                       <TableRow key={idx}>
                         <TableCell className="font-medium">{metric.name}</TableCell>
                         <TableCell className="font-mono">{metric.count || 0}</TableCell>
-                        <TableCell className="font-mono">{formatValue(metric.mean)}</TableCell>
-                        <TableCell className="font-mono">
+                        <TableCell className="hidden font-mono sm:table-cell">{formatValue(metric.mean)}</TableCell>
+                        <TableCell className="hidden font-mono md:table-cell">
                           {formatValue(metric.percentiles?.p50)}
                         </TableCell>
                         <TableCell className="font-mono">
                           {formatValue(metric.percentiles?.p95)}
                         </TableCell>
-                        <TableCell className="font-mono">
+                        <TableCell className="hidden font-mono md:table-cell">
                           {formatValue(metric.percentiles?.p99)}
                         </TableCell>
-                        <TableCell className="font-mono">{formatValue(metric.max)}</TableCell>
+                        <TableCell className="hidden font-mono sm:table-cell">{formatValue(metric.max)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

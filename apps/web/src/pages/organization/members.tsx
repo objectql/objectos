@@ -109,9 +109,9 @@ export default function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Members</h2>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Members</h2>
           <p className="text-muted-foreground">Manage members of {activeOrg.name}.</p>
         </div>
         <Button onClick={() => setInviteOpen(true)}>
