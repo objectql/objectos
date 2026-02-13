@@ -1,43 +1,43 @@
 version: 2
 updates:
   # Enable version updates for npm packages
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "02:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '02:00'
     open-pull-requests-limit: 10
     labels:
-      - "dependencies"
-      - "automated"
+      - 'dependencies'
+      - 'automated'
     commit-message:
-      prefix: "chore"
-      prefix-development: "chore"
-      include: "scope"
+      prefix: 'chore'
+      prefix-development: 'chore'
+      include: 'scope'
     # Group all patch updates together
     groups:
       patch-updates:
         patterns:
-          - "*"
+          - '*'
         update-types:
-          - "patch"
+          - 'patch'
       minor-updates:
         patterns:
-          - "*"
+          - '*'
         update-types:
-          - "minor"
+          - 'minor'
 
   # Enable version updates for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "02:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '02:00'
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: 'chore'
+      include: 'scope'

@@ -1,7 +1,6 @@
 ---
-title: "Migration Guide: From Kernel/Server to Runtime"
+title: 'Migration Guide: From Kernel/Server to Runtime'
 ---
-
 
 This guide helps you migrate from the deprecated `@objectos/kernel` and `@objectos/server` packages to the new microkernel architecture using `@objectstack/runtime`.
 
@@ -89,7 +88,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ /* ... */ });
+  app.enableCors({
+    /* ... */
+  });
   await app.listen(3000);
 }
 bootstrap();
@@ -100,8 +101,12 @@ bootstrap();
 import { ObjectOS } from '@objectos/kernel';
 
 const os = new ObjectOS({
-  datasources: { /* ... */ },
-  plugins: [ /* ... */ ]
+  datasources: {
+    /* ... */
+  },
+  plugins: [
+    /* ... */
+  ],
 });
 await os.init();
 ```
@@ -121,14 +126,18 @@ async function bootstrap() {
   const kernel = new ObjectKernel();
 
   // Register core plugins
-  kernel.use(DriverPlugin({
-    driver: 'postgres',
-    connection: process.env.DATABASE_URL
-  }));
+  kernel.use(
+    DriverPlugin({
+      driver: 'postgres',
+      connection: process.env.DATABASE_URL,
+    }),
+  );
 
-  kernel.use(ObjectQLPlugin({
-    metadata: './metadata',
-  }));
+  kernel.use(
+    ObjectQLPlugin({
+      metadata: './metadata',
+    }),
+  );
 
   // Register feature plugins
   kernel.use(BetterAuthPlugin);
@@ -186,10 +195,10 @@ export const MyPlugin: Plugin = {
 
   async init(ctx: PluginContext) {
     ctx.logger.info('Initializing MyPlugin');
-    
+
     // Register services
     ctx.registerService('myservice', new MyService());
-    
+
     // Subscribe to events
     ctx.hook('data.created', async (data) => {
       // Handle event
@@ -203,7 +212,7 @@ export const MyPlugin: Plugin = {
 
   async destroy() {
     // Cleanup
-  }
+  },
 };
 ```
 
@@ -224,29 +233,31 @@ export const MyPlugin: Plugin = {
 
 ## Feature Migration Map
 
-| Old Kernel Feature | New Solution |
-|-------------------|--------------|
-| `ObjectOS.load()` | `ObjectQLPlugin` handles metadata loading |
-| `ObjectOS.init()` | `kernel.bootstrap()` |
-| Permission System | `@objectos/plugin-permissions` (coming soon) |
-| Plugin Management | Part of `@objectstack/runtime` core |
-| Metrics & Monitoring | `@objectos/plugin-metrics` (coming soon) |
-| Hot Reload | Built into `@objectstack/runtime` |
-| Workflow Engine | `@objectos/plugin-workflow` (coming soon) |
-| Audit Logging | `@objectos/plugin-audit-log` |
-| Authentication | `@objectos/plugin-better-auth` |
+| Old Kernel Feature   | New Solution                                 |
+| -------------------- | -------------------------------------------- |
+| `ObjectOS.load()`    | `ObjectQLPlugin` handles metadata loading    |
+| `ObjectOS.init()`    | `kernel.bootstrap()`                         |
+| Permission System    | `@objectos/plugin-permissions` (coming soon) |
+| Plugin Management    | Part of `@objectstack/runtime` core          |
+| Metrics & Monitoring | `@objectos/plugin-metrics` (coming soon)     |
+| Hot Reload           | Built into `@objectstack/runtime`            |
+| Workflow Engine      | `@objectos/plugin-workflow` (coming soon)    |
+| Audit Logging        | `@objectos/plugin-audit-log`                 |
+| Authentication       | `@objectos/plugin-better-auth`               |
 
 ## Common Patterns
 
 ### Pattern 1: Service Registration
 
 **Old:**
+
 ```typescript
 // Services were managed manually or via kernel context
 kernel.services.register('myService', service);
 ```
 
 **New:**
+
 ```typescript
 // Use plugin context
 async init(ctx: PluginContext) {
@@ -257,11 +268,13 @@ async init(ctx: PluginContext) {
 ### Pattern 2: Event Handling
 
 **Old:**
+
 ```typescript
 kernel.on('afterInsert', handler);
 ```
 
 **New:**
+
 ```typescript
 async init(ctx: PluginContext) {
   ctx.hook('data.created', handler);
@@ -271,11 +284,13 @@ async init(ctx: PluginContext) {
 ### Pattern 3: Accessing Other Services
 
 **Old:**
+
 ```typescript
 const driver = kernel.getDriver();
 ```
 
 **New:**
+
 ```typescript
 async start(ctx: PluginContext) {
   const driver = ctx.getService('driver');
@@ -291,7 +306,7 @@ import { ObjectOS } from '@objectos/kernel';
 
 describe('MyTest', () => {
   let kernel: ObjectOS;
-  
+
   beforeEach(async () => {
     kernel = new ObjectOS();
     await kernel.init();
@@ -307,13 +322,13 @@ import { ObjectQLPlugin } from '@objectstack/runtime';
 
 describe('MyTest', () => {
   let kernel: ObjectKernel;
-  
+
   beforeEach(async () => {
     kernel = new ObjectKernel();
     kernel.use(ObjectQLPlugin());
     await kernel.bootstrap();
   });
-  
+
   afterEach(async () => {
     await kernel.shutdown();
   });

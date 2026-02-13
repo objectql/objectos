@@ -52,13 +52,13 @@ export function useRecords({
           params.orderby = sortOrder === 'desc' ? `${sortField} desc` : sortField;
         }
         if (filters?.length) {
-          params.filter = filters.map(
-            (f) => {
+          params.filter = filters
+            .map((f) => {
               // Sanitize: escape single quotes in values to prevent filter injection
               const safeValue = f.value.replace(/'/g, "''");
               return `${f.field} ${f.operator} '${safeValue}'`;
-            },
-          ).join(' and ');
+            })
+            .join(' and ');
         }
         const result = await objectStackClient.data.find(objectName, params);
         return {
@@ -139,10 +139,19 @@ export function useCreateRecord({ objectName }: UseCreateRecordOptions) {
     // Optimistic update: append the new record to the cached list immediately
     onMutate: async (newData) => {
       await queryClient.cancelQueries({ queryKey: ['records', objectName] });
-      const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
+      const previous = queryClient.getQueriesData<RecordListResponse>({
+        queryKey: ['records', objectName],
+      });
       queryClient.setQueriesData<RecordListResponse>(
         { queryKey: ['records', objectName] },
-        (old) => old ? { ...old, records: [...old.records, { id: crypto.randomUUID(), ...newData } as RecordData], total: old.total + 1 } : old,
+        (old) =>
+          old
+            ? {
+                ...old,
+                records: [...old.records, { id: crypto.randomUUID(), ...newData } as RecordData],
+                total: old.total + 1,
+              }
+            : old,
       );
       return { previous };
     },
@@ -179,9 +188,8 @@ export function useUpdateRecord({ objectName, recordId }: UseUpdateRecordOptions
     onMutate: async (newData) => {
       await queryClient.cancelQueries({ queryKey: ['record', objectName, recordId] });
       const previous = queryClient.getQueryData<RecordData>(['record', objectName, recordId]);
-      queryClient.setQueryData<RecordData>(
-        ['record', objectName, recordId],
-        (old) => old ? { ...old, ...newData } : old,
+      queryClient.setQueryData<RecordData>(['record', objectName, recordId], (old) =>
+        old ? { ...old, ...newData } : old,
       );
       return { previous };
     },
@@ -213,14 +221,20 @@ export function useDeleteRecord({ objectName }: UseDeleteRecordOptions) {
     // Optimistic update: remove the record from the cached list immediately
     onMutate: async (recordId) => {
       await queryClient.cancelQueries({ queryKey: ['records', objectName] });
-      const previous = queryClient.getQueriesData<RecordListResponse>({ queryKey: ['records', objectName] });
+      const previous = queryClient.getQueriesData<RecordListResponse>({
+        queryKey: ['records', objectName],
+      });
       queryClient.setQueriesData<RecordListResponse>(
         { queryKey: ['records', objectName] },
         (old) => {
           if (!old) return old;
           const filtered = old.records.filter((r) => String(r.id) !== recordId);
           const removed = filtered.length < old.records.length;
-          return { ...old, records: filtered, total: removed ? Math.max(0, old.total - 1) : old.total };
+          return {
+            ...old,
+            records: filtered,
+            total: removed ? Math.max(0, old.total - 1) : old.total,
+          };
         },
       );
       return { previous };

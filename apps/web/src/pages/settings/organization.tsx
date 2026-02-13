@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { organization, useActiveOrganization, useListOrganizations } from '@/lib/auth-client';
 import {
-  organization,
-  useActiveOrganization,
-  useListOrganizations,
-} from '@/lib/auth-client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -68,31 +71,23 @@ export default function OrganizationSettingsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Organization</h2>
-        <p className="text-muted-foreground">
-          Switch, create, and manage organizations.
-        </p>
+        <p className="text-muted-foreground">Switch, create, and manage organizations.</p>
       </div>
 
       {/* Organization Switcher */}
       <Card>
         <CardHeader>
           <CardTitle>Your Organizations</CardTitle>
-          <CardDescription>
-            Select an organization to manage, or create a new one.
-          </CardDescription>
+          <CardDescription>Select an organization to manage, or create a new one.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          {orgsPending && (
-            <div className="text-sm text-muted-foreground">Loading…</div>
-          )}
+          {orgsPending && <div className="text-sm text-muted-foreground">Loading…</div>}
           {!orgsPending &&
             organizations?.map((orgItem) => (
               <button
                 key={orgItem.id}
                 type="button"
-                onClick={() =>
-                  organization.setActive({ organizationId: orgItem.id })
-                }
+                onClick={() => organization.setActive({ organizationId: orgItem.id })}
                 className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition hover:bg-muted"
               >
                 <div className="flex items-center gap-2">
@@ -107,10 +102,7 @@ export default function OrganizationSettingsPage() {
               </button>
             ))}
           <div className="pt-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/settings/organization/create')}
-            >
+            <Button variant="outline" onClick={() => navigate('/settings/organization/create')}>
               Add organization
             </Button>
           </div>
@@ -123,9 +115,7 @@ export default function OrganizationSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>General</CardTitle>
-              <CardDescription>
-                Update the name and URL slug for {activeOrg.name}.
-              </CardDescription>
+              <CardDescription>Update the name and URL slug for {activeOrg.name}.</CardDescription>
             </CardHeader>
             <form onSubmit={handleUpdate}>
               <CardContent className="space-y-4">
@@ -182,8 +172,8 @@ export default function OrganizationSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                This action cannot be undone. All members will be removed and all
-                associated data will be permanently deleted.
+                This action cannot be undone. All members will be removed and all associated data
+                will be permanently deleted.
               </p>
               <div className="space-y-2">
                 <Label htmlFor="confirm-delete">

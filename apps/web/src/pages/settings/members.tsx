@@ -101,9 +101,7 @@ export default function MembersPage() {
       <Card>
         <CardHeader>
           <CardTitle>Members</CardTitle>
-          <CardDescription>
-            Select an organization to manage its members.
-          </CardDescription>
+          <CardDescription>Select an organization to manage its members.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -114,9 +112,7 @@ export default function MembersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Members</h2>
-          <p className="text-muted-foreground">
-            Manage members of {activeOrg.name}.
-          </p>
+          <p className="text-muted-foreground">Manage members of {activeOrg.name}.</p>
         </div>
         <Button onClick={() => setInviteOpen(true)}>
           <UserPlus />
@@ -131,9 +127,7 @@ export default function MembersPage() {
               <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
           ) : members.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              No members found.
-            </div>
+            <div className="text-center py-12 text-muted-foreground">No members found.</div>
           ) : (
             <Table>
               <TableHeader>
@@ -151,15 +145,11 @@ export default function MembersPage() {
                       <div className="flex items-center gap-3">
                         <Avatar className="size-8">
                           <AvatarFallback>
-                            {member.user?.name?.charAt(0) ||
-                              member.user?.email?.charAt(0) ||
-                              '?'}
+                            {member.user?.name?.charAt(0) || member.user?.email?.charAt(0) || '?'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="font-medium">
-                            {member.user?.name || 'Unknown'}
-                          </span>
+                          <span className="font-medium">{member.user?.name || 'Unknown'}</span>
                           <span className="text-xs text-muted-foreground">
                             {member.user?.email}
                           </span>
@@ -167,9 +157,7 @@ export default function MembersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={roleBadgeVariant(member.role)}>
-                        {member.role}
-                      </Badge>
+                      <Badge variant={roleBadgeVariant(member.role)}>{member.role}</Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(member.createdAt).toLocaleDateString()}
@@ -192,9 +180,7 @@ export default function MembersPage() {
                               }
                             >
                               <Shield />
-                              {member.role === 'admin'
-                                ? 'Demote to Member'
-                                : 'Promote to Admin'}
+                              {member.role === 'admin' ? 'Demote to Member' : 'Promote to Admin'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem

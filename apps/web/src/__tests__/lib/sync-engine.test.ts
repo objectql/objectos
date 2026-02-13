@@ -115,7 +115,15 @@ describe('SyncEngine', () => {
     const deltas = await engine.pullFromServer(async (cursor) => {
       expect(cursor).toBeNull();
       return {
-        deltas: [{ objectName: 'accounts', recordId: 'a-1', type: 'update' as const, data: { name: 'Updated' }, serverTimestamp: Date.now() }],
+        deltas: [
+          {
+            objectName: 'accounts',
+            recordId: 'a-1',
+            type: 'update' as const,
+            data: { name: 'Updated' },
+            serverTimestamp: Date.now(),
+          },
+        ],
         cursor: 'cursor-1',
       };
     });

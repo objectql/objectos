@@ -73,7 +73,7 @@ describe('mock-data', () => {
   describe('data consistency', () => {
     it('all app objects reference existing object definitions', () => {
       for (const app of mockAppDefinitions) {
-        for (const objName of (app.objects ?? [])) {
+        for (const objName of app.objects ?? []) {
           expect(
             mockObjectDefinitions[objName],
             `App "${app.name}" references undefined object "${objName}"`,

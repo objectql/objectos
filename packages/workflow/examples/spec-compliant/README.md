@@ -5,9 +5,11 @@ This directory contains workflow examples that follow the [@objectstack/spec](ht
 ## Examples
 
 ### 1. leave-request-flow.yml
+
 Multi-level leave approval with threshold-based auto-approval.
 
 **Features:**
+
 - Decision nodes for conditional routing
 - Assignment nodes for approvals
 - Auto-approval for short leaves (≤3 days)
@@ -18,9 +20,11 @@ Multi-level leave approval with threshold-based auto-approval.
 **Use Case:** Employee leave requests with automatic approval for short leaves and escalation for extended leaves.
 
 ### 2. order-fulfillment-flow.yml
+
 Complete e-commerce order processing flow.
 
 **Features:**
+
 - HTTP request nodes for payment processing
 - Get/Update record nodes for inventory
 - Create record for shipment
@@ -31,9 +35,11 @@ Complete e-commerce order processing flow.
 **Use Case:** Process online orders from payment to shipping with inventory management and error handling.
 
 ### 3. multi-approval-flow.yml
+
 Threshold-based multi-level expense approval.
 
 **Features:**
+
 - Dynamic routing based on amount
 - Parallel approval chains
 - Manager → Director → Finance escalation
@@ -48,30 +54,30 @@ Threshold-based multi-level expense approval.
 These examples conform to the Flow schema from @objectstack/spec:
 
 ```yaml
-name: string         # Machine name (lowercase_snake_case)
-label: string        # Display name
-type: enum           # autolaunched | record_change | schedule | screen | api
-status: enum         # draft | active | obsolete | invalid
-version: number      # Version number
-variables: array     # Flow variables (inputs/outputs)
-nodes: array         # Flow steps
-edges: array         # Connections between nodes
+name: string # Machine name (lowercase_snake_case)
+label: string # Display name
+type: enum # autolaunched | record_change | schedule | screen | api
+status: enum # draft | active | obsolete | invalid
+version: number # Version number
+variables: array # Flow variables (inputs/outputs)
+nodes: array # Flow steps
+edges: array # Connections between nodes
 ```
 
 ## Node Types
 
 All major Flow node types are demonstrated:
 
-| Node Type | Example | Description |
-|-----------|---------|-------------|
-| `start` | All | Flow entry point |
-| `end` | All | Flow termination |
-| `decision` | All | Conditional branching |
-| `assignment` | leave-request, multi-approval | Assign tasks |
-| `create_record` | order-fulfillment | Create records |
-| `update_record` | order-fulfillment, multi-approval | Update records |
-| `get_record` | order-fulfillment | Query records |
-| `http_request` | order-fulfillment, multi-approval | External API calls |
+| Node Type          | Example                           | Description           |
+| ------------------ | --------------------------------- | --------------------- |
+| `start`            | All                               | Flow entry point      |
+| `end`              | All                               | Flow termination      |
+| `decision`         | All                               | Conditional branching |
+| `assignment`       | leave-request, multi-approval     | Assign tasks          |
+| `create_record`    | order-fulfillment                 | Create records        |
+| `update_record`    | order-fulfillment, multi-approval | Update records        |
+| `get_record`       | order-fulfillment                 | Query records         |
+| `http_request`     | order-fulfillment, multi-approval | External API calls    |
 | `connector_action` | order-fulfillment, multi-approval | Connector integration |
 
 ## Visual Layout
@@ -86,7 +92,7 @@ nodes:
     position:
       x: 100
       y: 100
-  
+
   - id: approval
     type: assignment
     label: Manager Approval
@@ -105,11 +111,11 @@ Flows support input and output variables:
 variables:
   - name: request_id
     type: text
-    isInput: true      # Input parameter
-  
+    isInput: true # Input parameter
+
   - name: final_status
     type: text
-    isOutput: true     # Output parameter
+    isOutput: true # Output parameter
 ```
 
 ## Edges (Connections)
@@ -121,14 +127,14 @@ edges:
   - id: e1
     source: decision_node
     target: approved_node
-    condition: "true"
-    label: "Approved"
-  
+    condition: 'true'
+    label: 'Approved'
+
   - id: e2
     source: decision_node
     target: rejected_node
-    condition: "false"
-    label: "Rejected"
+    condition: 'false'
+    label: 'Rejected'
 ```
 
 ## Usage
@@ -154,7 +160,7 @@ const instance = await workflowAPI.startFlow(validated, {
   employee_id: 'EMP-123',
   days_count: 5,
   start_date: '2024-03-01',
-  manager_id: 'MGR-456'
+  manager_id: 'MGR-456',
 });
 
 // Check instance status
@@ -176,6 +182,7 @@ Each node's position property enables automatic layout in visual editors.
 ## Comparison with Legacy Format
 
 ### Legacy State Machine Format
+
 ```yaml
 name: leave_request
 states:
@@ -185,6 +192,7 @@ states:
 ```
 
 ### Spec-Compliant Flow Format
+
 ```yaml
 name: leave_request_flow
 nodes:
@@ -205,20 +213,22 @@ The Flow format is more visual and suitable for graphical workflow designers, wh
 Different node types have specific configuration:
 
 **Assignment Node:**
+
 ```yaml
 - id: approval
   type: assignment
   config:
-    assignee: "{{manager_id}}"
+    assignee: '{{manager_id}}'
     dueInDays: 3
 ```
 
 **HTTP Request Node:**
+
 ```yaml
 - id: payment
   type: http_request
   config:
-    url: "https://api.payment.com/charge"
+    url: 'https://api.payment.com/charge'
     method: POST
     body: |
       {
@@ -227,10 +237,11 @@ Different node types have specific configuration:
 ```
 
 **Decision Node:**
+
 ```yaml
 - id: check_amount
   type: decision
-  condition: "{{amount}} > 1000"
+  condition: '{{amount}} > 1000'
 ```
 
 ## See Also

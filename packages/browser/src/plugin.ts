@@ -1,6 +1,6 @@
 /**
  * Browser Runtime Plugin for ObjectOS
- * 
+ *
  * This plugin enables running ObjectOS backend entirely in the browser using:
  * - SQLite WASM for database operations
  * - OPFS for file storage
@@ -9,7 +9,13 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { BrowserRuntimeConfig, PluginHealthReport, PluginCapabilityManifest, PluginSecurityManifest, PluginStartupResult } from './types/index.js';
+import type {
+  BrowserRuntimeConfig,
+  PluginHealthReport,
+  PluginCapabilityManifest,
+  PluginSecurityManifest,
+  PluginStartupResult,
+} from './types/index.js';
 import { SQLiteWASMDriver } from './database/sqlite-wasm-driver.js';
 import { OPFSStorageBackend } from './storage/opfs-storage.js';
 import { ServiceWorkerManager, SERVICE_WORKER_SCRIPT } from './service-worker/manager.js';
@@ -37,24 +43,24 @@ export class BrowserRuntimePlugin implements Plugin {
       database: {
         name: 'objectos.db',
         useOPFS: true,
-        ...config.database
+        ...config.database,
       },
       storage: {
         rootDir: 'objectos-files',
         maxQuota: 100 * 1024 * 1024, // 100MB
-        ...config.storage
+        ...config.storage,
       },
       serviceWorker: {
         enabled: true,
         scriptPath: '/sw.js',
         apiBasePath: '/api',
-        ...config.serviceWorker
+        ...config.serviceWorker,
       },
       worker: {
         enabled: false, // Disabled by default for simplicity
         scriptPath: '/worker.js',
-        ...config.worker
-      }
+        ...config.worker,
+      },
     };
   }
 
@@ -105,7 +111,7 @@ export class BrowserRuntimePlugin implements Plugin {
   async start(context: PluginContext): Promise<void> {
     context.trigger('plugin.started', { plugin: this.name });
     context.logger.info('[BrowserRuntime] Started successfully');
-    
+
     // Set up API handlers
     this.setupAPIHandlers();
   }
@@ -151,7 +157,11 @@ export class BrowserRuntimePlugin implements Plugin {
       },
       checks: [
         { name: 'browser-database', status: isDbReady ? 'passed' : 'failed', message },
-        { name: 'browser-storage', status: this.storage ? 'passed' : 'warning', message: this.storage ? 'OPFS ready' : 'Storage not initialized' },
+        {
+          name: 'browser-storage',
+          status: this.storage ? 'passed' : 'warning',
+          message: this.storage ? 'OPFS ready' : 'Storage not initialized',
+        },
       ],
     };
   }
@@ -162,17 +172,19 @@ export class BrowserRuntimePlugin implements Plugin {
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
       capabilities: {
-        provides: [{
-          id: 'com.objectstack.service.browser',
-          name: 'browser',
-          version: { major: 0, minor: 1, patch: 0 },
-          methods: [
-            { name: 'getDatabase', description: 'Get browser database instance', async: false },
-            { name: 'getStorage', description: 'Get OPFS storage instance', async: false },
-            { name: 'getServiceWorker', description: 'Get service worker manager', async: false },
-          ],
-          stability: 'experimental',
-        }],
+        provides: [
+          {
+            id: 'com.objectstack.service.browser',
+            name: 'browser',
+            version: { major: 0, minor: 1, patch: 0 },
+            methods: [
+              { name: 'getDatabase', description: 'Get browser database instance', async: false },
+              { name: 'getStorage', description: 'Get OPFS storage instance', async: false },
+              { name: 'getServiceWorker', description: 'Get service worker manager', async: false },
+            ],
+            stability: 'experimental',
+          },
+        ],
         requires: [],
       },
       security: {
@@ -188,7 +200,11 @@ export class BrowserRuntimePlugin implements Plugin {
    * Startup result
    */
   getStartupResult(): PluginStartupResult {
-    return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
+    return {
+      plugin: { name: this.name, version: this.version },
+      success: !!this.context,
+      duration: 0,
+    };
   }
 
   /**
@@ -239,7 +255,9 @@ export class BrowserRuntimePlugin implements Plugin {
     }
 
     if (typeof Worker === 'undefined') {
-      this.context?.logger.warn('[BrowserRuntime] Web Workers not supported - some features will be limited');
+      this.context?.logger.warn(
+        '[BrowserRuntime] Web Workers not supported - some features will be limited',
+      );
     }
 
     if (!('storage' in navigator)) {
@@ -264,7 +282,7 @@ export class BrowserRuntimePlugin implements Plugin {
     this.database = new SQLiteWASMDriver({
       name: this.config.database?.name,
       useOPFS: this.config.database?.useOPFS,
-      initScripts: this.config.database?.initScripts
+      initScripts: this.config.database?.initScripts,
     });
 
     await this.database.connect();
@@ -277,7 +295,7 @@ export class BrowserRuntimePlugin implements Plugin {
   private async initStorage(): Promise<void> {
     this.storage = new OPFSStorageBackend({
       rootDir: this.config.storage?.rootDir,
-      maxQuota: this.config.storage?.maxQuota
+      maxQuota: this.config.storage?.maxQuota,
     });
 
     await this.storage.init();
@@ -292,9 +310,7 @@ export class BrowserRuntimePlugin implements Plugin {
       return;
     }
 
-    this.serviceWorker = new ServiceWorkerManager(
-      this.config.serviceWorker.apiBasePath
-    );
+    this.serviceWorker = new ServiceWorkerManager(this.config.serviceWorker.apiBasePath);
 
     // Create service worker script if needed
     await this.createServiceWorkerScript();
@@ -312,7 +328,7 @@ export class BrowserRuntimePlugin implements Plugin {
     }
 
     this.worker = new WorkerManager();
-    
+
     // Create worker script if needed
     await this.createWorkerScript();
 
@@ -328,7 +344,7 @@ export class BrowserRuntimePlugin implements Plugin {
     // script to the public directory. For now, we'll just log a warning.
     this.context?.logger.warn(
       '[BrowserRuntime] Service Worker script should be available at ' +
-      this.config.serviceWorker?.scriptPath
+        this.config.serviceWorker?.scriptPath,
     );
   }
 
@@ -339,8 +355,7 @@ export class BrowserRuntimePlugin implements Plugin {
     // In a real implementation, you would generate or copy the worker
     // script to the public directory. For now, we'll just log a warning.
     this.context?.logger.warn(
-      '[BrowserRuntime] Worker script should be available at ' +
-      this.config.worker?.scriptPath
+      '[BrowserRuntime] Worker script should be available at ' + this.config.worker?.scriptPath,
     );
   }
 
@@ -363,21 +378,18 @@ export class BrowserRuntimePlugin implements Plugin {
 
         return new Response(
           JSON.stringify({
-            data: { message: 'GraphQL handler not implemented yet' }
+            data: { message: 'GraphQL handler not implemented yet' },
           }),
           {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
-          }
+            headers: { 'Content-Type': 'application/json' },
+          },
         );
       } catch (error) {
-        return new Response(
-          JSON.stringify({ error: String(error) }),
-          {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
+        return new Response(JSON.stringify({ error: String(error) }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
     });
 
@@ -385,8 +397,8 @@ export class BrowserRuntimePlugin implements Plugin {
     this.serviceWorker.registerHandler('/api/data/*', async (request: any) => {
       try {
         const url = new URL(request.url);
-        const pathParts = url.pathname.split('/').filter(p => p);
-        
+        const pathParts = url.pathname.split('/').filter((p) => p);
+
         // Extract object name and ID from path
         // e.g., /api/data/contacts/123
         const objectName = pathParts[2]; // 'contacts'
@@ -397,21 +409,18 @@ export class BrowserRuntimePlugin implements Plugin {
 
         return new Response(
           JSON.stringify({
-            message: `REST handler for ${objectName} not implemented yet`
+            message: `REST handler for ${objectName} not implemented yet`,
           }),
           {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
-          }
+            headers: { 'Content-Type': 'application/json' },
+          },
         );
       } catch (error) {
-        return new Response(
-          JSON.stringify({ error: String(error) }),
-          {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
+        return new Response(JSON.stringify({ error: String(error) }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
     });
 

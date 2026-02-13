@@ -251,6 +251,7 @@ DEBUG=objectos:*
 ### Protecting Secrets
 
 1. **Never commit `.env` to version control**
+
    ```bash
    # Add to .gitignore
    .env
@@ -259,6 +260,7 @@ DEBUG=objectos:*
    ```
 
 2. **Use different `.env` files for different environments**
+
    ```bash
    .env.development
    .env.staging
@@ -280,6 +282,7 @@ DEBUG=objectos:*
 ### Loading Environment Variables
 
 The plugin automatically loads environment variables from:
+
 1. System environment
 2. `.env` file (if using dotenv)
 3. Programmatic configuration (highest priority)

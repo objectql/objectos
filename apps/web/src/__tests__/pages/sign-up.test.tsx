@@ -99,10 +99,12 @@ describe('SignUpPage', () => {
   });
 
   it('should display error message on sign-up failure', async () => {
-    mockSignUpEmail.mockImplementation((_data: unknown, callbacks: { onError?: (ctx: { error: { message: string } }) => void }) => {
-      callbacks.onError?.({ error: { message: 'Email already exists' } });
-      return Promise.resolve();
-    });
+    mockSignUpEmail.mockImplementation(
+      (_data: unknown, callbacks: { onError?: (ctx: { error: { message: string } }) => void }) => {
+        callbacks.onError?.({ error: { message: 'Email already exists' } });
+        return Promise.resolve();
+      },
+    );
 
     renderSignUp();
 

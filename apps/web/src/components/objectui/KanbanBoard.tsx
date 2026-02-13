@@ -105,14 +105,15 @@ export function KanbanBoard({
                   <Link key={id} to={`${basePath}/${id}`} className="block">
                     <Card className="cursor-pointer transition-shadow hover:shadow-md">
                       <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-sm font-medium leading-tight">
-                          {title}
-                        </CardTitle>
+                        <CardTitle className="text-sm font-medium leading-tight">{title}</CardTitle>
                       </CardHeader>
                       <CardContent className="p-3 pt-1">
                         <div className="space-y-1">
                           {displayFields.map((field) => (
-                            <div key={field.name} className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div
+                              key={field.name}
+                              className="flex items-center gap-2 text-xs text-muted-foreground"
+                            >
                               <span className="shrink-0">{field.label}:</span>
                               <span className="truncate">
                                 <FieldRenderer field={field} value={record[field.name]} />

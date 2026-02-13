@@ -89,28 +89,28 @@ Every hook receives a context object with information about the operation:
 interface HookContext {
   // Object being operated on
   objectName: string;
-  
+
   // User performing the operation
   user: {
     id: string;
     email: string;
     roles: string[];
   };
-  
+
   // For create/update: the data being saved
   data?: Record\<string, any\>;
-  
+
   // For update/delete: the record ID
   id?: string;
-  
+
   // For find: the query options
   filters?: any;
   sort?: any;
   limit?: number;
-  
+
   // For after hooks: the result of the operation
   result?: any;
-  
+
   // For update: the old values before update
   oldValues?: Record\<string, any\>;
 }
@@ -126,10 +126,10 @@ Automatically set fields when creating records:
 kernel.on('beforeInsert', async (ctx) => {
   // Set created_at timestamp
   ctx.data.created_at = new Date();
-  
+
   // Set created_by to current user
   ctx.data.created_by = ctx.user.id;
-  
+
   // Generate unique code
   if (ctx.objectName === 'projects') {
     ctx.data.code = `PRJ-${Date.now()}`;
@@ -147,7 +147,7 @@ kernel.on('beforeInsert:contacts', async (ctx) => {
   if (ctx.data.email) {
     ctx.data.email = ctx.data.email.toLowerCase();
   }
-  
+
   // Validate age
   if (ctx.data.age && ctx.data.age < 18) {
     throw new Error('Contacts must be 18 or older');
@@ -172,13 +172,13 @@ kernel.on('afterInsert:contacts', async (ctx) => {
   await sendEmail({
     to: ctx.result.email,
     subject: 'Welcome!',
-    body: `Hello ${ctx.result.first_name}, welcome to our platform!`
+    body: `Hello ${ctx.result.first_name}, welcome to our platform!`,
   });
-  
+
   // Notify sales team
   await notifySlack({
     channel: '#sales',
-    message: `New contact created: ${ctx.result.first_name} ${ctx.result.last_name}`
+    message: `New contact created: ${ctx.result.first_name} ${ctx.result.last_name}`,
   });
 });
 
@@ -188,7 +188,7 @@ kernel.on('afterUpdate:opportunities', async (ctx) => {
     await sendEmail({
       to: ctx.result.owner.email,
       subject: 'Opportunity Stage Changed',
-      body: `Opportunity "${ctx.result.name}" moved to ${ctx.result.stage}`
+      body: `Opportunity "${ctx.result.name}" moved to ${ctx.result.stage}`,
     });
   }
 });
@@ -216,10 +216,7 @@ Sync data across related objects:
 kernel.on('afterUpdate:accounts', async (ctx) => {
   // If account status changed to inactive, update all contacts
   if (ctx.oldValues.status !== ctx.result.status && ctx.result.status === 'inactive') {
-    await kernel.update('contacts', 
-      { account: ctx.result.id },
-      { status: 'inactive' }
-    );
+    await kernel.update('contacts', { account: ctx.result.id }, { status: 'inactive' });
   }
 });
 ```
@@ -253,9 +250,9 @@ Block deletion based on business rules:
 kernel.on('beforeDelete:accounts', async (ctx) => {
   // Check if account has opportunities
   const opportunities = await kernel.find('opportunities', {
-    filters: { account: ctx.id }
+    filters: { account: ctx.id },
   });
-  
+
   if (opportunities.length > 0) {
     throw new Error('Cannot delete account with active opportunities');
   }
@@ -274,7 +271,7 @@ kernel.on('afterInsert', async (ctx) => {
     record_id: ctx.result.id,
     user_id: ctx.user.id,
     timestamp: new Date(),
-    data: ctx.data
+    data: ctx.data,
   });
 });
 
@@ -286,7 +283,7 @@ kernel.on('afterUpdate', async (ctx) => {
     user_id: ctx.user.id,
     timestamp: new Date(),
     old_values: ctx.oldValues,
-    new_values: ctx.result
+    new_values: ctx.result,
   });
 });
 ```
@@ -310,18 +307,27 @@ kernel.on('beforeInsert', async (ctx) => {
 To control execution order, use priority:
 
 ```typescript
-kernel.on('beforeInsert', async (ctx) => {
-  console.log('Low priority - runs last');
-}, { priority: 1 });
+kernel.on(
+  'beforeInsert',
+  async (ctx) => {
+    console.log('Low priority - runs last');
+  },
+  { priority: 1 },
+);
 
-kernel.on('beforeInsert', async (ctx) => {
-  console.log('High priority - runs first');
-}, { priority: 10 });
+kernel.on(
+  'beforeInsert',
+  async (ctx) => {
+    console.log('High priority - runs first');
+  },
+  { priority: 10 },
+);
 ```
 
 ## Error Handling
 
 Throwing an error in a hook will:
+
 1. Stop execution of remaining hooks
 2. Rollback the database transaction
 3. Return error to the client
@@ -331,12 +337,12 @@ kernel.on('beforeInsert:contacts', async (ctx) => {
   if (!ctx.data.email) {
     throw new Error('Email is required');
   }
-  
+
   // Check for duplicate email
   const existing = await kernel.find('contacts', {
-    filters: { email: ctx.data.email }
+    filters: { email: ctx.data.email },
   });
-  
+
   if (existing.length > 0) {
     throw new Error('Email already exists');
   }
@@ -352,13 +358,13 @@ kernel.on('afterInsert:contacts', async (ctx) => {
   // Call external API
   await fetch('https://crm.example.com/api/contacts', {
     method: 'POST',
-    body: JSON.stringify(ctx.result)
+    body: JSON.stringify(ctx.result),
   });
-  
+
   // Wait for email to send
   await sendEmail({
     to: ctx.result.email,
-    subject: 'Welcome'
+    subject: 'Welcome',
   });
 });
 ```
@@ -373,24 +379,24 @@ import { createMockDriver } from '@objectos/test-utils';
 
 describe('Contact Hooks', () => {
   let kernel: ObjectOS;
-  
+
   beforeEach(() => {
     kernel = new ObjectOS();
     kernel.useDriver(createMockDriver());
-    
+
     // Register hooks
     kernel.on('beforeInsert:contacts', async (ctx) => {
       ctx.data.email = ctx.data.email.toLowerCase();
     });
   });
-  
+
   it('should lowercase email on insert', async () => {
     const result = await kernel.insert('contacts', {
       first_name: 'John',
       last_name: 'Doe',
-      email: 'JOHN@EXAMPLE.COM'
+      email: 'JOHN@EXAMPLE.COM',
     });
-    
+
     expect(result.email).toBe('john@example.com');
   });
 });
@@ -415,11 +421,11 @@ export function AuditPlugin(kernel: ObjectOS) {
   kernel.on('afterInsert', async (ctx) => {
     await logAudit('create', ctx);
   });
-  
+
   kernel.on('afterUpdate', async (ctx) => {
     await logAudit('update', ctx);
   });
-  
+
   kernel.on('afterDelete', async (ctx) => {
     await logAudit('delete', ctx);
   });

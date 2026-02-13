@@ -55,25 +55,25 @@ const browserPlugin = new BrowserRuntimePlugin({
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )`
-    ]
+      )`,
+    ],
   },
   storage: {
     rootDir: 'myapp-files',
-    maxQuota: 100 * 1024 * 1024 // 100MB
+    maxQuota: 100 * 1024 * 1024, // 100MB
   },
   serviceWorker: {
     enabled: true,
     scriptPath: '/sw.js',
-    apiBasePath: '/api'
-  }
+    apiBasePath: '/api',
+  },
 });
 
 // Register plugin
 async function initializeRuntime() {
   await kernel.registerPlugin(browserPlugin);
   await kernel.start();
-  
+
   console.log('Browser runtime initialized!');
   return { kernel, browserPlugin };
 }
@@ -103,7 +103,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  
+
   // Only intercept API requests
   if (!url.pathname.startsWith(API_BASE_PATH)) {
     return;
@@ -136,17 +136,17 @@ self.addEventListener('message', (event) => {
 
 async function handleAPIRequest(request) {
   const requestId = crypto.randomUUID();
-  
+
   const clients = await self.clients.matchAll();
   if (clients.length === 0) {
-    return new Response(
-      JSON.stringify({ error: 'No client available' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: 'No client available' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const client = clients[0];
-  
+
   const headers = {};
   request.headers.forEach((value, key) => {
     headers[key] = value;
@@ -172,8 +172,8 @@ async function handleAPIRequest(request) {
       url: request.url,
       method: request.method,
       headers,
-      body
-    }
+      body,
+    },
   });
 
   const timeoutPromise = new Promise((resolve) => {
@@ -182,7 +182,7 @@ async function handleAPIRequest(request) {
       resolve({
         status: 504,
         statusText: 'Gateway Timeout',
-        body: JSON.stringify({ error: 'Request timeout' })
+        body: JSON.stringify({ error: 'Request timeout' }),
       });
     }, 30000);
   });
@@ -192,7 +192,7 @@ async function handleAPIRequest(request) {
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
-    headers: new Headers(response.headers || { 'Content-Type': 'application/json' })
+    headers: new Headers(response.headers || { 'Content-Type': 'application/json' }),
   });
 }
 ```
@@ -207,14 +207,14 @@ import { initializeRuntime } from './browser-runtime';
 async function main() {
   // Initialize browser runtime
   const { kernel, browserPlugin } = await initializeRuntime();
-  
+
   // Get database instance
   const db = browserPlugin.getDatabase();
-  
+
   // Now you can use the database
   const users = await db.query('SELECT * FROM users');
   console.log('Users:', users);
-  
+
   // Your app code here...
 }
 
@@ -234,7 +234,7 @@ async function setupAPIHandlers() {
   const { browserPlugin } = await initializeRuntime();
   const sw = browserPlugin.getServiceWorker();
   const db = browserPlugin.getDatabase();
-  
+
   if (!sw || !db) return;
 
   // Handler for GET /api/users
@@ -242,22 +242,19 @@ async function setupAPIHandlers() {
     if (request.method === 'GET') {
       const users = await db.query('SELECT * FROM users');
       return new Response(JSON.stringify(users), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
-    
+
     if (request.method === 'POST') {
       const body = await request.json();
-      await db.execute(
-        'INSERT INTO users (name, email) VALUES (?, ?)',
-        [body.name, body.email]
-      );
+      await db.execute('INSERT INTO users (name, email) VALUES (?, ?)', [body.name, body.email]);
       return new Response(JSON.stringify({ success: true }), {
         status: 201,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
-    
+
     return new Response('Method not allowed', { status: 405 });
   });
 
@@ -265,35 +262,33 @@ async function setupAPIHandlers() {
   sw.registerHandler('/api/users/*', async (request) => {
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop();
-    
+
     if (request.method === 'GET') {
-      const user = await db.query(
-        'SELECT * FROM users WHERE id = ?',
-        [id]
-      );
+      const user = await db.query('SELECT * FROM users WHERE id = ?', [id]);
       return new Response(JSON.stringify(user[0] || null), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
-    
+
     if (request.method === 'PUT') {
       const body = await request.json();
-      await db.execute(
-        'UPDATE users SET name = ?, email = ? WHERE id = ?',
-        [body.name, body.email, id]
-      );
+      await db.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [
+        body.name,
+        body.email,
+        id,
+      ]);
       return new Response(JSON.stringify({ success: true }), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
-    
+
     if (request.method === 'DELETE') {
       await db.execute('DELETE FROM users WHERE id = ?', [id]);
       return new Response(JSON.stringify({ success: true }), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
-    
+
     return new Response('Method not allowed', { status: 405 });
   });
 }
@@ -308,28 +303,28 @@ async function handleFileUpload(file: File) {
   const { browserPlugin } = await initializeRuntime();
   const storage = browserPlugin.getStorage();
   const db = browserPlugin.getDatabase();
-  
+
   if (!storage || !db) return;
 
   // Read file as ArrayBuffer
   const buffer = await file.arrayBuffer();
   const data = new Uint8Array(buffer);
-  
+
   // Generate unique filename
   const timestamp = Date.now();
   const filename = `${timestamp}-${file.name}`;
   const path = `uploads/${filename}`;
-  
+
   // Save to OPFS
   await storage.writeFile(path, data);
-  
+
   // Save metadata to database
   await db.execute(
     `INSERT INTO files (path, name, size, type, uploaded_at) 
      VALUES (?, ?, ?, ?, ?)`,
-    [path, file.name, file.size, file.type, new Date().toISOString()]
+    [path, file.name, file.size, file.type, new Date().toISOString()],
   );
-  
+
   console.log('File uploaded:', filename);
   return { path, filename };
 }
@@ -337,22 +332,22 @@ async function handleFileUpload(file: File) {
 async function downloadFile(path: string) {
   const { browserPlugin } = await initializeRuntime();
   const storage = browserPlugin.getStorage();
-  
+
   if (!storage) return;
 
   // Read file from OPFS
   const data = await storage.readFile(path);
   const metadata = await storage.getMetadata(path);
-  
+
   // Create blob and download
   const blob = new Blob([data], { type: metadata.type });
   const url = URL.createObjectURL(blob);
-  
+
   const a = document.createElement('a');
   a.href = url;
   a.download = metadata.name;
   a.click();
-  
+
   URL.revokeObjectURL(url);
 }
 ```
@@ -365,24 +360,18 @@ Use transactions for atomic operations:
 async function transferFunds(fromId: number, toId: number, amount: number) {
   const { browserPlugin } = await initializeRuntime();
   const db = browserPlugin.getDatabase();
-  
+
   if (!db) throw new Error('Database not initialized');
 
   try {
     await db.beginTransaction();
-    
+
     // Deduct from sender
-    await db.execute(
-      'UPDATE accounts SET balance = balance - ? WHERE id = ?',
-      [amount, fromId]
-    );
-    
+    await db.execute('UPDATE accounts SET balance = balance - ? WHERE id = ?', [amount, fromId]);
+
     // Add to receiver
-    await db.execute(
-      'UPDATE accounts SET balance = balance + ? WHERE id = ?',
-      [amount, toId]
-    );
-    
+    await db.execute('UPDATE accounts SET balance = balance + ? WHERE id = ?', [amount, toId]);
+
     await db.commit();
     console.log('Transfer completed');
   } catch (error) {
@@ -418,7 +407,7 @@ export function useBrowserRuntime() {
         setLoading(false);
       }
     }
-    
+
     init();
   }, []);
 
@@ -440,14 +429,14 @@ export function UserList() {
   useEffect(() => {
     async function loadUsers() {
       if (!plugin) return;
-      
+
       const db = plugin.getDatabase();
       if (!db) return;
-      
+
       const result = await db.query('SELECT * FROM users');
       setUsers(result);
     }
-    
+
     loadUsers();
   }, [plugin]);
 
@@ -488,10 +477,10 @@ Monitor storage usage:
 async function checkStorageQuota() {
   const storage = browserPlugin.getStorage();
   if (!storage) return;
-  
+
   const usage = await storage.getStorageUsage();
   const percentUsed = (usage.used / usage.quota) * 100;
-  
+
   if (percentUsed > 80) {
     console.warn('Storage quota almost full:', percentUsed.toFixed(2) + '%');
     // Consider cleanup or notify user
@@ -506,24 +495,18 @@ Handle schema migrations:
 ```typescript
 async function migrateDatabase(db: any) {
   // Check current version
-  const result = await db.query(
-    "SELECT value FROM settings WHERE key = 'schema_version'"
-  );
+  const result = await db.query("SELECT value FROM settings WHERE key = 'schema_version'");
   const currentVersion = result.length > 0 ? parseInt(result[0].value) : 0;
-  
+
   // Apply migrations
   if (currentVersion < 1) {
     await db.execute('ALTER TABLE users ADD COLUMN phone TEXT');
-    await db.execute(
-      "INSERT OR REPLACE INTO settings (key, value) VALUES ('schema_version', '1')"
-    );
+    await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('schema_version', '1')");
   }
-  
+
   if (currentVersion < 2) {
     await db.execute('CREATE INDEX idx_users_email ON users(email)');
-    await db.execute(
-      "INSERT OR REPLACE INTO settings (key, value) VALUES ('schema_version', '2')"
-    );
+    await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('schema_version', '2')");
   }
 }
 ```

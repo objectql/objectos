@@ -27,8 +27,22 @@ export const mockWorkflowDefinitions: Record<string, WorkflowDefinition> = {
       { name: 'rejected', label: 'Rejected', final: true, color: 'red' },
     ],
     transitions: [
-      { name: 'approve', label: 'Approve', from: 'pending', to: 'approved', guard: 'isManager', actions: ['notify_employee'] },
-      { name: 'reject', label: 'Reject', from: 'pending', to: 'rejected', guard: 'isManager', actions: ['notify_employee'] },
+      {
+        name: 'approve',
+        label: 'Approve',
+        from: 'pending',
+        to: 'approved',
+        guard: 'isManager',
+        actions: ['notify_employee'],
+      },
+      {
+        name: 'reject',
+        label: 'Reject',
+        from: 'pending',
+        to: 'rejected',
+        guard: 'isManager',
+        actions: ['notify_employee'],
+      },
     ],
   },
   opportunity_pipeline: {
@@ -48,7 +62,13 @@ export const mockWorkflowDefinitions: Record<string, WorkflowDefinition> = {
       { name: 'qualify', label: 'Qualify', from: 'prospecting', to: 'qualification' },
       { name: 'propose', label: 'Send Proposal', from: 'qualification', to: 'proposal' },
       { name: 'negotiate', label: 'Negotiate', from: 'proposal', to: 'negotiation' },
-      { name: 'close_won', label: 'Close Won', from: 'negotiation', to: 'closed_won', actions: ['notify_team'] },
+      {
+        name: 'close_won',
+        label: 'Close Won',
+        from: 'negotiation',
+        to: 'closed_won',
+        actions: ['notify_team'],
+      },
       { name: 'close_lost', label: 'Close Lost', from: 'negotiation', to: 'closed_lost' },
       { name: 'requalify', label: 'Re-qualify', from: 'proposal', to: 'qualification' },
     ],
@@ -106,8 +126,22 @@ export const mockWorkflowStatuses: Record<string, WorkflowStatus> = {
     currentStateLabel: 'Pending',
     color: 'yellow',
     availableTransitions: [
-      { name: 'approve', label: 'Approve', from: 'pending', to: 'approved', guard: 'isManager', actions: ['notify_employee'] },
-      { name: 'reject', label: 'Reject', from: 'pending', to: 'rejected', guard: 'isManager', actions: ['notify_employee'] },
+      {
+        name: 'approve',
+        label: 'Approve',
+        from: 'pending',
+        to: 'approved',
+        guard: 'isManager',
+        actions: ['notify_employee'],
+      },
+      {
+        name: 'reject',
+        label: 'Reject',
+        from: 'pending',
+        to: 'rejected',
+        guard: 'isManager',
+        actions: ['notify_employee'],
+      },
     ],
     canApprove: true,
   },
@@ -142,12 +176,18 @@ export const mockAutomationRules: AutomationRule[] = [
     object: 'lead',
     active: true,
     trigger: { type: 'record_created', object: 'lead' },
-    conditions: [
-      { field: 'status', operator: 'equals', value: 'new' },
-    ],
+    conditions: [{ field: 'status', operator: 'equals', value: 'new' }],
     actions: [
-      { type: 'assign_record', label: 'Assign to Sales Team', config: { team: 'sales', method: 'round_robin' } },
-      { type: 'send_notification', label: 'Notify Assignee', config: { template: 'new_lead_assigned' } },
+      {
+        type: 'assign_record',
+        label: 'Assign to Sales Team',
+        config: { team: 'sales', method: 'round_robin' },
+      },
+      {
+        type: 'send_notification',
+        label: 'Notify Assignee',
+        config: { template: 'new_lead_assigned' },
+      },
     ],
     createdAt: '2025-01-10T10:00:00Z',
     updatedAt: '2025-01-15T14:00:00Z',
@@ -159,11 +199,13 @@ export const mockAutomationRules: AutomationRule[] = [
     object: 'invoice',
     active: true,
     trigger: { type: 'field_changed', object: 'invoice', field: 'status' },
-    conditions: [
-      { field: 'status', operator: 'equals', value: 'overdue' },
-    ],
+    conditions: [{ field: 'status', operator: 'equals', value: 'overdue' }],
     actions: [
-      { type: 'send_email', label: 'Send Reminder Email', config: { template: 'overdue_reminder', to: '{{customer_email}}' } },
+      {
+        type: 'send_email',
+        label: 'Send Reminder Email',
+        config: { template: 'overdue_reminder', to: '{{customer_email}}' },
+      },
     ],
     createdAt: '2025-01-12T09:00:00Z',
     updatedAt: '2025-01-12T09:00:00Z',
@@ -175,12 +217,18 @@ export const mockAutomationRules: AutomationRule[] = [
     object: 'opportunity',
     active: true,
     trigger: { type: 'workflow_transition', object: 'opportunity' },
-    conditions: [
-      { field: 'stage', operator: 'equals', value: 'closed_won' },
-    ],
+    conditions: [{ field: 'stage', operator: 'equals', value: 'closed_won' }],
     actions: [
-      { type: 'send_notification', label: 'Notify Team', config: { channel: '#sales-wins', template: 'deal_won' } },
-      { type: 'update_record', label: 'Set Close Date', config: { field: 'close_date', value: '{{now}}' } },
+      {
+        type: 'send_notification',
+        label: 'Notify Team',
+        config: { channel: '#sales-wins', template: 'deal_won' },
+      },
+      {
+        type: 'update_record',
+        label: 'Set Close Date',
+        config: { field: 'close_date', value: '{{now}}' },
+      },
     ],
     createdAt: '2025-01-14T11:00:00Z',
     updatedAt: '2025-01-20T16:00:00Z',
@@ -192,11 +240,13 @@ export const mockAutomationRules: AutomationRule[] = [
     object: 'task',
     active: false,
     trigger: { type: 'schedule', schedule: '0 9 * * *' },
-    conditions: [
-      { field: 'status', operator: 'not_equals', value: 'done' },
-    ],
+    conditions: [{ field: 'status', operator: 'not_equals', value: 'done' }],
     actions: [
-      { type: 'send_notification', label: 'Due Date Reminder', config: { template: 'task_due_soon' } },
+      {
+        type: 'send_notification',
+        label: 'Due Date Reminder',
+        config: { template: 'task_due_soon' },
+      },
     ],
     createdAt: '2025-01-16T08:00:00Z',
     updatedAt: '2025-01-16T08:00:00Z',
@@ -220,7 +270,7 @@ export const mockActivities: Record<string, ActivityEntry[]> = {
       timestamp: '2025-02-04T09:30:00Z',
       user: 'Bob Manager',
       summary: 'Added a comment',
-      comment: 'I\'ll review this by end of day.',
+      comment: "I'll review this by end of day.",
     },
   ],
   'opp-001': [

@@ -1,8 +1,8 @@
 ---
-title: "Compiling Workflow YAML to Deterministic State Machines"
-description: "Analyzing the ObjectOS Workflow Compiler: How we transform static YAML definitions into executable Hierarchical State Machines (HSM) with transactional guarantees."
+title: 'Compiling Workflow YAML to Deterministic State Machines'
+description: 'Analyzing the ObjectOS Workflow Compiler: How we transform static YAML definitions into executable Hierarchical State Machines (HSM) with transactional guarantees.'
 date: 2024-03-01
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # Compiling Workflow YAML to Deterministic State Machines
@@ -18,14 +18,14 @@ Converting a YAML file into an executable state machine involves several passes.
 1.  **Parse & Validate:** We use `ajv` to validate the YAML against the Workflow JSON Schema.
 2.  **Graph Construction:** We build an adjacency list representing the states and transitions.
 3.  **Static Analysis (The Safety Check):**
-    *   **Unreachable States:** We run a Breadth-First Search (BFS) starting from `initial`. Any node not visited is dead code.
-    *   **Determinism Check:** We verify that no two transitions from the same state have overlapping triggers *and* overlapping guards (which would create race conditions).
+    - **Unreachable States:** We run a Breadth-First Search (BFS) starting from `initial`. Any node not visited is dead code.
+    - **Determinism Check:** We verify that no two transitions from the same state have overlapping triggers _and_ overlapping guards (which would create race conditions).
 
 ### Cycle Detection
 
 While cycles are allowed in Workflows (e.g., Request Changes -> Resubmit), **Infinite loops** in automated actions are dangerous.
 
-We use **Tarjan's Algorithm** to identify Strongly Connected Components (SCCs) in the graph of *automatic* transitions (transitions without user input). If an automatic SCC exists, the compiler throws an error, preventing a Stack Overflow at runtime.
+We use **Tarjan's Algorithm** to identify Strongly Connected Components (SCCs) in the graph of _automatic_ transitions (transitions without user input). If an automatic SCC exists, the compiler throws an error, preventing a Stack Overflow at runtime.
 
 ## 2. Hierarchical States (Sub-States)
 
@@ -55,16 +55,16 @@ The `WorkflowRunner` executes a transition as a single **ACID Transaction**.
 await ctx.transaction(async (trx) => {
   // 1. Lock the record (SELECT FOR UPDATE)
   const record = await trx.find(id, { lock: true });
-  
+
   // 2. Evaluate Guards
-  if (!guards.every(g => g(record, ctx))) throw new Error('Guard failed');
-  
+  if (!guards.every((g) => g(record, ctx))) throw new Error('Guard failed');
+
   // 3. Execute 'on_exit' actions of old state
   await executeHooks(oldState.onExit, trx);
-  
+
   // 4. Update Status Field
   await trx.update(id, { status: newState });
-  
+
   // 5. Execute 'on_enter' actions of new state
   await executeHooks(newState.onEnter, trx);
 });

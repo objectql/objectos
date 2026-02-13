@@ -6,7 +6,7 @@ export const Task = ObjectSchema.create({
   pluralLabel: 'Tasks',
   icon: 'check-square',
   description: 'Activities and to-do items',
-  
+
   fields: {
     // Task Information
     subject: Field.text({
@@ -15,11 +15,11 @@ export const Task = ObjectSchema.create({
       searchable: true,
       maxLength: 255,
     }),
-    
+
     description: Field.markdown({
       label: 'Description',
     }),
-    
+
     // Task Management
     status: {
       type: 'select',
@@ -31,9 +31,9 @@ export const Task = ObjectSchema.create({
         { label: 'Waiting', value: 'waiting', color: '#FFD700' },
         { label: 'Completed', value: 'completed', color: '#00AA00' },
         { label: 'Deferred', value: 'deferred', color: '#999999' },
-      ]
+      ],
     },
-    
+
     priority: {
       type: 'select',
       label: 'Priority',
@@ -43,91 +43,91 @@ export const Task = ObjectSchema.create({
         { label: 'Normal', value: 'normal', color: '#00AA00' },
         { label: 'High', value: 'high', color: '#FFA500' },
         { label: 'Urgent', value: 'urgent', color: '#FF0000' },
-      ]
+      ],
     },
-    
+
     type: Field.select(['Call', 'Email', 'Meeting', 'Follow-up', 'Demo', 'Other'], {
       label: 'Task Type',
     }),
-    
+
     // Dates
     due_date: Field.date({
       label: 'Due Date',
     }),
-    
+
     reminder_date: Field.datetime({
       label: 'Reminder Date/Time',
     }),
-    
+
     completed_date: Field.datetime({
       label: 'Completed Date',
       readonly: true,
     }),
-    
+
     // Assignment
     owner: Field.lookup('user', {
       label: 'Assigned To',
       required: true,
     }),
-    
+
     // Related To (Polymorphic relationship - can link to multiple object types)
     related_to_type: Field.select(['Account', 'Contact', 'Opportunity', 'Lead', 'Case'], {
       label: 'Related To Type',
     }),
-    
+
     related_to_account: Field.lookup('account', {
       label: 'Related Account',
     }),
-    
+
     related_to_contact: Field.lookup('contact', {
       label: 'Related Contact',
     }),
-    
+
     related_to_opportunity: Field.lookup('opportunity', {
       label: 'Related Opportunity',
     }),
-    
+
     related_to_lead: Field.lookup('lead', {
       label: 'Related Lead',
     }),
-    
+
     related_to_case: Field.lookup('case', {
       label: 'Related Case',
     }),
-    
+
     // Recurrence (for recurring tasks)
     is_recurring: Field.boolean({
       label: 'Recurring Task',
       defaultValue: false,
     }),
-    
+
     recurrence_type: Field.select(['Daily', 'Weekly', 'Monthly', 'Yearly'], {
       label: 'Recurrence Type',
     }),
-    
+
     recurrence_interval: Field.number({
       label: 'Recurrence Interval',
       defaultValue: 1,
       min: 1,
     }),
-    
+
     recurrence_end_date: Field.date({
       label: 'Recurrence End Date',
     }),
-    
+
     // Flags
     is_completed: Field.boolean({
       label: 'Is Completed',
       defaultValue: false,
       readonly: true,
     }),
-    
+
     is_overdue: Field.boolean({
       label: 'Is Overdue',
       defaultValue: false,
       readonly: true,
     }),
-    
+
     // Progress
     progress_percent: Field.percent({
       label: 'Progress (%)',
@@ -135,37 +135,37 @@ export const Task = ObjectSchema.create({
       max: 100,
       defaultValue: 0,
     }),
-    
+
     // Time tracking
     estimated_hours: Field.number({
       label: 'Estimated Hours',
       scale: 2,
       min: 0,
     }),
-    
+
     actual_hours: Field.number({
       label: 'Actual Hours',
       scale: 2,
       min: 0,
     }),
   },
-  
+
   enable: {
     trackHistory: true,
     searchable: true,
     apiEnabled: true,
     files: true,
-    feeds: true,            // Enable social feed, comments, and mentions
-    activities: true,       // Enable tasks and events tracking
+    feeds: true, // Enable social feed, comments, and mentions
+    activities: true, // Enable tasks and events tracking
     trash: true,
-    mru: true,              // Track Most Recently Used
+    mru: true, // Track Most Recently Used
   },
-  
+
   titleFormat: '{subject}',
   compactLayout: ['subject', 'status', 'priority', 'due_date', 'owner'],
-  
+
   // Removed: list_views and form_views belong in UI configuration, not object definition
-  
+
   validations: [
     {
       name: 'completed_date_required',
@@ -186,10 +186,11 @@ export const Task = ObjectSchema.create({
       type: 'script',
       severity: 'warning',
       message: 'At least one related record should be selected',
-      condition: 'ISBLANK(related_to_account) AND ISBLANK(related_to_contact) AND ISBLANK(related_to_opportunity) AND ISBLANK(related_to_lead) AND ISBLANK(related_to_case)',
+      condition:
+        'ISBLANK(related_to_account) AND ISBLANK(related_to_contact) AND ISBLANK(related_to_opportunity) AND ISBLANK(related_to_lead) AND ISBLANK(related_to_case)',
     },
   ],
-  
+
   workflows: [
     {
       name: 'set_completed_flag',
@@ -203,7 +204,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'is_completed',
           value: 'status = "completed"',
-        }
+        },
       ],
     },
     {
@@ -224,7 +225,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'progress_percent',
           value: '100',
-        }
+        },
       ],
     },
     {
@@ -239,7 +240,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'is_overdue',
           value: 'true',
-        }
+        },
       ],
     },
     {
@@ -254,7 +255,7 @@ export const Task = ObjectSchema.create({
           type: 'email_alert',
           template: 'urgent_task_alert',
           recipients: ['{owner.email}'],
-        }
+        },
       ],
     },
   ],

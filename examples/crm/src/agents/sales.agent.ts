@@ -19,9 +19,21 @@ Always be professional, data-driven, and focused on helping close deals.`,
   model: { provider: 'openai', model: 'gpt-4', temperature: 0.7, maxTokens: 2000 },
 
   tools: [
-    { type: 'action' as const, name: 'analyze_lead', description: 'Analyze a lead and provide qualification score' },
-    { type: 'action' as const, name: 'suggest_next_action', description: 'Suggest next best action for an opportunity' },
-    { type: 'action' as const, name: 'generate_email', description: 'Generate a personalized email template' },
+    {
+      type: 'action' as const,
+      name: 'analyze_lead',
+      description: 'Analyze a lead and provide qualification score',
+    },
+    {
+      type: 'action' as const,
+      name: 'suggest_next_action',
+      description: 'Suggest next best action for an opportunity',
+    },
+    {
+      type: 'action' as const,
+      name: 'generate_email',
+      description: 'Generate a personalized email template',
+    },
   ],
 
   knowledge: {

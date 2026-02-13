@@ -69,9 +69,7 @@ export function WorkflowInstanceMonitor({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const filteredInstances =
-    statusFilter === 'all'
-      ? instances
-      : instances.filter((i) => i.status === statusFilter);
+    statusFilter === 'all' ? instances : instances.filter((i) => i.status === statusFilter);
 
   const counts = {
     all: instances.length,
@@ -101,7 +99,10 @@ export function WorkflowInstanceMonitor({
                 >
                   {status}
                   {counts[status] > 0 && (
-                    <Badge variant="secondary" className="ml-0.5 size-4 justify-center rounded-full p-0 text-[10px]">
+                    <Badge
+                      variant="secondary"
+                      className="ml-0.5 size-4 justify-center rounded-full p-0 text-[10px]"
+                    >
                       {counts[status]}
                     </Badge>
                   )}
@@ -134,18 +135,31 @@ export function WorkflowInstanceMonitor({
                     <div className="flex items-center gap-2">
                       <StatusIcon className={`size-4 ${statusColors[instance.status]}`} />
                       <span className="font-medium">{instance.workflowLabel}</span>
-                      <Badge variant={statusBadgeVariants[instance.status]} className="text-xs capitalize">
+                      <Badge
+                        variant={statusBadgeVariants[instance.status]}
+                        className="text-xs capitalize"
+                      >
                         {instance.status}
                       </Badge>
                     </div>
                     <div className="flex gap-1">
                       {instance.status === 'failed' && onRetry && (
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => onRetry(instance.id)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => onRetry(instance.id)}
+                        >
                           Retry
                         </Button>
                       )}
                       {instance.status === 'running' && onPause && (
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => onPause(instance.id)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => onPause(instance.id)}
+                        >
                           Pause
                         </Button>
                       )}
@@ -153,13 +167,20 @@ export function WorkflowInstanceMonitor({
                   </div>
 
                   <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>Record: <strong>{instance.recordTitle}</strong></span>
-                    <span>State: <strong>{instance.currentStateLabel}</strong></span>
+                    <span>
+                      Record: <strong>{instance.recordTitle}</strong>
+                    </span>
+                    <span>
+                      State: <strong>{instance.currentStateLabel}</strong>
+                    </span>
                     <span>By: {instance.initiatedBy}</span>
                     <span className="flex items-center gap-1">
                       <Clock className="size-3" />
                       {new Date(instance.startedAt).toLocaleDateString(undefined, {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </span>
                   </div>
@@ -169,10 +190,13 @@ export function WorkflowInstanceMonitor({
                     <div className="h-1.5 w-full rounded-full bg-muted">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          instance.status === 'failed' ? 'bg-red-500' :
-                          instance.status === 'completed' ? 'bg-green-500' :
-                          instance.status === 'paused' ? 'bg-yellow-500' :
-                          'bg-blue-500'
+                          instance.status === 'failed'
+                            ? 'bg-red-500'
+                            : instance.status === 'completed'
+                              ? 'bg-green-500'
+                              : instance.status === 'paused'
+                                ? 'bg-yellow-500'
+                                : 'bg-blue-500'
                         }`}
                         style={{ width: `${instance.progress}%` }}
                       />

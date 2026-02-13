@@ -63,7 +63,6 @@ export function App() {
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
-
               {/* ── Create Org (accessible to any authenticated user) ── */}
               <Route path="/settings/organization/create" element={<CreateOrganizationPage />} />
 
@@ -97,7 +96,6 @@ export function App() {
                 <Route path=":objectName/:recordId" element={<ObjectRecordPage />} />
                 <Route path=":objectName/:recordId/edit" element={<RecordEditPage />} />
               </Route>
-
             </Route>
 
             {/* Fallback */}

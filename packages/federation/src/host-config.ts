@@ -23,9 +23,7 @@ export class FederationHostConfigurator {
   /**
    * Generate a Vite Module Federation host config object.
    */
-  generateViteConfig(
-    config?: ResolvedFederationConfig,
-  ): FederationHostConfig {
+  generateViteConfig(config?: ResolvedFederationConfig): FederationHostConfig {
     const c = config ?? this.config;
     return {
       name: 'objectos-host',

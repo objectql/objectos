@@ -9,7 +9,11 @@ import { MarketplacePlugin } from '../src/plugin.js';
 import { PluginRegistry } from '../src/registry.js';
 import { PluginInstaller } from '../src/installer.js';
 import { PluginSandbox } from '../src/sandbox.js';
-import { validateManifest, resolveDependencies, checkCompatibility } from '../src/manifest-validator.js';
+import {
+  validateManifest,
+  resolveDependencies,
+  checkCompatibility,
+} from '../src/manifest-validator.js';
 import type { PluginManifest } from '../src/types.js';
 
 // ─── Test Fixtures ─────────────────────────────────────────────────
@@ -97,7 +101,7 @@ describe('O.2.1 — Plugin Registry', () => {
 
     const versions = registry.getVersions('test-plugin');
     expect(versions).toHaveLength(3);
-    expect(versions.map(v => v.version)).toEqual(['1.0.0', '1.1.0', '2.0.0']);
+    expect(versions.map((v) => v.version)).toEqual(['1.0.0', '1.1.0', '2.0.0']);
   });
 
   test('getPlugin returns the latest version', () => {
@@ -130,8 +134,12 @@ describe('O.2.1 — Plugin Registry', () => {
   });
 
   test('search filters by text query', () => {
-    registry.register(createValidManifest({ id: 'crm-plugin', name: 'CRM Plugin', description: 'CRM features' }));
-    registry.register(createValidManifest({ id: 'hrm-plugin', name: 'HRM Plugin', description: 'HRM features' }));
+    registry.register(
+      createValidManifest({ id: 'crm-plugin', name: 'CRM Plugin', description: 'CRM features' }),
+    );
+    registry.register(
+      createValidManifest({ id: 'hrm-plugin', name: 'HRM Plugin', description: 'HRM features' }),
+    );
 
     const result = registry.search('crm');
     expect(result.total).toBe(1);
@@ -139,7 +147,9 @@ describe('O.2.1 — Plugin Registry', () => {
   });
 
   test('search filters by keyword', () => {
-    registry.register(createValidManifest({ id: 'plugin-aa', keywords: ['analytics', 'dashboard'] }));
+    registry.register(
+      createValidManifest({ id: 'plugin-aa', keywords: ['analytics', 'dashboard'] }),
+    );
     registry.register(createValidManifest({ id: 'plugin-bb', keywords: ['crm'] }));
 
     const result = registry.search(undefined, { keyword: 'analytics' });
@@ -158,10 +168,12 @@ describe('O.2.1 — Plugin Registry', () => {
 
   test('search paginates results', () => {
     for (let i = 1; i <= 5; i++) {
-      registry.register(createValidManifest({
-        id: `plugin-${String(i).padStart(2, '0')}`,
-        name: `Plugin ${i}`,
-      }));
+      registry.register(
+        createValidManifest({
+          id: `plugin-${String(i).padStart(2, '0')}`,
+          name: `Plugin ${i}`,
+        }),
+      );
     }
 
     const page1 = registry.search(undefined, { page: 1, pageSize: 2 });
@@ -227,32 +239,32 @@ describe('O.2.2 — Manifest Validation', () => {
 
   test('rejects missing id', () => {
     const errors = validateManifest(createValidManifest({ id: '' }));
-    expect(errors.some(e => e.includes('"id"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"id"'))).toBe(true);
   });
 
   test('rejects invalid id format', () => {
     const errors = validateManifest(createValidManifest({ id: 'INVALID_ID' }));
-    expect(errors.some(e => e.includes('Invalid plugin ID'))).toBe(true);
+    expect(errors.some((e) => e.includes('Invalid plugin ID'))).toBe(true);
   });
 
   test('rejects missing name', () => {
     const errors = validateManifest(createValidManifest({ name: '' }));
-    expect(errors.some(e => e.includes('"name"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"name"'))).toBe(true);
   });
 
   test('rejects missing version', () => {
     const errors = validateManifest(createValidManifest({ version: '' }));
-    expect(errors.some(e => e.includes('"version"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"version"'))).toBe(true);
   });
 
   test('rejects invalid semver version', () => {
     const errors = validateManifest(createValidManifest({ version: 'not-semver' }));
-    expect(errors.some(e => e.includes('Invalid version'))).toBe(true);
+    expect(errors.some((e) => e.includes('Invalid version'))).toBe(true);
   });
 
   test('rejects version with only major.minor', () => {
     const errors = validateManifest(createValidManifest({ version: '1.0' }));
-    expect(errors.some(e => e.includes('Invalid version'))).toBe(true);
+    expect(errors.some((e) => e.includes('Invalid version'))).toBe(true);
   });
 
   test('accepts version with pre-release', () => {
@@ -262,47 +274,51 @@ describe('O.2.2 — Manifest Validation', () => {
 
   test('rejects missing description', () => {
     const errors = validateManifest(createValidManifest({ description: '' }));
-    expect(errors.some(e => e.includes('"description"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"description"'))).toBe(true);
   });
 
   test('rejects missing author', () => {
     const errors = validateManifest(createValidManifest({ author: '' }));
-    expect(errors.some(e => e.includes('"author"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"author"'))).toBe(true);
   });
 
   test('rejects missing license', () => {
     const errors = validateManifest(createValidManifest({ license: '' }));
-    expect(errors.some(e => e.includes('"license"'))).toBe(true);
+    expect(errors.some((e) => e.includes('"license"'))).toBe(true);
   });
 
   test('validates dependency format', () => {
-    const errors = validateManifest(createValidManifest({
-      dependencies: { 'valid-dep': '^1.0.0', 'BAD': 'not-valid' },
-    }));
-    expect(errors.some(e => e.includes('Invalid dependency ID'))).toBe(true);
-    expect(errors.some(e => e.includes('Invalid version range'))).toBe(true);
+    const errors = validateManifest(
+      createValidManifest({
+        dependencies: { 'valid-dep': '^1.0.0', BAD: 'not-valid' },
+      }),
+    );
+    expect(errors.some((e) => e.includes('Invalid dependency ID'))).toBe(true);
+    expect(errors.some((e) => e.includes('Invalid version range'))).toBe(true);
   });
 
   test('accepts valid dependency ranges', () => {
-    const errors = validateManifest(createValidManifest({
-      dependencies: {
-        'dep-one': '^1.0.0',
-        'dep-two': '~2.1.0',
-        'dep-three': '>=3.0.0',
-        'dep-four': '1.0.0',
-      },
-    }));
+    const errors = validateManifest(
+      createValidManifest({
+        dependencies: {
+          'dep-one': '^1.0.0',
+          'dep-two': '~2.1.0',
+          'dep-three': '>=3.0.0',
+          'dep-four': '1.0.0',
+        },
+      }),
+    );
     expect(errors).toHaveLength(0);
   });
 
   test('validates keyword array type', () => {
     const errors = validateManifest(createValidManifest({ keywords: 'not-array' as any }));
-    expect(errors.some(e => e.includes('Keywords must be an array'))).toBe(true);
+    expect(errors.some((e) => e.includes('Keywords must be an array'))).toBe(true);
   });
 
   test('validates engine format', () => {
     const errors = validateManifest(createValidManifest({ engine: { objectos: 'invalid' } }));
-    expect(errors.some(e => e.includes('Invalid engine range'))).toBe(true);
+    expect(errors.some((e) => e.includes('Invalid engine range'))).toBe(true);
   });
 
   test('returns multiple errors for completely invalid manifest', () => {
@@ -431,9 +447,11 @@ describe('O.2.3 — Plugin Installation', () => {
   });
 
   test('rejects when dependencies are missing', () => {
-    registry.register(createValidManifest({
-      dependencies: { 'required-dep': '^1.0.0' },
-    }));
+    registry.register(
+      createValidManifest({
+        dependencies: { 'required-dep': '^1.0.0' },
+      }),
+    );
 
     const result = installer.install('test-plugin');
     expect(result.success).toBe(false);
@@ -461,10 +479,12 @@ describe('O.2.3 — Plugin Installation', () => {
     installer.install('dep-aa');
 
     // Install plugin that depends on dep-aa
-    registry.register(createValidManifest({
-      id: 'dependent-plugin',
-      dependencies: { 'dep-aa': '^1.0.0' },
-    }));
+    registry.register(
+      createValidManifest({
+        id: 'dependent-plugin',
+        dependencies: { 'dep-aa': '^1.0.0' },
+      }),
+    );
     installer.install('dependent-plugin');
 
     const result = installer.uninstall('dep-aa');
@@ -480,8 +500,8 @@ describe('O.2.3 — Plugin Installation', () => {
 
     const installed = installer.getInstalled();
     expect(installed).toHaveLength(2);
-    expect(installed.map(p => p.pluginId)).toContain('plugin-aa');
-    expect(installed.map(p => p.pluginId)).toContain('plugin-bb');
+    expect(installed.map((p) => p.pluginId)).toContain('plugin-aa');
+    expect(installed.map((p) => p.pluginId)).toContain('plugin-bb');
   });
 
   test('isInstalled returns correct status', () => {
@@ -621,14 +641,14 @@ describe('O.2.6 — Plugin Sandbox', () => {
     const manifest = createValidManifest({ repository: undefined });
     const report = sandbox.review(manifest);
 
-    expect(report.warnings.some(w => w.includes('repository'))).toBe(true);
+    expect(report.warnings.some((w) => w.includes('repository'))).toBe(true);
   });
 
   test('warns about missing engine constraints', () => {
     const manifest = createValidManifest({ engine: undefined });
     const report = sandbox.review(manifest);
 
-    expect(report.warnings.some(w => w.includes('engine'))).toBe(true);
+    expect(report.warnings.some((w) => w.includes('engine'))).toBe(true);
   });
 
   test('warns about dangerous permissions', () => {
@@ -637,8 +657,8 @@ describe('O.2.6 — Plugin Sandbox', () => {
     });
     const warnings = sandbox.validatePermissions(manifest);
 
-    expect(warnings.some(w => w.includes('fs.write'))).toBe(true);
-    expect(warnings.some(w => w.includes('process.spawn'))).toBe(true);
+    expect(warnings.some((w) => w.includes('fs.write'))).toBe(true);
+    expect(warnings.some((w) => w.includes('process.spawn'))).toBe(true);
   });
 
   test('warns about excessive permissions', () => {
@@ -647,7 +667,7 @@ describe('O.2.6 — Plugin Sandbox', () => {
     });
     const warnings = sandbox.validatePermissions(manifest);
 
-    expect(warnings.some(w => w.includes('excessive'))).toBe(true);
+    expect(warnings.some((w) => w.includes('excessive'))).toBe(true);
   });
 
   test('returns no warnings for safe permissions', () => {
@@ -664,7 +684,7 @@ describe('O.2.6 — Plugin Sandbox', () => {
     });
     const issues = sandbox.scanDependencies(manifest);
 
-    expect(issues.some(i => i.includes('Suspicious'))).toBe(true);
+    expect(issues.some((i) => i.includes('Suspicious'))).toBe(true);
   });
 
   test('warns about large dependency trees', () => {
@@ -675,7 +695,7 @@ describe('O.2.6 — Plugin Sandbox', () => {
     const manifest = createValidManifest({ dependencies: deps });
     const issues = sandbox.scanDependencies(manifest);
 
-    expect(issues.some(i => i.includes('Large dependency tree'))).toBe(true);
+    expect(issues.some((i) => i.includes('Large dependency tree'))).toBe(true);
   });
 
   test('creates sandbox config with minimal permissions', () => {
@@ -748,9 +768,7 @@ describe('Marketplace Plugin Lifecycle', () => {
     await plugin.init(context as any);
 
     expect(context.registerService).toHaveBeenCalledWith('marketplace', plugin);
-    expect(context.logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Initialized'),
-    );
+    expect(context.logger.info).toHaveBeenCalledWith(expect.stringContaining('Initialized'));
     expect(context.trigger).toHaveBeenCalledWith('plugin.initialized', {
       pluginId: '@objectos/marketplace',
     });
@@ -778,9 +796,7 @@ describe('Marketplace Plugin Lifecycle', () => {
     await plugin.init(context as any);
     await plugin.stop();
 
-    expect(context.logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Stopped'),
-    );
+    expect(context.logger.info).toHaveBeenCalledWith(expect.stringContaining('Stopped'));
   });
 
   test('health report returns healthy status', async () => {
@@ -845,8 +861,12 @@ describe('Marketplace Plugin Lifecycle', () => {
     const plugin = new MarketplacePlugin();
     const routes: Array<{ method: string; path: string }> = [];
     const mockApp = {
-      get: jest.fn((path: string) => { routes.push({ method: 'GET', path }); }),
-      post: jest.fn((path: string) => { routes.push({ method: 'POST', path }); }),
+      get: jest.fn((path: string) => {
+        routes.push({ method: 'GET', path });
+      }),
+      post: jest.fn((path: string) => {
+        routes.push({ method: 'POST', path });
+      }),
     };
 
     const context = createMockContext();
@@ -859,8 +879,8 @@ describe('Marketplace Plugin Lifecycle', () => {
     await plugin.start(context as any);
 
     // Verify all expected routes are registered
-    const getRoutes = routes.filter(r => r.method === 'GET').map(r => r.path);
-    const postRoutes = routes.filter(r => r.method === 'POST').map(r => r.path);
+    const getRoutes = routes.filter((r) => r.method === 'GET').map((r) => r.path);
+    const postRoutes = routes.filter((r) => r.method === 'POST').map((r) => r.path);
 
     expect(getRoutes).toContain('/api/v1/plugins/registry');
     expect(getRoutes).toContain('/api/v1/plugins/registry/:id');

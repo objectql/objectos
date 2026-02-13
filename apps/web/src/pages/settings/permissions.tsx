@@ -16,14 +16,17 @@ interface PermissionSet {
   description?: string;
   isSystem?: boolean;
   isActive?: boolean;
-  objectPermissions?: Record<string, {
-    create: boolean;
-    read: boolean;
-    update: boolean;
-    delete: boolean;
-    viewAll?: boolean;
-    modifyAll?: boolean;
-  }>;
+  objectPermissions?: Record<
+    string,
+    {
+      create: boolean;
+      read: boolean;
+      update: boolean;
+      delete: boolean;
+      viewAll?: boolean;
+      modifyAll?: boolean;
+    }
+  >;
 }
 
 export default function PermissionsPage() {
@@ -65,9 +68,7 @@ export default function PermissionsPage() {
               <div className="animate-spin rounded-full size-8 border-2 border-muted border-t-primary" />
             </div>
           ) : permissionSets.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No permission sets found
-            </div>
+            <div className="text-center py-8 text-muted-foreground">No permission sets found</div>
           ) : (
             <Table>
               <TableHeader>
@@ -83,9 +84,7 @@ export default function PermissionsPage() {
               <TableBody>
                 {permissionSets.map((set) => (
                   <TableRow key={set.name}>
-                    <TableCell className="font-medium font-mono text-sm">
-                      {set.name}
-                    </TableCell>
+                    <TableCell className="font-medium font-mono text-sm">{set.name}</TableCell>
                     <TableCell>{set.label || set.name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {set.description || '-'}
@@ -105,9 +104,8 @@ export default function PermissionsPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {set.objectPermissions 
-                        ? Object.keys(set.objectPermissions).length 
-                        : 0} object{Object.keys(set.objectPermissions || {}).length !== 1 ? 's' : ''}
+                      {set.objectPermissions ? Object.keys(set.objectPermissions).length : 0} object
+                      {Object.keys(set.objectPermissions || {}).length !== 1 ? 's' : ''}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -127,26 +125,50 @@ export default function PermissionsPage() {
                   <CardTitle className="text-base">{set.label || set.name}</CardTitle>
                   {set.isSystem && <Badge variant="default">System</Badge>}
                 </div>
-                <CardDescription className="font-mono text-xs">
-                  {set.name}
-                </CardDescription>
+                <CardDescription className="font-mono text-xs">{set.name}</CardDescription>
               </CardHeader>
               <CardContent>
                 {set.objectPermissions && Object.keys(set.objectPermissions).length > 0 ? (
                   <div className="space-y-2">
-                    {Object.entries(set.objectPermissions).slice(0, 3).map(([objectName, perms]) => (
-                      <div key={objectName} className="text-sm">
-                        <div className="font-medium mb-1">{objectName}</div>
-                        <div className="flex gap-1 flex-wrap">
-                          {perms.create && <Badge variant="outline" className="text-xs">Create</Badge>}
-                          {perms.read && <Badge variant="outline" className="text-xs">Read</Badge>}
-                          {perms.update && <Badge variant="outline" className="text-xs">Update</Badge>}
-                          {perms.delete && <Badge variant="outline" className="text-xs">Delete</Badge>}
-                          {perms.viewAll && <Badge variant="default" className="text-xs">ViewAll</Badge>}
-                          {perms.modifyAll && <Badge variant="default" className="text-xs">ModifyAll</Badge>}
+                    {Object.entries(set.objectPermissions)
+                      .slice(0, 3)
+                      .map(([objectName, perms]) => (
+                        <div key={objectName} className="text-sm">
+                          <div className="font-medium mb-1">{objectName}</div>
+                          <div className="flex gap-1 flex-wrap">
+                            {perms.create && (
+                              <Badge variant="outline" className="text-xs">
+                                Create
+                              </Badge>
+                            )}
+                            {perms.read && (
+                              <Badge variant="outline" className="text-xs">
+                                Read
+                              </Badge>
+                            )}
+                            {perms.update && (
+                              <Badge variant="outline" className="text-xs">
+                                Update
+                              </Badge>
+                            )}
+                            {perms.delete && (
+                              <Badge variant="outline" className="text-xs">
+                                Delete
+                              </Badge>
+                            )}
+                            {perms.viewAll && (
+                              <Badge variant="default" className="text-xs">
+                                ViewAll
+                              </Badge>
+                            )}
+                            {perms.modifyAll && (
+                              <Badge variant="default" className="text-xs">
+                                ModifyAll
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                     {Object.keys(set.objectPermissions).length > 3 && (
                       <div className="text-xs text-muted-foreground">
                         +{Object.keys(set.objectPermissions).length - 3} more objects
@@ -154,9 +176,7 @@ export default function PermissionsPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="text-sm text-muted-foreground">
-                    No object permissions defined
-                  </div>
+                  <div className="text-sm text-muted-foreground">No object permissions defined</div>
                 )}
               </CardContent>
             </Card>
@@ -168,14 +188,10 @@ export default function PermissionsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Roles</CardTitle>
-          <CardDescription>
-            Define high-level access roles and assign them to users
-          </CardDescription>
+          <CardDescription>Define high-level access roles and assign them to users</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground">
-            Role management coming soon
-          </div>
+          <div className="text-sm text-muted-foreground">Role management coming soon</div>
         </CardContent>
       </Card>
 
@@ -183,9 +199,7 @@ export default function PermissionsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Field-Level Security</CardTitle>
-          <CardDescription>
-            Control field visibility and editability
-          </CardDescription>
+          <CardDescription>Control field visibility and editability</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground">

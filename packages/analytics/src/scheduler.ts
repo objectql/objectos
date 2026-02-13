@@ -96,7 +96,7 @@ export class ReportScheduler {
    */
   checkDue(): ScheduledReport[] {
     const now = new Date();
-    return Array.from(this.schedules.values()).filter(s => {
+    return Array.from(this.schedules.values()).filter((s) => {
       if (!s.enabled) return false;
       const nextRun = new Date(s.nextRun);
       return nextRun <= now;

@@ -27,8 +27,8 @@ const driver = new PostgresDriver({
     port: 5432,
     user: 'postgres',
     password: 'password',
-    database: 'myapp'
-  }
+    database: 'myapp',
+  },
 });
 
 // Connect driver to kernel
@@ -46,11 +46,13 @@ await kernel.load(objectConfig);
 Load an object definition into the registry.
 
 **Parameters:**
+
 - `config`: Object configuration (ObjectConfig)
 
 **Returns:** `Promise<void>`
 
 **Example:**
+
 ```typescript
 await kernel.load({
   name: 'contacts',
@@ -58,8 +60,8 @@ await kernel.load({
   fields: {
     first_name: { type: 'text', required: true },
     last_name: { type: 'text', required: true },
-    email: { type: 'email', unique: true }
-  }
+    email: { type: 'email', unique: true },
+  },
 });
 ```
 
@@ -68,6 +70,7 @@ await kernel.load({
 Query multiple records.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `options`: FindOptions - Query options
 - `user?`: User - Current user context (for permissions)
@@ -75,20 +78,26 @@ Query multiple records.
 **Returns:** `Promise<Record\<string, any\>[]>`
 
 **Example:**
+
 ```typescript
-const contacts = await kernel.find('contacts', {
-  filters: {
-    status: 'active',
-    age: { $gte: 18 }
+const contacts = await kernel.find(
+  'contacts',
+  {
+    filters: {
+      status: 'active',
+      age: { $gte: 18 },
+    },
+    fields: ['first_name', 'last_name', 'email'],
+    sort: [{ field: 'last_name', order: 'asc' }],
+    limit: 50,
+    skip: 0,
   },
-  fields: ['first_name', 'last_name', 'email'],
-  sort: [{ field: 'last_name', order: 'asc' }],
-  limit: 50,
-  skip: 0
-}, currentUser);
+  currentUser,
+);
 ```
 
 **FindOptions Interface:**
+
 ```typescript
 interface FindOptions {
   filters?: FilterExpression;
@@ -105,6 +114,7 @@ interface FindOptions {
 Get a single record by ID.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `id`: String - Record ID
 - `options?`: FindOptions - Optional query options
@@ -113,11 +123,17 @@ Get a single record by ID.
 **Returns:** `Promise<Record\<string, any\>>`
 
 **Example:**
+
 ```typescript
-const contact = await kernel.findOne('contacts', 'contact_123', {
-  fields: ['first_name', 'last_name', 'email'],
-  include: ['account']
-}, currentUser);
+const contact = await kernel.findOne(
+  'contacts',
+  'contact_123',
+  {
+    fields: ['first_name', 'last_name', 'email'],
+    include: ['account'],
+  },
+  currentUser,
+);
 ```
 
 ### `kernel.insert(objectName, data, user?)`
@@ -125,6 +141,7 @@ const contact = await kernel.findOne('contacts', 'contact_123', {
 Create a new record.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `data`: Object - Record data
 - `user?`: User - Current user context
@@ -132,15 +149,20 @@ Create a new record.
 **Returns:** `Promise<Record\<string, any\>>`
 
 **Example:**
-```typescript
-const newContact = await kernel.insert('contacts', {
-  first_name: 'John',
-  last_name: 'Doe',
-  email: 'john@example.com',
-  phone: '+1234567890'
-}, currentUser);
 
-console.log(newContact.id);  // Generated ID
+```typescript
+const newContact = await kernel.insert(
+  'contacts',
+  {
+    first_name: 'John',
+    last_name: 'Doe',
+    email: 'john@example.com',
+    phone: '+1234567890',
+  },
+  currentUser,
+);
+
+console.log(newContact.id); // Generated ID
 ```
 
 ### `kernel.update(objectName, id, data, user?)`
@@ -148,6 +170,7 @@ console.log(newContact.id);  // Generated ID
 Update an existing record.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `id`: String - Record ID
 - `data`: Object - Fields to update
@@ -156,11 +179,17 @@ Update an existing record.
 **Returns:** `Promise<Record\<string, any\>>`
 
 **Example:**
+
 ```typescript
-const updated = await kernel.update('contacts', 'contact_123', {
-  phone: '+1987654321',
-  status: 'inactive'
-}, currentUser);
+const updated = await kernel.update(
+  'contacts',
+  'contact_123',
+  {
+    phone: '+1987654321',
+    status: 'inactive',
+  },
+  currentUser,
+);
 ```
 
 ### `kernel.delete(objectName, id, user?)`
@@ -168,6 +197,7 @@ const updated = await kernel.update('contacts', 'contact_123', {
 Delete a record.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `id`: String - Record ID
 - `user?`: User - Current user context
@@ -175,6 +205,7 @@ Delete a record.
 **Returns:** `Promise<void>`
 
 **Example:**
+
 ```typescript
 await kernel.delete('contacts', 'contact_123', currentUser);
 ```
@@ -184,6 +215,7 @@ await kernel.delete('contacts', 'contact_123', currentUser);
 Count records matching filters.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `filters?`: FilterExpression - Filter criteria
 - `user?`: User - Current user context
@@ -191,10 +223,15 @@ Count records matching filters.
 **Returns:** `Promise<number>`
 
 **Example:**
+
 ```typescript
-const activeCount = await kernel.count('contacts', {
-  status: 'active'
-}, currentUser);
+const activeCount = await kernel.count(
+  'contacts',
+  {
+    status: 'active',
+  },
+  currentUser,
+);
 
 console.log(`${activeCount} active contacts`);
 ```
@@ -206,6 +243,7 @@ console.log(`${activeCount} active contacts`);
 Register a lifecycle hook.
 
 **Parameters:**
+
 - `event`: String - Hook event name
 - `handler`: Function - Hook callback
 - `options?`: HookOptions - Hook configuration
@@ -213,12 +251,14 @@ Register a lifecycle hook.
 **Returns:** `void`
 
 **Events:**
+
 - `beforeFind`, `afterFind`
 - `beforeInsert`, `afterInsert`
 - `beforeUpdate`, `afterUpdate`
 - `beforeDelete`, `afterDelete`
 
 **Example:**
+
 ```typescript
 kernel.on('beforeInsert', async (ctx) => {
   ctx.data.created_at = new Date();
@@ -231,6 +271,7 @@ kernel.on('afterInsert:contacts', async (ctx) => {
 ```
 
 **Hook Context:**
+
 ```typescript
 interface HookContext {
   objectName: string;
@@ -248,12 +289,14 @@ interface HookContext {
 Unregister a hook.
 
 **Parameters:**
+
 - `event`: String - Hook event name
 - `handler?`: Function - Specific handler to remove (optional)
 
 **Returns:** `void`
 
 **Example:**
+
 ```typescript
 // Remove all handlers for event
 kernel.off('beforeInsert');
@@ -269,6 +312,7 @@ kernel.off('beforeInsert', myHandler);
 Register a custom action.
 
 **Parameters:**
+
 - `name`: String - Action name (e.g., 'contacts.sendEmail')
 - `handler`: Function - Action callback
 - `options?`: ActionOptions - Action configuration
@@ -276,21 +320,22 @@ Register a custom action.
 **Returns:** `void`
 
 **Example:**
+
 ```typescript
 kernel.registerAction('contacts.sendEmail', async (ctx) => {
   const { id, subject, body } = ctx.params;
-  
+
   const contact = await ctx.kernel.findOne('contacts', id);
-  
+
   await sendEmail({
     to: contact.email,
     subject: subject,
-    body: body
+    body: body,
   });
-  
+
   return {
     success: true,
-    message: 'Email sent'
+    message: 'Email sent',
   };
 });
 ```
@@ -300,6 +345,7 @@ kernel.registerAction('contacts.sendEmail', async (ctx) => {
 Execute a registered action.
 
 **Parameters:**
+
 - `name`: String - Action name
 - `params`: Object - Action parameters
 - `user?`: User - Current user context
@@ -307,12 +353,17 @@ Execute a registered action.
 **Returns:** `Promise<any>`
 
 **Example:**
+
 ```typescript
-const result = await kernel.executeAction('contacts.sendEmail', {
-  id: 'contact_123',
-  subject: 'Hello',
-  body: 'Welcome!'
-}, currentUser);
+const result = await kernel.executeAction(
+  'contacts.sendEmail',
+  {
+    id: 'contact_123',
+    subject: 'Hello',
+    body: 'Welcome!',
+  },
+  currentUser,
+);
 
 console.log(result.message);
 ```
@@ -326,9 +377,10 @@ Get list of all registered objects.
 **Returns:** `string[]`
 
 **Example:**
+
 ```typescript
 const objects = kernel.getObjects();
-console.log(objects);  // ['contacts', 'accounts', 'opportunities']
+console.log(objects); // ['contacts', 'accounts', 'opportunities']
 ```
 
 ### `kernel.getObjectConfig(objectName)`
@@ -336,14 +388,16 @@ console.log(objects);  // ['contacts', 'accounts', 'opportunities']
 Get configuration for a specific object.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 
 **Returns:** `ObjectConfig`
 
 **Example:**
+
 ```typescript
 const config = kernel.getObjectConfig('contacts');
-console.log(config.label);        // 'Contact'
+console.log(config.label); // 'Contact'
 console.log(config.fields.email); // { type: 'email', unique: true, ... }
 ```
 
@@ -352,11 +406,13 @@ console.log(config.fields.email); // { type: 'email', unique: true, ... }
 Check if an object is registered.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 
 **Returns:** `boolean`
 
 **Example:**
+
 ```typescript
 if (kernel.hasObject('contacts')) {
   console.log('Contacts object is available');
@@ -370,15 +426,19 @@ if (kernel.hasObject('contacts')) {
 Set the database driver.
 
 **Parameters:**
+
 - `driver`: ObjectQLDriver - Driver instance
 
 **Returns:** `void`
 
 **Example:**
+
 ```typescript
 import { PostgresDriver } from '@objectql/driver-sql';
 
-const driver = new PostgresDriver({ /* config */ });
+const driver = new PostgresDriver({
+  /* config */
+});
 kernel.useDriver(driver);
 await driver.connect();
 ```
@@ -390,6 +450,7 @@ Get the current database driver.
 **Returns:** `ObjectQLDriver | null`
 
 **Example:**
+
 ```typescript
 const driver = kernel.getDriver();
 if (driver) {
@@ -404,25 +465,27 @@ if (driver) {
 Execute operations in a database transaction.
 
 **Parameters:**
+
 - `callback`: Function - Callback with transaction context
 
 **Returns:** `Promise<any>`
 
 **Example:**
+
 ```typescript
 await kernel.transaction(async (trx) => {
   // Create account
   const account = await trx.insert('accounts', {
-    name: 'Acme Corp'
+    name: 'Acme Corp',
   });
-  
+
   // Create contact
   const contact = await trx.insert('contacts', {
     first_name: 'John',
     last_name: 'Doe',
-    account: account.id
+    account: account.id,
   });
-  
+
   // If any operation fails, all changes are rolled back
   return { account, contact };
 });
@@ -435,17 +498,19 @@ await kernel.transaction(async (trx) => {
 Validate data against object schema.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `data`: Object - Data to validate
 
 **Returns:** `ValidationResult`
 
 **Example:**
+
 ```typescript
 const result = kernel.validate('contacts', {
   first_name: 'John',
   // Missing required 'last_name'
-  email: 'invalid-email'  // Invalid email format
+  email: 'invalid-email', // Invalid email format
 });
 
 if (!result.valid) {
@@ -464,6 +529,7 @@ if (!result.valid) {
 Check if user has permission for an action.
 
 **Parameters:**
+
 - `objectName`: String - Object API name
 - `action`: String - Action ('read', 'create', 'update', 'delete')
 - `user`: User - User context
@@ -471,6 +537,7 @@ Check if user has permission for an action.
 **Returns:** `boolean`
 
 **Example:**
+
 ```typescript
 const canCreate = kernel.checkPermission('contacts', 'create', currentUser);
 
@@ -497,20 +564,22 @@ interface User {
 
 ```typescript
 type FilterExpression = {
-  [field: string]: any | {
-    $eq?: any;
-    $ne?: any;
-    $gt?: any;
-    $gte?: any;
-    $lt?: any;
-    $lte?: any;
-    $in?: any[];
-    $nin?: any[];
-    $like?: string;
-    $ilike?: string;
-    $null?: boolean;
-    $between?: [any, any];
-  };
+  [field: string]:
+    | any
+    | {
+        $eq?: any;
+        $ne?: any;
+        $gt?: any;
+        $gte?: any;
+        $lt?: any;
+        $lte?: any;
+        $in?: any[];
+        $nin?: any[];
+        $like?: string;
+        $ilike?: string;
+        $null?: boolean;
+        $between?: [any, any];
+      };
   $and?: FilterExpression[];
   $or?: FilterExpression[];
   $not?: FilterExpression;
@@ -560,12 +629,25 @@ interface FieldConfig {
 }
 
 type FieldType =
-  | 'text' | 'textarea' | 'email' | 'url' | 'phone'
-  | 'number' | 'currency' | 'percent'
-  | 'date' | 'datetime' | 'time'
-  | 'boolean' | 'select' | 'multiselect'
-  | 'lookup' | 'master_detail'
-  | 'autonumber' | 'formula' | 'rollup_summary';
+  | 'text'
+  | 'textarea'
+  | 'email'
+  | 'url'
+  | 'phone'
+  | 'number'
+  | 'currency'
+  | 'percent'
+  | 'date'
+  | 'datetime'
+  | 'time'
+  | 'boolean'
+  | 'select'
+  | 'multiselect'
+  | 'lookup'
+  | 'master_detail'
+  | 'autonumber'
+  | 'formula'
+  | 'rollup_summary';
 ```
 
 ## Complete Example
@@ -577,7 +659,7 @@ import { PostgresDriver } from '@objectql/driver-sql';
 // Initialize
 const kernel = new ObjectOS();
 const driver = new PostgresDriver({
-  connection: process.env.DATABASE_URL
+  connection: process.env.DATABASE_URL,
 });
 
 kernel.useDriver(driver);
@@ -590,8 +672,8 @@ await kernel.load({
   fields: {
     first_name: { type: 'text', required: true },
     last_name: { type: 'text', required: true },
-    email: { type: 'email', unique: true }
-  }
+    email: { type: 'email', unique: true },
+  },
 });
 
 // Register hooks
@@ -611,30 +693,47 @@ kernel.registerAction('contacts.sendEmail', async (ctx) => {
 const currentUser = { id: 'user_123', roles: ['sales'] };
 
 // Create
-const contact = await kernel.insert('contacts', {
-  first_name: 'John',
-  last_name: 'Doe',
-  email: 'john@example.com'
-}, currentUser);
+const contact = await kernel.insert(
+  'contacts',
+  {
+    first_name: 'John',
+    last_name: 'Doe',
+    email: 'john@example.com',
+  },
+  currentUser,
+);
 
 // Query
-const contacts = await kernel.find('contacts', {
-  filters: { status: 'active' },
-  sort: [{ field: 'last_name', order: 'asc' }],
-  limit: 50
-}, currentUser);
+const contacts = await kernel.find(
+  'contacts',
+  {
+    filters: { status: 'active' },
+    sort: [{ field: 'last_name', order: 'asc' }],
+    limit: 50,
+  },
+  currentUser,
+);
 
 // Update
-await kernel.update('contacts', contact.id, {
-  phone: '+1234567890'
-}, currentUser);
+await kernel.update(
+  'contacts',
+  contact.id,
+  {
+    phone: '+1234567890',
+  },
+  currentUser,
+);
 
 // Execute action
-await kernel.executeAction('contacts.sendEmail', {
-  id: contact.id,
-  subject: 'Welcome',
-  body: 'Hello!'
-}, currentUser);
+await kernel.executeAction(
+  'contacts.sendEmail',
+  {
+    id: contact.id,
+    subject: 'Welcome',
+    body: 'Hello!',
+  },
+  currentUser,
+);
 
 // Delete
 await kernel.delete('contacts', contact.id, currentUser);

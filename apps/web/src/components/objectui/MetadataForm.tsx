@@ -207,11 +207,7 @@ export function MetadataForm({
                   {field.required && <span className="ml-1 text-destructive">*</span>}
                 </Label>
                 <div className="mt-1.5">
-                  <FieldInput
-                    field={field}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                  />
+                  <FieldInput field={field} value={formData[field.name]} onChange={handleChange} />
                 </div>
                 {field.description && (
                   <p className="mt-1 text-xs text-muted-foreground">{field.description}</p>

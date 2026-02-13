@@ -1,6 +1,6 @@
 /**
  * Service Worker for API Request Interception
- * 
+ *
  * This service worker intercepts HTTP requests to the API and routes them
  * to browser-based handlers, enabling a fully offline-capable application.
  */
@@ -30,12 +30,12 @@ export class ServiceWorkerManager {
 
     try {
       this.registration = await navigator.serviceWorker.register(scriptPath);
-      
+
       // Wait for service worker to be ready
       await navigator.serviceWorker.ready;
-      
+
       console.log('[ServiceWorker] Registered successfully');
-      
+
       // Set up message handler
       this.setupMessageHandler();
     } catch (error) {
@@ -60,11 +60,11 @@ export class ServiceWorkerManager {
    */
   registerHandler(pattern: string, handler: APIRequestHandler): void {
     this.handlers.set(pattern, handler);
-    
+
     // Notify service worker
     this.postMessage({
       type: 'REGISTER_HANDLER',
-      payload: { pattern }
+      payload: { pattern },
     });
   }
 
@@ -73,11 +73,11 @@ export class ServiceWorkerManager {
    */
   unregisterHandler(pattern: string): void {
     this.handlers.delete(pattern);
-    
+
     // Notify service worker
     this.postMessage({
       type: 'UNREGISTER_HANDLER',
-      payload: { pattern }
+      payload: { pattern },
     });
   }
 
@@ -115,11 +115,11 @@ export class ServiceWorkerManager {
    */
   private async handleAPIRequest(payload: any, requestId: string): Promise<void> {
     const { url, method, headers, body } = payload;
-    
+
     try {
       // Find matching handler
       const handler = this.findHandler(url);
-      
+
       if (!handler) {
         this.postMessage({
           type: 'API_RESPONSE',
@@ -127,8 +127,8 @@ export class ServiceWorkerManager {
           payload: {
             status: 404,
             statusText: 'Not Found',
-            body: JSON.stringify({ error: 'No handler found for this request' })
-          }
+            body: JSON.stringify({ error: 'No handler found for this request' }),
+          },
         });
         return;
       }
@@ -137,7 +137,7 @@ export class ServiceWorkerManager {
       const request = new Request(url, {
         method,
         headers: new Headers(headers),
-        body: body ? JSON.stringify(body) : undefined
+        body: body ? JSON.stringify(body) : undefined,
       });
 
       // Execute handler
@@ -149,7 +149,7 @@ export class ServiceWorkerManager {
       response.headers.forEach((value: string, key: string) => {
         responseHeaders.push([key, value]);
       });
-      
+
       this.postMessage({
         type: 'API_RESPONSE',
         id: requestId,
@@ -157,20 +157,20 @@ export class ServiceWorkerManager {
           status: response.status,
           statusText: response.statusText,
           headers: responseHeaders,
-          body: responseBody
-        }
+          body: responseBody,
+        },
       });
     } catch (error) {
       console.error('[ServiceWorker] Handler error:', error);
-      
+
       this.postMessage({
         type: 'API_RESPONSE',
         id: requestId,
         payload: {
           status: 500,
           statusText: 'Internal Server Error',
-          body: JSON.stringify({ error: String(error) })
-        }
+          body: JSON.stringify({ error: String(error) }),
+        },
       });
     }
   }
@@ -193,7 +193,7 @@ export class ServiceWorkerManager {
   private matchPattern(url: string, pattern: string): boolean {
     // Simple pattern matching - can be enhanced with regex
     const urlPath = new URL(url, 'http://localhost').pathname;
-    
+
     // Exact match
     if (urlPath === pattern) {
       return true;

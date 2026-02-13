@@ -14,20 +14,20 @@ actions:
     template: big_deal_alert
     recipients:
       - sales-manager@company.com
-  
+
   # Update field to mark as high priority
   - name: mark_high_priority
     type: field_update
     field: priority
     value: high
-  
+
   # Create a task for follow-up
   - name: create_follow_up_task
     type: task_creation
     taskObject: task
-    subject: "Follow up on big deal"
-    assignedTo: "{{owner_id}}"
-    dueDate: "{{NOW() + 1}}"
+    subject: 'Follow up on big deal'
+    assignedTo: '{{owner_id}}'
+    dueDate: '{{NOW() + 1}}'
     priority: high
 
 # Time-based triggers (delayed actions)
@@ -42,7 +42,7 @@ timeTriggers:
         type: email_alert
         template: contact_reminder
         recipients:
-          - "{{owner.email}}"
+          - '{{owner.email}}'
 
 active: true
 reevaluateOnChange: true

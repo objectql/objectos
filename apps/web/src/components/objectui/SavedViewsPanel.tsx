@@ -92,7 +92,10 @@ export function SavedViewsPanel({
                 >
                   {view.name}
                   {view.filters.length > 0 && (
-                    <Badge variant="secondary" className="ml-0.5 size-4 justify-center rounded-full p-0 text-[10px]">
+                    <Badge
+                      variant="secondary"
+                      className="ml-0.5 size-4 justify-center rounded-full p-0 text-[10px]"
+                    >
                       {view.filters.length}
                     </Badge>
                   )}

@@ -12,9 +12,7 @@ export const pageTree: Root = {
         name: 'Introduction',
         url: '/docs/getting-started',
       },
-      children: [
-        { type: 'page', name: 'Installation', url: '/docs/getting-started/installation' },
-      ],
+      children: [{ type: 'page', name: 'Installation', url: '/docs/getting-started/installation' }],
     },
     {
       type: 'folder',

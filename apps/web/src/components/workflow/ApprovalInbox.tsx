@@ -60,9 +60,7 @@ export function ApprovalInbox({ items, onApprove, isExecuting = false }: Approva
           <div className="flex items-center gap-2">
             <Clock className="size-5 text-muted-foreground" />
             <CardTitle>Approval Inbox</CardTitle>
-            {pendingCount > 0 && (
-              <Badge variant="destructive">{pendingCount} pending</Badge>
-            )}
+            {pendingCount > 0 && <Badge variant="destructive">{pendingCount} pending</Badge>}
           </div>
           <div className="flex gap-1">
             {(['all', 'pending', 'completed'] as FilterMode[]).map((mode) => (
@@ -124,10 +122,7 @@ export function ApprovalInbox({ items, onApprove, isExecuting = false }: Approva
                           minute: '2-digit',
                         })}
                       </span>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px]"
-                      >
+                      <Badge variant="secondary" className="text-[10px]">
                         {item.workflowStatus.currentStateLabel}
                       </Badge>
                     </div>
@@ -140,8 +135,7 @@ export function ApprovalInbox({ items, onApprove, isExecuting = false }: Approva
                           transition.name.includes('approve') ||
                           transition.name.includes('complete');
                         const isReject =
-                          transition.name.includes('reject') ||
-                          transition.name.includes('deny');
+                          transition.name.includes('reject') || transition.name.includes('deny');
                         return (
                           <Button
                             key={transition.name}
@@ -151,7 +145,11 @@ export function ApprovalInbox({ items, onApprove, isExecuting = false }: Approva
                             onClick={() => onApprove(item, transition)}
                             disabled={isExecuting}
                           >
-                            {isApprove ? <CheckCircle2 className="size-3" /> : isReject ? <XCircle className="size-3" /> : null}
+                            {isApprove ? (
+                              <CheckCircle2 className="size-3" />
+                            ) : isReject ? (
+                              <XCircle className="size-3" />
+                            ) : null}
                             {transition.label}
                           </Button>
                         );

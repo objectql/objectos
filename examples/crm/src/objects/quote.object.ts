@@ -12,48 +12,44 @@ export const Quote = ObjectSchema.create({
   description: 'Price quotes for customers',
   titleFormat: '{quote_number} - {name}',
   compactLayout: ['quote_number', 'name', 'account', 'status', 'total_price'],
-  
+
   fields: {
     // AutoNumber field
     quote_number: Field.autonumber({
       label: 'Quote Number',
       format: 'QTE-{0000}',
     }),
-    
+
     // Basic Information
-    name: Field.text({ 
-      label: 'Quote Name', 
-      required: true, 
+    name: Field.text({
+      label: 'Quote Name',
+      required: true,
       searchable: true,
       maxLength: 255,
     }),
-    
+
     // Relationships
     account: Field.lookup('account', {
       label: 'Account',
       required: true,
     }),
-    
+
     contact: Field.lookup('contact', {
       label: 'Contact',
       required: true,
-      referenceFilters: [
-        'account = {account}',
-      ]
+      referenceFilters: ['account = {account}'],
     }),
-    
+
     opportunity: Field.lookup('opportunity', {
       label: 'Opportunity',
-      referenceFilters: [
-        'account = {account}',
-      ]
+      referenceFilters: ['account = {account}'],
     }),
-    
+
     owner: Field.lookup('user', {
       label: 'Quote Owner',
       required: true,
     }),
-    
+
     // Status
     status: Field.select({
       label: 'Status',
@@ -67,55 +63,55 @@ export const Quote = ObjectSchema.create({
       ],
       required: true,
     }),
-    
+
     // Dates
     quote_date: Field.date({
       label: 'Quote Date',
       required: true,
       defaultValue: 'TODAY()',
     }),
-    
+
     expiration_date: Field.date({
       label: 'Expiration Date',
       required: true,
     }),
-    
+
     // Pricing
-    subtotal: Field.currency({ 
+    subtotal: Field.currency({
       label: 'Subtotal',
       scale: 2,
       readonly: true,
     }),
-    
+
     discount: Field.percent({
       label: 'Discount %',
       scale: 2,
       min: 0,
       max: 100,
     }),
-    
-    discount_amount: Field.currency({ 
+
+    discount_amount: Field.currency({
       label: 'Discount Amount',
       scale: 2,
       readonly: true,
     }),
-    
-    tax: Field.currency({ 
+
+    tax: Field.currency({
       label: 'Tax',
       scale: 2,
     }),
-    
-    shipping_handling: Field.currency({ 
+
+    shipping_handling: Field.currency({
       label: 'Shipping & Handling',
       scale: 2,
     }),
-    
-    total_price: Field.currency({ 
+
+    total_price: Field.currency({
       label: 'Total Price',
       scale: 2,
       readonly: true,
     }),
-    
+
     // Terms
     payment_terms: Field.select({
       label: 'Payment Terms',
@@ -125,35 +121,35 @@ export const Quote = ObjectSchema.create({
         { label: 'Net 60', value: 'net_60' },
         { label: 'Net 90', value: 'net_90' },
         { label: 'Due on Receipt', value: 'due_on_receipt' },
-      ]
+      ],
     }),
-    
+
     shipping_terms: Field.text({
       label: 'Shipping Terms',
       maxLength: 255,
     }),
-    
+
     // Billing & Shipping Address
     billing_address: Field.address({
       label: 'Billing Address',
       addressFormat: 'international',
     }),
-    
+
     shipping_address: Field.address({
       label: 'Shipping Address',
       addressFormat: 'international',
     }),
-    
+
     // Notes
     description: Field.markdown({
       label: 'Description',
     }),
-    
+
     internal_notes: Field.textarea({
       label: 'Internal Notes',
     }),
   },
-  
+
   // Database indexes
   indexes: [
     { fields: ['account'], unique: false },
@@ -162,7 +158,7 @@ export const Quote = ObjectSchema.create({
     { fields: ['status'], unique: false },
     { fields: ['quote_date'], unique: false },
   ],
-  
+
   // Enable advanced features
   enable: {
     trackHistory: true,
@@ -175,7 +171,7 @@ export const Quote = ObjectSchema.create({
     trash: true,
     mru: true,
   },
-  
+
   // Validation Rules
   validations: [
     {
@@ -193,7 +189,7 @@ export const Quote = ObjectSchema.create({
       condition: 'discount > 100',
     },
   ],
-  
+
   // Workflow Rules
   workflows: [
     {
@@ -207,9 +203,9 @@ export const Quote = ObjectSchema.create({
           type: 'field_update',
           field: 'status',
           value: '"expired"',
-        }
+        },
       ],
       active: true,
-    }
+    },
   ],
 });

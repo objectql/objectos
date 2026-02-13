@@ -71,11 +71,7 @@ export class ConversationManager {
   /**
    * Get message history for a conversation (enforces tenant isolation)
    */
-  getHistory(
-    conversationId: string,
-    tenantId: string,
-    limit?: number,
-  ): AgentMessage[] | undefined {
+  getHistory(conversationId: string, tenantId: string, limit?: number): AgentMessage[] | undefined {
     const conv = this.get(conversationId, tenantId);
     if (!conv) return undefined;
     if (limit !== undefined && limit > 0) {

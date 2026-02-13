@@ -6,7 +6,7 @@ export const Task = ObjectSchema.create({
   pluralLabel: 'Tasks',
   icon: 'check-square',
   description: 'Personal tasks and to-do items',
-  
+
   fields: {
     // Task Information
     subject: Field.text({
@@ -15,11 +15,11 @@ export const Task = ObjectSchema.create({
       searchable: true,
       maxLength: 255,
     }),
-    
+
     description: Field.markdown({
       label: 'Description',
     }),
-    
+
     // Task Management
     status: {
       type: 'select',
@@ -31,9 +31,9 @@ export const Task = ObjectSchema.create({
         { label: 'Waiting', value: 'waiting', color: '#F59E0B' },
         { label: 'Completed', value: 'completed', color: '#10B981' },
         { label: 'Deferred', value: 'deferred', color: '#6B7280' },
-      ]
+      ],
     },
-    
+
     priority: {
       type: 'select',
       label: 'Priority',
@@ -43,33 +43,33 @@ export const Task = ObjectSchema.create({
         { label: 'Normal', value: 'normal', color: '#10B981' },
         { label: 'High', value: 'high', color: '#F59E0B' },
         { label: 'Urgent', value: 'urgent', color: '#EF4444' },
-      ]
+      ],
     },
-    
+
     category: Field.select(['Personal', 'Work', 'Shopping', 'Health', 'Finance', 'Other'], {
       label: 'Category',
     }),
-    
+
     // Dates
     due_date: Field.date({
       label: 'Due Date',
     }),
-    
+
     reminder_date: Field.datetime({
       label: 'Reminder Date/Time',
     }),
-    
+
     completed_date: Field.datetime({
       label: 'Completed Date',
       readonly: true,
     }),
-    
+
     // Assignment
     owner: Field.lookup('user', {
       label: 'Assigned To',
       required: true,
     }),
-    
+
     // Tags
     tags: {
       type: 'select',
@@ -81,38 +81,38 @@ export const Task = ObjectSchema.create({
         { label: 'Blocked', value: 'blocked', color: '#F59E0B' },
         { label: 'Follow Up', value: 'follow_up', color: '#3B82F6' },
         { label: 'Review', value: 'review', color: '#8B5CF6' },
-      ]
+      ],
     },
-    
+
     // Recurrence
     is_recurring: Field.boolean({
       label: 'Recurring Task',
       defaultValue: false,
     }),
-    
+
     recurrence_type: Field.select(['Daily', 'Weekly', 'Monthly', 'Yearly'], {
       label: 'Recurrence Type',
     }),
-    
+
     recurrence_interval: Field.number({
       label: 'Recurrence Interval',
       defaultValue: 1,
       min: 1,
     }),
-    
+
     // Flags
     is_completed: Field.boolean({
       label: 'Is Completed',
       defaultValue: false,
       readonly: true,
     }),
-    
+
     is_overdue: Field.boolean({
       label: 'Is Overdue',
       defaultValue: false,
       readonly: true,
     }),
-    
+
     // Progress
     progress_percent: Field.percent({
       label: 'Progress (%)',
@@ -120,33 +120,33 @@ export const Task = ObjectSchema.create({
       max: 100,
       defaultValue: 0,
     }),
-    
+
     // Time Tracking
     estimated_hours: Field.number({
       label: 'Estimated Hours',
       scale: 2,
       min: 0,
     }),
-    
+
     actual_hours: Field.number({
       label: 'Actual Hours',
       scale: 2,
       min: 0,
     }),
-    
+
     // Additional fields
     notes: Field.richtext({
       label: 'Notes',
       description: 'Rich text notes with formatting',
     }),
-    
+
     category_color: Field.color({
       label: 'Category Color',
       colorFormat: 'hex',
       presetColors: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'],
     }),
   },
-  
+
   enable: {
     trackHistory: true,
     searchable: true,
@@ -157,10 +157,10 @@ export const Task = ObjectSchema.create({
     trash: true,
     mru: true,
   },
-  
+
   titleFormat: '{subject}',
   compactLayout: ['subject', 'status', 'priority', 'due_date', 'owner'],
-  
+
   validations: [
     {
       name: 'completed_date_required',
@@ -177,7 +177,7 @@ export const Task = ObjectSchema.create({
       condition: 'is_recurring = true AND ISBLANK(recurrence_type)',
     },
   ],
-  
+
   workflows: [
     {
       name: 'set_completed_flag',
@@ -191,7 +191,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'is_completed',
           value: 'status = "completed"',
-        }
+        },
       ],
     },
     {
@@ -212,7 +212,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'progress_percent',
           value: '100',
-        }
+        },
       ],
     },
     {
@@ -227,7 +227,7 @@ export const Task = ObjectSchema.create({
           type: 'field_update',
           field: 'is_overdue',
           value: 'true',
-        }
+        },
       ],
     },
     {
@@ -242,7 +242,7 @@ export const Task = ObjectSchema.create({
           type: 'email_alert',
           template: 'urgent_task_alert',
           recipients: ['{owner.email}'],
-        }
+        },
       ],
     },
   ],

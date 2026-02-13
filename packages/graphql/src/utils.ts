@@ -9,6 +9,6 @@
 export function toPascalCase(name: string): string {
   return name
     .split(/[_\s-]+/)
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
     .join('');
 }

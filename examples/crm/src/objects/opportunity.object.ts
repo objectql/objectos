@@ -8,31 +8,31 @@ export const Opportunity = ObjectSchema.create({
   description: 'Sales opportunities and deals in the pipeline',
   titleFormat: '{name} - {stage}',
   compactLayout: ['name', 'account', 'amount', 'stage', 'owner'],
-  
+
   fields: {
     // Basic Information
-    name: Field.text({ 
+    name: Field.text({
       label: 'Opportunity Name',
       required: true,
       searchable: true,
     }),
-    
+
     // Relationships
-    account: Field.lookup('account', { 
+    account: Field.lookup('account', {
       label: 'Account',
       required: true,
     }),
-    
+
     primary_contact: Field.lookup('contact', {
       label: 'Primary Contact',
-      referenceFilters: ['account = {opportunity.account}'],  // Filter contacts by account
+      referenceFilters: ['account = {opportunity.account}'], // Filter contacts by account
     }),
-    
+
     owner: Field.lookup('user', {
       label: 'Opportunity Owner',
       required: true,
     }),
-    
+
     // Financial Information
     amount: Field.currency({
       label: 'Amount',
@@ -40,13 +40,13 @@ export const Opportunity = ObjectSchema.create({
       scale: 2,
       min: 0,
     }),
-    
+
     expected_revenue: Field.currency({
       label: 'Expected Revenue',
       scale: 2,
-      readonly: true,  // Calculated field
+      readonly: true, // Calculated field
     }),
-    
+
     // Sales Process
     stage: Field.select({
       label: 'Stage',
@@ -59,74 +59,85 @@ export const Opportunity = ObjectSchema.create({
         { label: 'Negotiation', value: 'negotiation', color: '#9370DB' },
         { label: 'Closed Won', value: 'closed_won', color: '#00AA00' },
         { label: 'Closed Lost', value: 'closed_lost', color: '#FF0000' },
-      ]
+      ],
     }),
-    
+
     probability: Field.percent({
       label: 'Probability (%)',
       min: 0,
       max: 100,
       defaultValue: 10,
     }),
-    
+
     // Important Dates
     close_date: Field.date({
       label: 'Close Date',
       required: true,
     }),
-    
+
     created_date: Field.datetime({
       label: 'Created Date',
       readonly: true,
     }),
-    
+
     // Additional Classification
-    type: Field.select(['New Business', 'Existing Customer - Upgrade', 'Existing Customer - Renewal', 'Existing Customer - Expansion'], {
-      label: 'Opportunity Type',
-    }),
-    
-    lead_source: Field.select(['Web', 'Referral', 'Event', 'Partner', 'Advertisement', 'Cold Call'], {
-      label: 'Lead Source',
-    }),
-    
+    type: Field.select(
+      [
+        'New Business',
+        'Existing Customer - Upgrade',
+        'Existing Customer - Renewal',
+        'Existing Customer - Expansion',
+      ],
+      {
+        label: 'Opportunity Type',
+      },
+    ),
+
+    lead_source: Field.select(
+      ['Web', 'Referral', 'Event', 'Partner', 'Advertisement', 'Cold Call'],
+      {
+        label: 'Lead Source',
+      },
+    ),
+
     // Competitor Analysis
     competitors: Field.select(['Competitor A', 'Competitor B', 'Competitor C'], {
       label: 'Competitors',
       multiple: true,
     }),
-    
+
     // Campaign tracking
     campaign: Field.lookup('campaign', {
       label: 'Campaign',
       description: 'Marketing campaign that generated this opportunity',
     }),
-    
+
     // Sales cycle metrics
     days_in_stage: Field.number({
       label: 'Days in Current Stage',
       readonly: true,
     }),
-    
+
     // Additional information
     description: Field.markdown({
       label: 'Description',
     }),
-    
+
     next_step: Field.textarea({
       label: 'Next Steps',
     }),
-    
+
     // Flags
     is_private: Field.boolean({
       label: 'Private',
       defaultValue: false,
     }),
-    
+
     forecast_category: Field.select(['Pipeline', 'Best Case', 'Commit', 'Omitted', 'Closed'], {
       label: 'Forecast Category',
     }),
   },
-  
+
   // Database indexes for performance
   indexes: [
     { fields: ['name'], unique: false },
@@ -135,22 +146,22 @@ export const Opportunity = ObjectSchema.create({
     { fields: ['stage'], unique: false },
     { fields: ['close_date'], unique: false },
   ],
-  
+
   // Enable advanced features
   enable: {
-    trackHistory: true,    // Critical for tracking stage changes
+    trackHistory: true, // Critical for tracking stage changes
     searchable: true,
     apiEnabled: true,
     apiMethods: ['get', 'list', 'create', 'update', 'delete', 'aggregate', 'search'], // Whitelist allowed API operations
-    files: true,           // Attach proposals, contracts
-    feeds: true,           // Team collaboration (Chatter-like)
-    activities: true,      // Enable tasks and events tracking
+    files: true, // Attach proposals, contracts
+    feeds: true, // Team collaboration (Chatter-like)
+    activities: true, // Enable tasks and events tracking
     trash: true,
-    mru: true,             // Track Most Recently Used
+    mru: true, // Track Most Recently Used
   },
-  
+
   // Removed: list_views and form_views belong in UI configuration, not object definition
-  
+
   // Validation Rules
   validations: [
     {
@@ -174,17 +185,17 @@ export const Opportunity = ObjectSchema.create({
       message: 'Invalid stage transition',
       field: 'stage',
       transitions: {
-        'prospecting': ['qualification', 'closed_lost'],
-        'qualification': ['needs_analysis', 'closed_lost'],
-        'needs_analysis': ['proposal', 'closed_lost'],
-        'proposal': ['negotiation', 'closed_lost'],
-        'negotiation': ['closed_won', 'closed_lost'],
-        'closed_won': [],  // Terminal state
-        'closed_lost': []  // Terminal state
-      }
+        prospecting: ['qualification', 'closed_lost'],
+        qualification: ['needs_analysis', 'closed_lost'],
+        needs_analysis: ['proposal', 'closed_lost'],
+        proposal: ['negotiation', 'closed_lost'],
+        negotiation: ['closed_won', 'closed_lost'],
+        closed_won: [], // Terminal state
+        closed_lost: [], // Terminal state
+      },
     },
   ],
-  
+
   // Workflow Rules
   workflows: [
     {
@@ -223,7 +234,7 @@ export const Opportunity = ObjectSchema.create({
             "closed_lost", "omitted",
             forecast_category
           )`,
-        }
+        },
       ],
     },
     {
@@ -238,7 +249,7 @@ export const Opportunity = ObjectSchema.create({
           type: 'field_update',
           field: 'expected_revenue',
           value: 'amount * (probability / 100)',
-        }
+        },
       ],
     },
     {
@@ -253,8 +264,8 @@ export const Opportunity = ObjectSchema.create({
           type: 'email_alert',
           template: 'large_deal_won',
           recipients: ['sales_management@example.com'],
-        }
+        },
       ],
-    }
+    },
   ],
 });

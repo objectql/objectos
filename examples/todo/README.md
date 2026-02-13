@@ -5,6 +5,7 @@ A comprehensive Todo application demonstrating the ObjectStack Protocol with tas
 ## 🎯 Purpose
 
 This example serves as a **quick-start reference** for learning ObjectStack basics. It demonstrates:
+
 - Object definition with essential field types, validations, and workflows
 - Actions for task management (complete, defer, clone, etc.)
 - Dashboard with key metrics and visualizations
@@ -43,9 +44,11 @@ examples/app-todo/
 ## 📋 Features Demonstrated
 
 ### Object Definition
+
 - **Task Object** (`task`) with 20+ fields covering all common patterns
 
 ### Field Types Covered
+
 - ✅ **Text** (`subject`) — Task title (required, searchable)
 - ✅ **Markdown** (`description`) — Rich description
 - ✅ **Select** (`status`, `priority`, `category`) — Single-select with colors
@@ -59,28 +62,33 @@ examples/app-todo/
 - ✅ **Rich Text** (`notes`) — Formatted notes
 
 ### Actions (8)
+
 - **Complete Task** / **Start Task** — Status transitions
 - **Defer Task** — Reschedule with reason
 - **Set Reminder** / **Clone Task** — Utility actions
 - **Mass Complete** / **Delete Completed** / **Export CSV** — Bulk operations
 
 ### Dashboard
+
 - 4 Key Metrics (total, completed today, overdue, completion rate)
 - Charts (status pie, priority bar, weekly trend line, category donut)
 - Task tables (overdue, due today)
 
 ### Reports (6)
+
 - Tasks by Status / Priority / Owner
 - Overdue Tasks / Completed Tasks
 - Time Tracking (estimated vs actual hours matrix)
 
 ### Automation Flows (4)
+
 - **Task Reminder** — Daily scheduled reminder for tasks due tomorrow
 - **Overdue Escalation** — Auto-escalate tasks overdue by 3+ days
 - **Task Completion** — Auto-create next occurrence for recurring tasks
 - **Quick Add Task** — Screen flow for fast task creation
 
 ### Validations & Workflows
+
 - Completed date required when status is "completed"
 - Recurrence type required for recurring tasks
 - Auto-set `is_completed`, `completed_date`, `progress_percent` on status change

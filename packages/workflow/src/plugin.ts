@@ -1,6 +1,6 @@
 /**
  * Workflow Plugin for ObjectOS
- * 
+ *
  * This plugin provides comprehensive workflow and state machine capabilities including:
  * - Finite State Machine (FSM) from YAML
  * - State transitions with guards
@@ -10,14 +10,19 @@
  */
 
 import type { Plugin, PluginContext } from '@objectstack/runtime';
-import type { IWorkflowService, WorkflowTransition as SpecWorkflowTransition, WorkflowTransitionResult as SpecWorkflowTransitionResult, WorkflowStatus as SpecWorkflowStatus } from '@objectstack/spec/contracts';
 import type {
-    WorkflowPluginConfig,
-    WorkflowDefinition,
-    PluginHealthReport,
-    PluginCapabilityManifest,
-    PluginSecurityManifest,
-    PluginStartupResult,
+  IWorkflowService,
+  WorkflowTransition as SpecWorkflowTransition,
+  WorkflowTransitionResult as SpecWorkflowTransitionResult,
+  WorkflowStatus as SpecWorkflowStatus,
+} from '@objectstack/spec/contracts';
+import type {
+  WorkflowPluginConfig,
+  WorkflowDefinition,
+  PluginHealthReport,
+  PluginCapabilityManifest,
+  PluginSecurityManifest,
+  PluginStartupResult,
 } from './types.js';
 import { InMemoryWorkflowStorage } from './storage.js';
 import { ObjectQLWorkflowStorage } from './objectql-storage.js';
@@ -32,369 +37,420 @@ import * as path from 'path';
  * Implements the Plugin interface for @objectstack/runtime
  */
 export class WorkflowPlugin implements Plugin, IWorkflowService {
-    name = '@objectos/workflow';
-    version = '0.1.0';
-    dependencies: string[] = [];
+  name = '@objectos/workflow';
+  version = '0.1.0';
+  dependencies: string[] = [];
 
-    private config: WorkflowPluginConfig;
-    private storage: any;
-    private engine: WorkflowEngine;
-    private api: WorkflowAPI;
-    private context?: PluginContext;
-    private logger: any = console; // Fallback logger before initialization
-    private startedAt?: number;
+  private config: WorkflowPluginConfig;
+  private storage: any;
+  private engine: WorkflowEngine;
+  private api: WorkflowAPI;
+  private context?: PluginContext;
+  private logger: any = console; // Fallback logger before initialization
+  private startedAt?: number;
 
-    constructor(config: WorkflowPluginConfig = {}) {
-        this.config = {
-            enabled: true,
-            workflowsDir: './workflows',
-            defaultTimeout: 3600000, // 1 hour
-            maxTransitions: 1000,
-            ...config,
-        };
+  constructor(config: WorkflowPluginConfig = {}) {
+    this.config = {
+      enabled: true,
+      workflowsDir: './workflows',
+      defaultTimeout: 3600000, // 1 hour
+      maxTransitions: 1000,
+      ...config,
+    };
 
-        this.storage = config.storage || new InMemoryWorkflowStorage();
-        this.engine = new WorkflowEngine();
-        this.api = new WorkflowAPI(this.storage, this.engine);
+    this.storage = config.storage || new InMemoryWorkflowStorage();
+    this.engine = new WorkflowEngine();
+    this.api = new WorkflowAPI(this.storage, this.engine);
+  }
+
+  /**
+   * Initialize plugin - Register services and subscribe to events
+   */
+  init = async (context: PluginContext): Promise<void> => {
+    this.context = context;
+    this.logger = context.logger;
+    this.startedAt = Date.now();
+
+    // Upgrade storage to ObjectQL if not explicitly provided and broker is available
+    // We do this in init because we need the context
+    if (!this.config.storage && (context as any).broker) {
+      this.storage = new ObjectQLWorkflowStorage(context);
+      context.logger.info('[Workflow Plugin] Upgraded to ObjectQL storage');
+      // Re-initialize API with new storage
+      this.api = new WorkflowAPI(this.storage, this.engine);
     }
 
-    /**
-     * Initialize plugin - Register services and subscribe to events
-     */
-    init = async (context: PluginContext): Promise<void> => {
-        this.context = context;
-        this.logger = context.logger;
-        this.startedAt = Date.now();
+    // Update engine logger
+    (this.engine as any).logger = context.logger;
 
-        // Upgrade storage to ObjectQL if not explicitly provided and broker is available
-        // We do this in init because we need the context
-        if (!this.config.storage && (context as any).broker) {
-             this.storage = new ObjectQLWorkflowStorage(context);
-             context.logger.info('[Workflow Plugin] Upgraded to ObjectQL storage');
-             // Re-initialize API with new storage
-             this.api = new WorkflowAPI(this.storage, this.engine);
+    // Register workflow service
+    context.registerService('workflow', this);
+
+    // Register Standard Actions and Guards
+    this.registerStandardLibrary();
+
+    // Set up event listeners using kernel hooks
+    await this.setupEventListeners(context);
+
+    context.logger.info('[Workflow Plugin] Initialized successfully');
+
+    await context.trigger('plugin.initialized', {
+      pluginId: this.name,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  /**
+   * Start plugin - Connect to databases, start servers
+   */
+  async start(context: PluginContext): Promise<void> {
+    context.logger.info('[Workflow Plugin] Starting...');
+    // Load workflows from directory
+    if (this.config.workflowsDir) {
+      // If path is relative, resolve from cwd. If absolute, use as is.
+      const dirPath = path.isAbsolute(this.config.workflowsDir)
+        ? this.config.workflowsDir
+        : path.resolve(process.cwd(), this.config.workflowsDir);
+
+      context.logger.info(`[Workflow Plugin] Loading workflows from ${dirPath}`);
+
+      try {
+        const workflows = await loadWorkflows(dirPath);
+        for (const workflow of workflows) {
+          await this.registerWorkflow(workflow);
         }
 
-        // Update engine logger
-        (this.engine as any).logger = context.logger;
-
-        // Register workflow service
-        context.registerService('workflow', this);
-
-        // Register Standard Actions and Guards
-        this.registerStandardLibrary();
-
-        // Set up event listeners using kernel hooks
-        await this.setupEventListeners(context);
-
-        context.logger.info('[Workflow Plugin] Initialized successfully');
-
-        await context.trigger('plugin.initialized', { pluginId: this.name, timestamp: new Date().toISOString() });
-    }
-
-    /**
-     * Start plugin - Connect to databases, start servers
-     */
-    async start(context: PluginContext): Promise<void> {
-        context.logger.info('[Workflow Plugin] Starting...');
-        // Load workflows from directory
-        if (this.config.workflowsDir) {
-            // If path is relative, resolve from cwd. If absolute, use as is.
-            const dirPath = path.isAbsolute(this.config.workflowsDir) 
-                ? this.config.workflowsDir 
-                : path.resolve(process.cwd(), this.config.workflowsDir);
-            
-            context.logger.info(`[Workflow Plugin] Loading workflows from ${dirPath}`);
-            
-            try {
-                const workflows = await loadWorkflows(dirPath);
-                for (const workflow of workflows) {
-                    await this.registerWorkflow(workflow);
-                }
-                
-                if (workflows.length > 0) {
-                    context.logger.info(`[Workflow Plugin] Loaded ${workflows.length} workflows from disk`);
-                } else {
-                    context.logger.info(`[Workflow Plugin] No workflows found in ${dirPath}`);
-                }
-            } catch (err) {
-                // Log but don't crash startup if workflows directory is missing or invalid
-                context.logger.warn(`[Workflow Plugin] Could not load workflows from ${dirPath}: ${(err as Error).message}`);
-            }
+        if (workflows.length > 0) {
+          context.logger.info(`[Workflow Plugin] Loaded ${workflows.length} workflows from disk`);
+        } else {
+          context.logger.info(`[Workflow Plugin] No workflows found in ${dirPath}`);
         }
-        
-        context.logger.info('[Workflow Plugin] Started successfully');
-
-        await context.trigger('plugin.started', { pluginId: this.name, timestamp: new Date().toISOString() });
+      } catch (err) {
+        // Log but don't crash startup if workflows directory is missing or invalid
+        context.logger.warn(
+          `[Workflow Plugin] Could not load workflows from ${dirPath}: ${(err as Error).message}`,
+        );
+      }
     }
 
-    /**
-     * Register Standard Library of Actions and Guards
-     */
-    private registerStandardLibrary(): void {
-        // Register Actions
-        this.engine.registerAction('log', StandardActions.log);
-        this.engine.registerAction('send_email', StandardActions.sendEmail);
-        this.engine.registerAction('webhook', StandardActions.webhook);
-        this.engine.registerAction('update_record', StandardActions.updateRecord);
-        
-        // Register Guards
-        this.engine.registerGuard('always', StandardGuards.always);
-        this.engine.registerGuard('never', StandardGuards.never);
-        this.engine.registerGuard('field_equals', StandardGuards.fieldEquals);
-        this.engine.registerGuard('greater_than', StandardGuards.greaterThan);
-    }
+    context.logger.info('[Workflow Plugin] Started successfully');
 
-    /**
-     * Set up event listeners for workflow lifecycle using kernel hooks
-     */
-    private async setupEventListeners(context: PluginContext): Promise<void> {
-        // Listen for data create events to trigger workflows
-        context.hook('data.afterCreate', async (data: any) => {
-            try {
-                await this.emitEvent('workflow.trigger', { type: 'data.create', data });
-            } catch (error) {
-                const errorObj = error instanceof Error ? error : undefined;
-                this.context?.logger.error('[Workflow Plugin] Error emitting workflow.trigger event:', errorObj);
-            }
-        });
+    await context.trigger('plugin.started', {
+      pluginId: this.name,
+      timestamp: new Date().toISOString(),
+    });
+  }
 
-        // Listen for data update events to trigger workflows or transitions
-        context.hook('data.afterUpdate', async (eventData: any) => {
-             // eventData: { object, id, doc, previous }
-             try {
-                // If this is an update to a state field, check for active workflows
-                if (eventData.doc && (eventData.doc.status || eventData.doc.state)) {
-                     await this.emitEvent('workflow.trigger', { type: 'data.update', data: eventData });
-                }
-            } catch (error) {
-                const errorObj = error instanceof Error ? error : undefined;
-                this.context?.logger.error('[Workflow Plugin] Error handling data.update:', errorObj);
-            }
-        });
+  /**
+   * Register Standard Library of Actions and Guards
+   */
+  private registerStandardLibrary(): void {
+    // Register Actions
+    this.engine.registerAction('log', StandardActions.log);
+    this.engine.registerAction('send_email', StandardActions.sendEmail);
+    this.engine.registerAction('webhook', StandardActions.webhook);
+    this.engine.registerAction('update_record', StandardActions.updateRecord);
 
-        // Listen to the very event we emit, to actually Start workflows
-        context.hook('workflow.trigger', async (payload: any) => {
-            await this.handleWorkflowTrigger(payload);
-        });
+    // Register Guards
+    this.engine.registerGuard('always', StandardGuards.always);
+    this.engine.registerGuard('never', StandardGuards.never);
+    this.engine.registerGuard('field_equals', StandardGuards.fieldEquals);
+    this.engine.registerGuard('greater_than', StandardGuards.greaterThan);
+  }
 
-        this.context?.logger.info('[Workflow Plugin] Event listeners registered');
-    }
+  /**
+   * Set up event listeners for workflow lifecycle using kernel hooks
+   */
+  private async setupEventListeners(context: PluginContext): Promise<void> {
+    // Listen for data create events to trigger workflows
+    context.hook('data.afterCreate', async (data: any) => {
+      try {
+        await this.emitEvent('workflow.trigger', { type: 'data.create', data });
+      } catch (error) {
+        const errorObj = error instanceof Error ? error : undefined;
+        this.context?.logger.error(
+          '[Workflow Plugin] Error emitting workflow.trigger event:',
+          errorObj,
+        );
+      }
+    });
 
-    /**
-     * Handle workflow trigger event
-     * Finds matching workflows and starts them
-     */
-    private async handleWorkflowTrigger(payload: { type: string, data: any }): Promise<void> {
-        const { type, data } = payload;
-        
-        // Only handle creation triggers for auto-start for now
-        // data.object should be present in the event payload
-        const objectName = data.object; 
-        
-        if (!objectName) return;
-
-        if (type === 'data.create') {
-            const definitions = await this.api.listWorkflows();
-            const matching = definitions.filter(def => def.object === objectName);
-            
-            for (const def of matching) {
-                try {
-                    this.context?.logger.info(`[Workflow Plugin] Auto-starting workflow "${def.name}" for object "${objectName}"`);
-                    await this.api.startWorkflow(def.id, data);
-                } catch (err) {
-                    const error = err instanceof Error ? err : new Error(String(err));
-                    this.context?.logger.error(`[Workflow Plugin] Failed to auto-start workflow ${def.id}:`, error);
-                }
-            }
+    // Listen for data update events to trigger workflows or transitions
+    context.hook('data.afterUpdate', async (eventData: any) => {
+      // eventData: { object, id, doc, previous }
+      try {
+        // If this is an update to a state field, check for active workflows
+        if (eventData.doc && (eventData.doc.status || eventData.doc.state)) {
+          await this.emitEvent('workflow.trigger', { type: 'data.update', data: eventData });
         }
-    }
+      } catch (error) {
+        const errorObj = error instanceof Error ? error : undefined;
+        this.context?.logger.error('[Workflow Plugin] Error handling data.update:', errorObj);
+      }
+    });
 
-    /**
-     * Emit workflow events using kernel trigger system
-     */
-    private async emitEvent(event: string, data: any): Promise<void> {
-        if (!this.context) {
-            this.logger.warn(`[Workflow Plugin] Cannot emit event before initialization: ${event}`);
-            return;
-        }
-        await this.context.trigger(event, data);
-    }
+    // Listen to the very event we emit, to actually Start workflows
+    context.hook('workflow.trigger', async (payload: any) => {
+      await this.handleWorkflowTrigger(payload);
+    });
 
-    /**
-     * Register a workflow definition
-     */
-    async registerWorkflow(definition: WorkflowDefinition): Promise<void> {
-        await this.api.registerWorkflow(definition);
-        this.context?.logger.info(`[Workflow Plugin] Registered workflow: ${definition.name}`);
-    }
+    this.context?.logger.info('[Workflow Plugin] Event listeners registered');
+  }
 
-    // ── IWorkflowService contract methods ──
+  /**
+   * Handle workflow trigger event
+   * Finds matching workflows and starts them
+   */
+  private async handleWorkflowTrigger(payload: { type: string; data: any }): Promise<void> {
+    const { type, data } = payload;
 
-    /**
-     * IWorkflowService.transition — transition a record to a new state
-     */
-    async transition(trans: SpecWorkflowTransition): Promise<SpecWorkflowTransitionResult> {
+    // Only handle creation triggers for auto-start for now
+    // data.object should be present in the event payload
+    const objectName = data.object;
+
+    if (!objectName) return;
+
+    if (type === 'data.create') {
+      const definitions = await this.api.listWorkflows();
+      const matching = definitions.filter((def) => def.object === objectName);
+
+      for (const def of matching) {
         try {
-            // Find an active workflow instance for this record
-            const instances = await this.api.queryWorkflows({ status: 'running' });
-            const instance = instances.find(
-                (i) => i.data?.recordId === trans.recordId || i.id === trans.recordId
-            );
-            if (!instance) {
-                return { success: false, error: `No active workflow found for ${trans.object}/${trans.recordId}` };
-            }
-
-            // Find a transition that leads to the target state
-            const definition = await this.api.getWorkflow(instance.workflowId, instance.version);
-            if (!definition) {
-                return { success: false, error: 'Workflow definition not found' };
-            }
-            const currentStateDef = definition.states[instance.currentState];
-            const transitionName = currentStateDef?.transitions
-                ? Object.keys(currentStateDef.transitions).find(
-                      (t) => currentStateDef.transitions![t].target === trans.targetState
-                  )
-                : undefined;
-            if (!transitionName) {
-                return { success: false, error: `No transition to state "${trans.targetState}" from "${instance.currentState}"` };
-            }
-
-            const updated = await this.api.executeTransition(instance.id, transitionName, trans.userId);
-            return { success: true, currentState: updated.currentState };
-        } catch (error) {
-            return { success: false, error: error instanceof Error ? error.message : 'Transition failed' };
+          this.context?.logger.info(
+            `[Workflow Plugin] Auto-starting workflow "${def.name}" for object "${objectName}"`,
+          );
+          await this.api.startWorkflow(def.id, data);
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          this.context?.logger.error(
+            `[Workflow Plugin] Failed to auto-start workflow ${def.id}:`,
+            error,
+          );
         }
+      }
     }
+  }
 
-    /**
-     * IWorkflowService.getStatus — get the current workflow status for a record
-     */
-    async getStatus(object: string, recordId: string): Promise<SpecWorkflowStatus> {
-        const instances = await this.api.queryWorkflows({ status: 'running' });
-        const instance = instances.find(
-            (i) => i.data?.recordId === recordId || i.id === recordId
-        );
-        if (!instance) {
-            return { recordId, object, currentState: 'unknown', availableTransitions: [] };
-        }
-        const transitions = await this.api.getAvailableTransitions(instance.id);
-        return { recordId, object, currentState: instance.currentState, availableTransitions: transitions };
+  /**
+   * Emit workflow events using kernel trigger system
+   */
+  private async emitEvent(event: string, data: any): Promise<void> {
+    if (!this.context) {
+      this.logger.warn(`[Workflow Plugin] Cannot emit event before initialization: ${event}`);
+      return;
     }
+    await this.context.trigger(event, data);
+  }
 
-    /**
-     * IWorkflowService.getHistory — get transition history for a record (optional)
-     */
-    async getHistory(object: string, recordId: string): Promise<Array<{
-        fromState: string;
-        toState: string;
-        userId?: string;
-        comment?: string;
-        timestamp: string;
-    }>> {
-        const instances = await this.api.queryWorkflows({});
-        const instance = instances.find(
-            (i) => i.data?.recordId === recordId || i.id === recordId
-        );
-        if (!instance) return [];
-        return (instance.history || []).map((entry) => ({
-            fromState: entry.fromState,
-            toState: entry.toState,
-            userId: entry.triggeredBy,
-            timestamp: entry.timestamp instanceof Date ? entry.timestamp.toISOString() : String(entry.timestamp),
-        }));
-    }
+  /**
+   * Register a workflow definition
+   */
+  async registerWorkflow(definition: WorkflowDefinition): Promise<void> {
+    await this.api.registerWorkflow(definition);
+    this.context?.logger.info(`[Workflow Plugin] Registered workflow: ${definition.name}`);
+  }
 
-    /**
-     * Get the workflow API
-     */
-    getAPI(): WorkflowAPI {
-        return this.api;
-    }
+  // ── IWorkflowService contract methods ──
 
-    /**
-     * Get the workflow engine (for registering guards/actions)
-     */
-    getEngine(): WorkflowEngine {
-        return this.engine;
-    }
-
-    /**
-     * Health check
-     */
-    async healthCheck(): Promise<PluginHealthReport> {
-        const start = Date.now();
-        const status = this.config.enabled ? 'healthy' : 'degraded';
-        const message = this.config.enabled ? 'Workflow engine active' : 'Workflows disabled';
-        const latency = Date.now() - start;
+  /**
+   * IWorkflowService.transition — transition a record to a new state
+   */
+  async transition(trans: SpecWorkflowTransition): Promise<SpecWorkflowTransitionResult> {
+    try {
+      // Find an active workflow instance for this record
+      const instances = await this.api.queryWorkflows({ status: 'running' });
+      const instance = instances.find(
+        (i) => i.data?.recordId === trans.recordId || i.id === trans.recordId,
+      );
+      if (!instance) {
         return {
-            status,
-            timestamp: new Date().toISOString(),
-            message,
-            metrics: {
-                uptime: this.startedAt ? Date.now() - this.startedAt : 0,
-                responseTime: latency,
-            },
-            checks: [{ name: 'workflow-engine', status: status === 'healthy' ? 'passed' : 'warning', message }],
+          success: false,
+          error: `No active workflow found for ${trans.object}/${trans.recordId}`,
         };
-    }
+      }
 
-    /**
-     * Capability manifest
-     */
-    getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+      // Find a transition that leads to the target state
+      const definition = await this.api.getWorkflow(instance.workflowId, instance.version);
+      if (!definition) {
+        return { success: false, error: 'Workflow definition not found' };
+      }
+      const currentStateDef = definition.states[instance.currentState];
+      const transitionName = currentStateDef?.transitions
+        ? Object.keys(currentStateDef.transitions).find(
+            (t) => currentStateDef.transitions![t].target === trans.targetState,
+          )
+        : undefined;
+      if (!transitionName) {
         return {
-            capabilities: {
-                provides: [{
-                    id: 'com.objectstack.service.workflow',
-                    name: 'workflow',
-                    version: { major: 0, minor: 1, patch: 0 },
-                    methods: [
-                        { name: 'startWorkflow', description: 'Start a workflow instance', async: true },
-                        { name: 'transitionState', description: 'Transition workflow to a new state', async: true },
-                        { name: 'getWorkflowStatus', description: 'Get current workflow status', async: false },
-                        { name: 'listWorkflows', description: 'List registered workflows', async: false },
-                        { name: 'getApprovalStatus', description: 'Get approval chain status', async: true },
-                    ],
-                    stability: 'stable',
-                }],
-                requires: [],
-            },
-            security: {
-                pluginId: 'workflow',
-                trustLevel: 'trusted',
-                permissions: { permissions: [], defaultGrant: 'deny' },
-                sandbox: { enabled: false, level: 'none' },
-            },
+          success: false,
+          error: `No transition to state "${trans.targetState}" from "${instance.currentState}"`,
         };
-    }
+      }
 
-    /**
-     * Startup result
-     */
-    getStartupResult(): PluginStartupResult {
-        return { plugin: { name: this.name, version: this.version }, success: !!this.context, duration: 0 };
+      const updated = await this.api.executeTransition(instance.id, transitionName, trans.userId);
+      return { success: true, currentState: updated.currentState };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Transition failed',
+      };
     }
+  }
 
-    /**
-     * Cleanup and shutdown
-     */
-    async destroy(): Promise<void> {
-        this.context?.logger.info('[Workflow Plugin] Destroyed');
-
-        if (this.context) {
-            await this.context.trigger('plugin.destroyed', { pluginId: this.name, timestamp: new Date().toISOString() });
-        }
+  /**
+   * IWorkflowService.getStatus — get the current workflow status for a record
+   */
+  async getStatus(object: string, recordId: string): Promise<SpecWorkflowStatus> {
+    const instances = await this.api.queryWorkflows({ status: 'running' });
+    const instance = instances.find((i) => i.data?.recordId === recordId || i.id === recordId);
+    if (!instance) {
+      return { recordId, object, currentState: 'unknown', availableTransitions: [] };
     }
+    const transitions = await this.api.getAvailableTransitions(instance.id);
+    return {
+      recordId,
+      object,
+      currentState: instance.currentState,
+      availableTransitions: transitions,
+    };
+  }
+
+  /**
+   * IWorkflowService.getHistory — get transition history for a record (optional)
+   */
+  async getHistory(
+    object: string,
+    recordId: string,
+  ): Promise<
+    Array<{
+      fromState: string;
+      toState: string;
+      userId?: string;
+      comment?: string;
+      timestamp: string;
+    }>
+  > {
+    const instances = await this.api.queryWorkflows({});
+    const instance = instances.find((i) => i.data?.recordId === recordId || i.id === recordId);
+    if (!instance) return [];
+    return (instance.history || []).map((entry) => ({
+      fromState: entry.fromState,
+      toState: entry.toState,
+      userId: entry.triggeredBy,
+      timestamp:
+        entry.timestamp instanceof Date ? entry.timestamp.toISOString() : String(entry.timestamp),
+    }));
+  }
+
+  /**
+   * Get the workflow API
+   */
+  getAPI(): WorkflowAPI {
+    return this.api;
+  }
+
+  /**
+   * Get the workflow engine (for registering guards/actions)
+   */
+  getEngine(): WorkflowEngine {
+    return this.engine;
+  }
+
+  /**
+   * Health check
+   */
+  async healthCheck(): Promise<PluginHealthReport> {
+    const start = Date.now();
+    const status = this.config.enabled ? 'healthy' : 'degraded';
+    const message = this.config.enabled ? 'Workflow engine active' : 'Workflows disabled';
+    const latency = Date.now() - start;
+    return {
+      status,
+      timestamp: new Date().toISOString(),
+      message,
+      metrics: {
+        uptime: this.startedAt ? Date.now() - this.startedAt : 0,
+        responseTime: latency,
+      },
+      checks: [
+        { name: 'workflow-engine', status: status === 'healthy' ? 'passed' : 'warning', message },
+      ],
+    };
+  }
+
+  /**
+   * Capability manifest
+   */
+  getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
+    return {
+      capabilities: {
+        provides: [
+          {
+            id: 'com.objectstack.service.workflow',
+            name: 'workflow',
+            version: { major: 0, minor: 1, patch: 0 },
+            methods: [
+              { name: 'startWorkflow', description: 'Start a workflow instance', async: true },
+              {
+                name: 'transitionState',
+                description: 'Transition workflow to a new state',
+                async: true,
+              },
+              {
+                name: 'getWorkflowStatus',
+                description: 'Get current workflow status',
+                async: false,
+              },
+              { name: 'listWorkflows', description: 'List registered workflows', async: false },
+              { name: 'getApprovalStatus', description: 'Get approval chain status', async: true },
+            ],
+            stability: 'stable',
+          },
+        ],
+        requires: [],
+      },
+      security: {
+        pluginId: 'workflow',
+        trustLevel: 'trusted',
+        permissions: { permissions: [], defaultGrant: 'deny' },
+        sandbox: { enabled: false, level: 'none' },
+      },
+    };
+  }
+
+  /**
+   * Startup result
+   */
+  getStartupResult(): PluginStartupResult {
+    return {
+      plugin: { name: this.name, version: this.version },
+      success: !!this.context,
+      duration: 0,
+    };
+  }
+
+  /**
+   * Cleanup and shutdown
+   */
+  async destroy(): Promise<void> {
+    this.context?.logger.info('[Workflow Plugin] Destroyed');
+
+    if (this.context) {
+      await this.context.trigger('plugin.destroyed', {
+        pluginId: this.name,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
 }
 
 /**
  * Helper function to access the workflow API from kernel
  */
 export function getWorkflowAPI(kernel: any): WorkflowPlugin | null {
-    try {
-        return kernel.getService('workflow');
-    } catch {
-        return null;
-    }
+  try {
+    return kernel.getService('workflow');
+  } catch {
+    return null;
+  }
 }

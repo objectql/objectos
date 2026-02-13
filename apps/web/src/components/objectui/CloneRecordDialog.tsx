@@ -72,9 +72,7 @@ export function CloneRecordDialog({
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
-      setSelectedFields(
-        new Set(cloneableFields.filter((f) => !f.readonly).map((f) => f.name)),
-      );
+      setSelectedFields(new Set(cloneableFields.filter((f) => !f.readonly).map((f) => f.name)));
     }
   };
 
@@ -89,9 +87,7 @@ export function CloneRecordDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Clone {objectDef.label ?? objectDef.name}</DialogTitle>
-          <DialogDescription>
-            Select which fields to copy to the new record.
-          </DialogDescription>
+          <DialogDescription>Select which fields to copy to the new record.</DialogDescription>
         </DialogHeader>
         <div className="max-h-64 overflow-y-auto">
           <div className="space-y-2" data-testid="clone-field-list">
@@ -104,7 +100,9 @@ export function CloneRecordDialog({
                 <label
                   key={field.name}
                   className={`flex items-center gap-3 rounded-md border p-2 text-sm ${
-                    isReadonly ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-muted/50'
+                    isReadonly
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'cursor-pointer hover:bg-muted/50'
                   }`}
                 >
                   <input
@@ -127,10 +125,7 @@ export function CloneRecordDialog({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleClone}
-            disabled={isLoading || selectedFields.size === 0}
-          >
+          <Button onClick={handleClone} disabled={isLoading || selectedFields.size === 0}>
             {isLoading ? 'Cloning...' : `Clone (${selectedFields.size} fields)`}
           </Button>
         </DialogFooter>

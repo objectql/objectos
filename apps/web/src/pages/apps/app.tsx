@@ -24,9 +24,7 @@ function ObjectCard({ appId, objectName }: { appId: string; objectName: string }
           </CardTitle>
           <Badge variant="secondary">{result?.total ?? 0}</Badge>
         </div>
-        {objectDef.description && (
-          <CardDescription>{objectDef.description}</CardDescription>
-        )}
+        {objectDef.description && <CardDescription>{objectDef.description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <Button asChild variant="outline" size="sm">
@@ -56,9 +54,7 @@ export default function BusinessAppPage() {
     return (
       <div className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight">App not found</h2>
-        <p className="text-muted-foreground">
-          The requested business app is not installed.
-        </p>
+        <p className="text-muted-foreground">The requested business app is not installed.</p>
       </div>
     );
   }
@@ -69,7 +65,9 @@ export default function BusinessAppPage() {
         <h2 className="text-2xl font-bold tracking-tight">{appDef.label}</h2>
         <p className="text-muted-foreground">{appDef.description}</p>
         {appDef.active === false && (
-          <Badge variant="outline" className="mt-2">Paused</Badge>
+          <Badge variant="outline" className="mt-2">
+            Paused
+          </Badge>
         )}
       </div>
 

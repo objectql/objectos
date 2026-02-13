@@ -64,15 +64,13 @@ check('Node.js version', () => {
   const version = getVersion('node --version');
   if (!version) return { ok: false, message: 'Node.js not found' };
   const major = parseMajor(version);
-  if (major >= 20)
-    return { ok: true, message: `${version} (required: >=20.x)` };
+  if (major >= 20) return { ok: true, message: `${version} (required: >=20.x)` };
   return { ok: false, message: `${version} — upgrade to Node.js 20+ (LTS)` };
 });
 
 check('pnpm version', () => {
   const version = getVersion('pnpm --version');
-  if (!version)
-    return { ok: false, message: 'pnpm not found — install via corepack enable' };
+  if (!version) return { ok: false, message: 'pnpm not found — install via corepack enable' };
   const major = parseMajor(version);
   if (major >= 10) return { ok: true, message: `v${version} (required: >=10)` };
   return {
@@ -93,8 +91,7 @@ console.log('\nProject:');
 
 check('Dependencies installed', () => {
   const nodeModules = join(rootDir, 'node_modules');
-  if (existsSync(nodeModules))
-    return { ok: true, message: 'node_modules/ exists' };
+  if (existsSync(nodeModules)) return { ok: true, message: 'node_modules/ exists' };
   return {
     ok: false,
     message: 'node_modules/ missing — run: pnpm install',
@@ -112,20 +109,15 @@ check('Environment file', () => {
 
 check('AUTH_SECRET configured', () => {
   const envFile = join(rootDir, '.env');
-  if (!existsSync(envFile))
-    return { warn: true, message: '.env file missing (skipped)' };
+  if (!existsSync(envFile)) return { warn: true, message: '.env file missing (skipped)' };
   const content = readFileSync(envFile, 'utf-8');
   const match = content.match(/^AUTH_SECRET=(.+)$/m);
   if (!match) return { warn: true, message: 'AUTH_SECRET not set in .env' };
   const val = match[1].trim();
-  if (
-    val === 'your-super-secret-key-change-this-in-production' ||
-    val.length < 16
-  ) {
+  if (val === 'your-super-secret-key-change-this-in-production' || val.length < 16) {
     return {
       warn: true,
-      message:
-        'AUTH_SECRET is using the default/weak value — generate a secure key',
+      message: 'AUTH_SECRET is using the default/weak value — generate a secure key',
     };
   }
   return { ok: true, message: 'AUTH_SECRET is configured' };
@@ -149,8 +141,7 @@ console.log('\nTooling:');
 
 check('ESLint config', () => {
   const eslintConfig = join(rootDir, 'eslint.config.mjs');
-  if (existsSync(eslintConfig))
-    return { ok: true, message: 'eslint.config.mjs found' };
+  if (existsSync(eslintConfig)) return { ok: true, message: 'eslint.config.mjs found' };
   return { warn: true, message: 'ESLint config not found' };
 });
 
@@ -162,16 +153,14 @@ check('Prettier config', () => {
 
 check('EditorConfig', () => {
   const editorconfig = join(rootDir, '.editorconfig');
-  if (existsSync(editorconfig))
-    return { ok: true, message: '.editorconfig found' };
+  if (existsSync(editorconfig)) return { ok: true, message: '.editorconfig found' };
   return { warn: true, message: '.editorconfig not found' };
 });
 
 check('Git hooks (Husky)', () => {
   const huskyDir = join(rootDir, '.husky');
   const preCommit = join(huskyDir, 'pre-commit');
-  if (existsSync(preCommit))
-    return { ok: true, message: '.husky/pre-commit installed' };
+  if (existsSync(preCommit)) return { ok: true, message: '.husky/pre-commit installed' };
   if (existsSync(huskyDir))
     return { warn: true, message: '.husky exists but pre-commit hook missing' };
   return {
@@ -186,13 +175,9 @@ console.log('\nPackages:');
 
 check('Workspace packages', () => {
   const pkgDir = join(rootDir, 'packages');
-  if (!existsSync(pkgDir))
-    return { ok: false, message: 'packages/ directory not found' };
-  const packages = readdirSync(pkgDir).filter((d) =>
-    existsSync(join(pkgDir, d, 'package.json')),
-  );
-  if (packages.length >= 20)
-    return { ok: true, message: `${packages.length} packages found` };
+  if (!existsSync(pkgDir)) return { ok: false, message: 'packages/ directory not found' };
+  const packages = readdirSync(pkgDir).filter((d) => existsSync(join(pkgDir, d, 'package.json')));
+  if (packages.length >= 20) return { ok: true, message: `${packages.length} packages found` };
   return {
     warn: true,
     message: `${packages.length} packages found (expected 20)`,
@@ -201,12 +186,8 @@ check('Workspace packages', () => {
 
 check('Build artifacts', () => {
   const pkgDir = join(rootDir, 'packages');
-  const packages = readdirSync(pkgDir).filter((d) =>
-    existsSync(join(pkgDir, d, 'package.json')),
-  );
-  const built = packages.filter((d) =>
-    existsSync(join(pkgDir, d, 'dist')),
-  );
+  const packages = readdirSync(pkgDir).filter((d) => existsSync(join(pkgDir, d, 'package.json')));
+  const built = packages.filter((d) => existsSync(join(pkgDir, d, 'dist')));
   if (built.length === packages.length)
     return {
       ok: true,
@@ -226,19 +207,13 @@ check('Build artifacts', () => {
 // ─── Summary ────────────────────────────────────────────────────────────────
 
 console.log('\n' + '─'.repeat(50));
-console.log(
-  `\n  Results: ${passed} passed, ${warned} warnings, ${failed} failed\n`,
-);
+console.log(`\n  Results: ${passed} passed, ${warned} warnings, ${failed} failed\n`);
 
 if (failed > 0) {
-  console.log(
-    '  ❌ Some checks failed. Fix the issues above before developing.\n',
-  );
+  console.log('  ❌ Some checks failed. Fix the issues above before developing.\n');
   process.exit(1);
 } else if (warned > 0) {
-  console.log(
-    '  ⚠️  All checks passed with warnings. Review items above.\n',
-  );
+  console.log('  ⚠️  All checks passed with warnings. Review items above.\n');
   process.exit(0);
 } else {
   console.log('  🎉 Environment is healthy! Ready to develop.\n');

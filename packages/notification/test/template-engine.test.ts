@@ -20,9 +20,9 @@ describe('TemplateEngine', () => {
 
     it('should replace multiple variables', () => {
       const template = 'Hello {{firstName}} {{lastName}}!';
-      const result = engine.render(template, { 
-        firstName: 'John', 
-        lastName: 'Doe' 
+      const result = engine.render(template, {
+        firstName: 'John',
+        lastName: 'Doe',
       });
       expect(result).toBe('Hello John Doe!');
     });
@@ -36,8 +36,8 @@ describe('TemplateEngine', () => {
 
     it('should handle nested data', () => {
       const template = 'Email: {{user.email}}';
-      const result = engine.render(template, { 
-        user: { email: 'test@example.com' } 
+      const result = engine.render(template, {
+        user: { email: 'test@example.com' },
       });
       expect(result).toContain('test@example.com');
     });
@@ -48,7 +48,7 @@ describe('TemplateEngine', () => {
       const template = '{{#if admin}}Admin{{else}}User{{/if}}';
       const result1 = engine.render(template, { admin: true });
       const result2 = engine.render(template, { admin: false });
-      
+
       // Either handlebars is available or it returns the template as-is
       if (result1.includes('Admin') || result1.includes('{{#if')) {
         expect(true).toBe(true);
@@ -58,7 +58,7 @@ describe('TemplateEngine', () => {
     it('should support loops if handlebars is available', () => {
       const template = '{{#each items}}{{this}} {{/each}}';
       const result = engine.render(template, { items: ['a', 'b', 'c'] });
-      
+
       // Either handlebars is available or it returns the template as-is
       if (result.includes('a b c') || result.includes('{{#each')) {
         expect(true).toBe(true);
@@ -69,10 +69,10 @@ describe('TemplateEngine', () => {
   describe('Template Caching', () => {
     it('should cache compiled templates', () => {
       const template = 'Hello {{name}}!';
-      
+
       engine.render(template, { name: 'World' });
       expect(engine.getCacheSize()).toBe(1);
-      
+
       engine.render(template, { name: 'Alice' });
       expect(engine.getCacheSize()).toBe(1); // Still 1, reused
     });
@@ -80,7 +80,7 @@ describe('TemplateEngine', () => {
     it('should clear cache', () => {
       const template = 'Hello {{name}}!';
       engine.render(template, { name: 'World' });
-      
+
       expect(engine.getCacheSize()).toBe(1);
       engine.clearCache();
       expect(engine.getCacheSize()).toBe(0);
@@ -89,7 +89,7 @@ describe('TemplateEngine', () => {
     it('should work with cache disabled', () => {
       const noCacheEngine = new TemplateEngine({ cache: false });
       const template = 'Hello {{name}}!';
-      
+
       noCacheEngine.render(template, { name: 'World' });
       expect(noCacheEngine.getCacheSize()).toBe(0);
     });
@@ -135,11 +135,11 @@ describe('TemplateEngine', () => {
         Thank you,
         {{appName}}
       `;
-      
+
       const result = engine.render(template, {
         userName: 'John Doe',
         userEmail: 'john@example.com',
-        appName: 'MyApp'
+        appName: 'MyApp',
       });
 
       expect(result).toContain('John Doe');
@@ -149,11 +149,11 @@ describe('TemplateEngine', () => {
 
     it('should render SMS template', () => {
       const template = 'Hi {{name}}, your code is {{code}}. Valid for {{minutes}} minutes.';
-      
+
       const result = engine.render(template, {
         name: 'Alice',
         code: '123456',
-        minutes: 10
+        minutes: 10,
       });
 
       expect(result).toContain('Alice');

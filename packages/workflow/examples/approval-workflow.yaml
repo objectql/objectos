@@ -1,10 +1,10 @@
 # Approval Workflow Example
 # This workflow demonstrates a multi-level approval process
 
-name: "Document Approval"
-description: "Multi-level approval workflow for documents"
+name: 'Document Approval'
+description: 'Multi-level approval workflow for documents'
 type: approval
-version: "1.0.0"
+version: '1.0.0'
 
 states:
   draft:
@@ -17,9 +17,9 @@ states:
         actions:
           - notify_manager
     metadata:
-      label: "Draft"
-      description: "Document is being drafted"
-  
+      label: 'Draft'
+      description: 'Document is being drafted'
+
   pending_manager:
     transitions:
       approve:
@@ -33,8 +33,8 @@ states:
     on_enter:
       - set_pending_date
     metadata:
-      label: "Pending Manager Approval"
-  
+      label: 'Pending Manager Approval'
+
   pending_director:
     transitions:
       approve:
@@ -47,20 +47,20 @@ states:
         actions:
           - notify_requester
     metadata:
-      label: "Pending Director Approval"
-  
+      label: 'Pending Director Approval'
+
   approved:
     final: true
     on_enter:
       - set_approved_date
     metadata:
-      label: "Approved"
-      description: "Document has been approved"
-  
+      label: 'Approved'
+      description: 'Document has been approved'
+
   rejected:
     final: true
     on_enter:
       - set_rejected_date
     metadata:
-      label: "Rejected"
-      description: "Document was rejected"
+      label: 'Rejected'
+      description: 'Document was rejected'

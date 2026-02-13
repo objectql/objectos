@@ -31,10 +31,7 @@ describe('WorkflowStatusBadge', () => {
 
   it('shows workflow name when showWorkflowName is true', () => {
     render(
-      <WorkflowStatusBadge
-        status={makeStatus({ workflowName: 'leave_flow' })}
-        showWorkflowName
-      />,
+      <WorkflowStatusBadge status={makeStatus({ workflowName: 'leave_flow' })} showWorkflowName />,
     );
     expect(screen.getByText('leave_flow:')).toBeDefined();
   });

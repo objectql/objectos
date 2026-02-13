@@ -5,45 +5,45 @@ export const InvitationObject = ObjectSchema.create({
   description: 'Organization invitation',
   fields: {
     organizationId: Field.text({
-      label: "Organization ID",
-      description: "ID of the organization",
-      required: true
+      label: 'Organization ID',
+      description: 'ID of the organization',
+      required: true,
     }),
     email: Field.text({
-      label: "Email",
-      description: "Email of the invitee",
-      required: true
+      label: 'Email',
+      description: 'Email of the invitee',
+      required: true,
     }),
     teamId: Field.text({
-      label: "Team ID",
-      description: "ID of the team"
+      label: 'Team ID',
+      description: 'ID of the team',
     }),
     role: Field.text({
-      label: "Role",
-      description: "Role to be assigned",
-      required: true
+      label: 'Role',
+      description: 'Role to be assigned',
+      required: true,
     }),
     status: Field.select({
-      label: "Status",
-      description: "Status of the invitation (pending, accepted, rejected)",
+      label: 'Status',
+      description: 'Status of the invitation (pending, accepted, rejected)',
       options: ['pending', 'accepted', 'rejected'],
-      defaultValue: 'pending'
+      defaultValue: 'pending',
     }),
     expiresAt: Field.datetime({
-      label: "Expires At",
-      description: "Expiration time",
-      required: true
+      label: 'Expires At',
+      description: 'Expiration time',
+      required: true,
     }),
     inviterId: Field.text({
-      label: "Inviter ID",
-      description: "User ID of the inviter",
-      required: true
+      label: 'Inviter ID',
+      description: 'User ID of the inviter',
+      required: true,
     }),
     createdAt: Field.datetime({
-        defaultValue: 'now()'
+      defaultValue: 'now()',
     }),
     updatedAt: Field.datetime({
-        defaultValue: 'now()'
-    })
-  }
+      defaultValue: 'now()',
+    }),
+  },
 });

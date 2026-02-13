@@ -1,6 +1,6 @@
 /**
  * Type augmentation for File System API
- * 
+ *
  * The File System API types are not complete in TypeScript lib.dom.d.ts
  * This file adds missing type definitions.
  */

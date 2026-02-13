@@ -92,7 +92,11 @@ export class UIPlugin implements Plugin, IUIService {
   /**
    * Save (upsert) a view definition to the database.
    */
-  async saveView(viewName: string, objectName: string, definition: Record<string, unknown>): Promise<ViewRecord> {
+  async saveView(
+    viewName: string,
+    objectName: string,
+    definition: Record<string, unknown>,
+  ): Promise<ViewRecord> {
     this.ensureObjectQL();
 
     const record: Omit<ViewRecord, '_id'> = {
@@ -242,21 +246,27 @@ export class UIPlugin implements Plugin, IUIService {
   getManifest(): { capabilities: PluginCapabilityManifest; security: PluginSecurityManifest } {
     return {
       capabilities: {
-        provides: [{
-          id: 'com.objectstack.service.ui',
-          name: 'ui',
-          version: { major: 0, minor: 1, patch: 0 },
-          methods: [
-            { name: 'saveView', description: 'Save a view definition', async: true },
-            { name: 'loadView', description: 'Load a view definition', async: true },
-            { name: 'listViewsByObject', description: 'List views by object (async)', async: true },
-            { name: 'deleteView', description: 'Delete a view', async: true },
-            { name: 'getView', description: 'Get a view from registry', async: false },
-            { name: 'listViews', description: 'List views from registry', async: false },
-            { name: 'registerView', description: 'Register a view in registry', async: false },
-          ],
-          stability: 'stable',
-        }],
+        provides: [
+          {
+            id: 'com.objectstack.service.ui',
+            name: 'ui',
+            version: { major: 0, minor: 1, patch: 0 },
+            methods: [
+              { name: 'saveView', description: 'Save a view definition', async: true },
+              { name: 'loadView', description: 'Load a view definition', async: true },
+              {
+                name: 'listViewsByObject',
+                description: 'List views by object (async)',
+                async: true,
+              },
+              { name: 'deleteView', description: 'Delete a view', async: true },
+              { name: 'getView', description: 'Get a view from registry', async: false },
+              { name: 'listViews', description: 'List views from registry', async: false },
+              { name: 'registerView', description: 'Register a view in registry', async: false },
+            ],
+            stability: 'stable',
+          },
+        ],
         requires: [],
       },
       security: {
@@ -329,7 +339,9 @@ export class UIPlugin implements Plugin, IUIService {
       this.objectql.registerObject(SysView);
       this.context?.logger.info(`[UI] Registered object: ${this.viewObjectName}`);
     } catch (err) {
-      this.context?.logger.warn(`[UI] Could not register ${this.viewObjectName}: ${(err as Error).message}`);
+      this.context?.logger.warn(
+        `[UI] Could not register ${this.viewObjectName}: ${(err as Error).message}`,
+      );
     }
   }
 

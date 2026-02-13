@@ -1,9 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  useListOrganizations,
-  organization,
-  useActiveOrganization,
-} from '@/lib/auth-client';
+import { useListOrganizations, organization, useActiveOrganization } from '@/lib/auth-client';
 import { ChevronsUpDown, Plus, Blocks } from 'lucide-react';
 import {
   DropdownMenu,
@@ -26,8 +22,7 @@ export function TeamSwitcher() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
 
-  const currentOrg =
-    organizations?.find((o) => o.id === activeOrg?.id) || organizations?.[0];
+  const currentOrg = organizations?.find((o) => o.id === activeOrg?.id) || organizations?.[0];
   const displayName = currentOrg?.name || 'Personal';
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -87,9 +82,7 @@ export function TeamSwitcher() {
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <span className="text-xs font-medium">
-                    {org.name.charAt(0).toUpperCase()}
-                  </span>
+                  <span className="text-xs font-medium">{org.name.charAt(0).toUpperCase()}</span>
                 </div>
                 {org.name}
               </DropdownMenuItem>
@@ -102,9 +95,7 @@ export function TeamSwitcher() {
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
-              <span className="text-muted-foreground font-medium">
-                Add organization
-              </span>
+              <span className="text-muted-foreground font-medium">Add organization</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -102,9 +102,7 @@ export class RemoteLoader {
 
         // Validate exported interface
         if (!exports.default && !exports.plugin) {
-          throw new Error(
-            `Remote "${remote.name}" must export a default Plugin or named "plugin"`,
-          );
+          throw new Error(`Remote "${remote.name}" must export a default Plugin or named "plugin"`);
         }
 
         const mod: RemoteModule = {

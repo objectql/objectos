@@ -22,7 +22,9 @@ interface ViewSwitcherProps {
  */
 export function findKanbanField(objectDef: ObjectDefinition): string | undefined {
   const candidates = Object.entries(objectDef.fields)
-    .filter(([, f]) => (f.type === 'select' || f.type === 'radio') && f.options && f.options.length >= 2)
+    .filter(
+      ([, f]) => (f.type === 'select' || f.type === 'radio') && f.options && f.options.length >= 2,
+    )
     .map(([key]) => key);
 
   // Prefer common status/stage field names
@@ -46,12 +48,15 @@ export function ViewSwitcher({ currentView, onViewChange, objectDef }: ViewSwitc
     : false;
 
   return (
-    <div className="flex items-center rounded-lg border bg-muted/30 p-0.5" role="group" aria-label="View mode">
+    <div
+      className="flex items-center rounded-lg border bg-muted/30 p-0.5"
+      role="group"
+      aria-label="View mode"
+    >
       {views.map(({ mode, label, icon: Icon }) => {
         // Disable kanban if no suitable field, disable calendar if no date field
         const disabled =
-          (mode === 'kanban' && !hasKanbanField) ||
-          (mode === 'calendar' && !hasDateField);
+          (mode === 'kanban' && !hasKanbanField) || (mode === 'calendar' && !hasDateField);
 
         return (
           <Button

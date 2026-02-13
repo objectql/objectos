@@ -1,8 +1,8 @@
 ---
-title: "Deep Dive: Inside the ObjectOS Sync Engine (HLCs & Merkle Trees)"
-description: "A technical walkthrough of how we implemented distributed consistency using Hybrid Logical Clocks, Merkle Trees, and Differential Synchronization."
+title: 'Deep Dive: Inside the ObjectOS Sync Engine (HLCs & Merkle Trees)'
+description: 'A technical walkthrough of how we implemented distributed consistency using Hybrid Logical Clocks, Merkle Trees, and Differential Synchronization.'
 date: 2024-04-10
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # Deep Dive: Inside the ObjectOS Sync Engine
@@ -22,6 +22,7 @@ We solve this using **Hybrid Logical Clocks (HLC)**.
 ### HLC Structure
 
 An HLC timestamp is a 64-bit value composed of:
+
 1. **Physical Component (PT):** 48 bits representing the physical time (milliseconds).
 2. **Logical Component (LC):** 16 bits serving as a counter for events effectively happening within the "same" millisecond.
 
@@ -34,9 +35,9 @@ export class HLC {
     // to safeguard strong causality.
     const now = Date.now();
     const millis = Math.max(local.millis, remote.millis, now);
-    
+
     let counter = local.counter;
-    
+
     if (millis === local.millis && millis === remote.millis) {
       // Tie-breaking via logical counter
       counter = Math.max(local.counter, remote.counter) + 1;
@@ -47,7 +48,7 @@ export class HLC {
     } else {
       counter = 0;
     }
-    
+
     return new Timestamp(millis, counter, local.nodeId);
   }
 }
@@ -65,7 +66,7 @@ We use **Merkle Trees** (Hash Trees) to optimize synchronization.
 
 1. **Partitioning:** We bucket records based on their ID hashes.
 2. **Hashing:** Each bucket maintains a hash of its contents (XOR of the record hashes).
-3. **Comparison:** 
+3. **Comparison:**
    - Client sends its Root Hash.
    - Server compares it with its Root Hash.
    - If they match -> No changes.
@@ -79,7 +80,7 @@ Our synchronization protocol occurs over a WebSocket connection (for real-time) 
 
 ### Phase 1: Push (Client -> Server)
 
-The client sends a "Mutation Log". Crucially, we do not send the *state*; we send the *intent*.
+The client sends a "Mutation Log". Crucially, we do not send the _state_; we send the _intent_.
 
 ```json
 {
@@ -96,6 +97,7 @@ The client sends a "Mutation Log". Crucially, we do not send the *state*; we sen
 ```
 
 The Server applies these mutations using a **Last-Write-Wins (LWW) Register** Map.
+
 - If the incoming HLC > existing HLC for that field, update.
 - If incoming HLC < existing HLC, ignore (stale update).
 
@@ -109,10 +111,10 @@ async function getChangesSince(cursor: HLC) {
   // Query the 'Mutations' table, which is an append-only log
   const changes = await db.mutationLog.find({
     where: {
-      timestamp: { $gt: cursor.toString() }
-    }
+      timestamp: { $gt: cursor.toString() },
+    },
   });
-  
+
   return compactChanges(changes);
 }
 ```
@@ -124,7 +126,7 @@ While LWW is the default, it is lossy. For complex scenarios, ObjectOS supports 
 ### The JSON-Merge-Patch Problem
 
 If User A updates `{"color": "red"}` and User B updates `{"size": "large"}` on the same JSON blob, a naive LWW overwrites one.
-ObjectOS treats JSON fields as maps. We track timestamps *per key*.
+ObjectOS treats JSON fields as maps. We track timestamps _per key_.
 
 ```typescript
 // Internal representation of a Resolve map

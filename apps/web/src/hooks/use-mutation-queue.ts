@@ -80,9 +80,7 @@ export function useMutationQueue() {
 
   const markProcessing = useCallback((mutationId: string) => {
     setQueue((prev) =>
-      prev.map((m) =>
-        m.id === mutationId ? { ...m, status: 'processing' as const } : m,
-      ),
+      prev.map((m) => (m.id === mutationId ? { ...m, status: 'processing' as const } : m)),
     );
   }, []);
 

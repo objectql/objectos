@@ -1,8 +1,8 @@
 ---
-title: "Micro-Kernel Architecture: Implementing Inter-Process Communication in Node.js"
+title: 'Micro-Kernel Architecture: Implementing Inter-Process Communication in Node.js'
 description: "A deep analysis of ObjectOS's module isolation, the Event Bus design, and how we achieve loose coupling without the latency of microservices."
 date: 2024-02-01
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # Micro-Kernel Architecture: Implementing Inter-Process Communication
@@ -22,8 +22,9 @@ import { InventoryService } from '../inventory/service';
 ```
 
 In ObjectOS, we enforce a strict boundary.
-*   **Kernel Space:** The `PluginLoader`, `EventBroker`, and `Context` manager.
-*   **User Space:** The code inside your `plugins/` directory.
+
+- **Kernel Space:** The `PluginLoader`, `EventBroker`, and `Context` manager.
+- **User Space:** The code inside your `plugins/` directory.
 
 ### The Service Registry (V-Table equivalent)
 
@@ -42,6 +43,7 @@ const stock = await ctx.call('inventory.check_stock', { sku: 'A123' });
 ```
 
 **Why this indirection?**
+
 1.  **Middleware Injection:** The Kernel intercepts every `call`. It automates Tracing (OpenTelemetry), Logging, and Argument Validation (Zod) before the target function ever runs.
 2.  **Swappability:** You can hot-swap the implementation of `inventory.check_stock` without restarting the callers.
 
@@ -53,11 +55,12 @@ We implemented a custom **Broker** that supports:
 
 1.  **Transactional Outbox Pattern:**
     When a plugin emits an event alongside a DB mutation, the event is not fired until the DB transaction commits.
+
     ```typescript
     await ctx.transaction(async (trx) => {
         await trx.update('orders', ...);
         // Buffered effectively until commit
-        ctx.emit('order.created', { id }); 
+        ctx.emit('order.created', { id });
     });
     ```
 
@@ -82,6 +85,7 @@ Request(Context ID: 100)
 ```
 
 This inheritance chain allows us to:
+
 1.  **Trace Causality:** If Inventory Plugin throws an error, the stack trace links back to the Order Plugin's action.
 2.  **Sandboxing:** We can attach "Budgets" to contexts (e.g., Max SQL Queries = 50). If a plugin goes rogue, the Kernel kills that specific Context branch without crashing the server.
 

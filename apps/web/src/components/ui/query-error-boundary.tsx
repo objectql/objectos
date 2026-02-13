@@ -56,9 +56,7 @@ export class QueryErrorBoundary extends Component<
       return (
         <Card className="mx-auto max-w-lg" data-testid="error-boundary">
           <CardHeader>
-            <CardTitle className="text-base text-destructive">
-              Something went wrong
-            </CardTitle>
+            <CardTitle className="text-base text-destructive">Something went wrong</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
@@ -68,11 +66,7 @@ export class QueryErrorBoundary extends Component<
               <Button size="sm" onClick={this.handleRetry}>
                 Try again
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.location.reload()}
-              >
+              <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
                 Reload page
               </Button>
             </div>

@@ -223,11 +223,7 @@ export default function SecuritySettingsPage() {
               <p className="text-sm text-muted-foreground">
                 Your account is protected with two-factor authentication.
               </p>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowDisableDialog(true)}
-              >
+              <Button variant="destructive" size="sm" onClick={() => setShowDisableDialog(true)}>
                 Disable 2FA
               </Button>
             </div>
@@ -278,7 +274,9 @@ export default function SecuritySettingsPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-2 rounded-lg bg-muted p-3">
                     {backupCodes.map((code, i) => (
-                      <code key={i} className="text-sm font-mono">{code}</code>
+                      <code key={i} className="text-sm font-mono">
+                        {code}
+                      </code>
                     ))}
                   </div>
                 </div>
@@ -355,9 +353,7 @@ export default function SecuritySettingsPage() {
                 <Monitor className="size-5" />
                 Active Sessions
               </CardTitle>
-              <CardDescription>
-                Manage your active sessions across devices.
-              </CardDescription>
+              <CardDescription>Manage your active sessions across devices.</CardDescription>
             </div>
             {sessions.length > 1 && (
               <Button

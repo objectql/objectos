@@ -225,7 +225,10 @@ export class MarketplacePlugin implements Plugin {
         if (this.config.blockedPlugins.includes(pluginId)) {
           return c.json({ error: `Plugin "${pluginId}" is blocked` }, 403);
         }
-        if (this.config.allowedPlugins.length > 0 && !this.config.allowedPlugins.includes(pluginId)) {
+        if (
+          this.config.allowedPlugins.length > 0 &&
+          !this.config.allowedPlugins.includes(pluginId)
+        ) {
           return c.json({ error: `Plugin "${pluginId}" is not in the allow list` }, 403);
         }
 
@@ -242,10 +245,13 @@ export class MarketplacePlugin implements Plugin {
           if (entry) {
             const report = this.sandbox.review(entry.manifest);
             if (!report.safe) {
-              return c.json({
-                error: 'Plugin failed security review',
-                vulnerabilities: report.vulnerabilities,
-              }, 403);
+              return c.json(
+                {
+                  error: 'Plugin failed security review',
+                  vulnerabilities: report.vulnerabilities,
+                },
+                403,
+              );
             }
           }
         }
@@ -254,7 +260,10 @@ export class MarketplacePlugin implements Plugin {
 
         if (result.success) {
           context.logger.info(`[Marketplace] Plugin installed: ${pluginId} v${result.version}`);
-          await context.trigger('marketplace.plugin.installed', { pluginId, version: result.version });
+          await context.trigger('marketplace.plugin.installed', {
+            pluginId,
+            version: result.version,
+          });
         }
 
         return c.json(result, result.success ? 200 : 400);

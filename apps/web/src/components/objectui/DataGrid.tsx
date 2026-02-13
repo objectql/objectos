@@ -79,9 +79,7 @@ export function DataGrid({
   const handleSort = useCallback((column: string) => {
     setSort((prev) => {
       if (prev?.column === column) {
-        return prev.direction === 'asc'
-          ? { column, direction: 'desc' }
-          : null;
+        return prev.direction === 'asc' ? { column, direction: 'desc' } : null;
       }
       return { column, direction: 'asc' };
     });
@@ -138,12 +136,7 @@ export function DataGrid({
 
   return (
     <div className="rounded-md border" data-testid="data-grid">
-      <div
-        ref={containerRef}
-        className="overflow-auto"
-        style={{ height }}
-        onScroll={handleScroll}
-      >
+      <div ref={containerRef} className="overflow-auto" style={{ height }} onScroll={handleScroll}>
         <div style={{ minWidth: `${columns.length * 150}px` }}>
           {/* Header */}
           <div
@@ -170,14 +163,19 @@ export function DataGrid({
                 role="columnheader"
                 aria-sort={
                   sort?.column === col.name
-                    ? sort.direction === 'asc' ? 'ascending' : 'descending'
+                    ? sort.direction === 'asc'
+                      ? 'ascending'
+                      : 'descending'
                     : 'none'
                 }
               >
                 <span>{col.label}</span>
-                {sort?.column === col.name && (
-                  sort.direction === 'asc' ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-                )}
+                {sort?.column === col.name &&
+                  (sort.direction === 'asc' ? (
+                    <ArrowUp className="size-3" />
+                  ) : (
+                    <ArrowDown className="size-3" />
+                  ))}
               </div>
             ))}
           </div>

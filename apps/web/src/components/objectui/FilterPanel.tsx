@@ -45,7 +45,9 @@ export function FilterPanel({
   const filterableFields = allFields.filter(
     (f) =>
       !f.readonly &&
-      ['text', 'email', 'select', 'radio', 'number', 'currency', 'date', 'datetime'].includes(f.type),
+      ['text', 'email', 'select', 'radio', 'number', 'currency', 'date', 'datetime'].includes(
+        f.type,
+      ),
   );
 
   const addFilter = useCallback(() => {
@@ -53,13 +55,9 @@ export function FilterPanel({
     const field = filterableFields.find((f) => f.name === pendingField);
     if (!field) return;
 
-    const operator =
-      field.type === 'select' || field.type === 'radio' ? 'equals' : 'contains';
+    const operator = field.type === 'select' || field.type === 'radio' ? 'equals' : 'contains';
 
-    onFiltersChange([
-      ...filters,
-      { field: pendingField, operator, value: pendingValue },
-    ]);
+    onFiltersChange([...filters, { field: pendingField, operator, value: pendingValue }]);
     setPendingField('');
     setPendingValue('');
   }, [pendingField, pendingValue, filters, filterableFields, onFiltersChange]);
@@ -103,7 +101,10 @@ export function FilterPanel({
           <Filter className="size-4" />
           Filters
           {filters.length > 0 && (
-            <Badge variant="default" className="ml-1 size-5 justify-center rounded-full p-0 text-xs">
+            <Badge
+              variant="default"
+              className="ml-1 size-5 justify-center rounded-full p-0 text-xs"
+            >
               {filters.length}
             </Badge>
           )}

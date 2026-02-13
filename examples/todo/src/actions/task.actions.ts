@@ -44,7 +44,7 @@ export const DeferTaskAction: Action = {
       label: 'Reason for Deferral',
       type: 'textarea',
       required: false,
-    }
+    },
   ],
   successMessage: 'Task deferred successfully!',
   refreshAfter: true,
@@ -64,7 +64,7 @@ export const SetReminderAction: Action = {
       label: 'Reminder Date/Time',
       type: 'datetime',
       required: true,
-    }
+    },
   ],
   successMessage: 'Reminder set!',
   refreshAfter: true,

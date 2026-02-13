@@ -35,9 +35,7 @@ export default function CreateOrganizationPage() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create a new Organization</CardTitle>
-            <CardDescription>
-              An organization represents your team or company.
-            </CardDescription>
+            <CardDescription>An organization represents your team or company.</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleSubmit}>

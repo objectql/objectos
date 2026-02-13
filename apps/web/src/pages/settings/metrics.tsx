@@ -59,9 +59,9 @@ export default function MetricsPage() {
   }
 
   // Group metrics by type
-  const counterMetrics = metrics.filter(m => m.type === 'counter');
-  const gaugeMetrics = metrics.filter(m => m.type === 'gauge');
-  const histogramMetrics = metrics.filter(m => m.type === 'histogram');
+  const counterMetrics = metrics.filter((m) => m.type === 'counter');
+  const gaugeMetrics = metrics.filter((m) => m.type === 'gauge');
+  const histogramMetrics = metrics.filter((m) => m.type === 'histogram');
 
   return (
     <div className="space-y-6">
@@ -101,9 +101,7 @@ export default function MetricsPage() {
       ) : metrics.length === 0 ? (
         <Card>
           <CardContent className="py-8">
-            <div className="text-center text-muted-foreground">
-              No metrics available
-            </div>
+            <div className="text-center text-muted-foreground">No metrics available</div>
           </CardContent>
         </Card>
       ) : (
@@ -153,9 +151,7 @@ export default function MetricsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Gauges</CardTitle>
-                <CardDescription>
-                  Current values that can increase or decrease
-                </CardDescription>
+                <CardDescription>Current values that can increase or decrease</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -193,9 +189,7 @@ export default function MetricsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Histograms</CardTitle>
-                <CardDescription>
-                  Distribution of values with percentile breakdowns
-                </CardDescription>
+                <CardDescription>Distribution of values with percentile breakdowns</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -215,9 +209,7 @@ export default function MetricsPage() {
                       <TableRow key={idx}>
                         <TableCell className="font-medium">{metric.name}</TableCell>
                         <TableCell className="font-mono">{metric.count || 0}</TableCell>
-                        <TableCell className="font-mono">
-                          {formatValue(metric.mean)}
-                        </TableCell>
+                        <TableCell className="font-mono">{formatValue(metric.mean)}</TableCell>
                         <TableCell className="font-mono">
                           {formatValue(metric.percentiles?.p50)}
                         </TableCell>
@@ -227,9 +219,7 @@ export default function MetricsPage() {
                         <TableCell className="font-mono">
                           {formatValue(metric.percentiles?.p99)}
                         </TableCell>
-                        <TableCell className="font-mono">
-                          {formatValue(metric.max)}
-                        </TableCell>
+                        <TableCell className="font-mono">{formatValue(metric.max)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -242,9 +232,7 @@ export default function MetricsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Prometheus Export</CardTitle>
-              <CardDescription>
-                Export metrics in Prometheus text format
-              </CardDescription>
+              <CardDescription>Export metrics in Prometheus text format</CardDescription>
             </CardHeader>
             <CardContent>
               <a

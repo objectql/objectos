@@ -42,10 +42,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <AuthLayout
-      title="Create an account"
-      subtitle="Start your 14-day free trial"
-    >
+    <AuthLayout title="Create an account" subtitle="Start your 14-day free trial">
       <div className="space-y-6">
         <SocialButtons />
 

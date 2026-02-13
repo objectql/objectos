@@ -25,7 +25,7 @@ await NotificationPlugin.send({
   to: user.id,
   channel: ['email', 'in-app'],
   template: 'welcome',
-  data: { name: 'Steedos' }
+  data: { name: 'Steedos' },
 });
 ```
 

@@ -31,20 +31,33 @@ export const metadata = {
     default: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
     template: '%s | ObjectOS',
   },
-  description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation. Turn YAML schemas into secure, scalable APIs built on ObjectQL & NestJS.',
-  keywords: ['ObjectOS', 'Low-Code', 'Enterprise', 'Runtime Engine', 'RBAC', 'Workflow', 'NestJS', 'ObjectQL', 'Metadata-Driven'],
+  description:
+    'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation. Turn YAML schemas into secure, scalable APIs built on ObjectQL & NestJS.',
+  keywords: [
+    'ObjectOS',
+    'Low-Code',
+    'Enterprise',
+    'Runtime Engine',
+    'RBAC',
+    'Workflow',
+    'NestJS',
+    'ObjectQL',
+    'Metadata-Driven',
+  ],
   authors: [{ name: 'ObjectOS Team' }],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://objectos.dev',
     title: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
-    description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
+    description:
+      'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
     siteName: 'ObjectOS',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ObjectOS - The Enterprise Low-Code Runtime Engine',
-    description: 'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
+    description:
+      'The Business Operating System. Instant Backend. Security Kernel. Workflow Automation.',
   },
 };

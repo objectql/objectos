@@ -16,5 +16,11 @@ export const LeadsBySourceReport: ReportInput = {
     { field: 'status', sortOrder: 'asc' },
   ],
   filter: { is_converted: false },
-  chart: { type: 'pie', title: 'Leads by Source', showLegend: true, xAxis: 'lead_source', yAxis: 'full_name' }
+  chart: {
+    type: 'pie',
+    title: 'Leads by Source',
+    showLegend: true,
+    xAxis: 'lead_source',
+    yAxis: 'full_name',
+  },
 };

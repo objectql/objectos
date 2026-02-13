@@ -48,18 +48,18 @@ objectos/
 
 ### Package Responsibilities
 
-| Package | Role | Dependencies |
-|---------|------|-------------|
-| `@objectos/auth` | Identity — BetterAuth, SSO, 2FA, Sessions | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/permissions` | Authorization — RBAC, Permission Sets | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/audit` | Compliance — CRUD events, field history | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/workflow` | Flow — FSM engine, approval processes | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/automation` | Triggers — WorkflowRule, action types | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/jobs` | Background — queues, cron, retry | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/realtime` | Sync — WebSocket, presence | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/graphql` | GraphQL API — schema generation, subscriptions | `@objectstack/spec`, `graphql` |
-| `@objectos/agent` | AI — LLM agents, tools, orchestration | `@objectstack/spec`, `@objectstack/runtime` |
-| `@objectos/analytics` | Analytics — aggregation, reports, dashboards | `@objectstack/spec`, `@objectstack/runtime` |
+| Package                 | Role                                           | Dependencies                                |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------- |
+| `@objectos/auth`        | Identity — BetterAuth, SSO, 2FA, Sessions      | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/permissions` | Authorization — RBAC, Permission Sets          | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/audit`       | Compliance — CRUD events, field history        | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/workflow`    | Flow — FSM engine, approval processes          | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/automation`  | Triggers — WorkflowRule, action types          | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/jobs`        | Background — queues, cron, retry               | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/realtime`    | Sync — WebSocket, presence                     | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/graphql`     | GraphQL API — schema generation, subscriptions | `@objectstack/spec`, `graphql`              |
+| `@objectos/agent`       | AI — LLM agents, tools, orchestration          | `@objectstack/spec`, `@objectstack/runtime` |
+| `@objectos/analytics`   | Analytics — aggregation, reports, dashboards   | `@objectstack/spec`, `@objectstack/runtime` |
 
 ## Development Standards
 
@@ -68,6 +68,7 @@ objectos/
 > **"Kernel handles logic, Drivers handle data, Server handles HTTP."**
 
 This must be maintained at all times:
+
 - Kernel never touches HTTP or database connections directly
 - Server never touches database queries directly
 - Drivers are injected via dependency injection
@@ -75,12 +76,14 @@ This must be maintained at all times:
 ### Code Style
 
 **TypeScript**
+
 - Use strict mode (`strict: true` in tsconfig)
 - No `any` - use `unknown` with type guards if needed
 - Prefer interfaces over type aliases for public APIs
 - Use async/await for all I/O operations
 
 **Naming Conventions**
+
 - Files: `kebab-case.ts`
 - Classes: `PascalCase`
 - Functions/variables: `camelCase`
@@ -88,19 +91,21 @@ This must be maintained at all times:
 - Constants: `UPPER_SNAKE_CASE`
 
 **Comments**
+
 - Use JSDoc for all public APIs
-- Explain *why*, not just *what*
+- Explain _why_, not just _what_
 - Include examples for complex functions
 
 Example:
+
 ```typescript
 /**
  * Loads an object definition into the registry.
  * Triggers a schema sync if the driver supports it.
- * 
+ *
  * @param config The object metadata from YAML
  * @throws {ValidationError} If the config is invalid
- * 
+ *
  * @example
  * await kernel.load({
  *   name: 'contacts',
@@ -155,27 +160,28 @@ async find(
 - **E2E Tests**: For critical user flows
 
 Example test:
+
 ```typescript
 describe('ObjectOS.insert', () => {
   let kernel: ObjectOS;
   let mockDriver: jest.Mocked<ObjectQLDriver>;
-  
+
   beforeEach(() => {
     kernel = new ObjectOS();
     mockDriver = createMockDriver();
     kernel.useDriver(mockDriver);
   });
-  
+
   it('should validate required fields', async () => {
     await kernel.load({
       name: 'contacts',
       fields: {
-        email: { type: 'email', required: true }
-      }
+        email: { type: 'email', required: true },
+      },
     });
-    
+
     await expect(
-      kernel.insert('contacts', {}) // Missing email
+      kernel.insert('contacts', {}), // Missing email
     ).rejects.toThrow('email is required');
   });
 });
@@ -278,6 +284,7 @@ git checkout -b fix/issue-123
 ### 3. Make Changes
 
 Follow the coding standards above and ensure:
+
 - Code compiles without errors
 - Tests pass
 - Documentation is updated
@@ -307,6 +314,7 @@ git commit -m "docs(guide): add architecture examples"
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -330,6 +338,7 @@ git push origin feature/your-feature-name
 ### PR Checklist
 
 Before submitting, ensure:
+
 - [ ] Code follows style guidelines
 - [ ] All tests pass
 - [ ] New tests added for new features
@@ -375,7 +384,7 @@ describe('CachePlugin', () => {
 
   it('should return undefined for expired keys', async () => {
     await plugin.set('key', 'value', { ttl: 1 });
-    await new Promise(r => setTimeout(r, 10));
+    await new Promise((r) => setTimeout(r, 10));
     const result = await plugin.get('key');
     expect(result).toBeUndefined();
   });
@@ -397,11 +406,11 @@ pnpm test:coverage
 **Coverage thresholds** are enforced per package:
 
 | Metric     | Server Packages | Frontend (apps/web) |
-|------------|:--------------:|:-------------------:|
-| Branches   | 70%            | 60%                 |
-| Functions  | 70%            | 60%                 |
-| Lines      | 80%            | 70%                 |
-| Statements | 80%            | 70%                 |
+| ---------- | :-------------: | :-----------------: |
+| Branches   |       70%       |         60%         |
+| Functions  |       70%       |         60%         |
+| Lines      |       80%       |         70%         |
+| Statements |       80%       |         70%         |
 
 CI automatically collects coverage from all packages and uploads to Codecov.
 

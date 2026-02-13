@@ -1,6 +1,6 @@
 /**
  * CRM Seed Data
- * 
+ *
  * Demo records for all core CRM objects.
  * Uses the DatasetSchema format with upsert mode for idempotent loading.
  */
@@ -57,7 +57,7 @@ const accounts: DatasetInput = {
       phone: '+1-650-555-0500',
       website: 'https://wayne.example.com',
     },
-  ]
+  ],
 };
 
 // ─── Contacts ─────────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ const contacts: DatasetInput = {
       title: 'CTO',
       department: 'Engineering',
     },
-  ]
+  ],
 };
 
 // ─── Leads ────────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ const leads: DatasetInput = {
       source: 'trade_show',
       industry: 'Technology',
     },
-  ]
+  ],
 };
 
 // ─── Opportunities ────────────────────────────────────────────────────
@@ -195,7 +195,7 @@ const opportunities: DatasetInput = {
       type: 'existing_business',
       forecast_category: 'best_case',
     },
-  ]
+  ],
 };
 
 // ─── Products ─────────────────────────────────────────────────────────
@@ -232,7 +232,7 @@ const products: DatasetInput = {
       list_price: 75000,
       is_active: true,
     },
-  ]
+  ],
 };
 
 // ─── Tasks ────────────────────────────────────────────────────────────
@@ -270,7 +270,7 @@ const tasks: DatasetInput = {
       priority: 'normal',
       due_date: new Date(Date.now() + 86400000 * 7),
     },
-  ]
+  ],
 };
 
 /** All CRM seed datasets */

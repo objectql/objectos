@@ -1,6 +1,6 @@
 /**
  * Automation System Types
- * 
+ *
  * Type definitions aligned with @objectstack/spec/automation specification
  */
 
@@ -8,26 +8,18 @@
 // Import and Re-export Spec-Compliant Types
 // ============================================================================
 
-import type {
-  WorkflowRule,
-  WorkflowAction,
-  TimeTrigger,
-} from '@objectstack/spec/automation';
+import type { WorkflowRule, WorkflowAction, TimeTrigger } from '@objectstack/spec/automation';
 
 // Re-export spec types as primary types
-export type {
-  WorkflowRule,
-  WorkflowAction,
-  TimeTrigger,
-};
+export type { WorkflowRule, WorkflowAction, TimeTrigger };
 
 /**
  * Workflow trigger types from @objectstack/spec
  * Values: 'on_create' | 'on_update' | 'on_create_or_update' | 'on_delete' | 'schedule'
  */
-export type SpecWorkflowTriggerType = 
+export type SpecWorkflowTriggerType =
   | 'on_create'
-  | 'on_update' 
+  | 'on_update'
   | 'on_create_or_update'
   | 'on_delete'
   | 'schedule';
@@ -40,12 +32,12 @@ export type SpecWorkflowTriggerType =
  * Trigger type enumeration (legacy)
  * @deprecated Use SpecWorkflowTriggerType for spec-compliant types
  */
-export type TriggerType = 
+export type TriggerType =
   | SpecWorkflowTriggerType
-  | 'object.create' 
-  | 'object.update' 
-  | 'object.delete' 
-  | 'scheduled' 
+  | 'object.create'
+  | 'object.update'
+  | 'object.delete'
+  | 'scheduled'
   | 'webhook';
 
 /**
@@ -57,10 +49,10 @@ export type ActionType = WorkflowAction['type'];
 /**
  * Formula field type (legacy - keep for formula engine)
  */
-export type FormulaType = 
-  | 'calculated'       // Runtime calculated
-  | 'rollup'           // Rollup summary (SUM, COUNT, etc.)
-  | 'autonumber';      // Auto-number field
+export type FormulaType =
+  | 'calculated' // Runtime calculated
+  | 'rollup' // Rollup summary (SUM, COUNT, etc.)
+  | 'autonumber'; // Auto-number field
 
 /**
  * Rollup operation
@@ -84,7 +76,15 @@ export interface TriggerCondition {
   /** Field name */
   field: string;
   /** Operator */
-  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'starts_with' | 'ends_with' | 'changed';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'greater_than'
+    | 'less_than'
+    | 'contains'
+    | 'starts_with'
+    | 'ends_with'
+    | 'changed';
   /** Value to compare */
   value?: any;
 }
@@ -121,10 +121,7 @@ export interface WebhookTriggerConfig {
 /**
  * Trigger configuration (union type)
  */
-export type TriggerConfig = 
-  | ObjectTriggerConfig 
-  | ScheduledTriggerConfig 
-  | WebhookTriggerConfig;
+export type TriggerConfig = ObjectTriggerConfig | ScheduledTriggerConfig | WebhookTriggerConfig;
 
 /**
  * Update field action configuration (legacy)
@@ -197,11 +194,11 @@ export interface ExecuteScriptActionConfig {
 /**
  * Action configuration (union type) - legacy
  */
-export type ActionConfig = 
-  | UpdateFieldActionConfig 
-  | CreateRecordActionConfig 
-  | SendEmailActionConfig 
-  | HttpRequestActionConfig 
+export type ActionConfig =
+  | UpdateFieldActionConfig
+  | CreateRecordActionConfig
+  | SendEmailActionConfig
+  | HttpRequestActionConfig
   | ExecuteScriptActionConfig;
 
 // ============================================================================
@@ -320,10 +317,7 @@ export interface AutoNumberFormulaConfig {
 /**
  * Formula configuration (union type)
  */
-export type FormulaConfig = 
-  | CalculatedFormulaConfig 
-  | RollupFormulaConfig 
-  | AutoNumberFormulaConfig;
+export type FormulaConfig = CalculatedFormulaConfig | RollupFormulaConfig | AutoNumberFormulaConfig;
 
 // ============================================================================
 // Storage Interface
@@ -336,33 +330,33 @@ export type FormulaConfig =
 export interface AutomationStorage {
   /** Save an automation rule */
   saveRule(rule: AutomationRule | SpecAutomationRule): Promise<void>;
-  
+
   /** Get an automation rule */
   getRule(id: string): Promise<(AutomationRule | SpecAutomationRule) | null>;
-  
+
   /** List automation rules */
-  listRules(filter?: { 
-    status?: AutomationRuleStatus; 
+  listRules(filter?: {
+    status?: AutomationRuleStatus;
     triggerType?: TriggerType;
     active?: boolean;
     objectName?: string;
   }): Promise<(AutomationRule | SpecAutomationRule)[]>;
-  
+
   /** Update an automation rule */
   updateRule(id: string, updates: Partial<AutomationRule | SpecAutomationRule>): Promise<void>;
-  
+
   /** Delete an automation rule */
   deleteRule(id: string): Promise<void>;
-  
+
   /** Save a formula field */
   saveFormula(formula: FormulaField): Promise<void>;
-  
+
   /** Get a formula field */
   getFormula(objectName: string, fieldName: string): Promise<FormulaField | null>;
-  
+
   /** List formula fields */
   listFormulas(objectName?: string): Promise<FormulaField[]>;
-  
+
   /** Delete a formula field */
   deleteFormula(objectName: string, fieldName: string): Promise<void>;
 }

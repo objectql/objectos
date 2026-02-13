@@ -107,10 +107,12 @@ describe('SignInPage', () => {
   });
 
   it('should display error message on sign-in failure', async () => {
-    mockSignInEmail.mockImplementation((_data: unknown, callbacks: { onError?: (ctx: { error: { message: string } }) => void }) => {
-      callbacks.onError?.({ error: { message: 'Invalid credentials' } });
-      return Promise.resolve();
-    });
+    mockSignInEmail.mockImplementation(
+      (_data: unknown, callbacks: { onError?: (ctx: { error: { message: string } }) => void }) => {
+        callbacks.onError?.({ error: { message: 'Invalid credentials' } });
+        return Promise.resolve();
+      },
+    );
 
     renderSignIn();
 

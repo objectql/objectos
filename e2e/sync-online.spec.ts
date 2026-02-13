@@ -26,10 +26,11 @@ test.describe('Sync — Online Operations', () => {
   });
 
   test('network requests include rate-limit headers', async ({ page }) => {
-    const responsePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/api/v1/') && resp.status() !== 0,
-      { timeout: 10_000 },
-    ).catch(() => null);
+    const responsePromise = page
+      .waitForResponse((resp) => resp.url().includes('/api/v1/') && resp.status() !== 0, {
+        timeout: 10_000,
+      })
+      .catch(() => null);
 
     await page.goto('/console/');
 

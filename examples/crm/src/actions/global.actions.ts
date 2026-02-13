@@ -26,7 +26,7 @@ export const LogCallAction: Action = {
       label: 'Call Notes',
       type: 'textarea',
       required: false,
-    }
+    },
   ],
   successMessage: 'Call logged successfully!',
   refreshAfter: true,

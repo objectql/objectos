@@ -7,11 +7,29 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx", "vitest.config.ts", "jest.config.js", "jest.config.cjs", "jest.config.ts"]
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "test/**/*.tsx",
+        "vitest.config.ts",
+        "jest.config.js",
+        "jest.config.cjs",
+        "jest.config.ts"
+      ]
     },
     "test:coverage": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx", "vitest.config.ts", "jest.config.js", "jest.config.cjs", "jest.config.ts"],
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "test/**/*.tsx",
+        "vitest.config.ts",
+        "jest.config.js",
+        "jest.config.cjs",
+        "jest.config.ts"
+      ],
       "outputs": ["coverage/**"]
     },
     "lint": {},

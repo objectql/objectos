@@ -63,7 +63,7 @@ export default function PluginsPage() {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) return `${hours}h ${minutes % 60}m`;
     if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
     return `${seconds}s`;
@@ -85,9 +85,7 @@ export default function PluginsPage() {
       ) : plugins.length === 0 ? (
         <Card>
           <CardContent className="py-8">
-            <div className="text-center text-muted-foreground">
-              No plugins loaded
-            </div>
+            <div className="text-center text-muted-foreground">No plugins loaded</div>
           </CardContent>
         </Card>
       ) : (
@@ -99,11 +97,11 @@ export default function PluginsPage() {
               <CardDescription>
                 {plugins.length} plugin{plugins.length !== 1 ? 's' : ''} loaded
                 {' • '}
-                {plugins.filter(p => p.status === 'healthy').length} healthy
-                {plugins.filter(p => p.status === 'degraded').length > 0 && 
-                  ` • ${plugins.filter(p => p.status === 'degraded').length} degraded`}
-                {plugins.filter(p => p.status === 'error').length > 0 && 
-                  ` • ${plugins.filter(p => p.status === 'error').length} error`}
+                {plugins.filter((p) => p.status === 'healthy').length} healthy
+                {plugins.filter((p) => p.status === 'degraded').length > 0 &&
+                  ` • ${plugins.filter((p) => p.status === 'degraded').length} degraded`}
+                {plugins.filter((p) => p.status === 'error').length > 0 &&
+                  ` • ${plugins.filter((p) => p.status === 'error').length} error`}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -134,9 +132,7 @@ export default function PluginsPage() {
                         {plugin.version}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={statusColors[plugin.status] as any}>
-                          {plugin.status}
-                        </Badge>
+                        <Badge variant={statusColors[plugin.status] as any}>{plugin.status}</Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {formatUptime(plugin.uptime)}
@@ -172,9 +168,7 @@ export default function PluginsPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base">{plugin.name}</CardTitle>
-                    <Badge variant={statusColors[plugin.status] as any}>
-                      {plugin.status}
-                    </Badge>
+                    <Badge variant={statusColors[plugin.status] as any}>{plugin.status}</Badge>
                   </div>
                   <CardDescription>
                     v{plugin.version} • {formatUptime(plugin.uptime)} uptime
@@ -196,9 +190,7 @@ export default function PluginsPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-sm text-muted-foreground">
-                      No health checks available
-                    </div>
+                    <div className="text-sm text-muted-foreground">No health checks available</div>
                   )}
                 </CardContent>
               </Card>

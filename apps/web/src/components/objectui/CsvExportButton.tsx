@@ -27,11 +27,7 @@ function escapeCsvValue(value: unknown): string {
   return str;
 }
 
-export function CsvExportButton({
-  objectDef,
-  records,
-  filename,
-}: CsvExportButtonProps) {
+export function CsvExportButton({ objectDef, records, filename }: CsvExportButtonProps) {
   const handleExport = () => {
     const fields = resolveFields(objectDef.fields);
 
@@ -39,14 +35,10 @@ export function CsvExportButton({
     const headers = fields.map((f) => escapeCsvValue(f.label));
 
     // Build CSV rows
-    const rows = records.map((record) =>
-      fields.map((f) => escapeCsvValue(record[f.name])),
-    );
+    const rows = records.map((record) => fields.map((f) => escapeCsvValue(record[f.name])));
 
     // Combine into CSV string
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join(
-      '\n',
-    );
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 
     // Trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

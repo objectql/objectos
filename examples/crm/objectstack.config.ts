@@ -16,7 +16,8 @@ import { CrmSeedData } from './src/data';
 // ─── Sharing & Security (special: mixed single/array values) ───────
 import {
   OrganizationDefaults,
-  AccountTeamSharingRule, TerritorySharingRules,
+  AccountTeamSharingRule,
+  TerritorySharingRules,
   OpportunitySalesSharingRule,
   CaseEscalationSharingRule,
   RoleHierarchy,
@@ -29,7 +30,8 @@ export default defineStack({
     version: '3.0.0',
     type: 'app',
     name: 'Enterprise CRM',
-    description: 'Comprehensive enterprise CRM demonstrating all ObjectStack Protocol features including AI, security, and automation',
+    description:
+      'Comprehensive enterprise CRM demonstrating all ObjectStack Protocol features including AI, security, and automation',
   },
 
   // Auto-collected from barrel index files via Object.values()

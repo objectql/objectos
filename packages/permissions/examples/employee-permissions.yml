@@ -34,7 +34,7 @@ profiles:
     allowEdit: false
     allowDelete: false
     viewFilters:
-      manager: "{{ userId }}"
+      manager: '{{ userId }}'
 
   # Employee - can only view their own record
   employee:
@@ -44,7 +44,7 @@ profiles:
     allowEdit: false
     allowDelete: false
     viewFilters:
-      userId: "{{ userId }}"
+      userId: '{{ userId }}'
 
 # Field-level permissions
 fieldPermissions:

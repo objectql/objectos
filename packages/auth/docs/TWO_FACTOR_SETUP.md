@@ -32,10 +32,10 @@ const authPlugin = createBetterAuthPlugin({
 
 ### Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `twoFactorEnabled` | `boolean` | `true` | Enable/disable 2FA feature |
-| `twoFactorIssuer` | `string` | `"ObjectOS"` | Issuer name shown in authenticator apps |
+| Option             | Type      | Default      | Description                             |
+| ------------------ | --------- | ------------ | --------------------------------------- |
+| `twoFactorEnabled` | `boolean` | `true`       | Enable/disable 2FA feature              |
+| `twoFactorIssuer`  | `string`  | `"ObjectOS"` | Issuer name shown in authenticator apps |
 
 ### Disabling 2FA
 
@@ -114,7 +114,7 @@ const response = await authClient.signIn.email({
 if (response.requiresTwoFactor) {
   // Step 2: Prompt user for TOTP code
   const totpCode = prompt('Enter your 2FA code:');
-  
+
   // Step 3: Verify TOTP code
   await authClient.twoFactor.verify({
     code: totpCode,
@@ -166,11 +166,13 @@ The plugin automatically registers the following 2FA endpoints:
 ### "Invalid TOTP Code" Error
 
 **Common causes:**
+
 1. **Time sync issue** - Ensure the device running the authenticator app has the correct time
 2. **Expired code** - TOTP codes expire every 30 seconds, enter the current code
 3. **Wrong account** - Make sure you're using the correct account in your authenticator app
 
 **Solutions:**
+
 - Sync time on your device with network time
 - Wait for the next code to generate
 - Remove and re-add the account in your authenticator app
@@ -178,6 +180,7 @@ The plugin automatically registers the following 2FA endpoints:
 ### Lost Access to 2FA Device
 
 **Solutions:**
+
 1. Use backup codes if you saved them
 2. Contact an administrator to reset 2FA for your account
 3. Use account recovery flow (if implemented)
@@ -185,6 +188,7 @@ The plugin automatically registers the following 2FA endpoints:
 ### QR Code Not Displaying
 
 **Solutions:**
+
 1. Check that `twoFactorEnabled` is not set to `false`
 2. Verify the plugin is initialized correctly
 3. Check browser console for errors
@@ -226,7 +230,7 @@ function TwoFactorSetup() {
     <div>
       <h2>Enable Two-Factor Authentication</h2>
       <button onClick={generateSecret}>Generate QR Code</button>
-      
+
       {qrCode && (
         <>
           <img src={qrCode} alt="2FA QR Code" />
@@ -265,6 +269,7 @@ console.log('Save these backup codes:', backupCodes);
 ### Account Recovery
 
 Implement an account recovery flow for users who:
+
 1. Lost their 2FA device
 2. Lost their backup codes
 3. Need administrator assistance

@@ -2,13 +2,7 @@
  * Tests for i18n library functions.
  */
 import { describe, it, expect } from 'vitest';
-import {
-  resolveKey,
-  interpolate,
-  translate,
-  createI18nState,
-  loadTranslations,
-} from '@/lib/i18n';
+import { resolveKey, interpolate, translate, createI18nState, loadTranslations } from '@/lib/i18n';
 
 describe('resolveKey', () => {
   const map = {

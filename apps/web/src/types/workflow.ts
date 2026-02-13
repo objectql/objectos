@@ -71,7 +71,14 @@ export type AutomationActionType =
 
 export interface AutomationCondition {
   field: string;
-  operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'is_empty' | 'is_not_empty';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'contains'
+    | 'greater_than'
+    | 'less_than'
+    | 'is_empty'
+    | 'is_not_empty';
   value: string;
 }
 

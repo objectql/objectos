@@ -13,13 +13,13 @@ Plugin Marketplace for ObjectOS — discovery, installation, versioning, depende
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/plugins/registry` | Browse available plugins |
-| POST | `/api/v1/plugins/install` | Install a plugin |
-| POST | `/api/v1/plugins/uninstall` | Remove a plugin |
-| POST | `/api/v1/plugins/upgrade` | Upgrade a plugin to a new version |
-| GET | `/api/v1/plugins/installed` | List installed plugins |
+| Method | Path                        | Description                       |
+| ------ | --------------------------- | --------------------------------- |
+| GET    | `/api/v1/plugins/registry`  | Browse available plugins          |
+| POST   | `/api/v1/plugins/install`   | Install a plugin                  |
+| POST   | `/api/v1/plugins/uninstall` | Remove a plugin                   |
+| POST   | `/api/v1/plugins/upgrade`   | Upgrade a plugin to a new version |
+| GET    | `/api/v1/plugins/installed` | List installed plugins            |
 
 ## Usage
 

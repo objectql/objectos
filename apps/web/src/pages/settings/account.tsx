@@ -84,7 +84,9 @@ export default function AccountSettingsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Account Settings</h2>
-        <p className="text-muted-foreground">Manage your profile, password, and security preferences.</p>
+        <p className="text-muted-foreground">
+          Manage your profile, password, and security preferences.
+        </p>
       </div>
 
       {/* Profile Card */}

@@ -43,9 +43,7 @@ export class MigrationCLI {
 
   constructor(backend: StorageBackend, migrations: Migration[]) {
     this.runner = new MigrationRunnerImpl(backend);
-    this.migrations = migrations.slice().sort((a, b) =>
-      a.version.localeCompare(b.version),
-    );
+    this.migrations = migrations.slice().sort((a, b) => a.version.localeCompare(b.version));
   }
 
   /**
@@ -100,9 +98,7 @@ export class MigrationCLI {
     const last = applied[applied.length - 1];
     const migration = this.migrations.find((m) => m.version === last.version);
     if (!migration) {
-      throw new Error(
-        `Migration file for version ${last.version} not found. Cannot rollback.`,
-      );
+      throw new Error(`Migration file for version ${last.version} not found. Cannot rollback.`);
     }
 
     await this.runner.rollbackMigration(last.version, migration);

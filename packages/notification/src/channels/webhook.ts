@@ -1,15 +1,15 @@
 /**
  * Webhook Channel
- * 
+ *
  * Webhook notification channel with retry logic and authentication support
  */
 
-import type { 
-  WebhookConfig, 
-  NotificationRequest, 
+import type {
+  WebhookConfig,
+  NotificationRequest,
   NotificationResult,
   NotificationChannelInterface,
-  WebhookOptions
+  WebhookOptions,
 } from '../types.js';
 import { NotificationChannel } from '../types.js';
 
@@ -25,9 +25,9 @@ export class WebhookChannel implements NotificationChannelInterface {
       timeout: config.timeout ?? 10000,
       retryAttempts: config.retryAttempts ?? 3,
       retryDelay: config.retryDelay ?? 1000,
-      headers: config.headers ?? {}
+      headers: config.headers ?? {},
     };
-    
+
     this.axios = null;
   }
 
@@ -56,13 +56,11 @@ export class WebhookChannel implements NotificationChannelInterface {
         throw new Error('axios is not installed. Install with: npm install axios');
       }
 
-      const url = Array.isArray(request.recipient) 
-        ? request.recipient[0] 
-        : request.recipient;
+      const url = Array.isArray(request.recipient) ? request.recipient[0] : request.recipient;
 
-      const payload = request.data || { 
+      const payload = request.data || {
         subject: request.subject,
-        body: request.body 
+        body: request.body,
       };
 
       const options = request.options as WebhookOptions | undefined;
@@ -72,7 +70,7 @@ export class WebhookChannel implements NotificationChannelInterface {
         payload,
         options?.method || 'POST',
         options?.headers,
-        options?.auth
+        options?.auth,
       );
 
       return {
@@ -83,15 +81,15 @@ export class WebhookChannel implements NotificationChannelInterface {
         metadata: {
           url,
           status: result.status,
-          statusText: result.statusText
-        }
+          statusText: result.statusText,
+        },
       };
     } catch (error) {
       return {
         success: false,
         channel: NotificationChannel.Webhook,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -111,7 +109,7 @@ export class WebhookChannel implements NotificationChannelInterface {
         options.data,
         options.method || 'POST',
         options.headers,
-        options.auth
+        options.auth,
       );
 
       return {
@@ -122,15 +120,15 @@ export class WebhookChannel implements NotificationChannelInterface {
         metadata: {
           url: options.url,
           status: result.status,
-          statusText: result.statusText
-        }
+          statusText: result.statusText,
+        },
       };
     } catch (error) {
       return {
         success: false,
         channel: NotificationChannel.Webhook,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -144,13 +142,13 @@ export class WebhookChannel implements NotificationChannelInterface {
     method: string,
     customHeaders?: Record<string, string>,
     auth?: WebhookOptions['auth'],
-    attempt: number = 1
+    attempt: number = 1,
   ): Promise<any> {
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...this.config.headers,
-        ...customHeaders
+        ...customHeaders,
       };
 
       // Add authentication
@@ -168,7 +166,7 @@ export class WebhookChannel implements NotificationChannelInterface {
         url,
         data,
         headers,
-        timeout: this.config.timeout
+        timeout: this.config.timeout,
       };
 
       // Ensure axios is avail
@@ -190,6 +188,6 @@ export class WebhookChannel implements NotificationChannelInterface {
    * Sleep utility for retry delay
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

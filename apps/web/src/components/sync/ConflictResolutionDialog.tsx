@@ -44,8 +44,8 @@ export function ConflictResolutionDialog({
       <div className="mx-4 w-full max-w-2xl rounded-lg bg-card p-6 shadow-lg">
         <h2 className="text-lg font-semibold">Sync Conflict</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          The record <strong>{conflict.recordId}</strong> on{' '}
-          <strong>{conflict.objectName}</strong> was modified both locally and on the server.
+          The record <strong>{conflict.recordId}</strong> on <strong>{conflict.objectName}</strong>{' '}
+          was modified both locally and on the server.
         </p>
 
         {/* Diff table */}
@@ -53,7 +53,9 @@ export function ConflictResolutionDialog({
           <table className="w-full text-sm" role="table">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="px-3 py-2 text-left font-medium" scope="col">Field</th>
+                <th className="px-3 py-2 text-left font-medium" scope="col">
+                  Field
+                </th>
                 <th className="px-3 py-2 text-left font-medium" scope="col">
                   <span className="mr-1">◀</span> Local
                 </th>
@@ -66,8 +68,12 @@ export function ConflictResolutionDialog({
               {diffKeys.map((key) => (
                 <tr key={key} className="border-b">
                   <td className="px-3 py-2 font-mono text-xs">{key}</td>
-                  <td className="px-3 py-2 bg-destructive/5">{formatValue(conflict.localData[key])}</td>
-                  <td className="px-3 py-2 bg-primary/5">{formatValue(conflict.serverData[key])}</td>
+                  <td className="px-3 py-2 bg-destructive/5">
+                    {formatValue(conflict.localData[key])}
+                  </td>
+                  <td className="px-3 py-2 bg-primary/5">
+                    {formatValue(conflict.serverData[key])}
+                  </td>
                 </tr>
               ))}
               {diffKeys.length === 0 && (

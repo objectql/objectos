@@ -83,14 +83,17 @@ export function useAppObjects(appId: string | undefined) {
       const objectNames = appQuery.data?.objects ?? [];
       const settled = await Promise.allSettled(
         objectNames.map((name) =>
-          objectStackClient.meta.getItem('object', name).then((r) =>
-            r ? (r as ObjectDefinition) : getMockObjectDefinition(name),
-          ).catch(() => getMockObjectDefinition(name)),
+          objectStackClient.meta
+            .getItem('object', name)
+            .then((r) => (r ? (r as ObjectDefinition) : getMockObjectDefinition(name)))
+            .catch(() => getMockObjectDefinition(name)),
         ),
       );
       return settled
-        .filter((r): r is PromiseFulfilledResult<ObjectDefinition | undefined> =>
-          r.status === 'fulfilled')
+        .filter(
+          (r): r is PromiseFulfilledResult<ObjectDefinition | undefined> =>
+            r.status === 'fulfilled',
+        )
         .map((r) => r.value)
         .filter((v): v is ObjectDefinition => !!v);
     },

@@ -24,9 +24,6 @@ export async function waitForSync(page: Page, timeout = 10_000): Promise<void> {
 }
 
 /** Wait for the offline indicator to become visible. */
-export async function waitForOfflineIndicator(
-  page: Page,
-  timeout = 5_000,
-): Promise<void> {
+export async function waitForOfflineIndicator(page: Page, timeout = 5_000): Promise<void> {
   await page.waitForSelector('[data-testid="offline-indicator"]', { timeout });
 }

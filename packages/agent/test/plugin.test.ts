@@ -213,7 +213,14 @@ describe('O.3.2 — Tool Registry', () => {
   });
 
   test('rejects tool without name', () => {
-    expect(() => registry.register({ name: '', description: 'x', parameters: {}, handler: async () => ({ success: true }) })).toThrow('name and description');
+    expect(() =>
+      registry.register({
+        name: '',
+        description: 'x',
+        parameters: {},
+        handler: async () => ({ success: true }),
+      }),
+    ).toThrow('name and description');
   });
 
   test('unregisters a tool', () => {
@@ -243,11 +250,7 @@ describe('O.3.2 — Tool Registry', () => {
   });
 
   test('returns error for unknown tool execution', async () => {
-    const result = await registry.execute(
-      'nonexistent',
-      {},
-      { tenantId: 't1', userId: 'u1' },
-    );
+    const result = await registry.execute('nonexistent', {}, { tenantId: 't1', userId: 'u1' });
 
     expect(result.success).toBe(false);
     expect(result.error).toContain('not found');
@@ -383,11 +386,7 @@ describe('O.3.3 — Conversation Manager', () => {
   test('adds message with tenant check', () => {
     const conv = manager.create('user1', 'tenant1');
 
-    const updated = manager.addMessage(
-      conv.id,
-      { role: 'user', content: 'Hello' },
-      'tenant1',
-    );
+    const updated = manager.addMessage(conv.id, { role: 'user', content: 'Hello' }, 'tenant1');
 
     expect(updated?.messages).toHaveLength(1);
     expect(updated?.messages[0].content).toBe('Hello');
@@ -396,11 +395,7 @@ describe('O.3.3 — Conversation Manager', () => {
   test('rejects message from wrong tenant', () => {
     const conv = manager.create('user1', 'tenant1');
 
-    const result = manager.addMessage(
-      conv.id,
-      { role: 'user', content: 'Hello' },
-      'tenant2',
-    );
+    const result = manager.addMessage(conv.id, { role: 'user', content: 'Hello' }, 'tenant2');
 
     expect(result).toBeUndefined();
   });

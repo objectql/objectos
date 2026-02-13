@@ -1,6 +1,6 @@
 /**
  * Basic Usage Example for Browser Runtime Plugin
- * 
+ *
  * This example demonstrates how to set up and use the browser runtime plugin
  * to run ObjectOS entirely in the browser.
  */
@@ -10,11 +10,11 @@ import { BrowserRuntimePlugin } from '@objectos/plugin-browser';
 // Mock PluginContext for example purposes
 class MockPluginContext {
   private services: Map<string, any> = new Map();
-  
+
   logger = {
     info: (...args: any[]) => console.log('[INFO]', ...args),
     warn: (...args: any[]) => console.warn('[WARN]', ...args),
-    error: (...args: any[]) => console.error('[ERROR]', ...args)
+    error: (...args: any[]) => console.error('[ERROR]', ...args),
   };
 
   registerService(name: string, service: any): void {
@@ -42,33 +42,33 @@ async function main() {
           description TEXT,
           completed BOOLEAN DEFAULT 0,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`
-      ]
+        )`,
+      ],
     },
     storage: {
       rootDir: 'example-files',
-      maxQuota: 50 * 1024 * 1024 // 50MB
+      maxQuota: 50 * 1024 * 1024, // 50MB
     },
     serviceWorker: {
       enabled: false, // Disabled for this example
       scriptPath: '/sw.js',
-      apiBasePath: '/api'
+      apiBasePath: '/api',
     },
     worker: {
-      enabled: false // Disabled for this example
-    }
+      enabled: false, // Disabled for this example
+    },
   });
 
   // 2. Initialize plugin
   const context = new MockPluginContext();
-  
+
   try {
     console.log('📦 Initializing plugin...');
     await plugin.init(context as any);
-    
+
     console.log('▶️  Starting plugin...');
     await plugin.start(context as any);
-    
+
     console.log('✅ Plugin initialized successfully!\n');
 
     // 3. Use the database
@@ -78,21 +78,21 @@ async function main() {
     }
 
     console.log('💾 Database Operations:');
-    
+
     // Insert some tasks
     console.log('  - Inserting tasks...');
-    await db.execute(
-      'INSERT INTO tasks (title, description) VALUES (?, ?)',
-      ['Learn ObjectOS', 'Understand the plugin architecture']
-    );
-    await db.execute(
-      'INSERT INTO tasks (title, description) VALUES (?, ?)',
-      ['Build an app', 'Create a simple CRM application']
-    );
-    await db.execute(
-      'INSERT INTO tasks (title, description) VALUES (?, ?)',
-      ['Deploy to browser', 'Test the browser runtime plugin']
-    );
+    await db.execute('INSERT INTO tasks (title, description) VALUES (?, ?)', [
+      'Learn ObjectOS',
+      'Understand the plugin architecture',
+    ]);
+    await db.execute('INSERT INTO tasks (title, description) VALUES (?, ?)', [
+      'Build an app',
+      'Create a simple CRM application',
+    ]);
+    await db.execute('INSERT INTO tasks (title, description) VALUES (?, ?)', [
+      'Deploy to browser',
+      'Test the browser runtime plugin',
+    ]);
 
     // Query tasks
     console.log('  - Querying tasks...');
@@ -105,10 +105,7 @@ async function main() {
 
     // Update a task
     console.log('\n  - Marking first task as completed...');
-    await db.execute(
-      'UPDATE tasks SET completed = 1 WHERE id = ?',
-      [tasks[0].id]
-    );
+    await db.execute('UPDATE tasks SET completed = 1 WHERE id = ?', [tasks[0].id]);
 
     // 4. Use the file storage
     const storage = plugin.getStorage();
@@ -117,7 +114,7 @@ async function main() {
     }
 
     console.log('\n📁 File Storage Operations:');
-    
+
     // Write a file
     console.log('  - Writing file...');
     const fileContent = new TextEncoder().encode('Hello from ObjectOS Browser Runtime!');
@@ -151,7 +148,6 @@ async function main() {
     console.log('\n🧹 Cleaning up...');
     await plugin.stop();
     console.log('✅ Plugin stopped');
-
   } catch (error) {
     console.error('\n❌ Error:', error);
     throw error;

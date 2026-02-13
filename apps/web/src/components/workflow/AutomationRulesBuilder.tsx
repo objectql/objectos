@@ -50,7 +50,10 @@ const operatorLabels: Record<string, string> = {
 export function AutomationRulesBuilder({ rules, onToggleActive }: AutomationRulesBuilderProps) {
   if (rules.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12" data-testid="automation-rules-empty">
+      <div
+        className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12"
+        data-testid="automation-rules-empty"
+      >
         <Zap className="mb-2 size-8 text-muted-foreground" />
         <p className="text-lg font-medium">No automation rules</p>
         <p className="text-sm text-muted-foreground">
@@ -102,9 +105,7 @@ export function AutomationRulesBuilder({ rules, onToggleActive }: AutomationRule
                   {triggerLabels[rule.trigger.type]}
                 </span>
                 {rule.trigger.field && (
-                  <span className="text-blue-600 dark:text-blue-400">
-                    ({rule.trigger.field})
-                  </span>
+                  <span className="text-blue-600 dark:text-blue-400">({rule.trigger.field})</span>
                 )}
               </div>
 
@@ -144,7 +145,9 @@ export function AutomationRulesBuilder({ rules, onToggleActive }: AutomationRule
             <Separator className="my-3" />
 
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span>Object: <strong>{rule.object}</strong></span>
+              <span>
+                Object: <strong>{rule.object}</strong>
+              </span>
               <span>Created: {new Date(rule.createdAt).toLocaleDateString()}</span>
               {rule.updatedAt !== rule.createdAt && (
                 <span>Updated: {new Date(rule.updatedAt).toLocaleDateString()}</span>

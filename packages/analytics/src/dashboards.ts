@@ -5,11 +5,7 @@
  * Widgets reference report definitions or inline aggregation pipelines.
  */
 
-import type {
-  DashboardDefinition,
-  DashboardWidget,
-  AggregationResult,
-} from './types.js';
+import type { DashboardDefinition, DashboardWidget, AggregationResult } from './types.js';
 import { AggregationEngine } from './aggregation.js';
 import { ReportManager } from './reports.js';
 
@@ -84,7 +80,7 @@ export class DashboardManager {
   list(userId?: string): DashboardDefinition[] {
     const all = Array.from(this.dashboards.values());
     if (!userId) return all;
-    return all.filter(d => d.owner === userId || d.shared);
+    return all.filter((d) => d.owner === userId || d.shared);
   }
 
   /**
@@ -99,7 +95,7 @@ export class DashboardManager {
     if (!widget.id || typeof widget.id !== 'string') {
       throw new Error('Widget must have a valid id');
     }
-    if (dashboard.widgets.some(w => w.id === widget.id)) {
+    if (dashboard.widgets.some((w) => w.id === widget.id)) {
       throw new Error(`Widget "${widget.id}" already exists in dashboard`);
     }
 
@@ -116,7 +112,7 @@ export class DashboardManager {
       throw new Error(`Dashboard "${dashboardId}" not found`);
     }
 
-    const index = dashboard.widgets.findIndex(w => w.id === widgetId);
+    const index = dashboard.widgets.findIndex((w) => w.id === widgetId);
     if (index === -1) {
       throw new Error(`Widget "${widgetId}" not found in dashboard`);
     }
@@ -138,7 +134,7 @@ export class DashboardManager {
       throw new Error(`Dashboard "${dashboardId}" not found`);
     }
 
-    const index = dashboard.widgets.findIndex(w => w.id === widgetId);
+    const index = dashboard.widgets.findIndex((w) => w.id === widgetId);
     if (index === -1) {
       throw new Error(`Widget "${widgetId}" not found in dashboard`);
     }
@@ -160,7 +156,7 @@ export class DashboardManager {
       throw new Error(`Dashboard "${dashboardId}" not found`);
     }
 
-    const widget = dashboard.widgets.find(w => w.id === widgetId);
+    const widget = dashboard.widgets.find((w) => w.id === widgetId);
     if (!widget) {
       throw new Error(`Widget "${widgetId}" not found in dashboard`);
     }

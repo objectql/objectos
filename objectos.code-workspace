@@ -1,14 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../spec"
-		},
-		{
-			"path": "../objectql"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../spec",
+    },
+    {
+      "path": "../objectql",
+    },
+  ],
+  "settings": {},
 }

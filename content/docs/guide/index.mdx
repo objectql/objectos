@@ -56,19 +56,19 @@ fields:
 
 **Fields** define the properties of an object. ObjectOS supports various field types:
 
-| Field Type | Description | Example |
-|------------|-------------|---------|
-| `text` | Short text (up to 255 characters) | First Name |
-| `textarea` | Long text | Description |
-| `number` | Numeric value | Age |
-| `currency` | Money value | Price |
-| `date` | Date only | Birth Date |
-| `datetime` | Date and time | Created At |
-| `boolean` | True/false | Is Active |
-| `select` | Dropdown options | Status |
-| `lookup` | Reference to another object | Account |
-| `email` | Email address | Email |
-| `url` | Web URL | Website |
+| Field Type | Description                       | Example     |
+| ---------- | --------------------------------- | ----------- |
+| `text`     | Short text (up to 255 characters) | First Name  |
+| `textarea` | Long text                         | Description |
+| `number`   | Numeric value                     | Age         |
+| `currency` | Money value                       | Price       |
+| `date`     | Date only                         | Birth Date  |
+| `datetime` | Date and time                     | Created At  |
+| `boolean`  | True/false                        | Is Active   |
+| `select`   | Dropdown options                  | Status      |
+| `lookup`   | Reference to another object       | Account     |
+| `email`    | Email address                     | Email       |
+| `url`      | Web URL                           | Website     |
 
 ### 3. The Three Layers
 
@@ -147,7 +147,7 @@ fields:
     type: text
     label: Account Name
     required: true
-  
+
   industry:
     type: select
     label: Industry
@@ -156,11 +156,11 @@ fields:
       - Finance
       - Healthcare
       - Retail
-  
+
   website:
     type: url
     label: Website
-  
+
   annual_revenue:
     type: currency
     label: Annual Revenue
@@ -183,21 +183,21 @@ fields:
     type: text
     label: First Name
     required: true
-  
+
   last_name:
     type: text
     label: Last Name
     required: true
-  
+
   email:
     type: email
     label: Email
     unique: true
-  
+
   phone:
     type: text
     label: Phone
-  
+
   account:
     type: lookup
     label: Account
@@ -232,8 +232,8 @@ const driver = new PostgresDriver({
     port: 5432,
     user: 'postgres',
     password: 'postgres',
-    database: 'mycrm'
-  }
+    database: 'mycrm',
+  },
 });
 
 // 3. Connect driver to kernel
@@ -312,16 +312,14 @@ function ContactDetail({ contactId }) {
   return (
     <div>
       {/* Automatically generates a form */}
-      <ObjectForm 
-        objectName="contacts" 
-        recordId={contactId}
-      />
+      <ObjectForm objectName="contacts" recordId={contactId} />
     </div>
   );
 }
 ```
 
 The components automatically:
+
 - Fetch metadata from the server
 - Render appropriate input types
 - Handle validation
@@ -348,15 +346,15 @@ fields:
     type: email
     required: true
     unique: true
-  
+
   age:
     type: number
     min: 0
     max: 150
-  
+
   phone:
     type: text
-    pattern: '^\+?[1-9]\d{1,14}$'  # E.164 format
+    pattern: '^\+?[1-9]\d{1,14}$' # E.164 format
 ```
 
 ### Adding Relationships

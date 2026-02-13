@@ -13,10 +13,10 @@ Auto-generated GraphQL API plugin for ObjectOS. Builds a full GraphQL schema fro
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/v1/graphql` | GraphQL query/mutation endpoint |
-| GET | `/api/v1/graphql` | GraphQL Playground (in development mode) |
+| Method | Path              | Description                              |
+| ------ | ----------------- | ---------------------------------------- |
+| POST   | `/api/v1/graphql` | GraphQL query/mutation endpoint          |
+| GET    | `/api/v1/graphql` | GraphQL Playground (in development mode) |
 
 ## Usage
 

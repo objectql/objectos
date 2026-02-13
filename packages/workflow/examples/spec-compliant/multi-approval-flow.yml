@@ -32,27 +32,27 @@ nodes:
     position:
       x: 100
       y: 200
-  
+
   - id: check_amount
     type: decision
     label: Check Amount
     description: Route based on expense amount
-    condition: "{{amount}} <= 1000"
+    condition: '{{amount}} <= 1000'
     position:
       x: 250
       y: 200
-  
+
   # Small expenses - Manager only
   - id: manager_review
     type: assignment
     label: Manager Review
     config:
-      assignee: "{{manager_id}}"
+      assignee: '{{manager_id}}'
       dueInDays: 3
     position:
       x: 400
       y: 100
-  
+
   - id: manager_decision
     type: decision
     label: Manager Decision
@@ -60,18 +60,18 @@ nodes:
     position:
       x: 550
       y: 100
-  
+
   # Large expenses - Multiple approvals
   - id: manager_review_large
     type: assignment
     label: Manager Review
     config:
-      assignee: "{{manager_id}}"
+      assignee: '{{manager_id}}'
       dueInDays: 2
     position:
       x: 400
       y: 300
-  
+
   - id: manager_decision_large
     type: decision
     label: Manager Approved?
@@ -79,17 +79,17 @@ nodes:
     position:
       x: 550
       y: 300
-  
+
   - id: director_review
     type: assignment
     label: Director Review
     config:
-      assignee: "{{manager.manager_id}}"
+      assignee: '{{manager.manager_id}}'
       dueInDays: 2
     position:
       x: 700
       y: 250
-  
+
   - id: director_decision
     type: decision
     label: Director Approved?
@@ -97,26 +97,26 @@ nodes:
     position:
       x: 850
       y: 250
-  
+
   # Finance review for very large
   - id: check_very_large
     type: decision
     label: Very Large?
-    condition: "{{amount}} > 10000"
+    condition: '{{amount}} > 10000'
     position:
       x: 1000
       y: 250
-  
+
   - id: finance_review
     type: assignment
     label: Finance Review
     config:
-      assignee: "finance_team"
+      assignee: 'finance_team'
       dueInDays: 3
     position:
       x: 1150
       y: 300
-  
+
   - id: finance_decision
     type: decision
     label: Finance Approved?
@@ -124,13 +124,13 @@ nodes:
     position:
       x: 1300
       y: 300
-  
+
   # Approval actions
   - id: process_payment
     type: http_request
     label: Process Payment
     config:
-      url: "https://payment.api.com/process"
+      url: 'https://payment.api.com/process'
       method: POST
       body: |
         {
@@ -141,20 +141,20 @@ nodes:
     position:
       x: 700
       y: 100
-  
+
   - id: update_approved
     type: update_record
     label: Mark Approved
     config:
       object: expense
-      recordId: "{{expense_id}}"
+      recordId: '{{expense_id}}'
       fields:
         status: approved
-        approved_at: "{{NOW()}}"
+        approved_at: '{{NOW()}}'
     position:
       x: 1450
       y: 250
-  
+
   - id: notify_approved
     type: connector_action
     label: Notify Employee
@@ -162,33 +162,33 @@ nodes:
       connectorId: email
       actionId: send_email
       input:
-        to: "{{employee.email}}"
+        to: '{{employee.email}}'
         template: expense_approved
     position:
       x: 850
       y: 100
-  
+
   - id: approved
     type: end
     label: Approved
     position:
       x: 1600
       y: 200
-  
+
   # Rejection handling
   - id: update_rejected
     type: update_record
     label: Mark Rejected
     config:
       object: expense
-      recordId: "{{expense_id}}"
+      recordId: '{{expense_id}}'
       fields:
         status: rejected
-        rejected_at: "{{NOW()}}"
+        rejected_at: '{{NOW()}}'
     position:
       x: 700
       y: 400
-  
+
   - id: notify_rejected
     type: connector_action
     label: Notify Employee
@@ -196,12 +196,12 @@ nodes:
       connectorId: email
       actionId: send_email
       input:
-        to: "{{employee.email}}"
+        to: '{{employee.email}}'
         template: expense_rejected
     position:
       x: 850
       y: 400
-  
+
   - id: rejected
     type: end
     label: Rejected
@@ -213,113 +213,113 @@ edges:
   - id: e1
     source: start
     target: check_amount
-  
+
   # Small expense path
   - id: e2
     source: check_amount
     target: manager_review
-    condition: "true"
-    label: "≤ $1000"
-  
+    condition: 'true'
+    label: '≤ $1000'
+
   - id: e3
     source: manager_review
     target: manager_decision
-  
+
   - id: e4
     source: manager_decision
     target: process_payment
-    condition: "true"
+    condition: 'true'
     label: Approved
-  
+
   - id: e5
     source: process_payment
     target: notify_approved
-  
+
   - id: e6
     source: notify_approved
     target: approved
-  
+
   - id: e7
     source: manager_decision
     target: update_rejected
-    condition: "false"
+    condition: 'false'
     label: Rejected
-  
+
   # Large expense path
   - id: e8
     source: check_amount
     target: manager_review_large
-    condition: "false"
-    label: "> $1000"
-  
+    condition: 'false'
+    label: '> $1000'
+
   - id: e9
     source: manager_review_large
     target: manager_decision_large
-  
+
   - id: e10
     source: manager_decision_large
     target: director_review
-    condition: "true"
+    condition: 'true'
     label: Approved
-  
+
   - id: e11
     source: manager_decision_large
     target: update_rejected
-    condition: "false"
+    condition: 'false'
     label: Rejected
-  
+
   - id: e12
     source: director_review
     target: director_decision
-  
+
   - id: e13
     source: director_decision
     target: check_very_large
-    condition: "true"
+    condition: 'true'
     label: Approved
-  
+
   - id: e14
     source: director_decision
     target: update_rejected
-    condition: "false"
+    condition: 'false'
     label: Rejected
-  
+
   - id: e15
     source: check_very_large
     target: update_approved
-    condition: "false"
-    label: "≤ $10000"
-  
+    condition: 'false'
+    label: '≤ $10000'
+
   - id: e16
     source: check_very_large
     target: finance_review
-    condition: "true"
-    label: "> $10000"
-  
+    condition: 'true'
+    label: '> $10000'
+
   - id: e17
     source: finance_review
     target: finance_decision
-  
+
   - id: e18
     source: finance_decision
     target: update_approved
-    condition: "true"
+    condition: 'true'
     label: Approved
-  
+
   - id: e19
     source: finance_decision
     target: update_rejected
-    condition: "false"
+    condition: 'false'
     label: Rejected
-  
+
   - id: e20
     source: update_approved
     target: approved
-  
+
   - id: e21
     source: update_rejected
     target: notify_rejected
-  
+
   - id: e22
     source: notify_rejected
     target: rejected

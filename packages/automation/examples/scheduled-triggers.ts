@@ -1,6 +1,6 @@
 /**
  * Scheduled Trigger Examples
- * 
+ *
  * Demonstrates how to use scheduled triggers with cron expressions
  */
 
@@ -8,19 +8,19 @@ import type { AutomationRule } from '@objectos/plugin-automation';
 
 // Example 1: Daily report generation
 export const dailyReportRule: AutomationRule = {
-    id: 'daily_sales_report',
-    name: 'Daily Sales Report',
-    description: 'Generate and email daily sales report at 8 AM',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 8 * * *', // Every day at 8:00 AM
-        timezone: 'America/New_York',
-    },
-    actions: [
-        {
-            type: 'execute_script',
-            script: `
+  id: 'daily_sales_report',
+  name: 'Daily Sales Report',
+  description: 'Generate and email daily sales report at 8 AM',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 8 * * *', // Every day at 8:00 AM
+    timezone: 'America/New_York',
+  },
+  actions: [
+    {
+      type: 'execute_script',
+      script: `
                 // Calculate yesterday's sales
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
@@ -40,72 +40,72 @@ export const dailyReportRule: AutomationRule = {
                     averageDealSize: dealCount > 0 ? totalRevenue / dealCount : 0
                 };
             `,
-            language: 'javascript',
-        },
-        {
-            type: 'send_email',
-            to: ['sales@company.com', 'management@company.com'],
-            subject: 'Daily Sales Report - {{#now}}{{#format}}"YYYY-MM-DD"{{/format}}{{/now}}',
-            body: `Daily Sales Report
+      language: 'javascript',
+    },
+    {
+      type: 'send_email',
+      to: ['sales@company.com', 'management@company.com'],
+      subject: 'Daily Sales Report - {{#now}}{{#format}}"YYYY-MM-DD"{{/format}}{{/now}}',
+      body: `Daily Sales Report
 
 Date: {{reportData.date}}
-Total Revenue: ${{reportData.totalRevenue}}
+Total Revenue: \${{reportData.totalRevenue}}
 Deals Closed: {{reportData.dealCount}}
-Average Deal Size: ${{reportData.averageDealSize}}
+Average Deal Size: \${{reportData.averageDealSize}}
 
 Have a great day!`,
-        },
     },
-    priority: 100,
-    createdAt: new Date(),
+  ],
+  priority: 100,
+  createdAt: new Date(),
 };
 
 // Example 2: Weekly backup
 export const weeklyBackupRule: AutomationRule = {
-    id: 'weekly_backup',
-    name: 'Weekly Data Backup',
-    description: 'Backup critical data every Sunday at midnight',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 0 * * 0', // Every Sunday at midnight
-        timezone: 'UTC',
+  id: 'weekly_backup',
+  name: 'Weekly Data Backup',
+  description: 'Backup critical data every Sunday at midnight',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 0 * * 0', // Every Sunday at midnight
+    timezone: 'UTC',
+  },
+  actions: [
+    {
+      type: 'http_request',
+      url: 'https://api.backup-service.com/trigger',
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer {{backup_api_key}}',
+        'Content-Type': 'application/json',
+      },
+      body: {
+        type: 'full_backup',
+        timestamp: '{{#now}}{{/now}}',
+        databases: ['objectstack_main', 'objectstack_audit'],
+      },
     },
-    actions: [
-        {
-            type: 'http_request',
-            url: 'https://api.backup-service.com/trigger',
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer {{backup_api_key}}',
-                'Content-Type': 'application/json',
-            },
-            body: {
-                type: 'full_backup',
-                timestamp: '{{#now}}{{/now}}',
-                databases: ['objectstack_main', 'objectstack_audit'],
-            },
-        },
-    ],
-    priority: 100,
-    createdAt: new Date(),
+  ],
+  priority: 100,
+  createdAt: new Date(),
 };
 
 // Example 3: Monthly subscription renewal reminders
 export const monthlyRenewalRemindersRule: AutomationRule = {
-    id: 'monthly_renewal_reminders',
-    name: 'Monthly Subscription Renewal Reminders',
-    description: 'Send renewal reminders on the 1st of every month',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 9 1 * *', // 9 AM on the 1st of every month
-        timezone: 'America/Los_Angeles',
-    },
-    actions: [
-        {
-            type: 'execute_script',
-            script: `
+  id: 'monthly_renewal_reminders',
+  name: 'Monthly Subscription Renewal Reminders',
+  description: 'Send renewal reminders on the 1st of every month',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 9 1 * *', // 9 AM on the 1st of every month
+    timezone: 'America/Los_Angeles',
+  },
+  actions: [
+    {
+      type: 'execute_script',
+      script: `
                 // Find subscriptions expiring in the next 30 days
                 const today = new Date();
                 const thirtyDaysFromNow = new Date(today);
@@ -138,64 +138,64 @@ ObjectStack Team\`
                 
                 ctx.logger.info(\`Sent \${expiringSubscriptions.length} renewal reminders\`);
             `,
-            language: 'javascript',
-            timeout: 30000,
-        },
-    ],
-    priority: 90,
-    createdAt: new Date(),
+      language: 'javascript',
+      timeout: 30000,
+    },
+  ],
+  priority: 90,
+  createdAt: new Date(),
 };
 
 // Example 4: Hourly data sync
 export const hourlyDataSyncRule: AutomationRule = {
-    id: 'hourly_data_sync',
-    name: 'Hourly External System Sync',
-    description: 'Sync data with external system every hour',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 * * * *', // Every hour at minute 0
-        timezone: 'UTC',
+  id: 'hourly_data_sync',
+  name: 'Hourly External System Sync',
+  description: 'Sync data with external system every hour',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 * * * *', // Every hour at minute 0
+    timezone: 'UTC',
+  },
+  actions: [
+    {
+      type: 'http_request',
+      url: 'https://external-api.com/sync',
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer {{external_api_token}}',
+      },
+      timeout: 60000, // 1 minute timeout
     },
-    actions: [
-        {
-            type: 'http_request',
-            url: 'https://external-api.com/sync',
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer {{external_api_token}}',
-            },
-            timeout: 60000, // 1 minute timeout
-        },
-        {
-            type: 'create_record',
-            objectName: 'sync_log',
-            fields: {
-                syncType: 'hourly_external',
-                syncedAt: '{{#now}}{{/now}}',
-                status: 'completed',
-            },
-        },
+    {
+      type: 'create_record',
+      objectName: 'sync_log',
+      fields: {
+        syncType: 'hourly_external',
+        syncedAt: '{{#now}}{{/now}}',
+        status: 'completed',
+      },
     },
-    priority: 80,
-    createdAt: new Date(),
+  ],
+  priority: 80,
+  createdAt: new Date(),
 };
 
 // Example 5: Business hours reminder (every weekday at 9 AM)
 export const businessHoursReminderRule: AutomationRule = {
-    id: 'business_hours_reminder',
-    name: 'Daily Task Reminder',
-    description: 'Send task reminders every weekday morning',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 9 * * 1-5', // Monday through Friday at 9:00 AM
-        timezone: 'America/New_York',
-    },
-    actions: [
-        {
-            type: 'execute_script',
-            script: `
+  id: 'business_hours_reminder',
+  name: 'Daily Task Reminder',
+  description: 'Send task reminders every weekday morning',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 9 * * 1-5', // Monday through Friday at 9:00 AM
+    timezone: 'America/New_York',
+  },
+  actions: [
+    {
+      type: 'execute_script',
+      script: `
                 const users = await ctx.context.users.filter({ status: 'active' });
                 
                 for (const user of users) {
@@ -220,28 +220,28 @@ Have a productive day!\`
                     }
                 }
             `,
-            language: 'javascript',
-        },
-    ],
-    priority: 75,
-    createdAt: new Date(),
+      language: 'javascript',
+    },
+  ],
+  priority: 75,
+  createdAt: new Date(),
 };
 
 // Example 6: Quarterly review trigger
 export const quarterlyReviewRule: AutomationRule = {
-    id: 'quarterly_review',
-    name: 'Quarterly Performance Review',
-    description: 'Trigger quarterly review process on the first day of each quarter',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '0 8 1 1,4,7,10 *', // Jan 1, Apr 1, Jul 1, Oct 1 at 8 AM
-        timezone: 'America/Chicago',
-    },
-    actions: [
-        {
-            type: 'execute_script',
-            script: `
+  id: 'quarterly_review',
+  name: 'Quarterly Performance Review',
+  description: 'Trigger quarterly review process on the first day of each quarter',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '0 8 1 1,4,7,10 *', // Jan 1, Apr 1, Jul 1, Oct 1 at 8 AM
+    timezone: 'America/Chicago',
+  },
+  actions: [
+    {
+      type: 'execute_script',
+      script: `
                 const quarter = Math.floor((new Date().getMonth() / 3)) + 1;
                 const year = new Date().getFullYear();
                 
@@ -259,41 +259,41 @@ export const quarterlyReviewRule: AutomationRule = {
                 
                 ctx.logger.info(\`Created quarterly review tasks for \${managers.length} managers\`);
             `,
-            language: 'javascript',
-        },
-    ],
-    priority: 95,
-    createdAt: new Date(),
+      language: 'javascript',
+    },
+  ],
+  priority: 95,
+  createdAt: new Date(),
 };
 
 // Example 7: Custom schedule - every 15 minutes during business hours
 export const frequentMonitoringRule: AutomationRule = {
-    id: 'frequent_monitoring',
-    name: 'System Health Check',
-    description: 'Check system health every 15 minutes during business hours',
-    status: 'active',
-    trigger: {
-        type: 'scheduled',
-        cronExpression: '*/15 9-17 * * 1-5', // Every 15 minutes, 9 AM to 5 PM, weekdays
-        timezone: 'America/New_York',
+  id: 'frequent_monitoring',
+  name: 'System Health Check',
+  description: 'Check system health every 15 minutes during business hours',
+  status: 'active',
+  trigger: {
+    type: 'scheduled',
+    cronExpression: '*/15 9-17 * * 1-5', // Every 15 minutes, 9 AM to 5 PM, weekdays
+    timezone: 'America/New_York',
+  },
+  actions: [
+    {
+      type: 'http_request',
+      url: 'https://api.company.com/health',
+      method: 'GET',
+      timeout: 5000,
     },
-    actions: [
-        {
-            type: 'http_request',
-            url: 'https://api.company.com/health',
-            method: 'GET',
-            timeout: 5000,
-        },
-        {
-            type: 'update_field',
-            objectName: 'system_status',
-            recordId: 'main_system',
-            fields: {
-                lastChecked: '{{#now}}{{/now}}',
-                status: 'healthy',
-            },
-        },
-    ],
-    priority: 50,
-    createdAt: new Date(),
+    {
+      type: 'update_field',
+      objectName: 'system_status',
+      recordId: 'main_system',
+      fields: {
+        lastChecked: '{{#now}}{{/now}}',
+        status: 'healthy',
+      },
+    },
+  ],
+  priority: 50,
+  createdAt: new Date(),
 };

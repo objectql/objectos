@@ -10,11 +10,11 @@ import type { PluginContext } from '@objectstack/runtime';
 jest.mock('axios', () => {
   return {
     __esModule: true,
-    default: jest.fn().mockResolvedValue({ 
-      status: 200, 
-      statusText: 'OK', 
-      data: { success: true } 
-    })
+    default: jest.fn().mockResolvedValue({
+      status: 200,
+      statusText: 'OK',
+      data: { success: true },
+    }),
   };
 });
 
@@ -22,13 +22,13 @@ jest.mock('axios', () => {
 const createMockContext = (): PluginContext => {
   const services = new Map();
   const hooks: Map<string, Function[]> = new Map();
-  
+
   return {
     logger: {
       info: jest.fn(),
       warn: jest.fn(),
       error: jest.fn(),
-      debug: jest.fn()
+      debug: jest.fn(),
     },
     registerService: (name: string, service: any) => {
       services.set(name, service);
@@ -67,9 +67,9 @@ describe('NotificationPlugin', () => {
       context = createMockContext();
 
       await plugin.init(context);
-      
+
       expect(context.logger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Initialized successfully')
+        expect.stringContaining('Initialized successfully'),
       );
     });
 
@@ -78,7 +78,7 @@ describe('NotificationPlugin', () => {
       context = createMockContext();
 
       await plugin.init(context);
-      
+
       const service = context.getService('notification') as any;
       expect(service).toBeDefined();
       expect(service.send).toBeDefined();
@@ -94,10 +94,8 @@ describe('NotificationPlugin', () => {
 
       await plugin.init(context);
       await plugin.destroy();
-      
-      expect(context.logger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Destroyed')
-      );
+
+      expect(context.logger.info).toHaveBeenCalledWith(expect.stringContaining('Destroyed'));
     });
   });
 
@@ -110,10 +108,10 @@ describe('NotificationPlugin', () => {
           secure: false,
           auth: {
             user: 'test@example.com',
-            pass: 'password'
+            pass: 'password',
           },
-          from: 'noreply@example.com'
-        }
+          from: 'noreply@example.com',
+        },
       });
 
       expect(plugin).toBeDefined();
@@ -123,8 +121,8 @@ describe('NotificationPlugin', () => {
       plugin = new NotificationPlugin({
         sms: {
           provider: 'mock',
-          from: '+1234567890'
-        }
+          from: '+1234567890',
+        },
       });
 
       expect(plugin).toBeDefined();
@@ -133,8 +131,8 @@ describe('NotificationPlugin', () => {
     it('should accept push configuration', () => {
       plugin = new NotificationPlugin({
         push: {
-          provider: 'mock'
-        }
+          provider: 'mock',
+        },
       });
 
       expect(plugin).toBeDefined();
@@ -144,8 +142,8 @@ describe('NotificationPlugin', () => {
       plugin = new NotificationPlugin({
         webhook: {
           timeout: 5000,
-          retryAttempts: 3
-        }
+          retryAttempts: 3,
+        },
       });
 
       expect(plugin).toBeDefined();
@@ -156,8 +154,8 @@ describe('NotificationPlugin', () => {
         queue: {
           enabled: true,
           maxRetries: 5,
-          retryDelay: 3000
-        }
+          retryDelay: 3000,
+        },
       });
 
       expect(plugin).toBeDefined();
@@ -171,7 +169,7 @@ describe('NotificationPlugin', () => {
       await plugin.init(context);
 
       const result = await plugin.sendEmail('test@example.com', 'Test', 'Body');
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toContain('not configured');
     });
@@ -181,20 +179,16 @@ describe('NotificationPlugin', () => {
         email: {
           host: 'smtp.example.com',
           port: 587,
-          from: 'test@example.com'
+          from: 'test@example.com',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
       // This will fail because nodemailer is not installed, but we test the structure
-      const result = await plugin.sendEmail(
-        'recipient@example.com',
-        'Test Subject',
-        'Test Body'
-      );
-      
+      const result = await plugin.sendEmail('recipient@example.com', 'Test Subject', 'Test Body');
+
       expect(result).toHaveProperty('success');
       expect(result).toHaveProperty('channel');
       expect(result.channel).toBe(NotificationChannel.Email);
@@ -205,9 +199,9 @@ describe('NotificationPlugin', () => {
         email: {
           host: 'smtp.example.com',
           port: 587,
-          from: 'test@example.com'
+          from: 'test@example.com',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
@@ -215,9 +209,9 @@ describe('NotificationPlugin', () => {
       const result = await plugin.sendEmail(
         ['user1@example.com', 'user2@example.com'],
         'Test',
-        'Body'
+        'Body',
       );
-      
+
       expect(result).toHaveProperty('channel');
     });
   });
@@ -229,7 +223,7 @@ describe('NotificationPlugin', () => {
       await plugin.init(context);
 
       const result = await plugin.sendSMS('+1234567890', 'Test message');
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toContain('not configured');
     });
@@ -238,15 +232,15 @@ describe('NotificationPlugin', () => {
       plugin = new NotificationPlugin({
         sms: {
           provider: 'mock',
-          from: '+1234567890'
+          from: '+1234567890',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
       const result = await plugin.sendSMS('+9876543210', 'Test message');
-      
+
       expect(result.success).toBe(true);
       expect(result.channel).toBe(NotificationChannel.SMS);
     });
@@ -254,18 +248,15 @@ describe('NotificationPlugin', () => {
     it('should support multiple recipients', async () => {
       plugin = new NotificationPlugin({
         sms: {
-          provider: 'mock'
+          provider: 'mock',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
-      const result = await plugin.sendSMS(
-        ['+1111111111', '+2222222222'],
-        'Bulk message'
-      );
-      
+      const result = await plugin.sendSMS(['+1111111111', '+2222222222'], 'Bulk message');
+
       expect(result.success).toBe(true);
     });
   });
@@ -277,7 +268,7 @@ describe('NotificationPlugin', () => {
       await plugin.init(context);
 
       const result = await plugin.sendPush('token123', 'Title', 'Body');
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toContain('not configured');
     });
@@ -285,15 +276,15 @@ describe('NotificationPlugin', () => {
     it('should send push with mock provider', async () => {
       plugin = new NotificationPlugin({
         push: {
-          provider: 'mock'
+          provider: 'mock',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
       const result = await plugin.sendPush('device_token_123', 'Test Title', 'Test Body');
-      
+
       expect(result.success).toBe(true);
       expect(result.channel).toBe(NotificationChannel.Push);
     });
@@ -301,19 +292,15 @@ describe('NotificationPlugin', () => {
     it('should support multiple device tokens', async () => {
       plugin = new NotificationPlugin({
         push: {
-          provider: 'mock'
+          provider: 'mock',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
-      const result = await plugin.sendPush(
-        ['token1', 'token2', 'token3'],
-        'Title',
-        'Body'
-      );
-      
+      const result = await plugin.sendPush(['token1', 'token2', 'token3'], 'Title', 'Body');
+
       expect(result.success).toBe(true);
     });
   });
@@ -322,18 +309,18 @@ describe('NotificationPlugin', () => {
     it('should send webhook notification', async () => {
       plugin = new NotificationPlugin({
         webhook: {
-          timeout: 5000
+          timeout: 5000,
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
-      const result = await plugin.sendWebhook(
-        'https://example.com/webhook',
-        { event: 'test', data: 'value' }
-      );
-      
+      const result = await plugin.sendWebhook('https://example.com/webhook', {
+        event: 'test',
+        data: 'value',
+      });
+
       // Will fail without axios, but structure is tested
       expect(result).toHaveProperty('channel');
       expect(result.channel).toBe(NotificationChannel.Webhook);
@@ -341,7 +328,7 @@ describe('NotificationPlugin', () => {
 
     it('should support custom headers', async () => {
       plugin = new NotificationPlugin({
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
@@ -351,17 +338,17 @@ describe('NotificationPlugin', () => {
         { test: 'data' },
         {
           headers: {
-            'X-Custom-Header': 'value'
-          }
-        }
+            'X-Custom-Header': 'value',
+          },
+        },
       );
-      
+
       expect(result).toHaveProperty('channel');
     });
 
     it('should support authentication', async () => {
       plugin = new NotificationPlugin({
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
@@ -372,11 +359,11 @@ describe('NotificationPlugin', () => {
         {
           auth: {
             type: 'bearer',
-            token: 'secret_token'
-          }
-        }
+            token: 'secret_token',
+          },
+        },
       );
-      
+
       expect(result).toHaveProperty('channel');
     });
   });
@@ -385,9 +372,9 @@ describe('NotificationPlugin', () => {
     it('should send notification via generic send method', async () => {
       plugin = new NotificationPlugin({
         sms: {
-          provider: 'mock'
+          provider: 'mock',
         },
-        queue: { enabled: true }
+        queue: { enabled: true },
       });
       context = createMockContext();
       await plugin.init(context);
@@ -395,9 +382,9 @@ describe('NotificationPlugin', () => {
       const result = await plugin.send({
         channel: NotificationChannel.SMS,
         recipient: '+1234567890',
-        body: 'Test message'
+        body: 'Test message',
       });
-      
+
       // With queue enabled, it returns queued status
       expect(result.success).toBe(true);
       expect(result.metadata?.queued).toBe(true);
@@ -405,7 +392,7 @@ describe('NotificationPlugin', () => {
 
     it('should handle unconfigured channel', async () => {
       plugin = new NotificationPlugin({
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
@@ -413,9 +400,9 @@ describe('NotificationPlugin', () => {
       const result = await plugin.send({
         channel: NotificationChannel.Email,
         recipient: 'test@example.com',
-        body: 'Test'
+        body: 'Test',
       });
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toContain('not configured');
     });
@@ -424,27 +411,24 @@ describe('NotificationPlugin', () => {
   describe('Template Rendering', () => {
     it('should render simple template', () => {
       plugin = new NotificationPlugin();
-      
-      const result = plugin.renderTemplate(
-        'Hello {{name}}!',
-        { name: 'World' }
-      );
-      
+
+      const result = plugin.renderTemplate('Hello {{name}}!', { name: 'World' });
+
       expect(result).toBe('Hello World!');
     });
 
     it('should render complex template', () => {
       plugin = new NotificationPlugin();
-      
+
       const result = plugin.renderTemplate(
         'Hi {{user.name}}, your order #{{order.id}} is {{status}}.',
         {
           user: { name: 'John' },
           order: { id: '12345' },
-          status: 'shipped'
-        }
+          status: 'shipped',
+        },
       );
-      
+
       expect(result).toContain('John');
       expect(result).toContain('12345');
       expect(result).toContain('shipped');
@@ -454,9 +438,9 @@ describe('NotificationPlugin', () => {
   describe('Queue Management', () => {
     it('should return queue status when enabled', () => {
       plugin = new NotificationPlugin({
-        queue: { enabled: true }
+        queue: { enabled: true },
       });
-      
+
       const status = plugin.getQueueStatus();
       expect(status.enabled).toBe(true);
       expect(status).toHaveProperty('total');
@@ -464,9 +448,9 @@ describe('NotificationPlugin', () => {
 
     it('should return disabled status when queue disabled', () => {
       plugin = new NotificationPlugin({
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
-      
+
       const status = plugin.getQueueStatus();
       expect(status.enabled).toBe(false);
     });
@@ -478,15 +462,15 @@ describe('NotificationPlugin', () => {
         email: {
           host: 'invalid.smtp.server',
           port: 587,
-          from: 'test@example.com'
+          from: 'test@example.com',
         },
-        queue: { enabled: false }
+        queue: { enabled: false },
       });
       context = createMockContext();
       await plugin.init(context);
 
       const result = await plugin.sendEmail('test@example.com', 'Test', 'Body');
-      
+
       // Should return error result, not throw
       expect(result).toHaveProperty('success');
       expect(result).toHaveProperty('error');
@@ -497,89 +481,89 @@ describe('NotificationPlugin', () => {
 // ─── Kernel Compliance Tests ───────────────────────────────────────────────────
 
 describe('Kernel Compliance', () => {
-    let plugin: NotificationPlugin;
+  let plugin: NotificationPlugin;
 
-    beforeEach(async () => {
-        plugin = new NotificationPlugin();
-        const context = createMockContext();
-        await plugin.init(context);
-    });
+  beforeEach(async () => {
+    plugin = new NotificationPlugin();
+    const context = createMockContext();
+    await plugin.init(context);
+  });
 
-    afterEach(async () => {
-        await plugin.destroy();
-    });
+  afterEach(async () => {
+    await plugin.destroy();
+  });
 
-    describe('healthCheck()', () => {
-        it('should return health report', async () => {
-            const report = await plugin.healthCheck();
-            expect(report.status).toBeDefined();
-            expect(report.checks![0].name).toBe('notification-channels');
-            expect(report.timestamp).toBeDefined();
-        });
+  describe('healthCheck()', () => {
+    it('should return health report', async () => {
+      const report = await plugin.healthCheck();
+      expect(report.status).toBeDefined();
+      expect(report.checks![0].name).toBe('notification-channels');
+      expect(report.timestamp).toBeDefined();
     });
+  });
 
-    describe('getManifest()', () => {
-        it('should declare notification service', () => {
-            const manifest = plugin.getManifest();
-            expect(manifest.capabilities).toBeDefined();
-            expect(manifest.security).toBeDefined();
-        });
+  describe('getManifest()', () => {
+    it('should declare notification service', () => {
+      const manifest = plugin.getManifest();
+      expect(manifest.capabilities).toBeDefined();
+      expect(manifest.security).toBeDefined();
     });
+  });
 
-    describe('getStartupResult()', () => {
-        it('should return successful startup result', () => {
-            const result = plugin.getStartupResult();
-            expect(result.plugin.name).toBe('@objectos/notification');
-            expect(result.success).toBe(true);
-        });
+  describe('getStartupResult()', () => {
+    it('should return successful startup result', () => {
+      const result = plugin.getStartupResult();
+      expect(result.plugin.name).toBe('@objectos/notification');
+      expect(result.success).toBe(true);
     });
+  });
 });
 
 // ─── Contract Compliance (INotificationService) ────────────────────────────────
 
 describe('Contract Compliance (INotificationService)', () => {
-    let plugin: NotificationPlugin;
+  let plugin: NotificationPlugin;
 
-    beforeEach(async () => {
-        plugin = new NotificationPlugin({
-            sms: { provider: 'mock' },
-            queue: { enabled: false },
-        });
-        const context = createMockContext();
-        await plugin.init(context);
+  beforeEach(async () => {
+    plugin = new NotificationPlugin({
+      sms: { provider: 'mock' },
+      queue: { enabled: false },
+    });
+    const context = createMockContext();
+    await plugin.init(context);
+  });
+
+  afterEach(async () => {
+    await plugin.destroy();
+  });
+
+  describe('send() with spec NotificationMessage shape', () => {
+    it('should accept a message with to, channel, and body fields', async () => {
+      const result = await plugin.send({
+        to: '+1234567890',
+        channel: 'sms' as any,
+        body: 'Test message',
+      } as any);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty('success');
+    });
+  });
+
+  describe('getChannels()', () => {
+    it('should return an array', () => {
+      const channels = plugin.getChannels();
+      expect(Array.isArray(channels)).toBe(true);
     });
 
-    afterEach(async () => {
-        await plugin.destroy();
+    it('should include configured channels', () => {
+      const channels = plugin.getChannels();
+      expect(channels).toContain('sms');
     });
 
-    describe('send() with spec NotificationMessage shape', () => {
-        it('should accept a message with to, channel, and body fields', async () => {
-            const result = await plugin.send({
-                to: '+1234567890',
-                channel: 'sms' as any,
-                body: 'Test message',
-            } as any);
-
-            expect(result).toBeDefined();
-            expect(result).toHaveProperty('success');
-        });
+    it('should not include unconfigured channels like email', () => {
+      const channels = plugin.getChannels();
+      expect(channels).not.toContain('email');
     });
-
-    describe('getChannels()', () => {
-        it('should return an array', () => {
-            const channels = plugin.getChannels();
-            expect(Array.isArray(channels)).toBe(true);
-        });
-
-        it('should include configured channels', () => {
-            const channels = plugin.getChannels();
-            expect(channels).toContain('sms');
-        });
-
-        it('should not include unconfigured channels like email', () => {
-            const channels = plugin.getChannels();
-            expect(channels).not.toContain('email');
-        });
-    });
+  });
 });

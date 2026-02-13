@@ -16,13 +16,7 @@
  * @module apps/web/src/providers/dev-data-provider
  * @see docs/guide/technical-debt-resolution.md — TD-8
  */
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 export interface DevDataContextType {
   /** Whether mock data fallback is active */
@@ -43,9 +37,7 @@ export function DevDataProvider({ children }: { children: ReactNode }) {
   const [mockData, setMockData] = useState<Record<string, unknown> | null>(null);
   const [mockWorkflowData, setMockWorkflowData] = useState<Record<string, unknown> | null>(null);
 
-  const useMocks =
-    import.meta.env.DEV &&
-    import.meta.env.VITE_USE_MOCK_DATA !== 'false';
+  const useMocks = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
   useEffect(() => {
     if (useMocks) {
@@ -56,9 +48,7 @@ export function DevDataProvider({ children }: { children: ReactNode }) {
         setMockWorkflowData(m as unknown as Record<string, unknown>);
       });
 
-      console.warn(
-        '[ObjectOS] Mock data is active. Set VITE_USE_MOCK_DATA=false to disable.',
-      );
+      console.warn('[ObjectOS] Mock data is active. Set VITE_USE_MOCK_DATA=false to disable.');
     }
   }, [useMocks]);
 

@@ -11,9 +11,7 @@ const config: Config = {
     './node_modules/fumadocs-ui/dist/**/*.js',
     './node_modules/fumadocs-twoslash/dist/**/*.js',
   ],
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require('@tailwindcss/typography')],
 };
 
 export default config;

@@ -21,10 +21,38 @@ import type {
 // ─── Test Fixtures ─────────────────────────────────────────────────
 
 const SAMPLE_DATA = [
-  { id: '1', name: 'Alice', department: 'Engineering', salary: 120000, status: 'active', tags: ['lead', 'senior'] },
-  { id: '2', name: 'Bob', department: 'Engineering', salary: 95000, status: 'active', tags: ['mid'] },
-  { id: '3', name: 'Charlie', department: 'Sales', salary: 85000, status: 'inactive', tags: ['junior'] },
-  { id: '4', name: 'Diana', department: 'Sales', salary: 110000, status: 'active', tags: ['lead', 'senior'] },
+  {
+    id: '1',
+    name: 'Alice',
+    department: 'Engineering',
+    salary: 120000,
+    status: 'active',
+    tags: ['lead', 'senior'],
+  },
+  {
+    id: '2',
+    name: 'Bob',
+    department: 'Engineering',
+    salary: 95000,
+    status: 'active',
+    tags: ['mid'],
+  },
+  {
+    id: '3',
+    name: 'Charlie',
+    department: 'Sales',
+    salary: 85000,
+    status: 'inactive',
+    tags: ['junior'],
+  },
+  {
+    id: '4',
+    name: 'Diana',
+    department: 'Sales',
+    salary: 110000,
+    status: 'active',
+    tags: ['lead', 'senior'],
+  },
   { id: '5', name: 'Eve', department: 'Marketing', salary: 90000, status: 'active', tags: ['mid'] },
 ];
 
@@ -124,7 +152,7 @@ describe('O.4.1 — Aggregation Engine', () => {
       };
       const result = await engine.execute(pipeline, broker);
       expect(result.data).toHaveLength(4);
-      expect(result.data.every(r => r.status === 'active')).toBe(true);
+      expect(result.data.every((r) => r.status === 'active')).toBe(true);
     });
 
     test('filters with $gt operator', async () => {
@@ -159,44 +187,50 @@ describe('O.4.1 — Aggregation Engine', () => {
     test('groups by field with $sum', async () => {
       const pipeline: AggregationPipeline = {
         objectName: 'employees',
-        stages: [{
-          type: 'group',
-          body: { _id: 'department', totalSalary: { $sum: 'salary' } },
-        }],
+        stages: [
+          {
+            type: 'group',
+            body: { _id: 'department', totalSalary: { $sum: 'salary' } },
+          },
+        ],
       };
       const result = await engine.execute(pipeline, broker);
       expect(result.data).toHaveLength(3);
-      const eng = result.data.find(r => r._id === 'Engineering');
+      const eng = result.data.find((r) => r._id === 'Engineering');
       expect(eng?.totalSalary).toBe(215000);
     });
 
     test('groups with $avg', async () => {
       const pipeline: AggregationPipeline = {
         objectName: 'employees',
-        stages: [{
-          type: 'group',
-          body: { _id: 'department', avgSalary: { $avg: 'salary' } },
-        }],
+        stages: [
+          {
+            type: 'group',
+            body: { _id: 'department', avgSalary: { $avg: 'salary' } },
+          },
+        ],
       };
       const result = await engine.execute(pipeline, broker);
-      const eng = result.data.find(r => r._id === 'Engineering');
+      const eng = result.data.find((r) => r._id === 'Engineering');
       expect(eng?.avgSalary).toBe(107500);
     });
 
     test('groups with $min and $max', async () => {
       const pipeline: AggregationPipeline = {
         objectName: 'employees',
-        stages: [{
-          type: 'group',
-          body: {
-            _id: 'department',
-            minSalary: { $min: 'salary' },
-            maxSalary: { $max: 'salary' },
+        stages: [
+          {
+            type: 'group',
+            body: {
+              _id: 'department',
+              minSalary: { $min: 'salary' },
+              maxSalary: { $max: 'salary' },
+            },
           },
-        }],
+        ],
       };
       const result = await engine.execute(pipeline, broker);
-      const eng = result.data.find(r => r._id === 'Engineering');
+      const eng = result.data.find((r) => r._id === 'Engineering');
       expect(eng?.minSalary).toBe(95000);
       expect(eng?.maxSalary).toBe(120000);
     });
@@ -204,13 +238,15 @@ describe('O.4.1 — Aggregation Engine', () => {
     test('groups with $count', async () => {
       const pipeline: AggregationPipeline = {
         objectName: 'employees',
-        stages: [{
-          type: 'group',
-          body: { _id: 'department', headcount: { $count: true } },
-        }],
+        stages: [
+          {
+            type: 'group',
+            body: { _id: 'department', headcount: { $count: true } },
+          },
+        ],
       };
       const result = await engine.execute(pipeline, broker);
-      const eng = result.data.find(r => r._id === 'Engineering');
+      const eng = result.data.find((r) => r._id === 'Engineering');
       expect(eng?.headcount).toBe(2);
     });
   });
@@ -287,16 +323,18 @@ describe('O.4.1 — Aggregation Engine', () => {
         stages: [{ type: 'addFields', body: { bonus: 5000 } }],
       };
       const result = await engine.execute(pipeline, broker);
-      expect(result.data.every(r => r.bonus === 5000)).toBe(true);
+      expect(result.data.every((r) => r.bonus === 5000)).toBe(true);
     });
 
     test('adds computed fields with $multiply', async () => {
       const pipeline: AggregationPipeline = {
         objectName: 'employees',
-        stages: [{
-          type: 'addFields',
-          body: { annualBonus: { $multiply: ['$salary', 0.1] } },
-        }],
+        stages: [
+          {
+            type: 'addFields',
+            body: { annualBonus: { $multiply: ['$salary', 0.1] } },
+          },
+        ],
       };
       const result = await engine.execute(pipeline, broker);
       expect(result.data[0].annualBonus).toBe(12000);
@@ -348,30 +386,41 @@ describe('O.4.1 — Aggregation Engine', () => {
 
   describe('validation', () => {
     test('rejects empty objectName', () => {
-      expect(() => engine.validatePipeline({ objectName: '', stages: [{ type: 'match', body: {} }] }))
-        .toThrow('valid objectName');
+      expect(() =>
+        engine.validatePipeline({ objectName: '', stages: [{ type: 'match', body: {} }] }),
+      ).toThrow('valid objectName');
     });
 
     test('rejects empty stages', () => {
-      expect(() => engine.validatePipeline({ objectName: 'x', stages: [] }))
-        .toThrow('at least one stage');
+      expect(() => engine.validatePipeline({ objectName: 'x', stages: [] })).toThrow(
+        'at least one stage',
+      );
     });
 
     test('rejects invalid stage type', () => {
-      expect(() => engine.validatePipeline({ objectName: 'x', stages: [{ type: 'invalid' as any, body: {} }] }))
-        .toThrow('Invalid stage type');
+      expect(() =>
+        engine.validatePipeline({
+          objectName: 'x',
+          stages: [{ type: 'invalid' as any, body: {} }],
+        }),
+      ).toThrow('Invalid stage type');
     });
 
     test('rejects too many stages', () => {
       const engine2 = new AggregationEngine(2);
       const stages = Array(3).fill({ type: 'match', body: {} });
-      expect(() => engine2.validatePipeline({ objectName: 'x', stages }))
-        .toThrow('exceeds maximum');
+      expect(() => engine2.validatePipeline({ objectName: 'x', stages })).toThrow(
+        'exceeds maximum',
+      );
     });
 
     test('rejects stage without body', () => {
-      expect(() => engine.validatePipeline({ objectName: 'x', stages: [{ type: 'match', body: null as any }] }))
-        .toThrow('body object');
+      expect(() =>
+        engine.validatePipeline({
+          objectName: 'x',
+          stages: [{ type: 'match', body: null as any }],
+        }),
+      ).toThrow('body object');
     });
   });
 
@@ -411,8 +460,7 @@ describe('O.4.2 — Report Manager', () => {
 
     test('rejects duplicate report ID', () => {
       manager.create(createSampleReport());
-      expect(() => manager.create(createSampleReport()))
-        .toThrow('already exists');
+      expect(() => manager.create(createSampleReport())).toThrow('already exists');
     });
 
     test('gets a report by ID', () => {
@@ -433,8 +481,7 @@ describe('O.4.2 — Report Manager', () => {
     });
 
     test('throws on update of unknown report', () => {
-      expect(() => manager.update('nonexistent', { name: 'x' }))
-        .toThrow('not found');
+      expect(() => manager.update('nonexistent', { name: 'x' })).toThrow('not found');
     });
 
     test('deletes a report', () => {
@@ -479,8 +526,7 @@ describe('O.4.2 — Report Manager', () => {
     });
 
     test('throws for unknown report', async () => {
-      await expect(manager.execute('nonexistent', undefined, broker))
-        .rejects.toThrow('not found');
+      await expect(manager.execute('nonexistent', undefined, broker)).rejects.toThrow('not found');
     });
   });
 
@@ -511,35 +557,29 @@ describe('O.4.2 — Report Manager', () => {
         parameters: [{ name: 'status', type: 'string', required: true }],
       });
       manager.create(report);
-      await expect(manager.execute('report-1', {}, broker))
-        .rejects.toThrow('Required parameter');
+      await expect(manager.execute('report-1', {}, broker)).rejects.toThrow('Required parameter');
     });
   });
 
   describe('validation', () => {
     test('rejects report without id', () => {
-      expect(() => manager.create(createSampleReport({ id: '' })))
-        .toThrow('valid id');
+      expect(() => manager.create(createSampleReport({ id: '' }))).toThrow('valid id');
     });
 
     test('rejects report without name', () => {
-      expect(() => manager.create(createSampleReport({ name: '' })))
-        .toThrow('valid name');
+      expect(() => manager.create(createSampleReport({ name: '' }))).toThrow('valid name');
     });
 
     test('rejects report without objectName', () => {
-      expect(() => manager.create(createSampleReport({ objectName: '' })))
-        .toThrow('objectName');
+      expect(() => manager.create(createSampleReport({ objectName: '' }))).toThrow('objectName');
     });
 
     test('rejects report without stages', () => {
-      expect(() => manager.create(createSampleReport({ stages: [] })))
-        .toThrow('at least one');
+      expect(() => manager.create(createSampleReport({ stages: [] }))).toThrow('at least one');
     });
 
     test('rejects report with invalid format', () => {
-      expect(() => manager.create(createSampleReport({ format: 'pdf' as any })))
-        .toThrow('format');
+      expect(() => manager.create(createSampleReport({ format: 'pdf' as any }))).toThrow('format');
     });
   });
 });
@@ -568,8 +608,7 @@ describe('O.4.3 — Dashboard Manager', () => {
 
     test('rejects duplicate dashboard ID', () => {
       dashManager.create(createSampleDashboard());
-      expect(() => dashManager.create(createSampleDashboard()))
-        .toThrow('already exists');
+      expect(() => dashManager.create(createSampleDashboard())).toThrow('already exists');
     });
 
     test('gets a dashboard', () => {
@@ -621,8 +660,7 @@ describe('O.4.3 — Dashboard Manager', () => {
     test('rejects duplicate widget ID', () => {
       dashManager.create(createSampleDashboard());
       dashManager.addWidget('dash-1', createSampleWidget());
-      expect(() => dashManager.addWidget('dash-1', createSampleWidget()))
-        .toThrow('already exists');
+      expect(() => dashManager.addWidget('dash-1', createSampleWidget())).toThrow('already exists');
     });
 
     test('removes a widget', () => {
@@ -634,8 +672,7 @@ describe('O.4.3 — Dashboard Manager', () => {
 
     test('throws removing nonexistent widget', () => {
       dashManager.create(createSampleDashboard());
-      expect(() => dashManager.removeWidget('dash-1', 'nonexistent'))
-        .toThrow('not found');
+      expect(() => dashManager.removeWidget('dash-1', 'nonexistent')).toThrow('not found');
     });
 
     test('updates a widget', () => {
@@ -657,11 +694,14 @@ describe('O.4.3 — Dashboard Manager', () => {
     test('executes a widget with reportId', async () => {
       reportManager.create(createSampleReport());
       dashManager.create(createSampleDashboard());
-      dashManager.addWidget('dash-1', createSampleWidget({
-        id: 'widget-report',
-        reportId: 'report-1',
-        pipeline: undefined,
-      }));
+      dashManager.addWidget(
+        'dash-1',
+        createSampleWidget({
+          id: 'widget-report',
+          reportId: 'report-1',
+          pipeline: undefined,
+        }),
+      );
       const result = await dashManager.executeWidget('dash-1', 'widget-report', broker);
       expect(result.data).toHaveLength(4);
     });
@@ -669,13 +709,16 @@ describe('O.4.3 — Dashboard Manager', () => {
     test('executes all dashboard widgets', async () => {
       dashManager.create(createSampleDashboard());
       dashManager.addWidget('dash-1', createSampleWidget({ id: 'w1' }));
-      dashManager.addWidget('dash-1', createSampleWidget({
-        id: 'w2',
-        pipeline: {
-          objectName: 'employees',
-          stages: [{ type: 'match', body: { status: 'active' } }],
-        },
-      }));
+      dashManager.addWidget(
+        'dash-1',
+        createSampleWidget({
+          id: 'w2',
+          pipeline: {
+            objectName: 'employees',
+            stages: [{ type: 'match', body: { status: 'active' } }],
+          },
+        }),
+      );
       const results = await dashManager.executeDashboard('dash-1', broker);
       expect(Object.keys(results)).toHaveLength(2);
       expect(results['w1'].data).toEqual([{ total: 5 }]);
@@ -683,8 +726,9 @@ describe('O.4.3 — Dashboard Manager', () => {
     });
 
     test('throws for unknown dashboard on execute', async () => {
-      await expect(dashManager.executeDashboard('nonexistent', broker))
-        .rejects.toThrow('not found');
+      await expect(dashManager.executeDashboard('nonexistent', broker)).rejects.toThrow(
+        'not found',
+      );
     });
   });
 });
@@ -726,23 +770,23 @@ describe('O.4.4 — Report Scheduler', () => {
     });
 
     test('rejects schedule without id', () => {
-      expect(() => scheduler.schedule(createSampleSchedule({ id: '' })))
-        .toThrow('valid id');
+      expect(() => scheduler.schedule(createSampleSchedule({ id: '' }))).toThrow('valid id');
     });
 
     test('rejects schedule without reportId', () => {
-      expect(() => scheduler.schedule(createSampleSchedule({ reportId: '' })))
-        .toThrow('reportId');
+      expect(() => scheduler.schedule(createSampleSchedule({ reportId: '' }))).toThrow('reportId');
     });
 
     test('rejects schedule without cron', () => {
-      expect(() => scheduler.schedule(createSampleSchedule({ cron: '' })))
-        .toThrow('cron expression');
+      expect(() => scheduler.schedule(createSampleSchedule({ cron: '' }))).toThrow(
+        'cron expression',
+      );
     });
 
     test('rejects schedule without recipients', () => {
-      expect(() => scheduler.schedule(createSampleSchedule({ recipients: [] })))
-        .toThrow('at least one recipient');
+      expect(() => scheduler.schedule(createSampleSchedule({ recipients: [] }))).toThrow(
+        'at least one recipient',
+      );
     });
 
     test('unschedules', () => {
@@ -760,24 +804,30 @@ describe('O.4.4 — Report Scheduler', () => {
 
   describe('checkDue', () => {
     test('finds due schedules', () => {
-      scheduler.schedule(createSampleSchedule({
-        id: 's-due',
-        nextRun: new Date(Date.now() - 60000).toISOString(),
-      }));
-      scheduler.schedule(createSampleSchedule({
-        id: 's-future',
-        nextRun: new Date(Date.now() + 3600000).toISOString(),
-      }));
+      scheduler.schedule(
+        createSampleSchedule({
+          id: 's-due',
+          nextRun: new Date(Date.now() - 60000).toISOString(),
+        }),
+      );
+      scheduler.schedule(
+        createSampleSchedule({
+          id: 's-future',
+          nextRun: new Date(Date.now() + 3600000).toISOString(),
+        }),
+      );
       const due = scheduler.checkDue();
       expect(due).toHaveLength(1);
       expect(due[0].id).toBe('s-due');
     });
 
     test('ignores disabled schedules', () => {
-      scheduler.schedule(createSampleSchedule({
-        enabled: false,
-        nextRun: new Date(Date.now() - 60000).toISOString(),
-      }));
+      scheduler.schedule(
+        createSampleSchedule({
+          enabled: false,
+          nextRun: new Date(Date.now() - 60000).toISOString(),
+        }),
+      );
       expect(scheduler.checkDue()).toHaveLength(0);
     });
   });
@@ -785,9 +835,11 @@ describe('O.4.4 — Report Scheduler', () => {
   describe('runDue', () => {
     test('executes due reports', async () => {
       reportManager.create(createSampleReport());
-      scheduler.schedule(createSampleSchedule({
-        nextRun: new Date(Date.now() - 60000).toISOString(),
-      }));
+      scheduler.schedule(
+        createSampleSchedule({
+          nextRun: new Date(Date.now() - 60000).toISOString(),
+        }),
+      );
       const executed = await scheduler.runDue(broker);
       expect(executed).toContain('sched-1');
       const schedule = scheduler.getSchedule('sched-1');
@@ -849,14 +901,18 @@ describe('Analytics Plugin — Lifecycle', () => {
   test('initializes and registers service', async () => {
     await plugin.init(context as any);
     expect(context.registerService).toHaveBeenCalledWith('analytics', plugin);
-    expect(context.trigger).toHaveBeenCalledWith('plugin.initialized', { pluginId: '@objectos/analytics' });
+    expect(context.trigger).toHaveBeenCalledWith('plugin.initialized', {
+      pluginId: '@objectos/analytics',
+    });
   });
 
   test('starts and warns when no HTTP server', async () => {
     await plugin.init(context as any);
     await plugin.start(context as any);
     expect(context.logger.warn).toHaveBeenCalled();
-    expect(context.trigger).toHaveBeenCalledWith('plugin.started', { pluginId: '@objectos/analytics' });
+    expect(context.trigger).toHaveBeenCalledWith('plugin.started', {
+      pluginId: '@objectos/analytics',
+    });
   });
 
   test('stops cleanly', async () => {

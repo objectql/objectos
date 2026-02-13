@@ -81,9 +81,7 @@ export default function RecordEditPage() {
             {recordTitle}
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold tracking-tight">
-          Edit {recordTitle}
-        </h2>
+        <h2 className="text-2xl font-bold tracking-tight">Edit {recordTitle}</h2>
         <p className="text-muted-foreground">
           Update this {((objectDef?.label ?? objectName) || 'record').toLowerCase()} record.
         </p>

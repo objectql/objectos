@@ -1,6 +1,6 @@
 /**
  * Notification Plugin - Public API
- * 
+ *
  * Export all public types and classes
  */
 
@@ -33,10 +33,7 @@ export type {
   TemplateData,
   TemplateEngine as ITemplateEngine,
   QueuedNotification,
-  NotificationChannelInterface
+  NotificationChannelInterface,
 } from './types.js';
 
-export { 
-  NotificationChannel,
-  NotificationStatus
-} from './types.js';
+export { NotificationChannel, NotificationStatus } from './types.js';

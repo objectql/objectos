@@ -40,9 +40,7 @@ function Breadcrumbs({
   objectName?: string;
   recordTitle?: string;
 }) {
-  const items: { label: string; href?: string }[] = [
-    { label: appName, href: `/apps/${appId}` },
-  ];
+  const items: { label: string; href?: string }[] = [{ label: appName, href: `/apps/${appId}` }];
 
   if (objectName) {
     items.push({ label: objectName, href: `/apps/${appId}/${objectName}` });
@@ -141,7 +139,11 @@ export function AppLayout() {
                 <SidebarMenu>
                   {appRecentItems.map((item) => (
                     <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        tooltip={item.title}
+                      >
                         <Link to={item.href}>
                           <Clock className="size-3.5" />
                           <span className="truncate">{item.title}</span>

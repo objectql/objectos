@@ -5,11 +5,7 @@
  * Manages the installed plugin state and version history.
  */
 
-import type {
-  PluginManifest,
-  PluginInstallResult,
-  PluginRegistryEntry,
-} from './types.js';
+import type { PluginManifest, PluginInstallResult, PluginRegistryEntry } from './types.js';
 import type { PluginRegistry } from './registry.js';
 import { validateManifest, resolveDependencies, checkCompatibility } from './manifest-validator.js';
 

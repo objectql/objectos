@@ -78,10 +78,10 @@ Content-Type: application/json
 Better-Auth manages sessions via HTTP-only cookies. The Admin Console (`apps/web`) uses `better-auth/react` for session handling:
 
 ```typescript
-import { createAuthClient } from "better-auth/react";
+import { createAuthClient } from 'better-auth/react';
 
 export const authClient = createAuthClient({
-  baseURL: "/api/v1/auth",
+  baseURL: '/api/v1/auth',
 });
 ```
 
@@ -140,6 +140,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -156,17 +157,18 @@ fields:
   salary:
     type: currency
     label: Salary
-    visible_to: ['hr', 'admin']      # Only HR and admin can see
-    editable_by: ['hr']              # Only HR can edit
-  
+    visible_to: ['hr', 'admin'] # Only HR and admin can see
+    editable_by: ['hr'] # Only HR can edit
+
   social_security:
     type: text
     label: SSN
-    visible_to: ['hr']               # Only HR can see
-    editable_by: []                  # No one can edit (read-only)
+    visible_to: ['hr'] # Only HR can see
+    editable_by: [] # No one can edit (read-only)
 ```
 
 **Behavior:**
+
 - Users without `visible_to` roles cannot see the field in queries or forms
 - Users without `editable_by` roles cannot update the field
 - Attempts to read/write restricted fields return 403 Forbidden
@@ -182,8 +184,8 @@ Define default access levels per object:
 ```typescript
 const rlsConfig = {
   organizationWideDefaults: {
-    accounts: 'private',      // Only owner can see
-    contacts: 'publicRead',   // Everyone can read
+    accounts: 'private', // Only owner can see
+    contacts: 'publicRead', // Everyone can read
     opportunities: 'private',
   },
 };
@@ -226,15 +228,15 @@ records:
   - name: admin
     label: Administrator
     description: Full system access
-  
+
   - name: sales
     label: Sales User
     description: Sales team member
-  
+
   - name: support
     label: Support User
     description: Customer support
-  
+
   - name: guest
     label: Guest
     description: Limited read-only access
@@ -245,7 +247,7 @@ records:
 ```typescript
 // Assign role to user
 await kernel.update('users', userId, {
-  roles: ['sales', 'support']
+  roles: ['sales', 'support'],
 });
 ```
 
@@ -257,10 +259,10 @@ Define role inheritance:
 role_hierarchy:
   admin:
     inherits: [sales, support, guest]
-  
+
   sales:
     inherits: [guest]
-  
+
   support:
     inherits: [guest]
 ```
@@ -270,6 +272,7 @@ role_hierarchy:
 ### Automatic Validation
 
 ObjectOS automatically validates:
+
 - Required fields
 - Data types
 - Unique constraints
@@ -286,7 +289,7 @@ kernel.on('beforeInsert:contacts', async (ctx) => {
   if (ctx.data.email && !ctx.data.email.endsWith('@company.com')) {
     throw new Error('Only company email addresses allowed');
   }
-  
+
   // Sanitize phone number
   if (ctx.data.phone) {
     ctx.data.phone = ctx.data.phone.replace(/[^0-9+]/g, '');
@@ -302,8 +305,8 @@ ObjectOS drivers automatically parameterize queries:
 // Safe - parameters are escaped
 await kernel.find('contacts', {
   filters: {
-    email: userInput  // Automatically sanitized
-  }
+    email: userInput, // Automatically sanitized
+  },
 });
 ```
 
@@ -375,11 +378,13 @@ Prevent abuse with rate limiting:
 ```typescript
 import { RateLimitPlugin } from '@objectos/plugin-rate-limit';
 
-kernel.use(RateLimitPlugin({
-  windowMs: 60 * 1000,     // 1 minute
-  maxRequests: 100,        // 100 requests per window
-  perUser: true            // Rate limit per user
-}));
+kernel.use(
+  RateLimitPlugin({
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 100, // 100 requests per window
+    perUser: true, // Rate limit per user
+  }),
+);
 ```
 
 ## CORS Configuration
@@ -407,18 +412,21 @@ For the Vercel serverless deployment, CORS is applied via Hono middleware in `ap
 For server-to-server communication:
 
 ```typescript
-kernel.use(ApiKeyPlugin({
-  keys: [
-    {
-      key: process.env.API_KEY_1,
-      name: 'Integration Server',
-      scopes: ['read:contacts', 'write:contacts']
-    }
-  ]
-}));
+kernel.use(
+  ApiKeyPlugin({
+    keys: [
+      {
+        key: process.env.API_KEY_1,
+        name: 'Integration Server',
+        scopes: ['read:contacts', 'write:contacts'],
+      },
+    ],
+  }),
+);
 ```
 
 **Usage:**
+
 ```bash
 GET /api/data/contacts
 X-API-Key: your-api-key-here
@@ -454,13 +462,13 @@ honoApp.use(
 
 ### Response Headers Applied
 
-| Header | Value | OWASP Reference |
-|--------|-------|-----------------|
-| `Content-Security-Policy` | `default-src 'self'; ...` | A05:2021 – Security Misconfiguration |
-| `X-Frame-Options` | `DENY` | Clickjacking protection |
-| `X-Content-Type-Options` | `nosniff` | MIME-type sniffing prevention |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | Information leakage prevention |
-| `Cross-Origin-Resource-Policy` | `same-origin` | Cross-origin isolation |
+| Header                         | Value                             | OWASP Reference                      |
+| ------------------------------ | --------------------------------- | ------------------------------------ |
+| `Content-Security-Policy`      | `default-src 'self'; ...`         | A05:2021 – Security Misconfiguration |
+| `X-Frame-Options`              | `DENY`                            | Clickjacking protection              |
+| `X-Content-Type-Options`       | `nosniff`                         | MIME-type sniffing prevention        |
+| `Referrer-Policy`              | `strict-origin-when-cross-origin` | Information leakage prevention       |
+| `Cross-Origin-Resource-Policy` | `same-origin`                     | Cross-origin isolation               |
 
 ## Encryption
 
@@ -478,7 +486,7 @@ kernel.on('beforeInsert', async (ctx) => {
 
 kernel.on('afterFind', async (ctx) => {
   // Decrypt SSN when retrieving
-  ctx.result.forEach(record => {
+  ctx.result.forEach((record) => {
     if (record.social_security) {
       record.social_security = decrypt(record.social_security);
     }
@@ -534,37 +542,43 @@ const secret = process.env.JWT_SECRET;
 ### 1. Multi-Factor Authentication
 
 ```typescript
-kernel.use(MFAPlugin({
-  enabled: true,
-  methods: ['totp', 'sms'],
-  required_for_roles: ['admin']
-}));
+kernel.use(
+  MFAPlugin({
+    enabled: true,
+    methods: ['totp', 'sms'],
+    required_for_roles: ['admin'],
+  }),
+);
 ```
 
 ### 2. Password Policies
 
 ```typescript
-kernel.use(PasswordPolicyPlugin({
-  minLength: 12,
-  requireUppercase: true,
-  requireLowercase: true,
-  requireNumbers: true,
-  requireSpecialChars: true,
-  preventReuse: 5,         // Can't reuse last 5 passwords
-  expiryDays: 90           // Force reset every 90 days
-}));
+kernel.use(
+  PasswordPolicyPlugin({
+    minLength: 12,
+    requireUppercase: true,
+    requireLowercase: true,
+    requireNumbers: true,
+    requireSpecialChars: true,
+    preventReuse: 5, // Can't reuse last 5 passwords
+    expiryDays: 90, // Force reset every 90 days
+  }),
+);
 ```
 
 ### 3. Session Management
 
 ```typescript
-kernel.use(SessionPlugin({
-  maxAge: 24 * 60 * 60 * 1000,  // 24 hours
-  rolling: true,                 // Refresh on activity
-  secure: true,                  // HTTPS only
-  httpOnly: true,                // Not accessible via JavaScript
-  sameSite: 'strict'
-}));
+kernel.use(
+  SessionPlugin({
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    rolling: true, // Refresh on activity
+    secure: true, // HTTPS only
+    httpOnly: true, // Not accessible via JavaScript
+    sameSite: 'strict',
+  }),
+);
 ```
 
 ## Testing Security
@@ -577,17 +591,23 @@ describe('Integration: Auth → Permissions → Data → Audit', () => {
   it('should trace a full CRUD lifecycle in audit', async () => {
     // 1. Login event → recorded in audit
     await triggerHook(hooks, 'auth.login', {
-      userId: 'user-1', userName: 'Alice', ipAddress: '10.0.0.1',
+      userId: 'user-1',
+      userName: 'Alice',
+      ipAddress: '10.0.0.1',
     });
 
     // 2. Permission check → passes via data.beforeCreate hook
     await triggerHook(hooks, 'data.beforeCreate', {
-      objectName: 'orders', userId: 'user-1', userProfiles: ['admin'],
+      objectName: 'orders',
+      userId: 'user-1',
+      userProfiles: ['admin'],
     });
 
     // 3. Data operation → recorded in audit with field changes
     await triggerHook(hooks, 'data.create', {
-      objectName: 'orders', recordId: 'ord-1', userId: 'user-1',
+      objectName: 'orders',
+      recordId: 'ord-1',
+      userId: 'user-1',
     });
 
     // 4. Verify complete audit trail

@@ -21,9 +21,7 @@ export interface ContentTypeGuardConfig {
  * Creates a middleware that rejects mutation requests without an allowed
  * Content-Type header.
  */
-export function contentTypeGuard(
-  config: ContentTypeGuardConfig = {},
-): MiddlewareHandler {
+export function contentTypeGuard(config: ContentTypeGuardConfig = {}): MiddlewareHandler {
   const allowedTypes = config.allowedTypes ?? ['application/json'];
   const excludePaths = config.excludePaths ?? [];
 

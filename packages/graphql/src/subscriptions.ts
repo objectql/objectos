@@ -7,12 +7,7 @@
  * - on{Object}Deleted — fires when a record is deleted
  */
 
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLFieldConfigMap,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFieldConfigMap } from 'graphql';
 import type { GraphQLResolverContext, ObjectDef } from './types.js';
 import { PubSub } from './pubsub.js';
 import { toPascalCase } from './utils.js';

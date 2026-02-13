@@ -15,7 +15,7 @@ export const EscalateCaseAction: Action = {
       label: 'Escalation Reason',
       type: 'textarea',
       required: true,
-    }
+    },
   ],
   confirmText: 'This will escalate the case to the escalation team. Continue?',
   successMessage: 'Case escalated successfully!',
@@ -37,7 +37,7 @@ export const CloseCaseAction: Action = {
       label: 'Resolution',
       type: 'textarea',
       required: true,
-    }
+    },
   ],
   confirmText: 'Are you sure you want to close this case?',
   successMessage: 'Case closed successfully!',

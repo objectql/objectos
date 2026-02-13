@@ -29,7 +29,12 @@ export const ProductInfoRAG = {
   },
 
   loaders: [
-    { type: 'directory', source: '/knowledge/products', fileTypes: ['.md', '.pdf'], recursive: true },
+    {
+      type: 'directory',
+      source: '/knowledge/products',
+      fileTypes: ['.md', '.pdf'],
+      recursive: true,
+    },
   ],
 
   maxContextTokens: 2000,

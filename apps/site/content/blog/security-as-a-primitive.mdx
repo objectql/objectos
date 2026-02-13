@@ -1,15 +1,15 @@
 ---
-title: "The Policy Engine: Compiling ABAC Rules into Abstract Syntax Trees"
-description: "How ObjectOS implements Zero Trust not by filtering arrays in memory, but by compiling Attribute-Based Access Control policies directly into SQL predicates."
+title: 'The Policy Engine: Compiling ABAC Rules into Abstract Syntax Trees'
+description: 'How ObjectOS implements Zero Trust not by filtering arrays in memory, but by compiling Attribute-Based Access Control policies directly into SQL predicates.'
 date: 2024-03-20
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # The Policy Engine: Compiling ABAC Rules into ASTs
 
 "Security as a Primitive" means security cannot be an afterthought. In ObjectOS, the access control system is an **Attribute-Based Access Control (ABAC)** engine that sits directly in front of the Data Access Layer.
 
-Instead of fetching data and *then* filtering it (which is slow and insecure pagination-wise), ObjectOS **compiles security rules into the database query**.
+Instead of fetching data and _then_ filtering it (which is slow and insecure pagination-wise), ObjectOS **compiles security rules into the database query**.
 
 ## 1. Defining Policies (The DSL)
 
@@ -22,8 +22,8 @@ rule:
   - effect: allow
     action: [read, update]
     condition:
-      owner: "{user.id}"
-      amount: 
+      owner: '{user.id}'
+      amount:
         $lt: 10000
 ```
 
@@ -45,8 +45,8 @@ If a user has multiple roles (e.g., "Sales Rep" AND "Regional Manager"), the Com
 
 ```sql
 -- Compiled Query
-SELECT * FROM sales_order 
-WHERE 
+SELECT * FROM sales_order
+WHERE
   -- Role: Sales Rep
   (owner = 'u_123' AND amount < 10000)
   OR
@@ -62,8 +62,8 @@ If a user cannot see the `margin` field, we don't just "hide" it in the UI. We s
 The Query Planner iterates through the requested fields:
 
 ```typescript
-const allowedFields = requestedFields.filter(field => 
-  policyEngine.can(user, 'read_field', 'sales_order', field)
+const allowedFields = requestedFields.filter((field) =>
+  policyEngine.can(user, 'read_field', 'sales_order', field),
 );
 // Generates: SELECT id, date, amount FROM ... (omits 'margin')
 ```

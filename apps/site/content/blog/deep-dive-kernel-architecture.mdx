@@ -1,8 +1,8 @@
 ---
-title: "Architecture Internals: The Plugin Lifecycle & Dependency Graph"
-description: "How the ObjectOS Kernel manages dependency injection, plugin isolation, and the boot sequence."
+title: 'Architecture Internals: The Plugin Lifecycle & Dependency Graph'
+description: 'How the ObjectOS Kernel manages dependency injection, plugin isolation, and the boot sequence.'
 date: 2024-04-20
-author: "ObjectOS Engineering"
+author: 'ObjectOS Engineering'
 ---
 
 # Architecture Internals: The Plugin Lifecycle
@@ -20,11 +20,8 @@ Every unit of functionality in ObjectOS is a plugin. A plugin is defined by its 
 export const InventoryPlugin = definePlugin({
   id: 'com.objectos.inventory',
   version: '1.2.0',
-  dependencies: [
-    'com.objectos.auth', 
-    'com.objectos.products'
-  ],
-  provides: ['inventory.service']
+  dependencies: ['com.objectos.auth', 'com.objectos.products'],
+  provides: ['inventory.service'],
 });
 ```
 
@@ -36,7 +33,7 @@ When `ObjectOS.boot()` is called, the kernel performs the following steps:
 2. **Graph Construction:** Builds a Directed Acyclic Graph (DAG) based on the `dependencies` array.
 3. **Cycle Detection:** If Plugin A depends on Plugin B, and Plugin B depends on Plugin A, the kernel throws a `CircularDependencyError` and halts boot.
 4. **Ordering:** Performs a Topological Sort to determine the linear load order.
-   - *Result:* `Auth` -> `Products` -> `Inventory`.
+   - _Result:_ `Auth` -> `Products` -> `Inventory`.
 
 ### Code Snapshot: The Resolver
 
@@ -55,7 +52,7 @@ function resolveLoadOrder(plugins: Map<string, Plugin>): Plugin[] {
     if (visited.has(pluginId)) return;
 
     tempStack.add(pluginId);
-    
+
     const plugin = plugins.get(pluginId);
     for (const depId of plugin.manifest.dependencies) {
       visit(depId);
@@ -67,7 +64,7 @@ function resolveLoadOrder(plugins: Map<string, Plugin>): Plugin[] {
   }
 
   for (const id of plugins.keys()) visit(id);
-  
+
   return sorted;
 }
 ```
@@ -77,6 +74,7 @@ function resolveLoadOrder(plugins: Map<string, Plugin>): Plugin[] {
 Once loaded, plugins do not access global variables. They interact with the system via the `Context`.
 
 The Kernel creates a **Sandbox** for each plugin.
+
 - **Service Registry:** A plugin can `provide()` services.
 - **Service Injection:** A plugin `inject()`s services from dependencies.
 
@@ -85,7 +83,7 @@ The Kernel creates a **Sandbox** for each plugin.
 async function onLoad(ctx: PluginContext) {
   // Safe Injection: guaranteed to be available because of the DAG sort
   const authService = ctx.inject('auth.service');
-  
+
   // Registering own service
   ctx.provide('inventory.reserve', async (itemId, qty) => {
     // Implementation
@@ -106,8 +104,9 @@ ObjectOS wraps every plugin hook in a `try/catch` block that acts as an **Error 
 ## Hot Module Replacement (HMR)
 
 In development, the Kernel supports HMR. Because the dependency graph is known, when you edit `InventoryPlugin`, the kernel can:
+
 1. Dispose `InventoryPlugin`.
-2. Dispose any plugins that *depend* on `InventoryPlugin` (reverse topological walk).
+2. Dispose any plugins that _depend_ on `InventoryPlugin` (reverse topological walk).
 3. Reload the code.
 4. Re-initialize them in order.
 

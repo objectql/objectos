@@ -1,6 +1,6 @@
 /**
  * Notification System Types
- * 
+ *
  * Core type definitions for multi-channel notification system
  */
 
@@ -11,7 +11,7 @@ export enum NotificationChannel {
   Email = 'email',
   SMS = 'sms',
   Push = 'push',
-  Webhook = 'webhook'
+  Webhook = 'webhook',
 }
 
 /**
@@ -22,7 +22,7 @@ export enum NotificationStatus {
   Sending = 'sending',
   Sent = 'sent',
   Failed = 'failed',
-  Retrying = 'retrying'
+  Retrying = 'retrying',
 }
 
 /**

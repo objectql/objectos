@@ -1,18 +1,18 @@
 /**
  * Cache Plugin - Public API
- * 
+ *
  * Export all public interfaces and classes
  */
 
 // Types
 export type {
-    CacheBackend,
-    CacheConfig,
-    CacheEntry,
-    CacheStats,
-    CacheStrategy,
-    LruCacheOptions,
-    RedisCacheOptions,
+  CacheBackend,
+  CacheConfig,
+  CacheEntry,
+  CacheStats,
+  CacheStrategy,
+  LruCacheOptions,
+  RedisCacheOptions,
 } from './types.js';
 
 // Backends

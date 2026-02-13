@@ -24,10 +24,7 @@ export function bodyLimit(config: BodyLimitConfig = {}): MiddlewareHandler {
   return async (c, next) => {
     const contentLength = c.req.header('content-length');
     if (contentLength && parseInt(contentLength, 10) > maxSize) {
-      return c.json(
-        { error: 'Payload too large', maxSize },
-        413,
-      );
+      return c.json({ error: 'Payload too large', maxSize }, 413);
     }
     await next();
   };

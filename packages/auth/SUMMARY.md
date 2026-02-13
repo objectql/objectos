@@ -30,6 +30,7 @@ packages/plugins/better-auth/
 ### Key Features Implemented
 
 #### 1. Authentication Capabilities
+
 - ✅ Email/Password authentication via Better-Auth
 - ✅ Organization and team management
 - ✅ Role-based access control (owner, admin, user)
@@ -37,6 +38,7 @@ packages/plugins/better-auth/
 - ✅ First user automatically gets super_admin role
 
 #### 2. Plugin Architecture
+
 - ✅ Conforms to @objectstack/spec v0.6.0 protocol
 - ✅ Implements PluginDefinition interface with all lifecycle hooks:
   - `onInstall` - First-time setup
@@ -47,11 +49,13 @@ packages/plugins/better-auth/
 - ✅ Uses scoped storage for configuration
 
 #### 3. Route Registration
+
 - ✅ Automatically registers all Better-Auth routes at `/api/auth/*`
 - ✅ Includes Node.js handler wrapper for Better-Auth
 - ✅ No manual controller setup required
 
 #### 4. Event System
+
 - ✅ Defines authentication-related events:
   - `auth.user.created`
   - `auth.user.login`
@@ -60,6 +64,7 @@ packages/plugins/better-auth/
   - `auth.session.expired`
 
 #### 5. Database Support
+
 - ✅ PostgreSQL via `pg` driver
 - ✅ MongoDB via `mongodb` driver
 - ✅ SQLite via `better-sqlite3` driver (default)
@@ -68,6 +73,7 @@ packages/plugins/better-auth/
 ### Code Quality
 
 #### Build & Tests
+
 - ✅ TypeScript compilation successful
 - ✅ All 7 tests passing
 - ✅ No TypeScript errors
@@ -75,12 +81,14 @@ packages/plugins/better-auth/
 - ✅ Declaration maps generated
 
 #### Security
+
 - ✅ No known vulnerabilities in dependencies
 - ✅ Secure session management via Better-Auth
 - ✅ CORS support with configurable trusted origins
 - ✅ First user protection (super_admin role)
 
 #### Documentation
+
 - ✅ Comprehensive README with API documentation
 - ✅ Integration guide for ObjectOS Server
 - ✅ Usage examples with multiple scenarios
@@ -110,7 +118,7 @@ import { createBetterAuthPlugin } from '@objectos/plugin-better-auth';
 const authPlugin = createBetterAuthPlugin({
   databaseUrl: 'postgres://localhost:5432/mydb',
   baseURL: 'https://myapp.com/api/auth',
-  trustedOrigins: ['https://myapp.com']
+  trustedOrigins: ['https://myapp.com'],
 });
 
 const os = new ObjectOS({
@@ -185,6 +193,7 @@ See INTEGRATION.md for detailed migration steps.
 ## Dependencies
 
 ### Production Dependencies
+
 - `better-auth` ^1.4.10
 - `better-sqlite3` ^12.6.0
 - `mongodb` ^7.0.0
@@ -192,6 +201,7 @@ See INTEGRATION.md for detailed migration steps.
 - `@objectstack/spec` 0.6.0
 
 ### Development Dependencies
+
 - `@types/node` ^20.10.0
 - `@types/pg` ^8.11.0
 - `@types/better-sqlite3` ^7.6.0

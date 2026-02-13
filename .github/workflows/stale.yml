@@ -1,4 +1,4 @@
-name: "Stale Issues and PRs"
+name: 'Stale Issues and PRs'
 
 on:
   schedule:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/stale@v10
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
           # Issue settings
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
@@ -32,7 +32,7 @@ jobs:
           days-before-close: 7
           stale-issue-label: 'stale'
           exempt-issue-labels: 'pinned,security,bug,enhancement,good first issue'
-          
+
           # PR settings
           stale-pr-message: >
             This pull request has been automatically marked as stale because it has not had
@@ -47,7 +47,7 @@ jobs:
           days-before-pr-close: 7
           stale-pr-label: 'stale'
           exempt-pr-labels: 'pinned,security,in-progress,blocked'
-          
+
           # Operation limits
           operations-per-run: 100
           remove-stale-when-updated: true

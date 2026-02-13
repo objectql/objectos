@@ -2,12 +2,12 @@
 title: ObjectStack CLI Usage Guide
 ---
 
-
 This guide covers how to use the `@objectstack/cli` commands to develop and manage your ObjectOS applications.
 
 ## Overview
 
 The ObjectStack CLI (`@objectstack/cli`) provides a comprehensive set of tools for:
+
 - Starting and managing development servers
 - Generating metadata files (objects, flows, views, etc.)
 - Validating and compiling configurations
@@ -56,6 +56,7 @@ pnpm dev
 ```
 
 This runs:
+
 - API server on `http://localhost:5320`
 - Admin Console on `http://localhost:5321/console/`
 
@@ -78,6 +79,7 @@ pnpm generate:object product
 ```
 
 This creates a TypeScript file with a complete object schema including:
+
 - Standard fields (name, description)
 - Metadata (ownership, labels)
 - Field definitions
@@ -118,6 +120,7 @@ pnpm generate:flow approval-process
 ```
 
 This creates a flow definition with:
+
 - Trigger configuration
 - Node definitions
 - Transition logic
@@ -171,6 +174,7 @@ pnpm create:plugin my-plugin
 ```
 
 This scaffolds a complete plugin structure with:
+
 - Plugin manifest
 - Service definitions
 - Tests
@@ -219,6 +223,7 @@ pnpm objectstack:validate
 ```
 
 This checks:
+
 - Configuration structure
 - Plugin compatibility
 - Metadata format compliance
@@ -249,6 +254,7 @@ pnpm objectstack:info
 ```
 
 This displays:
+
 - Number of plugins loaded
 - Configuration metadata
 - Load time
@@ -262,6 +268,7 @@ pnpm objectstack:doctor
 ```
 
 This verifies:
+
 - Node.js version
 - Package manager (pnpm/npm/yarn)
 - TypeScript installation
@@ -305,6 +312,7 @@ pnpm site:build
 Output: `apps/site/out/`
 
 **Note:** The repository has two documentation systems:
+
 - `apps/site/` - Main documentation site (Next.js + Fumadocs) - builds to `out/`
 - `docs/` - VitePress guides (legacy) - not built for production
 
@@ -386,6 +394,7 @@ pnpm start
 ```
 
 This runs a single-process server that:
+
 - Serves the API on `http://localhost:5320/api/v1/*`
 - Serves the Admin Console at `http://localhost:5320/console/`
 - Serves the documentation at `http://localhost:5320/docs/`
@@ -402,15 +411,12 @@ The server configuration is defined in `objectstack.config.ts`:
 export default {
   metadata: {
     baseDir: resolve(__dirname),
-    patterns: [
-      'packages/*/objects/*.object.yml',
-      'packages/*/workflows/*.workflow.yml',
-    ]
+    patterns: ['packages/*/objects/*.object.yml', 'packages/*/workflows/*.workflow.yml'],
   },
-  
+
   plugins: [
     new MetricsPlugin(),
-    new CachePlugin(), 
+    new CachePlugin(),
     new StoragePlugin(),
     new BetterAuthPlugin(),
     // ... more plugins
@@ -425,7 +431,7 @@ export default {
     cors: {
       origin: ['http://localhost:5321'],
       credentials: true,
-    }
+    },
   },
 };
 ```

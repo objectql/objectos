@@ -45,7 +45,7 @@ export class PubSub {
         if (queue.length > 0) {
           return Promise.resolve({ value: queue.shift(), done: false });
         }
-        return new Promise(r => {
+        return new Promise((r) => {
           resolve = r;
         });
       },

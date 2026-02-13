@@ -83,16 +83,10 @@ async function bootstrapKernel(): Promise<void> {
     honoApp.use('/api/v1/*', sanitize());
 
     // ── Rate limiting — General API (100 req/min per IP) ─────
-    honoApp.use(
-      '/api/v1/*',
-      rateLimit({ windowMs: 60_000, maxRequests: 100 }),
-    );
+    honoApp.use('/api/v1/*', rateLimit({ windowMs: 60_000, maxRequests: 100 }));
 
     // ── Rate limiting — Auth endpoints (10 req/min — brute-force protection) ──
-    honoApp.use(
-      '/api/v1/auth/*',
-      rateLimit({ windowMs: 60_000, maxRequests: 10 }),
-    );
+    honoApp.use('/api/v1/auth/*', rateLimit({ windowMs: 60_000, maxRequests: 10 }));
 
     // Health-check (always available)
     honoApp.get('/api/v1/health', (c) =>

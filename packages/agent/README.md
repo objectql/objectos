@@ -12,13 +12,13 @@ LLM-powered AI Agent Framework plugin for ObjectOS with tool calling, conversati
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/v1/agent/chat` | Send a message to an agent |
-| GET | `/api/v1/agent/conversations` | List conversations |
-| GET | `/api/v1/agent/tools` | List available tools |
-| GET | `/api/v1/agent/stats` | Agent usage statistics |
-| GET | `/api/v1/agent/cost` | Cost tracking report |
+| Method | Path                          | Description                |
+| ------ | ----------------------------- | -------------------------- |
+| POST   | `/api/v1/agent/chat`          | Send a message to an agent |
+| GET    | `/api/v1/agent/conversations` | List conversations         |
+| GET    | `/api/v1/agent/tools`         | List available tools       |
+| GET    | `/api/v1/agent/stats`         | Agent usage statistics     |
+| GET    | `/api/v1/agent/cost`          | Cost tracking report       |
 
 ## Usage
 

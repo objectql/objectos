@@ -57,9 +57,7 @@ export default function ObjectRecordPage() {
           </Link>
         </Button>
         <h2 className="text-2xl font-bold tracking-tight">Record not found</h2>
-        <p className="text-muted-foreground">
-          The requested record does not exist.
-        </p>
+        <p className="text-muted-foreground">The requested record does not exist.</p>
       </div>
     );
   }
@@ -72,16 +70,13 @@ export default function ObjectRecordPage() {
   const relatedObjects = Object.entries(mockObjectDefinitions)
     .filter(([, def]) =>
       Object.values(def.fields).some(
-        (f) =>
-          (f.type === 'lookup' || f.type === 'master_detail') &&
-          f.reference === objectName,
+        (f) => (f.type === 'lookup' || f.type === 'master_detail') && f.reference === objectName,
       ),
     )
     .map(([name, def]) => {
       const fkField = Object.entries(def.fields).find(
         ([, f]) =>
-          (f.type === 'lookup' || f.type === 'master_detail') &&
-          f.reference === objectName,
+          (f.type === 'lookup' || f.type === 'master_detail') && f.reference === objectName,
       );
       return {
         objectName: name,
@@ -100,7 +95,10 @@ export default function ObjectRecordPage() {
       await queryClient.invalidateQueries({ queryKey: ['record', objectName, recordId] });
       await queryClient.invalidateQueries({ queryKey: ['activities', recordId] });
     } catch (error) {
-      console.error(`Failed to execute transition: ${transition.name} on record ${recordId}`, error);
+      console.error(
+        `Failed to execute transition: ${transition.name} on record ${recordId}`,
+        error,
+      );
     }
   };
 

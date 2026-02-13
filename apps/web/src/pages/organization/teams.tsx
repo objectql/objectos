@@ -203,9 +203,7 @@ export default function TeamsPage() {
             <form onSubmit={handleCreateTeam}>
               <DialogHeader>
                 <DialogTitle>Create Team</DialogTitle>
-                <DialogDescription>
-                  Create a new team within your organization.
-                </DialogDescription>
+                <DialogDescription>Create a new team within your organization.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
@@ -236,7 +234,12 @@ export default function TeamsPage() {
       {error && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {error}
-          <Button variant="ghost" size="sm" className="ml-2 h-auto p-0" onClick={() => setError('')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2 h-auto p-0"
+            onClick={() => setError('')}
+          >
             ×
           </Button>
         </div>
@@ -285,7 +288,12 @@ export default function TeamsPage() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <MoreHorizontal className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -316,9 +324,7 @@ export default function TeamsPage() {
               {selectedTeam ? `${selectedTeam.name} — Members` : 'Team Members'}
             </CardTitle>
             <CardDescription>
-              {selectedTeam
-                ? 'Manage members of this team'
-                : 'Select a team to view its members'}
+              {selectedTeam ? 'Manage members of this team' : 'Select a team to view its members'}
             </CardDescription>
           </CardHeader>
           <CardContent>

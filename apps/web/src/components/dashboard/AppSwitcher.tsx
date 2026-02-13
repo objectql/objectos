@@ -64,15 +64,9 @@ function useAppSwitcherState() {
   }, [normalizedQuery, apps]);
 
   const pinnedApps = filteredApps.filter((app) => app.pinned);
-  const systemApps = filteredApps.filter(
-    (app) => app.category === 'system' && !app.pinned,
-  );
-  const businessApps = filteredApps.filter(
-    (app) => app.category === 'business' && !app.pinned,
-  );
-  const customApps = filteredApps.filter(
-    (app) => app.category === 'custom' && !app.pinned,
-  );
+  const systemApps = filteredApps.filter((app) => app.category === 'system' && !app.pinned);
+  const businessApps = filteredApps.filter((app) => app.category === 'business' && !app.pinned);
+  const customApps = filteredApps.filter((app) => app.category === 'custom' && !app.pinned);
 
   return {
     navigate,
@@ -122,13 +116,8 @@ function AppDropdownBody({
 
   return (
     <>
-      <DropdownMenuLabel className="text-xs text-muted-foreground">
-        Search
-      </DropdownMenuLabel>
-      <DropdownMenuItem
-        className="p-2"
-        onSelect={(event) => event.preventDefault()}
-      >
+      <DropdownMenuLabel className="text-xs text-muted-foreground">Search</DropdownMenuLabel>
+      <DropdownMenuItem className="p-2" onSelect={(event) => event.preventDefault()}>
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -140,18 +129,14 @@ function AppDropdownBody({
       <div className="max-h-[50vh] overflow-auto">
         {pinnedApps.length > 0 && (
           <>
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Pinned
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">Pinned</DropdownMenuLabel>
             {pinnedApps.map(renderAppItem)}
           </>
         )}
 
         {systemApps.length > 0 && (
           <>
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              System
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">System</DropdownMenuLabel>
             {systemApps.map(renderAppItem)}
           </>
         )}
@@ -167,17 +152,13 @@ function AppDropdownBody({
 
         {customApps.length > 0 && (
           <>
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Custom
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">Custom</DropdownMenuLabel>
             {customApps.map(renderAppItem)}
           </>
         )}
 
         {filteredApps.length === 0 && (
-          <div className="px-3 py-2 text-xs text-muted-foreground">
-            No apps match your search.
-          </div>
+          <div className="px-3 py-2 text-xs text-muted-foreground">No apps match your search.</div>
         )}
       </div>
       <DropdownMenuSeparator />
@@ -234,9 +215,7 @@ export function AppSwitcher({ variant = 'sidebar' }: AppSwitcherProps) {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{state.displayName}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  Business Apps
-                </span>
+                <span className="truncate text-xs text-muted-foreground">Business Apps</span>
               </div>
               <ChevronDown className="ml-auto" />
             </SidebarMenuButton>

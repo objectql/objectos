@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { organization, useActiveOrganization, useListOrganizations } from '@/lib/auth-client';
 import {
-  organization,
-  useActiveOrganization,
-  useListOrganizations,
-} from '@/lib/auth-client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -72,9 +75,7 @@ export default function OrganizationSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Organization Settings</CardTitle>
-          <CardDescription>
-            Select an organization to manage its settings.
-          </CardDescription>
+          <CardDescription>Select an organization to manage its settings.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -84,17 +85,13 @@ export default function OrganizationSettingsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Organization Settings</h2>
-        <p className="text-muted-foreground">
-          Manage settings for {activeOrg.name}.
-        </p>
+        <p className="text-muted-foreground">Manage settings for {activeOrg.name}.</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Organization Switcher</CardTitle>
-          <CardDescription>
-            Select an organization to manage its settings.
-          </CardDescription>
+          <CardDescription>Select an organization to manage its settings.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {orgsPending && (
@@ -131,9 +128,7 @@ export default function OrganizationSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>General</CardTitle>
-          <CardDescription>
-            Update your organization name and URL slug.
-          </CardDescription>
+          <CardDescription>Update your organization name and URL slug.</CardDescription>
         </CardHeader>
         <form onSubmit={handleUpdate}>
           <CardContent className="space-y-4">
@@ -186,14 +181,12 @@ export default function OrganizationSettingsPage() {
       <Card className="border-destructive/50">
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>
-            Permanently delete this organization and all its data.
-          </CardDescription>
+          <CardDescription>Permanently delete this organization and all its data.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            This action cannot be undone. All members will be removed and all
-            associated data will be permanently deleted.
+            This action cannot be undone. All members will be removed and all associated data will
+            be permanently deleted.
           </p>
           <div className="space-y-2">
             <Label htmlFor="confirm-delete">

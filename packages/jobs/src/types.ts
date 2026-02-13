@@ -1,18 +1,18 @@
 /**
  * Job System Types
- * 
+ *
  * Type definitions for the job queue and scheduling system
  */
 
 /**
  * Job status enumeration
  */
-export type JobStatus = 
-  | 'pending'    // Job is queued, waiting to be processed
-  | 'running'    // Job is currently being processed
-  | 'completed'  // Job completed successfully
-  | 'failed'     // Job failed after all retries
-  | 'cancelled'  // Job was cancelled
+export type JobStatus =
+  | 'pending' // Job is queued, waiting to be processed
+  | 'running' // Job is currently being processed
+  | 'completed' // Job completed successfully
+  | 'failed' // Job failed after all retries
+  | 'cancelled' // Job was cancelled
   | 'scheduled'; // Job is scheduled for future execution
 
 /**
@@ -170,25 +170,25 @@ export interface JobQueryOptions {
 export interface JobStorage {
   /** Save a job */
   save(job: Job): Promise<void>;
-  
+
   /** Get a job by ID */
   get(id: string): Promise<Job | null>;
-  
+
   /** Update a job */
   update(id: string, updates: Partial<Job>): Promise<void>;
-  
+
   /** Delete a job */
   delete(id: string): Promise<void>;
-  
+
   /** Query jobs */
   query(options: JobQueryOptions): Promise<Job[]>;
-  
+
   /** Get queue statistics */
   getStats(): Promise<JobQueueStats>;
-  
+
   /** Get next pending job */
   getNextPending(): Promise<Job | null>;
-  
+
   /** Get scheduled jobs due for execution */
   getScheduledDue(): Promise<Job[]>;
 }
