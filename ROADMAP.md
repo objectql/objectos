@@ -3,7 +3,7 @@
 > **Version**: 14.1.0
 > **Date**: February 12, 2026
 > **Status**: Phase P — Developer Experience ✅ Complete
-> **Spec SDK**: `@objectstack/spec@3.0.1`
+> **Spec SDK**: `@objectstack/spec@3.0.2`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
 ---
