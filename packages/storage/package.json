@@ -15,8 +15,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@objectstack/runtime": "^3.0.2",
-    "@objectstack/spec": "3.0.2"
+    "@objectstack/runtime": "^3.0.6",
+    "@objectstack/spec": "3.0.6"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
@@ -29,6 +29,6 @@
   },
   "optionalDependencies": {
     "better-sqlite3": "^11.0.0",
-    "ioredis": "^5.4.2"
+    "ioredis": "^5.9.3"
   }
 }
