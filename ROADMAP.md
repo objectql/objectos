@@ -1,33 +1,31 @@
 # ObjectOS Roadmap
 
-> **Version**: 15.0.0
-> **Date**: February 13, 2026
-> **Status**: Phase Q — Mobile UX Optimization ✅ Complete
-> **Spec SDK**: `@objectstack/spec@3.0.2`
+> **Version**: 16.0.0
+> **Date**: February 16, 2026
+> **Status**: Phase R — SDK Upgrade & Spec Alignment 🟡 In Progress
+> **Spec SDK**: `@objectstack/spec@3.0.6`
 > **ObjectUI**: `@object-ui/*@2.0.0`
 
 ---
 
 ## Executive Summary
 
-ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 19 server-side plugins fully implemented, spec compliance at 100%, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–Q are complete**. The platform has completed **Phase Q — Mobile UX Optimization**, delivering responsive layouts, adaptive table columns, touch-friendly headers, and responsive typography across all 31 pages of the Admin Console.
+ObjectOS is a metadata-driven enterprise runtime platform built on the ObjectStack protocol. With all 19 server-side plugins fully implemented, 10 of 25 spec service contracts implemented, and the Admin Console operational with 31 pages (including record create/edit), **Phases A–Q are complete**. **Phase R — SDK Upgrade & Spec Alignment** is now in progress.
 
 The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift: the Admin Console's Business App Shell now leverages @object-ui's `SchemaRenderer` for metadata-driven UI rendering, replacing hand-built components with protocol-compliant controls.
 
-**All roadmap phases are now complete.** The platform is production-ready with comprehensive developer tooling, coverage reporting, plugin scaffolding, environment health checks, and mobile-optimized UI.
-
-> **@objectstack/\* v3.0.1 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.1 — the latest patch release of the 3.x series, bringing bug fixes and performance improvements while maintaining full protocol compatibility.
+> **@objectstack/\* v3.0.6 Upgrade**: All ObjectStack SDK packages upgraded to v3.0.6 — the latest patch release of the 3.x series. All @objectql/\* packages upgraded to v4.2.2. Note: `@objectql/core@4.2.2` is now **deprecated** — migration to `@objectstack/objectql` is recommended (see Phase R).
 
 ### What Changed
 
-| Before (Plan v14.1)                          | After (Plan v15.0 — This Roadmap)                                                                |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Phase P was the last completed phase         | **Phase Q — Mobile UX Optimization** complete across all 31 Admin Console pages                  |
-| Cards used fixed `px-6` padding              | Cards use responsive `px-4 sm:px-6` padding for mobile comfort                                   |
-| Layout headers fixed at `h-16 px-4`          | Headers adapt to `h-14 px-3` on mobile, `h-16 px-4` on desktop                                   |
-| Tables showed all columns on all screens     | Non-essential table columns hidden on mobile via `hidden sm:table-cell` / `hidden md:table-cell` |
-| Page headings used fixed `text-2xl`          | Headings use responsive `text-xl sm:text-2xl` across all pages                                   |
-| Header + action button rows used inline flex | Header sections stack vertically on mobile via `flex-col sm:flex-row`                            |
+| Before (Plan v15.0)                       | After (Plan v16.0 — This Roadmap)                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| @objectstack/\* pinned at v3.0.2          | **All @objectstack/\* upgraded to v3.0.6** (latest)                               |
+| @objectql/\* at ^4.2.0                    | **All @objectql/\* upgraded to ^4.2.2** (latest)                                  |
+| @objectql/core considered current         | **@objectql/core@4.2.2 is deprecated** — migrate to @objectstack/objectql         |
+| Spec compliance claimed at 100%           | **10/25 spec contracts implemented** — honest assessment per spec contract matrix |
+| No mention of spec contract gaps          | **Phase R added** — SDK upgrade, @objectql migration, spec v4.0 naming alignment  |
+| External Dependencies table showed v3.0.1 | External Dependencies table updated to actual v3.0.6 versions                     |
 
 ---
 
@@ -90,25 +88,26 @@ The integration of **@object-ui** (6 packages at v2.0.0) marks a strategic shift
 
 ## Completed Phases
 
-| Phase | Focus                                                  |     Timeline     |     Status      |
-| :---: | ------------------------------------------------------ | :--------------: | :-------------: |
-|   A   | Kernel Compliance Baseline                             |     Oct 2025     |       ✅        |
-|   B   | Security & Audit Parity                                |     Nov 2025     |       ✅        |
-|   C   | Workflow & Automation Spec Execution                   |     Nov 2025     |       ✅        |
-|   D   | Realtime Protocol Compliance                           |     Dec 2025     |       ✅        |
-|   E   | Operational Readiness                                  |     Dec 2025     |       ✅        |
-|   F   | Release Candidate (Security, Performance, Docker, E2E) |     Jan 2026     |       ✅        |
-|   G   | Spec Protocol Alignment + Admin Console                |     Feb 2026     |       ✅        |
-|   H   | @object-ui Driven Development                          |     Feb 2026     |       ✅        |
-|   I   | Rich Data Experience                                   |     Feb 2026     |       ✅        |
-|   J   | Workflow & Automation UI                               |     Feb 2026     |       ✅        |
-|   K   | Offline & Sync                                         |     Feb 2026     |       ✅        |
-|   L   | Polish & Performance                                   |     Feb 2026     |       ✅        |
-| **M** | **Technical Debt Resolution**                          | **Feb–Sep 2026** | **✅ Complete** |
-| **N** | **Enterprise Features**                                |   **Feb 2026**   | **✅ Complete** |
-| **O** | **Platform Expansion**                                 |   **Feb 2026**   | **✅ Complete** |
-| **P** | **Developer Experience**                               | **Feb–Apr 2026** | **✅ Complete** |
-| **Q** | **Mobile UX Optimization**                             |   **Feb 2026**   | **✅ Complete** |
+| Phase | Focus                                                  |     Timeline     |       Status       |
+| :---: | ------------------------------------------------------ | :--------------: | :----------------: |
+|   A   | Kernel Compliance Baseline                             |     Oct 2025     |         ✅         |
+|   B   | Security & Audit Parity                                |     Nov 2025     |         ✅         |
+|   C   | Workflow & Automation Spec Execution                   |     Nov 2025     |         ✅         |
+|   D   | Realtime Protocol Compliance                           |     Dec 2025     |         ✅         |
+|   E   | Operational Readiness                                  |     Dec 2025     |         ✅         |
+|   F   | Release Candidate (Security, Performance, Docker, E2E) |     Jan 2026     |         ✅         |
+|   G   | Spec Protocol Alignment + Admin Console                |     Feb 2026     |         ✅         |
+|   H   | @object-ui Driven Development                          |     Feb 2026     |         ✅         |
+|   I   | Rich Data Experience                                   |     Feb 2026     |         ✅         |
+|   J   | Workflow & Automation UI                               |     Feb 2026     |         ✅         |
+|   K   | Offline & Sync                                         |     Feb 2026     |         ✅         |
+|   L   | Polish & Performance                                   |     Feb 2026     |         ✅         |
+| **M** | **Technical Debt Resolution**                          | **Feb–Sep 2026** |  **✅ Complete**   |
+| **N** | **Enterprise Features**                                |   **Feb 2026**   |  **✅ Complete**   |
+| **O** | **Platform Expansion**                                 |   **Feb 2026**   |  **✅ Complete**   |
+| **P** | **Developer Experience**                               | **Feb–Apr 2026** |  **✅ Complete**   |
+| **Q** | **Mobile UX Optimization**                             |   **Feb 2026**   |  **✅ Complete**   |
+| **R** | **SDK Upgrade & Spec Alignment**                       |   **Feb 2026**   | **🟡 In Progress** |
 
 ### Phase G Outcomes
 
@@ -516,6 +515,114 @@ A comprehensive scan of the entire codebase identified the following improvement
 
 ---
 
+## Phase R — SDK Upgrade & Spec Alignment (Current — Feb 2026)
+
+> **Goal**: Upgrade all ObjectStack SDK packages to latest versions, align with spec protocol contract matrix, and prepare for @objectql/core deprecation migration.
+
+### R.1 — SDK Version Upgrade
+
+| #     | Task                                                             | Priority | Status |
+| ----- | ---------------------------------------------------------------- | :------: | :----: |
+| R.1.1 | Upgrade all @objectstack/\* packages from v3.0.2 to v3.0.6       |    🔴    |   ✅   |
+| R.1.2 | Upgrade all @objectql/\* packages from ^4.2.0 to ^4.2.2          |    🔴    |   ✅   |
+| R.1.3 | Update pnpm-lock.yaml with new dependency tree                   |    🔴    |   ✅   |
+| R.1.4 | Verify build compatibility (24/24 turbo tasks pass)              |    🔴    |   ✅   |
+| R.1.5 | Verify test compatibility (all tests pass)                       |    🔴    |   ✅   |
+| R.1.6 | Security advisory check — no vulnerabilities in updated packages |    🔴    |   ✅   |
+
+### R.2 — Roadmap Accuracy Audit
+
+| #     | Task                                                                   | Priority | Status |
+| ----- | ---------------------------------------------------------------------- | :------: | :----: |
+| R.2.1 | Full codebase scan — verify every package's real implementation status |    🔴    |   ✅   |
+| R.2.2 | Cross-reference with spec protocol contract implementation matrix      |    🔴    |   ✅   |
+| R.2.3 | Update ROADMAP.md with accurate completion status                      |    🔴    |   ✅   |
+| R.2.4 | Update External Dependencies table with actual installed versions      |    🔴    |   ✅   |
+| R.2.5 | Add spec contract compliance matrix to ROADMAP                         |    🟡    |   ✅   |
+
+### R.3 — @objectql/core Deprecation Migration (Planned)
+
+> `@objectql/core@4.2.2` is officially deprecated. The recommended replacement is `@objectstack/objectql`.
+
+| #     | Task                                                                                               | Priority | Status |
+| ----- | -------------------------------------------------------------------------------------------------- | :------: | :----: |
+| R.3.1 | Audit all packages importing @objectql/core (audit, auth, automation, jobs, permissions, workflow) |    🟡    |   ⬜   |
+| R.3.2 | Replace @objectql/core imports with @objectstack/objectql equivalents                              |    🟡    |   ⬜   |
+| R.3.3 | Remove @objectql/core, @objectql/driver-mongo, @objectql/driver-sql, @objectql/platform-node deps  |    🟡    |   ⬜   |
+| R.3.4 | Verify build and test compatibility after migration                                                |    🟡    |   ⬜   |
+
+### R.4 — Spec v4.0 Naming Alignment (Planned)
+
+> Per spec protocol ROADMAP, `plugin-*` packages implementing core contracts will be renamed to `service-*` in v4.0.
+
+| #     | Task                                                                         | Priority | Status |
+| ----- | ---------------------------------------------------------------------------- | :------: | :----: |
+| R.4.1 | Track `@objectstack/plugin-auth` → `@objectstack/service-auth` rename        |    🟢    |   ⬜   |
+| R.4.2 | Track `@objectstack/plugin-hono-server` → `@objectstack/service-http` rename |    🟢    |   ⬜   |
+| R.4.3 | Track `@objectstack/plugin-security` introduction for RBAC/RLS/FLS           |    🟢    |   ⬜   |
+| R.4.4 | Evaluate ObjectOS package alignment with spec `service-*` naming convention  |    🟢    |   ⬜   |
+
+---
+
+## Spec Protocol Contract Compliance
+
+> Cross-reference with the [ObjectStack Spec Protocol ROADMAP](https://github.com/objectstack-ai/spec/blob/main/ROADMAP.md) contract implementation matrix.
+
+### ObjectOS Contract Implementations (10/25)
+
+ObjectOS provides **independent implementations** of 10 spec service contracts. These are ObjectOS-native plugins — not the spec's official `@objectstack/service-*` packages (which are planned separately in the spec ROADMAP).
+
+| #   | Contract             | Interface              | ObjectOS Package         | Spec Official Package                         | Status |
+| --- | -------------------- | ---------------------- | ------------------------ | --------------------------------------------- | :----: |
+| 1   | Cache Service        | `ICacheService`        | `@objectos/cache`        | `@objectstack/service-cache` ✅               |   ✅   |
+| 2   | Storage Service      | `IStorageService`      | `@objectos/storage`      | `@objectstack/service-storage` ✅             |   ✅   |
+| 3   | Auth Service         | `IAuthService`         | `@objectos/auth`         | `@objectstack/plugin-auth` ✅                 |   ✅   |
+| 4   | Notification Service | `INotificationService` | `@objectos/notification` | `@objectstack/service-notification` (planned) |   ✅   |
+| 5   | i18n Service         | `II18nService`         | `@objectos/i18n`         | `@objectstack/service-i18n` (planned)         |   ✅   |
+| 6   | UI Service           | `IUIService`           | `@objectos/ui`           | — (deprecated, merged into IMetadataService)  |   ✅   |
+| 7   | Job Service          | `IJobService`          | `@objectos/jobs`         | `@objectstack/service-job` ✅                 |   ✅   |
+| 8   | Automation Service   | `IAutomationService`   | `@objectos/automation`   | `@objectstack/service-automation` (planned)   |   ✅   |
+| 9   | Realtime Service     | `IRealtimeService`     | `@objectos/realtime`     | `@objectstack/service-realtime` (planned)     |   ✅   |
+| 10  | Workflow Service     | `IWorkflowService`     | `@objectos/workflow`     | `@objectstack/service-workflow` (planned)     |   ✅   |
+
+### Contracts NOT Implemented by ObjectOS (15/25)
+
+These contracts are defined in `@objectstack/spec/contracts` but ObjectOS does not provide implementations. Some are handled by the ObjectStack runtime directly.
+
+| #   | Contract                | Interface                | Provided By                            | Status     |
+| --- | ----------------------- | ------------------------ | -------------------------------------- | ---------- |
+| 1   | Data Engine             | `IDataEngine`            | `@objectstack/objectql` (runtime)      | ✅ Runtime |
+| 2   | Data Driver             | `IDataDriver`            | `@objectstack/driver-memory` (runtime) | ✅ Runtime |
+| 3   | Metadata Service        | `IMetadataService`       | `@objectstack/metadata` (runtime)      | ✅ Runtime |
+| 4   | HTTP Server             | `IHttpServer`            | `@objectstack/plugin-hono-server`      | ✅ Runtime |
+| 5   | Logger                  | `Logger`                 | `@objectstack/core` (runtime)          | ✅ Runtime |
+| 6   | Service Registry        | `IServiceRegistry`       | `@objectstack/core` (runtime)          | ✅ Runtime |
+| 7   | Queue Service           | `IQueueService`          | `@objectstack/service-queue` (runtime) | ✅ Runtime |
+| 8   | Analytics Service       | `IAnalyticsService`      | `@objectos/analytics` (ObjectOS)       | 🟡 Partial |
+| 9   | GraphQL Service         | `IGraphQLService`        | `@objectos/graphql` (ObjectOS)         | 🟡 Custom  |
+| 10  | Search Service          | `ISearchService`         | — (not implemented)                    | ⬜ Planned |
+| 11  | AI Service              | `IAIService`             | `@objectos/agent` (ObjectOS)           | 🟡 Custom  |
+| 12  | Schema Driver           | `ISchemaDriver`          | — (not implemented)                    | ⬜ Planned |
+| 13  | Startup Orchestrator    | `IStartupOrchestrator`   | `@objectstack/core` (basic)            | 🟡 Partial |
+| 14  | Plugin Validator        | `IPluginValidator`       | — (not implemented)                    | ⬜ Planned |
+| 15  | Plugin Lifecycle Events | `IPluginLifecycleEvents` | `@objectstack/core` (partial)          | 🟡 Partial |
+
+### Additional ObjectOS Packages (No Spec Contract)
+
+These ObjectOS packages provide functionality beyond the current spec contract definitions:
+
+| Package                 | Role                                                |
+| ----------------------- | --------------------------------------------------- |
+| `@objectos/audit`       | CRUD event capture, field-level history, compliance |
+| `@objectos/browser`     | SQLite WASM, OPFS, Service Worker, offline sync     |
+| `@objectos/federation`  | Cross-instance federation and data sharing          |
+| `@objectos/marketplace` | Plugin registry, discovery, installation            |
+| `@objectos/metrics`     | Counter/Gauge/Histogram, Prometheus export          |
+| `@objectos/permissions` | RBAC, permission sets, object/field/record security |
+| `@objectos/telemetry`   | OpenTelemetry-compatible distributed tracing        |
+
+---
+
 ## Release Timeline
 
 ### v1.0.0 — Production Release (Target: March 2026)
@@ -523,7 +630,7 @@ A comprehensive scan of the entire codebase identified the following improvement
 | Criterion                                                    |   Status   |
 | ------------------------------------------------------------ | :--------: |
 | All 14 plugins implemented                                   |     ✅     |
-| Spec compliance 100%                                         |     ✅     |
+| 10/25 spec contracts implemented (ObjectOS-native)           |     ✅     |
 | Admin Console operational (31 pages)                         |     ✅     |
 | Security review passed                                       |     ✅     |
 | Integration test suite                                       |     ✅     |
@@ -563,11 +670,11 @@ A comprehensive scan of the entire codebase identified the following improvement
 - Phase M.3: Platform Hardening ✅
   - Plugin isolation (Worker Threads + Child Process) (TD-7) ✅
 - @objectstack/\* v3.0.0 upgrade ✅ Phase N.3
-- Phase O.1: Full GraphQL layer
-- Phase O.2: Plugin Marketplace
-- Phase O.3: AI Agent Framework
-- Phase O.4: Analytics plugin
-- Phase O.5: Dynamic Plugin Loading (Module Federation)
+- Phase O.1: Full GraphQL layer ✅
+- Phase O.2: Plugin Marketplace ✅
+- Phase O.3: AI Agent Framework ✅
+- Phase O.4: Analytics plugin ✅
+- Phase O.5: Dynamic Plugin Loading (Module Federation) ✅
 
 ### v2.1.0 — Developer Experience: Documentation (Target: February 2026)
 
@@ -610,6 +717,14 @@ A comprehensive scan of the entire codebase identified the following improvement
   - Adaptive table columns — hide non-essential columns on mobile ✅
   - Header + action button stacking on mobile ✅
   - Compact mobile headers and content padding ✅
+
+### v3.1.0 — SDK Upgrade & Spec Alignment (Target: February 2026)
+
+- Phase R: SDK Upgrade & Spec Alignment
+  - R.1: @objectstack/\* v3.0.6 + @objectql/\* v4.2.2 upgrade ✅
+  - R.2: Roadmap accuracy audit with spec contract matrix ✅
+  - R.3: @objectql/core deprecation migration ⬜
+  - R.4: Spec v4.0 naming alignment tracking ⬜
 
 ### Master Timeline
 
@@ -660,6 +775,13 @@ Feb 2026                                                    Sep 2026
   │   Q.4 Header + action stacking             │              │
   │   Q.5 Mobile-specific enhancements         │              │
   │                                      v3.0.0 Release       │
+  │                                             │              │
+  ├── Phase R: SDK Upgrade & Spec Alignment ───┤              │
+  │   R.1 @objectstack/* v3.0.6 upgrade  ✅    │              │
+  │   R.2 Roadmap accuracy audit         ✅    │              │
+  │   R.3 @objectql/core deprecation migration │              │
+  │   R.4 Spec v4.0 naming alignment          │              │
+  │                                      v3.1.0 Release       │
   ▼                                             ▼              ▼
 ```
 
@@ -757,35 +879,39 @@ User Action → React Component → @object-ui/react SchemaRenderer
 
 ## External Dependencies
 
-| Dependency                        | Version | Role                           |
-| --------------------------------- | ------- | ------------------------------ |
-| `@objectstack/runtime`            | 3.0.1   | Microkernel — plugin lifecycle |
-| `@objectstack/spec`               | 3.0.1   | Protocol contracts             |
-| `@objectstack/cli`                | 3.0.1   | Server bootstrap               |
-| `@objectstack/client`             | 3.0.0   | Frontend SDK                   |
-| `@objectstack/objectql`           | 3.0.1   | ObjectQL plugin                |
-| `@objectstack/driver-memory`      | 3.0.1   | In-memory driver               |
-| `@objectstack/plugin-hono-server` | 3.0.1   | Hono HTTP server               |
-| `@objectstack/plugin-auth`        | 3.0.1   | Authentication                 |
-| `@object-ui/core`                 | 2.0.0   | UI core logic                  |
-| `@object-ui/react`                | 2.0.0   | React components               |
-| `@object-ui/components`           | 2.0.0   | Standard controls              |
-| `@object-ui/layout`               | 2.0.0   | App shell                      |
-| `@object-ui/fields`               | 2.0.0   | Field renderers                |
-| `@object-ui/data-objectstack`     | 2.0.0   | Data adapter                   |
+| Dependency                        | Version | Role                                                 |
+| --------------------------------- | ------- | ---------------------------------------------------- |
+| `@objectstack/runtime`            | 3.0.6   | Microkernel — plugin lifecycle                       |
+| `@objectstack/spec`               | 3.0.6   | Protocol contracts (25 service interfaces)           |
+| `@objectstack/cli`                | 3.0.6   | Server bootstrap                                     |
+| `@objectstack/client`             | 3.0.6   | Frontend SDK                                         |
+| `@objectstack/objectql`           | 3.0.6   | ObjectQL plugin (data engine)                        |
+| `@objectstack/driver-memory`      | 3.0.6   | In-memory driver                                     |
+| `@objectstack/plugin-hono-server` | 3.0.6   | Hono HTTP server                                     |
+| `@objectstack/plugin-auth`        | 3.0.6   | Authentication (better-auth)                         |
+| `@objectql/core`                  | 4.2.2   | ⚠️ **Deprecated** — migrate to @objectstack/objectql |
+| `@objectql/driver-mongo`          | 4.2.2   | MongoDB driver                                       |
+| `@objectql/driver-sql`            | 4.2.2   | SQL driver (PostgreSQL, MySQL, SQLite)               |
+| `@objectql/platform-node`         | 4.2.2   | Node.js platform utilities                           |
+| `@object-ui/core`                 | 2.0.0   | UI core logic                                        |
+| `@object-ui/react`                | 2.0.0   | React components                                     |
+| `@object-ui/components`           | 2.0.0   | Standard controls                                    |
+| `@object-ui/layout`               | 2.0.0   | App shell                                            |
+| `@object-ui/fields`               | 2.0.0   | Field renderers                                      |
+| `@object-ui/data-objectstack`     | 2.0.0   | Data adapter                                         |
 
 ---
 
 ## Quality Targets
 
-| Metric                 | Target      |
-| ---------------------- | ----------- |
-| API Response Time      | P95 < 100ms |
-| Test Coverage (Server) | ≥ 80%       |
-| Test Coverage (UI)     | ≥ 70%       |
-| TypeScript Errors      | 0           |
-| Spec Compliance        | 100%        |
-| Accessibility          | WCAG 2.1 AA |
+| Metric                 | Target                            |
+| ---------------------- | --------------------------------- |
+| API Response Time      | P95 < 100ms                       |
+| Test Coverage (Server) | ≥ 80%                             |
+| Test Coverage (UI)     | ≥ 70%                             |
+| TypeScript Errors      | 0                                 |
+| Spec Contract Coverage | 10/25 (40%) — see contract matrix |
+| Accessibility          | WCAG 2.1 AA                       |
 
 ---
 
@@ -800,5 +926,5 @@ User Action → React Component → @object-ui/react SchemaRenderer
 ---
 
 <div align="center">
-<sub>ObjectOS v15.0.0 Roadmap — All Phases Complete | Built with @objectstack/spec@3.0.2</sub>
+<sub>ObjectOS v16.0.0 Roadmap — Phase R In Progress | Built with @objectstack/spec@3.0.6</sub>
 </div>

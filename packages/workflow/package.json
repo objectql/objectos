@@ -16,8 +16,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@objectstack/runtime": "^3.0.2",
-    "@objectstack/spec": "3.0.2",
+    "@objectstack/runtime": "^3.0.6",
+    "@objectstack/spec": "3.0.6",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
@@ -32,6 +32,6 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@objectql/core": "^4.2.0"
+    "@objectql/core": "^4.2.2"
   }
 }
