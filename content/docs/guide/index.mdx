@@ -14,7 +14,7 @@ ObjectOS is a **metadata-driven runtime engine** that interprets and executes bu
 ┌─────────────────────────────────────────────────┐
 │  ObjectQL (Protocol Repository)                 │
 │  - Metadata standard in YAML                    │
-│  - Type definitions (@objectql/types)           │
+│  - Type definitions (@objectstack/spec)          │
 │  - Database drivers                             │
 └─────────────────────┬───────────────────────────┘
                       │
@@ -77,7 +77,7 @@ ObjectOS follows a strict architectural principle:
 > **"Kernel handles logic, Drivers handle data, Server handles HTTP."**
 
 - **Kernel** (`@objectos/kernel`): Validates, enforces permissions, runs hooks
-- **Drivers** (`@objectql/driver-*`): Translates to SQL/NoSQL queries
+- **Drivers** (`@objectstack/objectql`): Translates to SQL/NoSQL queries
 - **Server** (`@objectos/server`): Exposes REST APIs
 
 This separation means you can swap databases without changing business logic!
@@ -116,7 +116,7 @@ cd my-app
 npm init -y
 
 # Install ObjectOS packages
-npm install @objectos/kernel @objectos/server @objectql/driver-sql
+npm install @objectos/kernel @objectos/server @objectstack/objectql
 
 # Install database driver
 npm install pg  # for PostgreSQL
@@ -216,7 +216,7 @@ Create `src/main.ts`:
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import { PostgresDriver } from '@objectql/driver-sql';
+import { ObjectQLPlugin } from '@objectstack/objectql';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';

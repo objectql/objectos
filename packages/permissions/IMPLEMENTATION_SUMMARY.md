@@ -265,7 +265,7 @@ See `examples/usage-example.ts` for complete usage demonstration:
     "js-yaml": "^4.1.1"
   },
   "peerDependencies": {
-    "@objectql/core": "^4.0.3"
+    "@objectstack/objectql": "^3.0.6"
   }
 }
 ```

@@ -28,6 +28,6 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@objectql/core": "^4.2.2"
+    "@objectstack/objectql": "^3.0.6"
   }
 }
