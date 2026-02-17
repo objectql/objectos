@@ -129,7 +129,7 @@ interface ObjectConfig {
 }
 
 // ✅ GOOD
-import { ObjectConfig } from '@objectql/types';
+import { ObjectConfig } from '@objectstack/spec/data';
 ```
 
 #### Rule #2: Use Strict Types
@@ -141,7 +141,7 @@ async find(name: string, opts: any): Promise<any> {
 }
 
 // ✅ GOOD
-import { FindOptions } from '@objectql/types';
+import { FindOptions } from '@objectstack/spec/data';
 
 async find(
   name: string,

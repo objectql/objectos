@@ -41,7 +41,7 @@ The **"Business Operating System"** for the ObjectStack ecosystem.
   - **Internal:** Event Bus (EventEmitter / Redis / NATS).
   - **Outbound:** Webhooks / SMTP / SMS.
 - **Dependencies:**
-  - Depends on `@objectql/core` for Data Access.
+  - Depends on `@objectstack/objectql` for Data Access.
   - Depends on `@objectstack/runtime` for Kernel lifecycle.
   - Depends on `@objectstack/spec` for protocol contracts.
 

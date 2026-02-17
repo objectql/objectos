@@ -7,28 +7,21 @@ This document provides a complete reference for the ObjectOS Kernel SDK. Use the
 ## Installation
 
 ```bash
-npm install @objectos/kernel @objectql/driver-sql
+npm install @objectos/kernel @objectstack/objectql
 ```
 
 ## Basic Setup
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import { PostgresDriver } from '@objectql/driver-sql';
+import { ObjectQLPlugin } from '@objectstack/objectql';
 
 // Create kernel instance
 const kernel = new ObjectOS();
 
-// Configure database driver
-const driver = new PostgresDriver({
-  client: 'pg',
-  connection: {
-    host: 'localhost',
-    port: 5432,
-    user: 'postgres',
-    password: 'password',
-    database: 'myapp',
-  },
+// Configure data engine
+const objectql = new ObjectQLPlugin({
+  driver: 'memory',
 });
 
 // Connect driver to kernel
@@ -434,13 +427,12 @@ Set the database driver.
 **Example:**
 
 ```typescript
-import { PostgresDriver } from '@objectql/driver-sql';
+import { ObjectQLPlugin } from '@objectstack/objectql';
 
-const driver = new PostgresDriver({
+const objectql = new ObjectQLPlugin({
   /* config */
 });
-kernel.useDriver(driver);
-await driver.connect();
+kernel.usePlugin(objectql);
 ```
 
 ### `kernel.getDriver()`
@@ -654,12 +646,12 @@ type FieldType =
 
 ```typescript
 import { ObjectOS } from '@objectos/kernel';
-import { PostgresDriver } from '@objectql/driver-sql';
+import { ObjectQLPlugin } from '@objectstack/objectql';
 
 // Initialize
 const kernel = new ObjectOS();
-const driver = new PostgresDriver({
-  connection: process.env.DATABASE_URL,
+const objectql = new ObjectQLPlugin({
+  driver: 'memory',
 });
 
 kernel.useDriver(driver);

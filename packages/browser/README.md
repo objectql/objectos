@@ -343,11 +343,11 @@ async function getFile(path: string): Promise<Blob> {
 
 ### 1. Database Migration
 
-**Server (PostgreSQL)**:
+**Server (ObjectQL Plugin)**:
 
 ```typescript
-import { PostgresDriver } from '@objectql/driver-sql';
-const driver = new PostgresDriver({
+import { ObjectQLPlugin } from '@objectstack/objectql';
+const objectql = new ObjectQLPlugin({
   /* config */
 });
 ```

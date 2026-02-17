@@ -54,10 +54,8 @@ All ObjectOS plugins must conform to this lifecycle for consistency and predicta
 - **Location**: https://github.com/objectstack-ai/objectql
 - **Purpose**: Defines the metadata standard and provides core implementations
 - **Key Packages**:
-  - `@objectql/core` - Metadata parser, AST builder, query compiler
-  - `@objectql/types` - TypeScript type definitions for the protocol
-  - `@objectql/driver-sql` - SQL database driver (PostgreSQL, MySQL, SQLite)
-  - `@objectql/driver-mongo` - MongoDB driver
+  - `@objectstack/objectql` - ObjectQL plugin (data engine, metadata parser, query compiler)
+  - `@objectstack/driver-memory` - In-memory data driver for development and testing
 
 ### ObjectOS Repository (Runtime Implementation)
 
@@ -257,10 +255,10 @@ interface ObjectQLDriver {
 
 ### Supported Drivers
 
-| Driver         | Package                  | Databases                 |
-| -------------- | ------------------------ | ------------------------- |
-| SQL Driver     | `@objectql/driver-sql`   | PostgreSQL, MySQL, SQLite |
-| MongoDB Driver | `@objectql/driver-mongo` | MongoDB                   |
+| Driver          | Package                      | Databases                |
+| --------------- | ---------------------------- | ------------------------ |
+| Memory Driver   | `@objectstack/driver-memory` | In-memory (dev/testing)  |
+| ObjectQL Plugin | `@objectstack/objectql`      | SQL, MongoDB via drivers |
 
 ## Layer 4: HTTP Layer (@objectos/server)
 
