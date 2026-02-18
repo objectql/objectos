@@ -10,7 +10,7 @@
     "lint": "echo 'Lint: site excluded (see eslint.config.mjs ignores)'"
   },
   "dependencies": {
-    "fumadocs-core": "^16.4.11",
+    "fumadocs-core": "^16.6.3",
     "fumadocs-docgen": "^3.0.6",
     "fumadocs-mdx": "^14.2.7",
     "fumadocs-twoslash": "^3.1.13",
