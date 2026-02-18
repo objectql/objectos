@@ -28,7 +28,7 @@
     "typescript": "^5.9.3"
   },
   "optionalDependencies": {
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "^12.6.2",
     "ioredis": "^5.9.3"
   }
 }
