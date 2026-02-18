@@ -20,7 +20,7 @@
     "@objectstack/spec": "3.0.6",
     "comlink": "^4.4.1",
     "idb": "^8.0.0",
-    "sql.js": "^1.11.0"
+    "sql.js": "^1.14.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
